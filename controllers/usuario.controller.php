@@ -37,6 +37,8 @@ if (isset($_GET['operation'])){
       }
 
       $_SESSION['login'] = $login;
+      $_SESSION['idUsuario'] = $login["idUsuario"]; // Agrega esta línea
+
       echo json_encode($login);
     break;
 

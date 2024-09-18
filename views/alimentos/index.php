@@ -35,7 +35,7 @@
                             <!-- Costo -->
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="number" step="0.01" name="costo" id="costo" class="form-control" required>
+                                    <input type="number" step="0.01" name="costo" id="costo" class="form-control">
                                     <label for="costo">Costo</label>
                                 </div>
                             </div>
@@ -63,7 +63,7 @@
                             <!-- Fecha de Ingreso -->
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <input type="datetime-local" name="fechaIngreso" id="fechaIngreso" class="form-control" required>
+                                    <input type="datetime-local" name="fechaIngreso" id="fechaIngreso" class="form-control">
                                     <label for="fechaIngreso">Fecha de Ingreso</label>
                                 </div>
                             </div>
@@ -107,116 +107,157 @@
 <?php require_once '../../footer.php'; ?>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const form = document.querySelector("#form-alimentos");
-        const alimentosTable = document.querySelector("#alimentos-table");
-        const idTipomovimiento = document.querySelector("#idTipomovimiento");
-        const idTipoEquinoSelect = document.querySelector("#idTipoEquino");
+   document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("#form-alimentos");
+    const alimentosTable = document.querySelector("#alimentos-table");
+    const idTipomovimiento = document.querySelector("#idTipomovimiento");
+    const idTipoEquinoSelect = document.querySelector("#idTipoEquino");
+    const costoField = document.querySelector("#costo");
+    const fechaField = document.querySelector("#fechaIngreso");
 
-        // Cargar la lista de tipos de equinos
-        const loadTipoEquinos = async () => {
-            try {
-                const response = await fetch('../../controllers/alimento.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({ operation: 'getTipoEquinos' })
-                });
-                const tipos = await response.json();
-                idTipoEquinoSelect.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
-                tipos.forEach(tipo => {
-                    const option = document.createElement('option');
-                    option.value = tipo.idTipoEquino;
-                    option.textContent = tipo.tipoEquino;
-                    idTipoEquinoSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error:', error);
+    // Cargar la lista de tipos de equinos
+    const loadTipoEquinos = async () => {
+        try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'getTipoEquinos' })
+            });
+            const tipos = await response.json();
+            idTipoEquinoSelect.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
+            tipos.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo.idTipoEquino;
+                option.textContent = tipo.tipoEquino;
+                idTipoEquinoSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Cargar la lista de alimentos registrados
+    const loadAlimentos = async () => {
+        try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'getAllAlimentos' })
+            });
+            const alimentos = await response.json();
+            alimentosTable.innerHTML = alimentos.map(alimento => `
+                <tr>
+                    <td>${alimento.idAlimento}</td>
+                    <td>${alimento.nombreAlimento}</td>
+                    <td>${alimento.cantidad}</td>
+                    <td>${alimento.costo}</td>
+                    <td class="text-center">
+                        <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alimento.idAlimento})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Definir la función eliminarAlimento en el contexto global
+    window.eliminarAlimento = async (idAlimento) => {
+        if (!confirm('¿Estás seguro de que deseas eliminar este alimento?')) return;
+
+        try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+                method: "DELETE",
+                body: new URLSearchParams({ idAlimento })
+            });
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message);
+                loadAlimentos(); // Recargar la lista de alimentos después de eliminar
+            } else {
+                alert(result.message);
             }
-        };
+        } catch (error) {
+            alert("Error en la solicitud: " + error.message);
+            console.error('Error:', error);
+        }
+    };
 
-        // Cargar la lista de alimentos registrados
-        const loadAlimentos = async () => {
-            try {
-                const response = await fetch('../../controllers/alimento.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({ operation: 'getAllAlimentos' })
-                });
-                const alimentos = await response.json();
-                alimentosTable.innerHTML = alimentos.map(alimento => `
-                    <tr>
-                        <td>${alimento.idAlimento}</td>
-                        <td>${alimento.nombreAlimento}</td>
-                        <td>${alimento.cantidad}</td>
-                        <td>${alimento.costo}</td>
-                        <td class="text-center">
-                            <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alimento.idAlimento})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (error) {
-                console.error('Error:', error);
+    // Función para verificar si un alimento ya existe
+    const verificarNombreDuplicado = (nombre) => {
+        const filas = document.querySelectorAll("#alimentos-table tr");
+        for (const fila of filas) {
+            const nombreAlimento = fila.children[1].textContent.trim();
+            if (nombreAlimento.toLowerCase() === nombre.toLowerCase()) {
+                return true;
             }
-        };
+        }
+        return false;
+    };
 
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
+    // Función para manejar las actualizaciones de stock
+    const actualizarStock = async (tipoMovimiento) => {
+        idTipomovimiento.value = tipoMovimiento;
+        form.dataset.operation = 'actualizar_stock';
 
-            const formData = new FormData(form);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'registrar');
+        costoField.removeAttribute('required');
+        fechaField.removeAttribute('required');
 
-            try {
-                const response = await fetch('../../controllers/alimento.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-                const result = await response.json();
+        const formData = new FormData(form);
+        const data = new URLSearchParams(formData);
+        data.append('operation', 'actualizar_stock');
 
-                if (result.status === "success") {
-                    alert(result.message);
-                    form.reset();
-                    loadAlimentos();
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                alert("Error en la solicitud: " + error.message);
-                console.error('Error:', error);
+        try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+                method: "POST",
+                body: data
+            });
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message);
+                form.reset();
+                loadAlimentos();
+            } else {
+                alert(result.message);
             }
-        });
+        } catch (error) {
+            alert("Error en la solicitud: " + error.message);
+            console.error('Error:', error);
+        }
+    };
 
-        window.eliminarAlimento = async (idAlimento) => {
-            if (!confirm('¿Estás seguro de que deseas eliminar este alimento?')) return;
-
-            try {
-                const response = await fetch('../../controllers/alimento.controller.php', {
-                    method: "DELETE",
-                    body: new URLSearchParams({ idAlimento })
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    alert(result.message);
-                    loadAlimentos();
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                alert("Error en la solicitud: " + error.message);
-                console.error('Error:', error);
-            }
-        };
-
-        document.querySelector("#entrada-btn").addEventListener("click", () => {
-            idTipomovimiento.value = 1;
-        });
-
-        document.querySelector("#salida-btn").addEventListener("click", () => {
-            idTipomovimiento.value = 2;
-        });
-
-        loadTipoEquinos();
-        loadAlimentos();
+    // Evento para el botón de entrada
+    document.querySelector("#entrada-btn").addEventListener("click", () => {
+        actualizarStock(1);
     });
+
+    // Evento para el botón de salida
+    document.querySelector("#salida-btn").addEventListener("click", () => {
+        actualizarStock(2);
+    });
+
+    // Evento para el botón de registrar un nuevo alimento
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        if (!idTipomovimiento.value) {
+            const nombreAlimento = document.querySelector("#nombreAlimento").value.trim();
+            if (verificarNombreDuplicado(nombreAlimento)) {
+                alert('El alimento ya existe. No se puede duplicar.');
+                return;
+            }
+
+            costoField.setAttribute('required', 'required');
+            fechaField.setAttribute('required', 'required');
+        }
+
+        form.submit();
+    });
+
+    loadTipoEquinos();
+    loadAlimentos();
+});
+ 
 </script>

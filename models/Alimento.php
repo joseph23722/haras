@@ -24,9 +24,19 @@ class Alimento extends Conexion {
                 throw new Exception('Usuario no autenticado.');
             }
 
+            // Verificar si el alimento ya existe
+            $checkQuery = $this->pdo->prepare("SELECT COUNT(*) FROM Alimentos WHERE nombreAlimento = ?");
+            $checkQuery->execute([$params['nombreAlimento']]);
+            $count = $checkQuery->fetchColumn();
+
+            if ($count > 0) {
+                return ['status' => 'error', 'message' => 'El alimento ya existe.'];
+            }
+
+            // Registrar el nuevo alimento
             $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?)");
             $query->execute([
-                $idUsuario,  // Pasar el idUsuario desde la sesión
+                $idUsuario,
                 $params['nombreAlimento'],
                 $params['cantidad'],
                 $params['costo'],
