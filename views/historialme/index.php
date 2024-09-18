@@ -50,16 +50,6 @@
                         </div>
                     </div>
 
-                    <!-- Usuario -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select name="idUsuario" id="idUsuario" class="form-select" required>
-                                <option value="">Seleccione Usuario</option>
-                            </select>
-                            <label for="idUsuario"><i class="fas fa-user" style="color: #32cd32;"></i> Usuario</label>
-                        </div>
-                    </div>
-
                     <!-- Fecha -->
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -205,5 +195,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
 </script>

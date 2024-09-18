@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($data['operation'] === 'registrar') {
             $params = [
                 'idEquino' => $data['idEquino'],
-                'idUsuario' => $data['idUsuario'],
                 'fecha' => $data['fecha'],
                 'diagnostico' => $data['diagnostico'],
                 'tratamiento' => $data['tratamiento'],
@@ -47,3 +46,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Método de solicitud no permitido.']);
 }
+

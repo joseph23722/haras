@@ -11,10 +11,23 @@ class Historialme extends Conexion {
     // Método para registrar el historial médico
     public function registrarHistorial($params = []) {
         try {
+            // Iniciar la sesión si aún no se ha iniciado
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            // Obtener el idUsuario desde la sesión
+            $idUsuario = $_SESSION['idUsuario'] ?? null;
+
+            if ($idUsuario === null) {
+                throw new Exception('Usuario no autenticado.');
+            }
+
+            // Ejecutar el procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_historial_medico_registrar(?,?,?,?,?,?,?)");
             $query->execute([
                 $params['idEquino'],
-                $params['idUsuario'],
+                $idUsuario, // Usar el idUsuario de la sesión
                 $params['fecha'],
                 $params['diagnostico'],
                 $params['tratamiento'],

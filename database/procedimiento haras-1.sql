@@ -599,9 +599,7 @@ CREATE PROCEDURE spu_medicamentos_registrar(
     IN _caducidad DATE,
     IN _precioUnitario DECIMAL(10,2),
     IN _idTipomovimiento INT,
-    IN _idUsuario INT,
-    IN _visita TEXT,
-    IN _tratamiento TEXT
+    IN _idUsuario INT
 )
 BEGIN
     INSERT INTO Medicamentos (
@@ -610,9 +608,7 @@ BEGIN
         caducidad, 
         precioUnitario, 
         idTipomovimiento, 
-        idUsuario, 
-        visita, 
-        tratamiento
+        idUsuario
     ) 
     VALUES (
         _nombreMedicamento, 
@@ -620,16 +616,62 @@ BEGIN
         _caducidad, 
         _precioUnitario, 
         _idTipomovimiento, 
-        _idUsuario, 
-        _visita, 
-        _tratamiento
+        _idUsuario
     );
 END $$
 
 DELIMITER ;
 
--- procedimientos faltantes---------------------------------------------------------------------------------------------------------------------------------
 
+-- Procedimiento Entrada y Salida de Medicamentos-----------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE PROCEDURE spu_medicamentos_movimiento(
+    IN _nombreMedicamento VARCHAR(100),
+    IN _cantidad DECIMAL(10,2),
+    IN _idTipomovimiento INT
+)
+BEGIN
+    DECLARE _currentCantidad DECIMAL(10,2);
+    DECLARE _newCantidad DECIMAL(10,2);
+    
+    -- Obtener la cantidad actual del medicamento
+    SELECT cantidad INTO _currentCantidad
+    FROM Medicamentos
+    WHERE nombreMedicamento = _nombreMedicamento
+    LIMIT 1;
+    
+    -- Verificar si el medicamento existe
+    IF _currentCantidad IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El medicamento no existe.';
+    ELSE
+        -- Calcular la nueva cantidad basada en el tipo de movimiento
+        IF _idTipomovimiento = 1 THEN -- Entrada
+            SET _newCantidad = _currentCantidad + _cantidad;
+        ELSEIF _idTipomovimiento = 2 THEN -- Salida
+            IF _currentCantidad >= _cantidad THEN
+                SET _newCantidad = _currentCantidad - _cantidad;
+            ELSE
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Stock insuficiente para realizar la salida.';
+            END IF;
+        ELSE
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
+        END IF;
+
+        -- Actualizar la cantidad del medicamento
+        UPDATE Medicamentos
+        SET cantidad = _newCantidad
+        WHERE nombreMedicamento = _nombreMedicamento;
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+-- procedimientos faltantes---------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar un nuevo entrenamiento realizado a un equino------------------------------------------
 DELIMITER $$
 
