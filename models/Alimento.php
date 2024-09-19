@@ -1,5 +1,4 @@
 <?php
-
 require_once 'Conexion.php';
 
 class Alimento extends Conexion {
@@ -24,16 +23,7 @@ class Alimento extends Conexion {
                 throw new Exception('Usuario no autenticado.');
             }
 
-            // Verificar si el alimento ya existe
-            $checkQuery = $this->pdo->prepare("SELECT COUNT(*) FROM Alimentos WHERE nombreAlimento = ?");
-            $checkQuery->execute([$params['nombreAlimento']]);
-            $count = $checkQuery->fetchColumn();
-
-            if ($count > 0) {
-                return ['status' => 'error', 'message' => 'El alimento ya existe.'];
-            }
-
-            // Registrar el nuevo alimento
+            // Llamar al procedimiento almacenado para registrar el alimento
             $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
@@ -46,6 +36,9 @@ class Alimento extends Conexion {
 
             return ['status' => 'success', 'message' => 'Alimento registrado exitosamente.'];
         } catch (PDOException $e) {
+            if ($e->getCode() == '45000') { // Código SQLSTATE personalizado para errores del procedimiento
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
             error_log($e->getMessage());
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
@@ -57,36 +50,23 @@ class Alimento extends Conexion {
     // Método para actualizar el stock de un alimento (entrada/salida)
     public function actualizarStockAlimento($params = []) {
         try {
-            // Iniciar la sesión si aún no se ha iniciado
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            // Obtener el idUsuario desde la sesión
-            $idUsuario = $_SESSION['idUsuario'] ?? null;
-
-            if ($idUsuario === null) {
-                throw new Exception('Usuario no autenticado.');
-            }
-
-            $query = $this->pdo->prepare("CALL spu_alimentos_actualizar_stock(?,?,?,?,?)");
+            // Llamar al procedimiento almacenado correcto para gestionar la entrada/salida
+            $query = $this->pdo->prepare("CALL spu_alimentos_movimiento(?,?,?)");
             $query->execute([
-                $idUsuario,  // Pasar el idUsuario desde la sesión
                 $params['nombreAlimento'],
                 $params['cantidad'],
-                $params['idTipomovimiento'],
-                $params['fechaIngreso']
+                $params['idTipomovimiento']
             ]);
 
             return ['status' => 'success', 'message' => 'Stock actualizado exitosamente.'];
         } catch (PDOException $e) {
+            error_log($e->getMessage()); // Registrar el mensaje de error
             if ($e->getCode() == '45000') {
-                return ['status' => 'error', 'message' => 'Stock insuficiente para realizar la salida.'];
+                return ['status' => 'error', 'message' => $e->getMessage()];
             }
-            error_log($e->getMessage());
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log($e->getMessage()); // Registrar el mensaje de error
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }

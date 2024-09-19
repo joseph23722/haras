@@ -70,4 +70,17 @@ class Admi extends Conexion {
             return []; // Devuelve un array vacío en caso de error
         }
     }
+
+    // Método para eliminar un medicamento
+    public function eliminarMedicamento($idMedicamento) {
+        try {
+            $query = $this->pdo->prepare("DELETE FROM Medicamentos WHERE idMedicamento = ?");
+            $query->execute([$idMedicamento]);
+
+            return $query->rowCount() > 0; // Verifica si se eliminó correctamente
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
 }

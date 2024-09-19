@@ -21,15 +21,26 @@ try {
         // Operaciones CRUD según la operación solicitada
         if ($operation === 'registrar') {
             $result = $alimento->registrarNuevoAlimento($params);
-        } elseif ($operation === 'actualizar_stock') {
+        } elseif ($operation === 'actualizar_stock' || $operation === 'movimiento') {
             $result = $alimento->actualizarStockAlimento($params);
         } elseif ($operation === 'getAllAlimentos') {
             $result = $alimento->getAllAlimentos();
+            header('Content-Type: application/json');
+            echo json_encode($result);
+            exit();
         } elseif ($operation === 'getTipoEquinos') {
             $result = $alimento->getTipoEquinos();
             header('Content-Type: application/json');
             echo json_encode($result);
             exit();
+        } elseif ($operation === 'eliminar') {
+            $idAlimento = $_POST['idAlimento'] ?? null;
+            if ($idAlimento === null) {
+                throw new Exception('ID del alimento no proporcionado.');
+            }
+            $result = $alimento->eliminarAlimento($idAlimento);
+        } else {
+            throw new Exception('Operación no válida.');
         }
 
         // Enviar la respuesta en formato JSON

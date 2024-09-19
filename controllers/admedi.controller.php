@@ -20,9 +20,9 @@ try {
             $cantidad = $_POST['cantidad'] ?? null;
             $caducidad = $_POST['caducidad'] ?? null;
             $precioUnitario = $_POST['precioUnitario'] ?? null;
-            $idTipomovimiento = $_POST['idTipomovimiento'] ?? null;
 
-            if (!$nombreMedicamento || !$cantidad || !$caducidad || !$precioUnitario || !$idTipomovimiento) {
+            // Comprobar que los datos requeridos estén presentes
+            if (!$nombreMedicamento || !$cantidad || !$caducidad || !$precioUnitario) {
                 throw new Exception('Datos incompletos para registrar el medicamento.');
             }
 
@@ -31,7 +31,7 @@ try {
                 'cantidad' => $cantidad,
                 'caducidad' => $caducidad,
                 'precioUnitario' => $precioUnitario,
-                'idTipomovimiento' => $idTipomovimiento
+                'idTipomovimiento' => 1 // '1' puede representar un movimiento de entrada por defecto al registrar un medicamento
             ];
 
             $result = $admi->registrarMedicamento($params);
@@ -65,6 +65,7 @@ try {
             } else {
                 throw new Exception('Error al realizar el movimiento.');
             }
+
         } elseif ($operation === 'getAllMedicamentos') {
             // Obtener todos los medicamentos
             $medicamentos = $admi->getAllMedicamentos();
@@ -76,6 +77,22 @@ try {
 
             echo json_encode($medicamentos);
             exit();
+
+        } elseif ($operation === 'eliminar') {
+            // Eliminar un medicamento
+            $idMedicamento = $_POST['idMedicamento'] ?? null;
+
+            if (!$idMedicamento) {
+                throw new Exception('ID de medicamento no proporcionado.');
+            }
+
+            $result = $admi->eliminarMedicamento($idMedicamento);
+
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Medicamento eliminado correctamente.']);
+            } else {
+                throw new Exception('Error al eliminar el medicamento.');
+            }
         } else {
             throw new Exception('Operación no válida.');
         }

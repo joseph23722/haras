@@ -2,22 +2,22 @@
 
 <div class="container-fluid px-4">
     <!-- Título principal -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #ff6347;">Registro de Equino</h1>
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Equino</h1>
 
-    <div class="card mb-4 shadow-lg border-0">
-        <div class="card-header bg-gradient-primary text-white">
-            <h5 class="mb-0 text-uppercase">Datos del Equino</h5>
+    <div class="card mb-4 shadow border-0">
+        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+            <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Equino</h5>
         </div>
 
         <!-- Formulario -->
-        <div class="card-body p-4 bg-light rounded">
+        <div class="card-body p-4" style="background-color: #f9f9f9;">
             <form action="" id="form-registro-equino" autocomplete="off">
                 <div class="row g-3">
                     <!-- Nombre del Equino -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="nombreEquino" id="nombreEquino" class="form-control" required>
-                            <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #ff7f50;"></i> Nombre del Equino</label>
+                            <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #00b4d8;"></i> Nombre del Equino</label>
                         </div>
                     </div>
 
@@ -77,8 +77,12 @@
 
                     <!-- Botones -->
                     <div class="col-md-12 text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-lg" id="registrar-equino"><i class="fas fa-save"></i> Registrar Equino</button>
-                        <button type="reset" class="btn btn-secondary btn-lg shadow-sm"><i class="fas fa-times"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-equino" style="background-color: #0077b6; border: none;">
+                            <i class="fas fa-save"></i> Registrar Equino
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </form>
@@ -86,14 +90,13 @@
     </div>
 
     <!-- Tabla para mostrar los equinos registrados -->
-    <div class="card mt-4 shadow-lg border-0">
-        <div class="card-header bg-gradient-info text-white d-flex justify-content-between align-items-center">
+    <div class="card mt-4 shadow border-0">
+        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
             <h5 class="mb-0"><i class="fas fa-list"></i> Equinos Registrados</h5>
-            <i class="fas fa-table fa-2x" style="color: #32cd32;"></i>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body p-0" style="background-color: #f9f9f9;">
             <table id="tablaEquinos" class="table table-hover table-striped table-bordered shadow-sm mb-0">
-                <thead class="bg-primary text-white text-center">
+                <thead style="background-color: #caf0f8; color: #003366;">
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
