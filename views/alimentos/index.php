@@ -73,7 +73,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Cantidad</th>
+                        <th>stockFinal</th>
                         <th>Costo</th>
                         <th>Acciones</th>
                     </tr>
@@ -168,11 +168,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const alimentos = await response.json();
 
+            // Mostrar el stock actual (stockFinal) y el último movimiento (cantidad)
             alimentosTable.innerHTML = alimentos.map(alim => `
                 <tr>
                     <td>${alim.idAlimento}</td>
                     <td>${alim.nombreAlimento}</td>
-                    <td>${alim.cantidad}</td>
+                    <td>${alim.stockFinal}</td>  <!-- Cambiado a stockFinal -->
                     <td>${alim.costo}</td>
                     <td class="text-center">
                         <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
@@ -182,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>
             `).join('');
 
+            // Llenar el select con los alimentos registrados
             alimentoSelect.innerHTML = '<option value="">Seleccione un Alimento</option>';
             alimentos.forEach(alim => {
                 const option = document.createElement('option');
@@ -193,6 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error('Error:', error);
         }
     };
+
 
     // Evento para registrar un nuevo alimento
     formRegistrarAlimento.addEventListener("submit", async (event) => {

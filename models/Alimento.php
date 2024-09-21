@@ -96,6 +96,19 @@ class Alimento extends Conexion {
         }
     }
 
+    // Método específico para el Dashboard - Obtener información de stock de alimentos
+    public function getAlimentosStockInfo() {
+        try {
+            $query = $this->pdo->prepare("SELECT nombreAlimento, stockFinal, cantidad FROM Alimentos");
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return [];
+        }
+    }
+
+
     // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {

@@ -71,6 +71,18 @@ class Admi extends Conexion {
         }
     }
 
+    // Método para obtener el stock total de medicamentos
+    public function getMedicamentosStockInfo() {
+        try {
+            $query = $this->pdo->prepare("SELECT SUM(cantidad) AS totalStock FROM Medicamentos");
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC); // Devolverá la suma del stock
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return null; // Devuelve null en caso de error
+        }
+    }
+
     // Método para eliminar un medicamento
     public function eliminarMedicamento($idMedicamento) {
         try {

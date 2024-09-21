@@ -144,6 +144,7 @@ SELECT * FROM detallemedicamentos;
 SELECT * FROM propietarios;
 SELECT * FROM medicamentos;
 SELECT * FROM equinos;
+select * from alimentos;
 
 CALL spu_listar_equinos_por_tipo('padrillo');
 CALL spu_listar_equinos_por_tipo('yegua');

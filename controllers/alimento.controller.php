@@ -28,6 +28,11 @@ try {
             header('Content-Type: application/json');
             echo json_encode($result);
             exit();
+        } elseif ($operation === 'getAlimentosStockInfo') {  // Nueva operación para el Dashboard
+            $result = $alimento->getAlimentosStockInfo();  // Llamada al nuevo método
+            header('Content-Type: application/json');
+            echo json_encode($result);
+            exit();
         } elseif ($operation === 'getTipoEquinos') {
             $result = $alimento->getTipoEquinos();
             header('Content-Type: application/json');

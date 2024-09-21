@@ -1,18 +1,11 @@
 <?php require_once 'header.php'; ?>
 
-
 <!-- Encabezado del Dashboard -->
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
                 <h1 class="m-0"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
-            </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard v1</li>
-                </ol>
             </div>
         </div>
     </div>
@@ -35,7 +28,7 @@
                     </div>
                     <a href="#" class="small-box-footer"
                         style="background-color: rgba(0, 0, 0, 0.1); color: white; padding: 10px 0; text-align: center;">
-                        More info <i class="fas fa-arrow-circle-right"></i>
+                        Más información <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
@@ -53,126 +46,57 @@
                     </div>
                     <a href="#" class="small-box-footer"
                         style="background-color: rgba(0, 0, 0, 0.1); color: white; padding: 10px 0; text-align: center;">
-                        More info <i class="fas fa-arrow-circle-right"></i>
+                        Más información <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
             <!-- ./col -->
 
-            <!-- Medicamentos Disponibles -->
+            <!-- Medicamentos en Stock -->
             <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
                 <div class="small-box bg-warning shadow-lg rounded position-relative card-hover">
                     <div class="inner">
-                        <h3 style="color: white;">120</h3>
-                        <p style="color: white; margin-top: 5px;">Medicamentos Disponibles</p>
+                        <h3 id="total-stock-medicamentos" style="color: white;">0</h3> <!-- Mostrar el stock dinámicamente -->
+                        <p style="color: white; margin-top: 5px;">Medicamentos en Stock</p>
                     </div>
                     <div class="icon animated-icon">
                         <i class="fas fa-pills" style="font-size: 80px; opacity: 0.4;"></i>
                     </div>
-                    <a href="#" class="small-box-footer"
+                    <a href="tablas/tablas.admedi.php" class="small-box-footer"
                         style="background-color: rgba(0, 0, 0, 0.1); color: white; padding: 10px 0; text-align: center;">
-                        More info <i class="fas fa-arrow-circle-right"></i>
+                        Más información <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
-            <!-- ./col -->
 
+            <!-- ./col -->
             <!-- Alimentos en Stock -->
             <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
                 <div class="small-box bg-danger shadow-lg rounded position-relative card-hover">
                     <div class="inner">
-                        <h3 style="color: white;">65</h3>
+                        <h3 id="total-stock-alimentos" style="color: white;">0</h3> <!-- Mostrar el stock dinámicamente -->
                         <p style="color: white; margin-top: 5px;">Alimentos en Stock</p>
                     </div>
                     <div class="icon animated-icon">
                         <i class="fas fa-apple-alt" style="font-size: 80px; opacity: 0.4;"></i>
                     </div>
-                    <a href="#" class="small-box-footer"
+                    <a href="tablas/tablas.alimento.php" class="small-box-footer"
                         style="background-color: rgba(0, 0, 0, 0.1); color: white; padding: 10px 0; text-align: center;">
-                        More info <i class="fas fa-arrow-circle-right"></i>
+                        Más información <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
             </div>
             <!-- ./col -->
         </div>
-
-        <!-- Row for charts and map -->
-        <div class="row">
-            <!-- Sales Chart -->
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header border-0">
-                        <h3 class="card-title">Sales</h3>
-                        <div class="card-tools">
-                            <a href="#" class="btn btn-tool btn-sm">
-                                <i class="fas fa-download"></i>
-                            </a>
-                            <a href="#" class="btn btn-tool btn-sm">
-                                <i class="fas fa-bars"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex">
-                            <p class="d-flex flex-column">
-                                <span class="text-bold text-lg">820</span>
-                                <span>Sales Over Time</span>
-                            </p>
-                            <p class="ml-auto d-flex flex-column text-right">
-                                <span class="text-success">
-                                    <i class="fas fa-arrow-up"></i> 33.1%
-                                </span>
-                                <span class="text-muted">Since last month</span>
-                            </p>
-                        </div>
-                        <!-- Chart -->
-                        <div class="position-relative mb-4">
-                            <canvas id="sales-chart" height="200"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visitors Map -->
-            <div class="col-lg-6 mb-3">
-                <div class="card bg-gradient-primary">
-                    <div class="card-header border-0">
-                        <h3 class="card-title">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Visitors
-                        </h3>
-                        <!-- tools card -->
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-primary btn-sm daterange" title="Date range">
-                                <i class="far fa-calendar-alt"></i>
-                            </button>
-                            <button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse"
-                                title="Collapse">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="world-map" style="height: 250px; width: 100%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
-
-
 
 <?php require_once 'footer.php'; ?>
 
 <!-- Enlaces a Librerías de AdminLTE y Plugins -->
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap 4 -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2.0/dist/js/adminlte.min.js"></script>
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Estilos y Animaciones adicionales -->
@@ -199,41 +123,56 @@
 </style>
 
 <script>
-    // Chart para estadísticas de ventas
-    var salesChartCanvas = document.getElementById('sales-chart').getContext('2d');
+    // Función para obtener el total de alimentos en stock
+    const loadAlimentosStock = async () => {
+        try {
+            const response = await fetch('controllers/alimento.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'getAlimentosStockInfo' }) // Llamada al nuevo método
+            });
 
-    var salesChartData = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-            label: 'Sales',
-            backgroundColor: 'rgba(60,141,188,0.9)',
-            borderColor: 'rgba(60,141,188,0.8)',
-            data: [30, 50, 60, 70, 50, 80, 90]
-        }]
-    };
-
-    var salesChartOptions = {
-        maintainAspectRatio: false,
-        responsive: true,
-        scales: {
-            x: {
-                grid: {
-                    display: false,
-                }
-            },
-            y: {
-                grid: {
-                    borderDash: [5, 5],
-                },
-                beginAtZero: true
+            if (!response.ok) {
+                throw new Error("Error al obtener los alimentos en stock");
             }
+
+            const result = await response.json();
+            
+            let totalStock = 0;
+            result.forEach(alimento => {
+                totalStock += parseFloat(alimento.stockFinal); // Sumar el stock final
+            });
+
+            document.querySelector("#total-stock-alimentos").textContent = totalStock; // Mostrar total en el dashboard
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
 
-    // Create the sales chart
-    new Chart(salesChartCanvas, {
-        type: 'line',
-        data: salesChartData,
-        options: salesChartOptions
+    // Función para obtener el total de medicamentos en stock
+    const loadMedicamentosStock = async () => {
+        try {
+            const response = await fetch('controllers/admedi.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'getMedicamentosStockInfo' }) // Llamada al nuevo método para medicamentos
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al obtener los medicamentos en stock");
+            }
+
+            const result = await response.json();
+            
+            const totalStock = result.totalStock || 0;
+
+            document.querySelector("#total-stock-medicamentos").textContent = totalStock; // Mostrar total en el dashboard
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Llamar a las funciones para cargar los alimentos y medicamentos en stock al cargar la página
+    document.addEventListener("DOMContentLoaded", () => {
+        loadAlimentosStock();
+        loadMedicamentosStock(); // Llamar también a la función para los medicamentos
     });
 </script>

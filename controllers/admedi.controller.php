@@ -78,6 +78,17 @@ try {
             echo json_encode($medicamentos);
             exit();
 
+        } elseif ($operation === 'getMedicamentosStockInfo') {
+            // Nueva operación para obtener el stock total de medicamentos
+            $stockInfo = $admi->getMedicamentosStockInfo();
+
+            if ($stockInfo) {
+                echo json_encode($stockInfo);
+            } else {
+                throw new Exception('Error al obtener el stock de medicamentos.');
+            }
+            exit();
+
         } elseif ($operation === 'eliminar') {
             // Eliminar un medicamento
             $idMedicamento = $_POST['idMedicamento'] ?? null;

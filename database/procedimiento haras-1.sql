@@ -347,7 +347,7 @@ BEGIN
 END $$
 
 DELIMITER ;
--- ---------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar los alimentos  entrada y salida 
 DELIMITER $$
 
@@ -360,83 +360,91 @@ CREATE PROCEDURE spu_alimentos_nuevo(
     IN _fechaIngreso DATETIME
 )
 BEGIN
-    -- Insertar un nuevo alimento en el inventario
-    INSERT INTO Alimentos (
-        idUsuario, 
-        nombreAlimento, 
-        cantidad, 
-        costo, 
-        idTipoEquino, 
-        idTipomovimiento, 
-        stockFinal, 
-        fechaIngreso
-    ) 
-    VALUES (
-        _idUsuario, 
-        _nombreAlimento, 
-        _cantidad, 
-        _costo, 
-        _idTipoEquino, 
-        1,  -- Se asume que es una entrada inicial
-        _cantidad,  -- El stock inicial es igual a la cantidad ingresada
-        _fechaIngreso
-    );
+    DECLARE _exists INT DEFAULT 0;
+
+    -- Verificar si el alimento ya existe
+    SELECT COUNT(*) INTO _exists 
+    FROM Alimentos
+    WHERE nombreAlimento = _nombreAlimento;
+
+    IF _exists > 0 THEN
+        -- Si el alimento ya existe, lanzar un error
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El alimento ya existe en el inventario.';
+    ELSE
+        -- Insertar un nuevo alimento en el inventario
+        INSERT INTO Alimentos (
+            idUsuario, 
+            nombreAlimento, 
+            cantidad, 
+            costo, 
+            idTipoEquino, 
+            idTipomovimiento, 
+            stockFinal, 
+            fechaIngreso
+        ) 
+        VALUES (
+            _idUsuario, 
+            _nombreAlimento, 
+            _cantidad, 
+            _costo, 
+            _idTipoEquino, 
+            1,  -- Se asume que es una entrada inicial
+            _cantidad,  -- El stock inicial es igual a la cantidad ingresada
+            _fechaIngreso
+        );
+    END IF;
 END $$
 
 DELIMITER ;
--- ----------------------------------------------------------
+
+
+-- ------------------------------------------------------------------------------------------------------------------------
+-- Procedimiento Entrada y Salida de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
 
-CREATE PROCEDURE spu_alimentos_actualizar_stock(
-    IN _idUsuario INT,
+CREATE PROCEDURE spu_alimentos_movimiento(
     IN _nombreAlimento VARCHAR(100),
     IN _cantidad DECIMAL(10,2),
-    IN _idTipomovimiento INT,  -- 1: Entrada, 2: Salida
-    IN _fechaIngreso DATETIME
+    IN _idTipomovimiento INT
 )
 BEGIN
-    DECLARE _stockActual INT DEFAULT 0;
-    DECLARE _errorStock INT DEFAULT 0;
-    DECLARE _alimentoID INT;
+    DECLARE _currentStock DECIMAL(10,2);
+    DECLARE _newStock DECIMAL(10,2);
+    DECLARE _idAlimento INT;
 
     -- Obtener el stock actual del alimento
-    SELECT idAlimento, stockFinal INTO _alimentoID, _stockActual
+    SELECT idAlimento, stockFinal INTO _idAlimento, _currentStock
     FROM Alimentos
     WHERE nombreAlimento = _nombreAlimento
     ORDER BY fechaIngreso DESC
     LIMIT 1;
 
-    -- Si no hay registros anteriores, inicializar el stock actual en 0
-    IF _stockActual IS NULL THEN
-        SET _stockActual = 0;
-    END IF;
-
-    -- Manejar el movimiento de entrada o salida
-    IF _idTipomovimiento = 1 THEN
-        SET _stockActual = _stockActual + _cantidad;
-
-    ELSEIF _idTipomovimiento = 2 THEN
-        IF _stockActual >= _cantidad THEN
-            SET _stockActual = _stockActual - _cantidad;
-        ELSE
-            SET _errorStock = 1;  -- Marcar que no hay suficiente stock
-        END IF;
-    END IF;
-
-    -- Actualizar el stock si no hay error
-    IF _errorStock = 0 THEN
-        -- Actualizar el registro del alimento
-        UPDATE Alimentos
-        SET 
-            cantidad = _cantidad,
-            stockFinal = _stockActual,
-            fechaIngreso = _fechaIngreso,
-            idTipomovimiento = _idTipomovimiento
-        WHERE idAlimento = _alimentoID;
-
+    -- Verificar si el alimento existe
+    IF _currentStock IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El alimento no existe.';
     ELSE
-        -- Enviar mensaje de error en caso de stock insuficiente
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Stock insuficiente para realizar la salida';
+        -- Calcular el nuevo stock basado en el tipo de movimiento
+        IF _idTipomovimiento = 1 THEN -- Entrada
+            SET _newStock = _currentStock + _cantidad;
+        ELSEIF _idTipomovimiento = 2 THEN -- Salida
+            IF _currentStock >= _cantidad THEN
+                SET _newStock = _currentStock - _cantidad;
+            ELSE
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Stock insuficiente para realizar la salida.';
+            END IF;
+        ELSE
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
+        END IF;
+
+        -- Actualizar el stock final del alimento
+        UPDATE Alimentos
+        SET stockFinal = _newStock
+        WHERE idAlimento = _idAlimento;
+
     END IF;
 END $$
 
@@ -602,22 +610,36 @@ CREATE PROCEDURE spu_medicamentos_registrar(
     IN _idUsuario INT
 )
 BEGIN
-    INSERT INTO Medicamentos (
-        nombreMedicamento, 
-        cantidad, 
-        caducidad, 
-        precioUnitario, 
-        idTipomovimiento, 
-        idUsuario
-    ) 
-    VALUES (
-        _nombreMedicamento, 
-        _cantidad, 
-        _caducidad, 
-        _precioUnitario, 
-        _idTipomovimiento, 
-        _idUsuario
-    );
+    DECLARE _exists INT DEFAULT 0;
+
+    -- Verificar si el medicamento ya existe (independiente de mayúsculas/minúsculas)
+    SELECT COUNT(*) INTO _exists 
+    FROM Medicamentos
+    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento);
+
+    IF _exists > 0 THEN
+        -- Si el medicamento ya existe, lanzar un error
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El medicamento ya existe en el inventario.';
+    ELSE
+        -- Insertar un nuevo medicamento en el inventario
+        INSERT INTO Medicamentos (
+            nombreMedicamento, 
+            cantidad, 
+            caducidad, 
+            precioUnitario, 
+            idTipomovimiento, 
+            idUsuario
+        ) 
+        VALUES (
+            _nombreMedicamento, 
+            _cantidad, 
+            _caducidad, 
+            _precioUnitario, 
+            _idTipomovimiento, 
+            _idUsuario
+        );
+    END IF;
 END $$
 
 DELIMITER ;
