@@ -7,8 +7,7 @@ VALUES
 -- 5. Insertar Datos en Personal
 INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso) 
 VALUES 
-('Juan', 'Pérez', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27'),   -- Personal: Juan Pérez
-('Ana', 'García', 'Avenida San Vicente 456', 'DNI', '87654321', 1, '2024-08-26');  -- Personal: Ana García
+('Juan', 'Pérez', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27');   -- Personal: Juan Pérez
 
 
 -- Insertar datos en la tabla Roles

@@ -697,7 +697,7 @@ CREATE PROCEDURE registrarServicio(
     IN p_idEquinoMacho INT,
     IN p_idEquinoHembra INT,
     IN p_idPropietario INT,
-    IN p_idEquinoExterno INT,  -- Ahora se maneja por ID en lugar de nombre
+    IN p_idEquinoExterno INT,
     IN p_fechaServicio DATE,
     IN p_tipoServicio ENUM('propio', 'mixto'),
     IN p_detalles TEXT,
@@ -717,18 +717,20 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-    -- Validación para la hora de entrada y salida
+    -- Validación para la hora de entrada
     IF p_horaEntrada >= CURRENT_TIME THEN
         SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor o igual a la hora actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-    IF p_horaSalida > CURRENT_TIME THEN
-        SET v_mensajeError = 'Error: La hora de salida no puede ser mayor que la hora actual.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    -- Validación para la hora de salida
+    IF p_fechaServicio = CURDATE() THEN
+        IF p_horaSalida > CURRENT_TIME THEN
+            SET v_mensajeError = 'Error: La hora de salida no puede ser mayor que la hora actual si la fecha es hoy.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
     END IF;
 
-    -- Validación para la hora de salida
     IF p_horaSalida <= p_horaEntrada THEN
         SET v_mensajeError = 'Error: La hora de salida debe ser mayor que la hora de entrada.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
