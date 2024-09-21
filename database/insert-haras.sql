@@ -4,25 +4,6 @@ VALUES
 ('Herramientas'),         -- Tipo de inventario: Herramientas
 ('Equipo de Protección');  -- Tipo de inventario: Equipo de Protección
 
--- 2. Insertar Datos en TipoMovimientos
-INSERT INTO TipoMovimientos (movimiento) 
-VALUES 
-('entrada'),   -- Tipo de movimiento: Entrada
-('salida');    -- Tipo de movimiento: Salida
-
--- 3. Insertar Datos en TipoEquinos
-INSERT INTO TipoEquinos (tipoEquino) VALUES 
-('yegua'), 
-('padrillo'), 
-('potranca'), 
-('potrillo');
-
--- 4. Insertar Datos en EstadoMonta
-INSERT INTO EstadoMonta (genero, nombreEstado) 
-VALUES 
-('macho', 'activo'),   -- Estado de monta: Macho Activo
-('hembra', 'preñada'); -- Estado de monta: Hembra Preñada
-
 -- 5. Insertar Datos en Personal
 INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso) 
 VALUES 
@@ -41,8 +22,6 @@ INSERT INTO Usuarios (idPersonal, correo, clave, idRol)
 VALUES 
 (1, 'juanperez@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 1),  -- Usuario: Juan Pérez, Rol: Administrador
 (2, 'anagarcia@gmail.com', '$2y$10$MRJu1.8gZKUVLvIaU6EeseekrcojOrG3KMEFmx/o5qAuNAyb/zfPy', 2);   -- Usuario: Ana García, Rol: Empleado
-
-
 
 
 -- 7. Insertar Datos en Implementos
@@ -69,11 +48,6 @@ VALUES
 (3, 5.00, '2024-08-27', '2024-09-27'),  -- Detalle de Medicamento: Antibiótico, dosis 5.00
 (4, 10.00, '2024-08-26', '2024-09-26'); -- Detalle de Medicamento: Desinfectante, dosis 10.00
 
--- 11. Insertar Datos en Propietarios
-INSERT INTO Propietarios (nombreHaras, nombreequino, genero, costoServicio) 
-VALUES ('Haras Sunrise', 'Caballo Fuego', 'macho', 1500.00),
-       ('Haras Luna', 'Yegua Brillante', 'hembra', 1300.00);
-       
 -- 12. Insertar Datos en Equinos
 INSERT INTO Equinos (nombreEquino, sexo, idTipoEquino, detalles, idPropietario, nacionalidad) 
 VALUES 
@@ -133,26 +107,32 @@ VALUES
 (1, '2024-08-27', '08:00:00', '17:00:00', 'Asistencia completa'),  -- Asistencia de Juan Pérez
 (2, '2024-08-26', '09:00:00', '16:00:00', 'Asistencia parcial');   -- Asistencia de Ana García
 
+-- AGREGADOS:
 
+INSERT INTO Propietarios (nombreHaras, costoServicio) 
+    VALUES  ('Haras Sunrise', 1500.00),
+            ('Haras Luna', 1300.00);
 
-USE HarasDB;
-SELECT * FROM TipoEquinos;
-SELECT * FROM Servicios;
-SELECT * FROM Usuarios;
-SELECT * FROM Personal;
-SELECT * FROM detallemedicamentos;
-SELECT * FROM propietarios;
-SELECT * FROM medicamentos;
-SELECT * FROM equinos;
-select * from alimentos;
+INSERT INTO Medicamentos (nombreMedicamento, cantidad, caducidad, precioUnitario, idTipomovimiento, idUsuario)
+    VALUES
+        ('Antibiótico X', 50.00, '2025-12-31', 15.00, 1, 1),
+        ('Analgesico Y', 30.00, '2026-06-15', 10.50, 1, 1);
 
-CALL spu_listar_equinos_por_tipo('padrillo');
-CALL spu_listar_equinos_por_tipo('yegua');
+-- 2. Insertar Datos en TipoMovimientos
+INSERT INTO TipoMovimientos (movimiento) 
+    VALUES 
+        ('Entrada'),   -- Tipo de movimiento: Entrada
+        ('Salida');    -- Tipo de movimiento: Salida
 
+-- 3. Insertar Datos en TipoEquinos
+INSERT INTO TipoEquinos (tipoEquino) VALUES 
+    ('Yegua'), 
+    ('Padrillo'), 
+    ('Potranca'), 
+    ('Potrillo');
 
-SELECT * FROM TipoEquinos;
-SELECT * FROM Equinos;
-
-
-CALL spu_listar_medicamentos_con_detalles();
-CALL spu_listar_haras();
+-- 4. Insertar Datos en EstadoMonta
+INSERT INTO EstadoMonta (genero, nombreEstado) 
+    VALUES 
+        ('Macho', 'Activo'),   -- Estado de monta: Macho Activo
+        ('Hembra', 'Preñada'); -- Estado de monta: Hembra Preñada

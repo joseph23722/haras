@@ -116,10 +116,8 @@ CREATE TABLE DetalleMedicamentos (
 CREATE TABLE Propietarios (  
     idPropietario INT PRIMARY KEY AUTO_INCREMENT,  
     nombreHaras VARCHAR(100) NOT NULL,  
-    nombreEquino VARCHAR(100) NOT NULL, 
-    genero ENUM('macho', 'hembra') NOT NULL,  
     costoServicio DECIMAL(10,2) NOT NULL
-);
+)ENGINE = INNODB;
 
 -- 13. Equinos
 CREATE TABLE Equinos (
@@ -130,28 +128,32 @@ CREATE TABLE Equinos (
     idTipoEquino INT NOT NULL,
     detalles TEXT,
     idEstadoMonta INT NULL,
-    idPropietario INT,
-    generacion VARCHAR(50),
-    nacionalidad VARCHAR(50) NOT NULL,
+	nacionalidad VARCHAR(50) NULL,
+    idPropietario INT,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstado)
-);
+) ENGINE = INNODB;
 
 
 -- 14. Servicios 
+
 CREATE TABLE Servicios (
-    idServicio INT PRIMARY KEY AUTO_INCREMENT,  -- ID único del servicio
-    idEquino INT NOT NULL,                      -- ID del equino que recibe el servicio (clave foránea a la tabla Equinos)
-    fechaServicio DATE NOT NULL,                -- Fecha del servicio
-    tipoServicio ENUM('propio', 'mixto') NOT NULL, -- Tipo de servicio
-    detalles TEXT NOT NULL,                     -- Detalles del servicio
-    idDetalleMed INT NULL,                      -- ID del medicamento (puede ser NULL)
-    horaEntrada TIME NOT NULL,                  -- Hora de inicio del servicio
-    horaSalida TIME NOT NULL,                   -- Hora de fin del servicio
-    CONSTRAINT fk_servicio_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    CONSTRAINT fk_servicio_medicamento FOREIGN KEY (idDetalleMed) REFERENCES DetalleMedicamentos(idDetalleMed)
-);
+    idServicio INT PRIMARY KEY AUTO_INCREMENT,
+    idEquinoMacho INT NOT NULL,               -- ID del equino macho
+    idEquinoHembra INT NOT NULL,              -- ID del equino hembra
+    fechaServicio DATE NOT NULL,
+    tipoServicio ENUM('propio', 'mixto') NOT NULL,
+    detalles TEXT NOT NULL,
+    idMedicamento INT NULL,
+    horaEntrada TIME NOT NULL,
+    horaSalida TIME NOT NULL,
+    idPropietario INT NULL,                   -- Permitir NULL para servicios propios
+    CONSTRAINT fk_servicio_equino_macho FOREIGN KEY (idEquinoMacho) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_servicio_equino_hembra FOREIGN KEY (idEquinoHembra) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_servicio_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
+    CONSTRAINT fk_servicio_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario)
+) ENGINE = INNODB;
 
 -- 15. Entrenamientos
 CREATE TABLE Entrenamientos (

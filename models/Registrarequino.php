@@ -8,32 +8,69 @@ class Registrarequino extends Conexion {
         $this->pdo = parent::getConexion();
     }
 
-    public function registrarEquino($params = []) {
+    // Registra un nuevo equino
+    public function registrarEquino($data) {
         try {
-            $query = $this->pdo->prepare("CALL spu_equino_registrar(?,?,?,?,?,?,?)");
-            $query->execute([
-                $params['nombreEquino'],
-                $params['fechaNacimiento'],
-                $params['sexo'],
-                $params['detalles'],
-                $params['idPropietario'],
-                $params['generacion'],
-                $params['nacionalidad']
-            ]);
+            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?)";
+            $stmt = $this->pdo->prepare($sql);
+    
+            $nombreEquino = ($data['nombreEquino']);
+            $idPropietario = !empty($data['idPropietario']) ? $data['idPropietario'] : null;
+            $fechaNacimiento = !empty($data['fechaNacimiento']) ? $data['fechaNacimiento'] : null;
+            $sexo = ($data['sexo']);
+            $idTipoEquino = ($data['idTipoEquino']);
+            $nacionalidad = !empty($data['nacionalidad']) ? $data['nacionalidad'] : null;
+            $detalles = !empty($data['detalles']) ? $data['detalles'] : null;
 
-            return $query->fetch(PDO::FETCH_ASSOC)['idEquino'];
-        } catch (Exception $e) {
+            // Si hay un propietario externo, establece fecha de nacimiento y nacionalidad como null
+            if (!empty($idPropietario)) {
+                $fechaNacimiento = null;
+                $nacionalidad = null;
+            }
+    
+            // Asigna los valores a los parámetros
+            $stmt->bindParam(1, $nombreEquino);
+            $stmt->bindParam(2, $fechaNacimiento);
+            $stmt->bindParam(3, $sexo);
+            $stmt->bindParam(4, $detalles);
+            $stmt->bindParam(5, $idTipoEquino);
+            $stmt->bindParam(6, $idPropietario);
+            $stmt->bindParam(7, $nacionalidad);
+    
+            $stmt->execute();
+    
+            return ["status" => "success", "message" => "Equino registrado exitosamente."];
+        } catch (PDOException $e) {
+            return ["status" => "error", "message" => "Error al registrar el equino: " . $e->getMessage()];
+        }
+    }
+    
+
+    // Lista propietarios usando un procedimiento almacenado
+    public function listarPropietarios() {
+        try {
+            $sql = "CALL spu_listar_haras()"; 
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Loguear el error para revisión
             error_log($e->getMessage());
-            return false;
+            return [];
         }
     }
 
-    public function listarPropietarios() {
+    // Lista tipos de equinos usando un procedimiento almacenado
+    public function listarTipoEquinos() {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_haras()");
-            $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC); // Verifica que aquí se está obteniendo un array
-        } catch (Exception $e) {
+            $sql = "CALL spu_listar_tipoequinos()"; 
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Loguear el error para revisión
             error_log($e->getMessage());
             return [];
         }

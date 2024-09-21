@@ -2,66 +2,69 @@
 
 require_once 'Conexion.php';
 
-class ServicioPropio extends Conexion {
+class ServicioPropio extends Conexion
+{
     private $pdo;
 
-    public function __CONSTRUCT() {
+    public function __CONSTRUCT()
+    {
         $this->pdo = parent::getConexion();
     }
 
     // Registrar un nuevo servicio propio
-    public function registrarServicioPropio($params = []) {
+    public function registrarServicioPropio($params = [])
+    {
         try {
-            // Llamada al procedimiento almacenado para registrar el servicio propio
-            $query = $this->pdo->prepare("CALL spu_registrar_servicio_propio(?, ?, ?, ?, ?, ?)");
+            error_log("Llamando a procedimiento almacenado con: " . print_r($params, true));
+
+            $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
-                $params['idEquino1'],
-                $params['idEquino2'],
+                $params['idEquinoMacho'],
+                $params['idEquinoHembra'],
+                null,
+                null,
                 $params['fechaServicio'],
+                'propio',
                 $params['detalles'],
+                null,
                 $params['horaEntrada'],
                 $params['horaSalida']
             ]);
-            return true;
+
+            return ['status' => 'success', 'message' => 'Servicio propio registrado exitosamente.'];
         } catch (PDOException $e) {
             error_log("Error al registrar servicio propio: " . $e->getMessage());
-            return false;
+            return ['status' => 'error', 'message' => 'Error al registrar el servicio propio.'];
         }
     }
 
-    // Listar equinos por tipo (yegua o padrillo)
-    public function listarEquinosPorTipo($tipoEquino) {
+    // Listar equinos propios filtrando por tipo
+    public function listarEquinosPropios($tipoEquino)
+    {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_equinos_por_tipo(?)");
-            $query->execute([$tipoEquino]);
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+            $query = $this->pdo->prepare("CALL spu_listar_equinos_propios()");
+            $query->execute();
+            $equinos = $query->fetchAll(PDO::FETCH_ASSOC);
+            return array_filter($equinos, function($equino) use ($tipoEquino) {
+                return $equino['idTipoEquino'] == $tipoEquino;
+            });
         } catch (PDOException $e) {
-            error_log("Error al listar equinos por tipo: " . $e->getMessage());
+            error_log("Error al listar equinos propios: " . $e->getMessage());
             return [];
         }
     }
 
-    // Listar haras (propietarios)
-    public function listarHaras() {
+    // Listar medicamentos
+    public function listarMedicamentos()
+    {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_haras()");
+            $query = $this->pdo->prepare("CALL ListarMedicamentos()");
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al listar haras: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    // Listar medicamentos con sus detalles
-    public function listarMedicamentosConDetalles() {
-        try {
-            $query = $this->pdo->prepare("CALL spu_listar_medicamentos_con_detalles()");
-            $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error al listar medicamentos con detalles: " . $e->getMessage());
+            error_log("Error al listar medicamentos: " . $e->getMessage());
             return [];
         }
     }
 }
+?>

@@ -139,160 +139,6 @@ END $$
 
 DELIMITER ;
 
-
--- prueba de servicio---------------------------------------------------------------------------------
--- Procedimiento para registrar un nuevo servicio equino - propio
-DELIMITER $$
-
-CREATE PROCEDURE spu_registrar_servicio_propio(
-    IN _idEquino1 INT, 
-    IN _idEquino2 INT, 
-    IN _fechaServicio DATE, 
-    IN _detalles TEXT, 
-    IN _horaEntrada TIME, 
-    IN _horaSalida TIME
-)
-BEGIN
-    -- Iniciar la transacción
-    START TRANSACTION;
-
-    -- Insertar en la tabla Servicios para el primer equino
-    INSERT INTO Servicios (
-        idEquino, 
-        fechaServicio, 
-        tipoServicio, 
-        detalles, 
-        horaEntrada, 
-        horaSalida
-    )
-    VALUES (
-        _idEquino1, 
-        _fechaServicio, 
-        'propio', 
-        _detalles, 
-        _horaEntrada, 
-        _horaSalida
-    );
-
-    -- Insertar en la tabla Servicios para el segundo equino
-    INSERT INTO Servicios (
-        idEquino, 
-        fechaServicio, 
-        tipoServicio, 
-        detalles, 
-        horaEntrada, 
-        horaSalida
-    )
-    VALUES (
-        _idEquino2, 
-        _fechaServicio, 
-        'propio', 
-        _detalles, 
-        _horaEntrada, 
-        _horaSalida
-    );
-
-    -- Finalizar la transacción
-    COMMIT;
-END$$
-
-DELIMITER ;
-
-
--- Procedimiento para registrar un nuevo servicio equino - mixto----------------------------------------------------------------------
-DELIMITER $$
-
-CREATE PROCEDURE spu_registrar_servicio_mixto(
-    IN _idEquinoSeleccionado INT,  -- Equino seleccionado desde el formulario
-    IN _nombreNuevoEquino VARCHAR(100),  -- Nombre del nuevo equino
-    IN _idTipoEquino INT,  -- Tipo del nuevo equino (1 = Yegua, 2 = Padrillo)
-    IN _nombreHaras VARCHAR(100),  -- Nombre del Haras del nuevo equino (solo si es nuevo)
-    IN _idHaras INT,  -- ID del Haras existente (si se seleccionó uno)
-    IN _fechaServicio DATE,  -- Fecha del servicio
-    IN _detalles TEXT,  -- Detalles del servicio
-    IN _horaEntrada TIME,  -- Hora de entrada
-    IN _horaSalida TIME  -- Hora de salida
-)
-BEGIN
-    DECLARE _nuevoPropietarioId INT;
-
-    -- Iniciar la transacción
-    START TRANSACTION;
-
-    -- Si no se seleccionó un Haras existente, insertar un nuevo haras
-    IF _idHaras IS NULL THEN
-        -- Insertar el nuevo haras en la tabla Propietarios
-        INSERT INTO Propietarios (nombreHaras) 
-        VALUES (_nombreHaras);
-
-        -- Obtener el id del nuevo propietario creado
-        SET _nuevoPropietarioId = LAST_INSERT_ID();
-    ELSE
-        -- Si se seleccionó un haras existente, usar su ID
-        SET _nuevoPropietarioId = _idHaras;
-    END IF;
-
-    -- Insertar el nuevo equino en la tabla Equinos
-    INSERT INTO Equinos (
-        nombreEquino,
-        sexo,
-        idTipoEquino,
-        detalles,
-        idPropietario
-    )
-    VALUES (
-        _nombreNuevoEquino,
-        CASE WHEN _idTipoEquino = 1 THEN 'hembra' ELSE 'macho' END,
-        _idTipoEquino,
-        'Detalles del nuevo equino',
-        _nuevoPropietarioId
-    );
-
-    -- Obtener el id del nuevo equino creado
-    SET @nuevoEquinoId = LAST_INSERT_ID();
-
-    -- Insertar en la tabla Servicios para el equino seleccionado
-    INSERT INTO Servicios (
-        idEquino, 
-        fechaServicio, 
-        tipoServicio, 
-        detalles, 
-        horaEntrada, 
-        horaSalida
-    )
-    VALUES (
-        _idEquinoSeleccionado, 
-        _fechaServicio, 
-        'mixto', 
-        _detalles, 
-        _horaEntrada, 
-        _horaSalida
-    );
-
-    -- Insertar en la tabla Servicios para el nuevo equino creado
-    INSERT INTO Servicios (
-        idEquino, 
-        fechaServicio, 
-        tipoServicio, 
-        detalles, 
-        horaEntrada, 
-        horaSalida
-    )
-    VALUES (
-        @nuevoEquinoId, 
-        _fechaServicio, 
-        'mixto', 
-        _detalles, 
-        _horaEntrada, 
-        _horaSalida
-    );
-
-    -- Finalizar la transacción
-    COMMIT;
-END$$
-
-DELIMITER ;
-
 -- Procedimiento para listar equinos por tipo (yegua o padrillo)----------------------------------------------------------------------------------------------
 DELIMITER $$
 
@@ -450,93 +296,6 @@ END $$
 
 DELIMITER ;
 
--- ----------------------------------------------------------------------------------------------------------------------------------
--- Procedimiento para registrar un nuevo equino en la base de datos
-DELIMITER $$
-
-CREATE PROCEDURE spu_equino_registrar(
-    IN _nombreEquino VARCHAR(100),         -- Nombre del equino
-    IN _fechaNacimiento DATE,              -- Fecha de nacimiento del equino (tipo DATE)
-    IN _sexo ENUM('macho', 'hembra'),      -- Sexo del equino
-    IN _detalles TEXT,                     -- Detalles adicionales del equino
-    IN _idPropietario INT,                 -- ID del propietario del equino (puede ser NULL si es propio)
-    IN _generacion VARCHAR(50),            -- Generación del equino
-    IN _nacionalidad VARCHAR(50)           -- Nacionalidad del equino
-)
-BEGIN
-    DECLARE _idTipoEquino INT;  -- Variable para almacenar el ID del tipo de equino
-    DECLARE _edadMeses INT;     -- Variable para calcular la edad en meses
-    DECLARE _idEstadoMonta INT; -- Variable para almacenar el ID del estado de monta (solo para adultos)
-    DECLARE _currentTime DATE;  -- Variable para almacenar la fecha actual
-    DECLARE _errorMsg VARCHAR(255);
-    
-    -- Obtener la fecha actual
-    SET _currentTime = CURDATE();
-
-    -- Validar si la fecha de nacimiento es válida (no puede ser futura)
-    IF _fechaNacimiento > _currentTime THEN
-        SET _errorMsg = 'Error: La fecha de nacimiento no puede ser futura.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-    END IF;
-
-    -- Calcular la edad del equino en meses
-    SET _edadMeses = TIMESTAMPDIFF(MONTH, _fechaNacimiento, _currentTime);
-
-    -- Determinar el tipo de equino en función de la edad y el sexo
-    IF _edadMeses <= 12 THEN
-        IF _sexo = 'macho' THEN
-            SET _idTipoEquino = (SELECT idTipoEquino FROM TipoEquinos WHERE tipoEquino = 'potrillo' LIMIT 1);
-        ELSE
-            SET _idTipoEquino = (SELECT idTipoEquino FROM TipoEquinos WHERE tipoEquino = 'potranca' LIMIT 1);
-        END IF;
-        -- No asignar estado de monta para potrillos/potrancas
-        SET _idEstadoMonta = NULL;
-    ELSE
-        IF _sexo = 'macho' THEN
-            SET _idTipoEquino = (SELECT idTipoEquino FROM TipoEquinos WHERE tipoEquino = 'padrillo' LIMIT 1);
-        ELSE
-            SET _idTipoEquino = (SELECT idTipoEquino FROM TipoEquinos WHERE tipoEquino = 'yegua' LIMIT 1);
-        END IF;
-
-        -- Asignar un estado de monta válido solo para yeguas y padrillos
-        SET _idEstadoMonta = (SELECT idEstado FROM EstadoMonta WHERE genero = _sexo LIMIT 1);
-    END IF;
-
-    -- Validar si el propietario proporcionado existe (si se proporcionó uno)
-    IF _idPropietario IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Propietarios WHERE idPropietario = _idPropietario) THEN
-        SET _errorMsg = 'Error: El propietario no existe.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-    END IF;
-
-    -- Insertar un nuevo registro en la tabla 'Equinos'
-    INSERT INTO Equinos (
-        nombreEquino, 
-        fechaNacimiento, 
-        sexo, 
-        idTipoEquino, 
-        detalles, 
-        idEstadoMonta, 
-        idPropietario, 
-        generacion, 
-        nacionalidad
-    ) 
-    VALUES (
-        _nombreEquino, 
-        _fechaNacimiento, 
-        _sexo, 
-        _idTipoEquino, 
-        _detalles, 
-        _idEstadoMonta,  -- Este valor será NULL para potrillos/potrancas
-        _idPropietario, 
-        _generacion, 
-        _nacionalidad
-    );
-    
-    -- Devolver el ID del equino recién insertado
-    SELECT LAST_INSERT_ID() AS idEquino;
-END $$
-
-DELIMITER ;
 
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$
@@ -790,4 +549,304 @@ BEGIN
     );
 END $$
 
+DELIMITER ;
+
+
+-- Agregados:
+
+DELIMITER $$
+CREATE PROCEDURE spu_listar_equinos_propios()
+BEGIN
+    SELECT 
+        idEquino,
+        nombreEquino,
+        sexo,
+        idTipoEquino
+    FROM 
+        Equinos
+    WHERE 
+        idPropietario IS NULL  -- Filtrar solo los equinos que no tienen propietario
+        AND idTipoEquino IN (1, 2);  -- Filtrar solo yeguas (1) y padrillos (2)
+END $$
+DELIMITER ;
+
+-- Listar Medicamentos
+DELIMITER $$
+
+CREATE PROCEDURE listarMedicamentos()
+BEGIN
+    SELECT idMedicamento, nombreMedicamento
+    FROM Medicamentos;
+END $$
+
+DELIMITER ;
+
+-- Listar Haras
+DELIMITER $$
+CREATE PROCEDURE spu_listar_haras()
+BEGIN
+    -- Seleccionamos el ID y el nombre de los haras de forma única
+    SELECT DISTINCT 
+        idPropietario,            -- ID del propietario
+        nombreHaras               -- Nombre del haras
+    FROM Propietarios;
+END $$
+DELIMITER ;
+
+-- Listar por propietarios
+DELIMITER $$
+CREATE PROCEDURE spu_listar_equinos_por_propietario (
+    IN _idPropietario INT,    -- ID del propietario (Haras)
+    IN _genero INT            -- Género: 1 para hembra, 2 para macho
+)
+BEGIN
+    SELECT 
+        e.idEquino,           
+        e.nombreEquino,         
+        p.nombreHaras            
+    FROM 
+        Equinos e
+    JOIN 
+        Propietarios p ON e.idPropietario = p.idPropietario 
+    WHERE 
+        e.idPropietario = _idPropietario AND  
+        e.sexo = _genero;                      
+END $$
+DELIMITER ;
+
+-- Registrar Equino
+DELIMITER $$
+CREATE PROCEDURE spu_equino_registrar(
+    IN _nombreEquino VARCHAR(100),         -- Nombre del equino
+    IN _fechaNacimiento DATE,               -- Fecha de nacimiento del equino (puede ser NULL)
+    IN _sexo ENUM('macho', 'hembra'),      -- Sexo del equino
+    IN _detalles TEXT,                     -- Detalles adicionales del equino
+    IN _idTipoEquino INT,                  -- ID del tipo de equino seleccionado
+    IN _idPropietario INT,                  -- ID del propietario del equino (puede ser NULL si es propio)
+    IN _nacionalidad VARCHAR(50)            -- Nacionalidad del equino (puede ser NULL)
+)
+BEGIN
+    DECLARE _errorMsg VARCHAR(255);
+    DECLARE _tipoEquinoNombre VARCHAR(50);
+
+    -- Validar si la fecha de nacimiento no es futura
+    IF _fechaNacimiento > CURDATE() THEN
+        SET _errorMsg = 'Error: La fecha de nacimiento no puede ser posterior a la fecha actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    -- Validar si el propietario proporcionado existe (si se proporcionó uno)
+    IF _idPropietario IS NOT NULL AND NOT EXISTS (SELECT * FROM Propietarios WHERE idPropietario = _idPropietario) THEN
+        SET _errorMsg = 'Error: El propietario no existe.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    -- Obtener el nombre del tipo de equino para validación
+    SELECT tipoequino INTO _tipoEquinoNombre FROM TipoEquinos WHERE idTipoEquino = _idTipoEquino;
+
+    -- Validar tipo de equino según el sexo
+    IF _sexo = 'macho' AND _tipoEquinoNombre NOT IN ('padrillo', 'potrillo') THEN
+        SET _errorMsg = 'Error: Un macho debe ser un padrillo o un potrillo.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    IF _sexo = 'hembra' AND _tipoEquinoNombre NOT IN ('yegua', 'potranca') THEN
+        SET _errorMsg = 'Error: Una hembra debe ser una yegua o una potranca.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    -- Insertar un nuevo registro en la tabla 'Equinos'
+    INSERT INTO Equinos (
+        nombreEquino, 
+        fechaNacimiento, 
+        sexo, 
+        idTipoEquino, 
+        detalles, 
+        idPropietario,
+        nacionalidad
+    ) 
+    VALUES (
+        _nombreEquino, 
+        _fechaNacimiento, 
+        _sexo, 
+        _idTipoEquino, 
+        _detalles, 
+        _idPropietario, 
+        _nacionalidad
+    );
+    
+    -- Devolver el ID del equino recién insertado
+    SELECT LAST_INSERT_ID() AS idEquino;
+END $$
+DELIMITER ;
+
+
+-- Listar tipo equino
+DELIMITER $$
+CREATE PROCEDURE spu_listar_tipoequinos()
+BEGIN
+    -- Listar todos los tipos de equinos disponibles
+    SELECT idTipoEquino, tipoEquino
+    FROM TipoEquinos;
+END $$
+DELIMITER ;
+
+-- Registrar Servicio
+DELIMITER $$
+CREATE PROCEDURE registrarServicio(
+    IN p_idEquinoMacho INT,
+    IN p_idEquinoHembra INT,
+    IN p_idPropietario INT,
+    IN p_idEquinoExterno INT,  -- Ahora se maneja por ID en lugar de nombre
+    IN p_fechaServicio DATE,
+    IN p_tipoServicio ENUM('propio', 'mixto'),
+    IN p_detalles TEXT,
+    IN p_idMedicamento INT,
+    IN p_horaEntrada TIME,
+    IN p_horaSalida TIME
+)
+BEGIN
+    DECLARE v_sexoMacho ENUM('macho', 'hembra');
+    DECLARE v_sexoHembra ENUM('macho', 'hembra');
+    DECLARE v_sexoExterno ENUM('macho', 'hembra');
+    DECLARE v_mensajeError VARCHAR(255);
+
+    -- Validación para la fecha de servicio
+    IF p_fechaServicio > CURDATE() THEN
+        SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Validación para la hora de entrada y salida
+    IF p_horaEntrada >= CURRENT_TIME THEN
+        SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor o igual a la hora actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    IF p_horaSalida > CURRENT_TIME THEN
+        SET v_mensajeError = 'Error: La hora de salida no puede ser mayor que la hora actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Validación para la hora de salida
+    IF p_horaSalida <= p_horaEntrada THEN
+        SET v_mensajeError = 'Error: La hora de salida debe ser mayor que la hora de entrada.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Validación para servicios propios
+    IF p_tipoServicio = 'propio' THEN
+        SELECT sexo INTO v_sexoMacho
+        FROM Equinos
+        WHERE idEquino = p_idEquinoMacho;
+
+        SELECT sexo INTO v_sexoHembra
+        FROM Equinos
+        WHERE idEquino = p_idEquinoHembra;
+
+        IF v_sexoMacho IS NULL OR v_sexoHembra IS NULL THEN
+            SET v_mensajeError = 'Uno o ambos equinos no existen.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        IF v_sexoMacho = v_sexoHembra THEN
+            SET v_mensajeError = 'Los equinos deben ser de géneros opuestos.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        INSERT INTO Servicios (
+            idEquinoMacho,
+            idEquinoHembra,
+            fechaServicio,
+            tipoServicio,
+            detalles,
+            idMedicamento,
+            horaEntrada,
+            horaSalida,
+            idPropietario
+        ) VALUES (
+            p_idEquinoMacho,
+            p_idEquinoHembra,
+            p_fechaServicio,
+            p_tipoServicio,
+            p_detalles,
+            p_idMedicamento,
+            p_horaEntrada,
+            p_horaSalida,
+            NULL  -- No hay propietario externo para servicios propios
+        );
+
+    ELSEIF p_tipoServicio = 'mixto' THEN
+        IF p_idPropietario IS NULL THEN
+            SET v_mensajeError = 'Debe seleccionar el ID del propietario para servicios mixtos.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        -- Obtener el sexo del equino externo basado en su ID
+        SELECT sexo INTO v_sexoExterno
+        FROM Equinos
+        WHERE idEquino = p_idEquinoExterno;
+
+        IF v_sexoExterno IS NULL THEN
+            SET v_mensajeError = 'No se encontró un equino externo con el ID proporcionado.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        IF p_idEquinoMacho IS NOT NULL THEN
+            SELECT sexo INTO v_sexoMacho
+            FROM Equinos
+            WHERE idEquino = p_idEquinoMacho;
+
+            IF v_sexoMacho = v_sexoExterno THEN
+                SET v_mensajeError = 'El equino externo debe tener el género opuesto al equino propio.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+            END IF;
+
+            INSERT INTO Servicios (
+                idEquinoMacho,
+                idEquinoHembra,
+                fechaServicio,
+                tipoServicio,
+                detalles,
+                idMedicamento,
+                horaEntrada,
+                horaSalida,
+                idPropietario
+            ) VALUES (
+                p_idEquinoMacho,
+                p_idEquinoExterno,
+                p_fechaServicio,
+                p_tipoServicio,
+                p_detalles,
+                p_idMedicamento,
+                p_horaEntrada,
+                p_horaSalida,
+                p_idPropietario
+            );
+        ELSE
+            INSERT INTO Servicios (
+                idEquinoMacho,
+                idEquinoHembra,
+                fechaServicio,
+                tipoServicio,
+                detalles,
+                idMedicamento,
+                horaEntrada,
+                horaSalida,
+                idPropietario
+            ) VALUES (
+                p_idEquinoExterno,
+                p_idEquinoHembra,
+                p_fechaServicio,
+                p_tipoServicio,
+                p_detalles,
+                p_idMedicamento,
+                p_horaEntrada,
+                p_horaSalida,
+                p_idPropietario
+            );
+        END IF;
+    END IF;
+
+END $$
 DELIMITER ;

@@ -1,48 +1,36 @@
 <?php
 require_once '../models/Registrarequino.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
-    $operation = isset($input['operation']) ? $input['operation'] : '';
+$controller = new Registrarequino();
 
-    // Instancia de la clase Registrarequino
-    $equino = new Registrarequino();
+$requestBody = json_decode(file_get_contents("php://input"), true);
 
-    switch ($operation) {
-        case 'add':
-            $datosEquino = [
-                "nombreEquino" => $input['nombreEquino'],
-                "fechaNacimiento" => $input['fechaNacimiento'],
-                "sexo" => $input['sexo'],
-                "detalles" => $input['detalles'],
-                "idPropietario" => $input['idPropietario'],
-                "generacion" => $input['generacion'],
-                "nacionalidad" => $input['nacionalidad']
-            ];
+// Verifica si la decodificación fue exitosa
+if (json_last_error() !== JSON_ERROR_NONE) {
+    echo json_encode(["status" => "error", "message" => "JSON mal formado."]);
+    exit;
+}
 
-            $result = $equino->registrarEquino($datosEquino);
-            if ($result) {
-                $response = [
-                    "status" => "success",
-                    "message" => "El equino ha sido registrado exitosamente.",
-                    "idEquino" => $result
-                ];
-            } else {
-                $response = [
-                    "status" => "error",
-                    "message" => "Hubo un problema al registrar el equino."
-                ];
-            }
-            echo json_encode($response);
-            break;
+// Verifica si la operación está definida
+if (!isset($requestBody['operation'])) {
+    echo json_encode(["status" => "error", "message" => "Operación no especificada."]);
+    exit;
+}
 
-        case 'listarPropietarios':
-            $propietarios = $equino->listarPropietarios();
-            echo json_encode($propietarios);
-            break;
+switch ($requestBody['operation']) {
+    case 'registrarEquino':
+        echo json_encode($controller->registrarEquino($requestBody));
+        break;
 
-        default:
-            echo json_encode(["status" => "error", "message" => "Operación no válida."]);
-            break;
-    }
+    case 'listarPropietarios':
+        echo json_encode($controller->listarPropietarios());
+        break;
+
+    case 'listarTipoEquinos':
+        echo json_encode($controller->listarTipoEquinos());
+        break;
+
+    default:
+        echo json_encode(["status" => "error", "message" => "Operación no válida."]);
+        break;
 }
