@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error('Error al cargar opciones');
             }
             const data = await response.json();
+            console.log("Datos recibidos:", data);  // Agrega esto
             const items = Array.isArray(data) ? data : Object.values(data);
             selectElement.innerHTML = '<option value="">Seleccione</option>';
             items.forEach(item => {
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(`Error al cargar opciones: ${error}`);
         }
     };
+    
 
     const loadMedicamentos = async () => {
         try {
