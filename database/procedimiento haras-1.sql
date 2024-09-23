@@ -193,22 +193,40 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
 -- -------------------------------------------------------------------------------------------------------------------------------------
--- Procedimiento para registrar los alimentos  entrada y salida 
+-- Procedimiento para registrar los alimentos  y manejar los movimintos entrada y salida 
 DELIMITER $$
 
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
-    IN _cantidad DECIMAL(10,2),
+    IN _cantidad INT,
     IN _costo DECIMAL(10,2),
-    IN _idTipoEquino INT,
     IN _fechaIngreso DATETIME
 )
 BEGIN
     DECLARE _exists INT DEFAULT 0;
+    DECLARE _compra DECIMAL(10,2);
 
-    -- Verificar si el alimento ya existe
+    -- Convertir el nombre del alimento a minúsculas antes de la verificación
+    SET _nombreAlimento = LOWER(_nombreAlimento);
+
+    -- Calcular el costo total de la compra
+    SET _compra = _cantidad * _costo;
+
+    -- Verificar si el alimento ya existe (sin importar mayúsculas/minúsculas)
     SELECT COUNT(*) INTO _exists 
     FROM Alimentos
     WHERE nombreAlimento = _nombreAlimento;
@@ -224,26 +242,27 @@ BEGIN
             nombreAlimento, 
             cantidad, 
             costo, 
-            idTipoEquino, 
             idTipomovimiento, 
             stockFinal, 
-            fechaIngreso
+            fechaIngreso,
+            fechaMovimiento,
+            compra
         ) 
         VALUES (
             _idUsuario, 
             _nombreAlimento, 
             _cantidad, 
             _costo, 
-            _idTipoEquino, 
-            1,  -- Se asume que es una entrada inicial
+            1,  -- '1' indica una entrada
             _cantidad,  -- El stock inicial es igual a la cantidad ingresada
-            _fechaIngreso
+            _fechaIngreso,
+            NOW(),  -- Registrar el momento del movimiento
+            _compra  -- Costo total de la compra
         );
     END IF;
 END $$
 
 DELIMITER ;
-
 
 -- ------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento Entrada y Salida de Alimentos -----------------------------------------------------------------------------------
@@ -251,13 +270,17 @@ DELIMITER $$
 
 CREATE PROCEDURE spu_alimentos_movimiento(
     IN _nombreAlimento VARCHAR(100),
-    IN _cantidad DECIMAL(10,2),
-    IN _idTipomovimiento INT
+    IN _cantidad INT,
+    IN _idTipomovimiento INT,
+    IN _idTipoEquino INT -- Puede ser NULL, pero no se debe declarar así
 )
 BEGIN
-    DECLARE _currentStock DECIMAL(10,2);
-    DECLARE _newStock DECIMAL(10,2);
+    DECLARE _currentStock INT;
+    DECLARE _newStock INT;
     DECLARE _idAlimento INT;
+
+    -- Convertir el nombre del alimento a minúsculas antes de la verificación
+    SET _nombreAlimento = LOWER(_nombreAlimento);
 
     -- Obtener el stock actual del alimento
     SELECT idAlimento, stockFinal INTO _idAlimento, _currentStock
@@ -274,9 +297,25 @@ BEGIN
         -- Calcular el nuevo stock basado en el tipo de movimiento
         IF _idTipomovimiento = 1 THEN -- Entrada
             SET _newStock = _currentStock + _cantidad;
+
+            -- Actualizar el stock final y registrar la entrada
+            UPDATE Alimentos
+            SET stockFinal = _newStock,
+                idTipomovimiento = 1,  -- Entrada
+                fechaMovimiento = NOW()
+            WHERE idAlimento = _idAlimento;
+
         ELSEIF _idTipomovimiento = 2 THEN -- Salida
             IF _currentStock >= _cantidad THEN
                 SET _newStock = _currentStock - _cantidad;
+
+                -- Actualizar el stock final y registrar la salida
+                UPDATE Alimentos
+                SET stockFinal = _newStock, 
+                    idTipomovimiento = 2,  -- Salida
+                    idTipoEquino = _idTipoEquino,  -- Registrar el tipo de equino
+                    fechaMovimiento = NOW()
+                WHERE idAlimento = _idAlimento;
             ELSE
                 SIGNAL SQLSTATE '45000'
                 SET MESSAGE_TEXT = 'Stock insuficiente para realizar la salida.';
@@ -285,16 +324,14 @@ BEGIN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
         END IF;
-
-        -- Actualizar el stock final del alimento
-        UPDATE Alimentos
-        SET stockFinal = _newStock
-        WHERE idAlimento = _idAlimento;
-
     END IF;
 END $$
 
 DELIMITER ;
+
+
+
+
 
 
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
@@ -362,7 +399,7 @@ DELIMITER $$
 
 CREATE PROCEDURE spu_medicamentos_registrar(
     IN _nombreMedicamento VARCHAR(100),
-    IN _cantidad DECIMAL(10,2),
+    IN _cantidad INT, -- Cambiado a INT
     IN _caducidad DATE,
     IN _precioUnitario DECIMAL(10,2),
     IN _idTipomovimiento INT,
@@ -403,18 +440,17 @@ END $$
 
 DELIMITER ;
 
-
 -- Procedimiento Entrada y Salida de Medicamentos-----------------------------------------------------------------------------------
 DELIMITER $$
 
 CREATE PROCEDURE spu_medicamentos_movimiento(
     IN _nombreMedicamento VARCHAR(100),
-    IN _cantidad DECIMAL(10,2),
+    IN _cantidad INT, -- Cambiado a INT
     IN _idTipomovimiento INT
 )
 BEGIN
-    DECLARE _currentCantidad DECIMAL(10,2);
-    DECLARE _newCantidad DECIMAL(10,2);
+    DECLARE _currentCantidad INT; -- Cambiado a INT
+    DECLARE _newCantidad INT; -- Cambiado a INT
     
     -- Obtener la cantidad actual del medicamento
     SELECT cantidad INTO _currentCantidad
@@ -450,7 +486,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-
 
 -- procedimientos faltantes---------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar un nuevo entrenamiento realizado a un equino------------------------------------------
@@ -569,6 +604,7 @@ BEGIN
         AND idTipoEquino IN (1, 2);  -- Filtrar solo yeguas (1) y padrillos (2)
 END $$
 DELIMITER ;
+
 
 -- Listar Medicamentos
 DELIMITER $$

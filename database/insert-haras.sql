@@ -22,7 +22,7 @@ VALUES
 (1, 'juanperez@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 1),  -- Usuario: Juan Pérez, Rol: Administrador
 (2, 'anagarcia@gmail.com', '$2y$10$MRJu1.8gZKUVLvIaU6EeseekrcojOrG3KMEFmx/o5qAuNAyb/zfPy', 2);   -- Usuario: Ana García, Rol: Empleado
 
-
+select * from usuarios;
 -- 7. Insertar Datos en Implementos
 INSERT INTO Implementos (idTipoinventario, nombreProducto, descripcion, precioUnitario, idTipomovimiento, cantidad, stockFinal) 
 VALUES 
@@ -30,10 +30,20 @@ VALUES
 (2, 'Guantes', 'Guantes de seguridad', 5.00, 2, 20, 20);  -- Implemento: Guantes de seguridad
 
 -- 8. Insertar Datos en Alimentos
-INSERT INTO Alimentos (idUsuario, nombreAlimento, cantidad, costo, idTipoEquino, idTipomovimiento, stockFinal, fechaIngreso, compra) 
+INSERT INTO Alimentos (idUsuario, nombreAlimento, cantidad, costo, idTipomovimiento, idTipoEquino, stockFinal, fechaIngreso, compra, fechaMovimiento) 
 VALUES 
-(3, 'Heno', 100.00, 50.00, 1, 1, 100, '2024-08-27', 50.00),  -- Alimento: Heno para Padrillo
-(4, 'Avena', 200.00, 75.00, 2, 2, 200, '2024-08-26', 75.00);  -- Alimento: Avena para Yegua
+(3, 'Avena', 100, 15.50, 1, 1, 100, '2024-09-20', 1550.00, NOW());
+CALL spu_alimentos_nuevo(3, 'Manzana', 150, 18.75, '2024-09-22');
+ CALL spu_alimentos_movimiento('Manzana', 50, 1, NULL);
+CALL spu_alimentos_movimiento('Manzana', 30, 2, 1);
+--
+CALL spu_alimentos_movimiento('Manzana', 200, 2, 1);
+
+select * from alimentos;
+
+
+
+
 
 -- 9. Insertar Datos en Medicamentos
 INSERT INTO Medicamentos (nombreMedicamento, cantidad, caducidad, precioUnitario, idTipomovimiento, idUsuario, visita, tratamiento) 
@@ -135,3 +145,6 @@ INSERT INTO EstadoMonta (genero, nombreEstado)
     VALUES 
         ('Macho', 'Activo'),   -- Estado de monta: Macho Activo
         ('Hembra', 'Preñada'); -- Estado de monta: Hembra Preñada
+        
+select * from servicios;
+select * from equinos;

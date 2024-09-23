@@ -75,13 +75,15 @@ CREATE TABLE Alimentos (
     idAlimento INT PRIMARY KEY AUTO_INCREMENT,
     idUsuario INT NOT NULL,
     nombreAlimento VARCHAR(100) NOT NULL,
-    cantidad DECIMAL(10,2) NOT NULL,
+    cantidad INT NOT NULL, 
     costo DECIMAL(10,2) NOT NULL,
-    idTipoEquino INT NOT NULL,
-    idTipomovimiento INT NOT NULL,
+    idTipomovimiento INT NOT NULL, -- '1' para entrada, '2' para salida
+    idTipoEquino INT NULL, -- Solo se utiliza en salidas
     stockFinal INT NOT NULL,
     fechaIngreso DATETIME NULL,
     compra DECIMAL(10,2) NOT NULL,
+    fechaMovimiento DATETIME DEFAULT NOW(), -- Registrar cuándo ocurrió la entrada o salida
+    CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento), -- Restringe duplicados sin importar mayúsculas/minúsculas
     CONSTRAINT fk_alimento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
     CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
     CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
@@ -91,12 +93,11 @@ CREATE TABLE Alimentos (
 CREATE TABLE Medicamentos (
     idMedicamento INT PRIMARY KEY AUTO_INCREMENT,
     nombreMedicamento VARCHAR(100) NOT NULL,
-    cantidad DECIMAL(10,2) NOT NULL,
+    cantidad INT NOT NULL, -- Cambiado de DECIMAL a INT
     caducidad DATE NOT NULL,
     precioUnitario DECIMAL(10,2) NOT NULL,
     idTipomovimiento INT NOT NULL,
     idUsuario INT NOT NULL,
-    visita TEXT,
     tratamiento TEXT,
     CONSTRAINT fk_medicamento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
     CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
@@ -106,7 +107,7 @@ CREATE TABLE Medicamentos (
 CREATE TABLE DetalleMedicamentos (
     idDetalleMed INT PRIMARY KEY AUTO_INCREMENT,
     idMedicamento INT NOT NULL,
-    dosis DECIMAL(10,2) NOT NULL,
+    dosis INT NOT NULL, -- Cambiado de DECIMAL a INT
     fechaInicio DATE NOT NULL,
     fechaFin DATE NOT NULL,
     CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
