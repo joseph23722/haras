@@ -84,11 +84,12 @@ $host = "http://localhost/haras";
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="<?= $host ?>/views/propio/"><i class="fas fa-cog"></i> Servicio Propio</a>
                                 <a class="nav-link" href="<?= $host ?>/views/mixto/"><i class="fas fa-exchange-alt"></i> Servicio Mixto</a>
+                                <a class="nav-link" href="<?= $host ?>/views/listadoservicios/"><i class="fa-solid fa-list-ol"></i> Listado Servicios</a>
                             </nav>
                         </div>
 
                         <!-- Campos -->
-                        <div class="sb-sidenav-menu-heading">Usuarios</div>
+                        <div class="sb-sidenav-menu-heading">Campos</div>
                         <a class="nav-link" href="<?= $host ?>/views/campos">
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-group-arrows-rotate"></i></div>
                             Rotación Campos

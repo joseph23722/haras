@@ -10,8 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log(print_r($data, true)); // Log de los datos que llegan al servidor
 
     // Validación básica
-    if (empty($data['idEquinoMacho']) || empty($data['idEquinoHembra']) || empty($data['fechaServicio']) ||
-        empty($data['horaEntrada']) || empty($data['horaSalida'])) {
+    if (
+        empty($data['idEquinoMacho']) || empty($data['idEquinoHembra']) || empty($data['fechaServicio']) ||
+        empty($data['horaEntrada']) || empty($data['horaSalida'])
+    ) {
         echo json_encode(["status" => "error", "message" => "Faltan parámetros necesarios."]);
         exit;
     }
@@ -24,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("Error al registrar servicio propio: " . $e->getMessage());
         echo json_encode(["status" => "error", "message" => "Error al registrar el servicio propio."]);
     }
-
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['tipoEquino'])) {
         $equinos = $servicioPropio->listarEquinosPropios($_GET['tipoEquino']);
@@ -32,10 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_GET['listarMedicamentos'])) {
         $medicamentos = $servicioPropio->listarMedicamentos();
         echo json_encode($medicamentos);
+    } elseif (isset($_GET['fechaInicio']) && isset($_GET['fechaFin']) && isset($_GET['tipoServicio'])) {
+        // Listar servicios por rango de fechas y tipo
+        $fechaInicio = $_GET['fechaInicio'];
+        $fechaFin = $_GET['fechaFin'];
+        $tipoServicio = $_GET['tipoServicio'];
+
+        $servicios = $servicioPropio->listarServiciosPorFechaYTipo($fechaInicio, $fechaFin, $tipoServicio);
+        echo json_encode($servicios);
     } else {
         echo json_encode(["status" => "error", "message" => "Parámetros no válidos."]);
     }
 } else {
     echo json_encode(["status" => "error", "message" => "Método de solicitud no permitido."]);
 }
-?>

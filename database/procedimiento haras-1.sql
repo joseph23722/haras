@@ -2,7 +2,6 @@
 
 -- login -------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_usuarios_login(IN _correo VARCHAR(100))
 BEGIN
     SELECT 
@@ -18,12 +17,10 @@ BEGIN
     WHERE 
         USU.correo = _correo;
 END $$
-
 DELIMITER ;
 
 -- registrar personal - no uso - prueba---------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_personal_registrar(
     IN _apellidos VARCHAR(100),       -- Apellidos del personal
     IN _nombres VARCHAR(100),         -- Nombres del personal
@@ -41,7 +38,6 @@ BEGIN
     -- Devolver el ID del personal recién insertado
     SELECT LAST_INSERT_ID() AS idPersonal;
 END $$
-
 DELIMITER ;
 
 CALL spu_personal_registrar('Perez', 'Juan', '12345678', 'Calle Falsa 123', 'DNI', 2, NULL);
@@ -51,7 +47,6 @@ CALL spu_personal_registrar('Perez', 'Juan', '12345678', 'Calle Falsa 123', 'DNI
 
 -- Procedimiento combinado para registrar persona y usuario (en uso)-------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_registrar_persona_usuario(
     IN _apellidos VARCHAR(100),       -- Apellidos del personal
     IN _nombres VARCHAR(100),         -- Nombres del personal
@@ -85,12 +80,10 @@ BEGIN
     -- Devolver el ID del usuario recién insertado
     SELECT @idPersonal AS idPersonal;
 END $$
-
 DELIMITER ;
 
 -- procedimiento para buscar por Dni ---------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_personal_buscar_dni(
     IN _nrodocumento VARCHAR(50) -- Número de documento a buscar
 )
@@ -114,13 +107,11 @@ BEGIN
     WHERE 
         p.nrodocumento = _nrodocumento;
 END $$
-
 DELIMITER ;
 
 
 -- Procedimiento para registrar usuarios en la tabla 'Usuarios'--------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_usuarios_registrar(
     IN _idPersonal INT,             -- ID del personal asociado al usuario
     IN _idRol INT,                  -- ID del rol del usuario
@@ -135,12 +126,10 @@ BEGIN
     -- Devolver el ID del usuario recién insertado
     SELECT LAST_INSERT_ID() AS idUsuario;
 END $$
-
 DELIMITER ;
 
 -- Procedimiento para listar equinos por tipo (yegua o padrillo)----------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_listar_equinos_por_tipo (
     IN _tipoEquino ENUM('yegua', 'padrillo')  -- Tipo de equino: yegua o padrillo
 )
@@ -156,26 +145,10 @@ BEGIN
     WHERE 
         te.tipoEquino = _tipoEquino;  -- Filtramos por el tipo de equino (yegua o padrillo)
 END $$
-
-DELIMITER ;
-
--- Procedimiento para listar haras (propietarios) con nombres únicos-------------------------------------------------------------------------
-DELIMITER $$
-
-CREATE PROCEDURE spu_listar_haras()
-BEGIN
-    -- Seleccionamos el ID y el nombre de los haras de forma única
-    SELECT DISTINCT 
-        idPropietario,            -- ID del propietario
-        nombreHaras               -- Nombre del haras
-    FROM Propietarios;
-END $$
-
 DELIMITER ;
 
 -- Procedimiento para obtener la lista de medicamentos con sus detalles (si existen)--------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_listar_medicamentos_con_detalles()
 BEGIN
     -- Seleccionamos los medicamentos junto con los detalles si existen
@@ -190,24 +163,11 @@ BEGIN
     LEFT JOIN 
         DetalleMedicamentos dm ON m.idMedicamento = dm.idMedicamento;  -- Incluimos detalles si existen
 END $$
-
 DELIMITER ;
-
-
-
-
-
-
-
-
-
-
-
 
 -- -------------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar los alimentos  y manejar los movimintos entrada y salida 
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -260,13 +220,11 @@ BEGIN
         );
     END IF;
 END $$
-
 DELIMITER ;
 
 -- ------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento Entrada y Salida de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_movimiento(
     IN _nombreAlimento VARCHAR(100),
     IN _cantidad INT,
@@ -325,17 +283,10 @@ BEGIN
         END IF;
     END IF;
 END $$
-
 DELIMITER ;
-
-
-
-
-
 
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_medico_registrar(
     IN _idEquino INT,
     IN _idUsuario INT,
@@ -365,12 +316,10 @@ BEGIN
         _recomendaciones
     );
 END $$
-
 DELIMITER ;
 
 -- lista equinos por tipo en medicamento ----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_listar_equinos_para_medicamento (
     IN _tipoEquino ENUM('yegua', 'padrillo', 'potrillo', 'potranca')  -- Tipo de equino: yegua, padrillo, potrillo o potranca
 )
@@ -386,7 +335,6 @@ BEGIN
     WHERE 
         te.tipoEquino = _tipoEquino;  -- Filtramos por el tipo de equino
 END $$
-
 DELIMITER ;
 
 CALL spu_listar_equinos_para_medicamento('yegua');
@@ -395,7 +343,6 @@ CALL spu_listar_equinos_para_medicamento('potranca');
 
 -- Procedimiento para registrar la entrada y administración de medicamentos---------------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_registrar(
     IN _nombreMedicamento VARCHAR(100),
     IN _cantidad INT, -- Cambiado a INT
@@ -436,7 +383,6 @@ BEGIN
         );
     END IF;
 END $$
-
 DELIMITER ;
 
 -- Procedimiento Entrada y Salida de Medicamentos-----------------------------------------------------------------------------------
@@ -483,13 +429,11 @@ BEGIN
         WHERE nombreMedicamento = _nombreMedicamento;
     END IF;
 END $$
-
 DELIMITER ;
 
 -- procedimientos faltantes---------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar un nuevo entrenamiento realizado a un equino------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_entrenamientos_registrar(
     IN _idEquino INT,
     IN _fecha DATETIME,
@@ -516,13 +460,10 @@ BEGIN
         _comentarios
     );
 END $$
-
 DELIMITER ;
-
 
 -- Procedimiento para registrar la asistencia del personal------------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_asistencia_personal_registrar(
     IN _idPersonal INT,
     IN _fecha DATETIME,
@@ -552,13 +493,11 @@ BEGIN
         _comentarios
     );
 END $$
-
 DELIMITER ;
 
 
 -- Procedimiento para registrar la rotación de campos---------------------------------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_rotacion_campos_registrar(
     IN _idCampo INT,
     IN _idTipoRotacion INT,
@@ -582,12 +521,9 @@ BEGIN
         _detalleRotacion
     );
 END $$
-
 DELIMITER ;
 
-
 -- Agregados:
-
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_propios()
 BEGIN
@@ -604,24 +540,20 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- Listar Medicamentos
 DELIMITER $$
-
 CREATE PROCEDURE listarMedicamentos()
 BEGIN
     SELECT idMedicamento, nombreMedicamento
     FROM Medicamentos;
 END $$
-
 DELIMITER ;
 
 -- Listar Haras
 DELIMITER $$
 CREATE PROCEDURE spu_listar_haras()
 BEGIN
-    -- Seleccionamos el ID y el nombre de los haras de forma única
-    SELECT DISTINCT 
+		SELECT DISTINCT 
         idPropietario,            -- ID del propietario
         nombreHaras               -- Nombre del haras
     FROM Propietarios;
@@ -748,11 +680,36 @@ BEGIN
     DECLARE v_sexoHembra ENUM('macho', 'hembra');
     DECLARE v_sexoExterno ENUM('macho', 'hembra');
     DECLARE v_mensajeError VARCHAR(255);
+    DECLARE v_count INT;
 
     -- Validación para la fecha de servicio
     IF p_fechaServicio > CURDATE() THEN
         SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Validación para evitar que un padrillo y una yegua realicen más de un servicio en el mismo día
+    IF p_tipoServicio = 'propio' THEN
+        SELECT COUNT(*) INTO v_count
+        FROM Servicios
+        WHERE idEquinoHembra = p_idEquinoHembra
+          AND DATE(fechaServicio) = p_fechaServicio;
+
+        IF v_count > 0 THEN
+            SET v_mensajeError = 'Error: La yegua ya tiene un servicio registrado en esta fecha.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+    ELSEIF p_tipoServicio = 'mixto' THEN
+        SELECT COUNT(*) INTO v_count
+        FROM Servicios
+        WHERE (idEquinoHembra = p_idEquinoHembra OR idEquinoHembra IS NULL)
+          AND DATE(fechaServicio) = p_fechaServicio;
+
+        IF v_count > 0 THEN
+            SET v_mensajeError = 'Error: La yegua ya tiene un servicio registrado en esta fecha.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
     END IF;
 
     -- Validación para la hora de entrada solo si la fecha es hoy
@@ -900,5 +857,38 @@ BEGIN
         END IF;
     END IF;
 
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE listarServiciosPorFechaYTipo(
+    IN p_fechaInicio DATE,
+    IN p_fechaFin DATE,
+    IN p_tipoServicio ENUM('Propio', 'Mixto')
+)
+BEGIN
+    SELECT 
+        s.idServicio,
+        em.nombreEquino AS nombrePadrillo,
+        eh.nombreEquino AS nombreYegua,
+        s.fechaServicio,
+        s.detalles,
+        s.horaEntrada,
+        s.horaSalida,
+        s.costoServicio,
+        CASE 
+            WHEN s.tipoServicio = 'Mixto' THEN p.nombreHaras 
+            ELSE NULL 
+        END AS nombreHaras
+    FROM 
+        Servicios s
+    LEFT JOIN Equinos em ON s.idEquinoMacho = em.idEquino
+    LEFT JOIN Equinos eh ON s.idEquinoHembra = eh.idEquino
+    LEFT JOIN Propietarios p ON s.idPropietario = p.idPropietario
+    WHERE 
+        s.fechaServicio BETWEEN p_fechaInicio AND p_fechaFin AND
+        s.tipoServicio = p_tipoServicio
+    ORDER BY 
+        s.fechaServicio DESC;
 END $$
 DELIMITER ;

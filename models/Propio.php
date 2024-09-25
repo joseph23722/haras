@@ -46,7 +46,7 @@ class ServicioPropio extends Conexion
             $query = $this->pdo->prepare("CALL spu_listar_equinos_propios()");
             $query->execute();
             $equinos = $query->fetchAll(PDO::FETCH_ASSOC);
-            return array_filter($equinos, function($equino) use ($tipoEquino) {
+            return array_filter($equinos, function ($equino) use ($tipoEquino) {
                 return $equino['idTipoEquino'] == $tipoEquino;
             });
         } catch (PDOException $e) {
@@ -67,5 +67,16 @@ class ServicioPropio extends Conexion
             return [];
         }
     }
+
+    public function listarServiciosPorFechaYTipo($fechaInicio, $fechaFin, $tipoServicio)
+    {
+        try {
+            $query = $this->pdo->prepare("CALL listarServiciosPorFechaYTipo(?, ?, ?)");
+            $query->execute([$fechaInicio, $fechaFin, $tipoServicio]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al listar servicios: " . $e->getMessage());
+            return [];
+        }
+    }
 }
-?>

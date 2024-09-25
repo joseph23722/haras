@@ -61,6 +61,38 @@ document.addEventListener("DOMContentLoaded", () => {
     // Llama a la función enforcePositiveNumbers solo para el campo costoServicio
     enforcePositiveNumbers(costoServicioInput);
 
+    const loadServicios = async (fechaServicio, tipoServicio) => {
+        try {
+            const response = await fetch(`../../controllers/mixto.controller.php?fechaServicio=${fechaServicio}&tipoServicio=${tipoServicio}`);
+            if (!response.ok) {
+                throw new Error('Error al cargar servicios');
+            }
+            const data = await response.json();
+            serviciosTable.innerHTML = '';
+
+            data.forEach(servicio => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${servicio.idServicio}</td>
+                    <td>${servicio.nombrePadrillo}</td>
+                    <td>${servicio.nombreYegua}</td>
+                    <td>${servicio.fechaServicio}</td>
+                    <td>${servicio.detalles}</td>
+                    <td>${servicio.horaEntrada}</td>
+                    <td>${servicio.horaSalida}</td>
+                    <td>${servicio.nombreHaras || ''}</td>
+                `;
+                serviciosTable.appendChild(row);
+            });
+
+            // Inicializar DataTable
+            $('#serviciosTable').DataTable();
+        } catch (error) {
+            console.error(`Error al cargar servicios: ${error}`);
+            mensajeDiv.innerText = "Error al cargar los servicios.";
+        }
+    };
+
     // Carga padrillos (tipo = 2) y yeguas (tipo = 1)
     loadOptions('../../controllers/mixto.controller.php?tipoEquino=2', idEquinoMachoSelect); // Padrillos
     loadOptions('../../controllers/mixto.controller.php?tipoEquino=1', idEquinoHembraSelect); // Yeguas
