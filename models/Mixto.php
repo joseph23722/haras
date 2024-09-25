@@ -17,7 +17,7 @@ class ServicioMixto extends Conexion
         try {
             error_log("Llamando a procedimiento almacenado con: " . print_r($params, true));
 
-            $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             $query->execute([
                 $params['idEquinoMacho'] ?? null,
@@ -29,7 +29,8 @@ class ServicioMixto extends Conexion
                 $params['detalles'],
                 null,
                 $params['horaEntrada'],
-                $params['horaSalida']
+                $params['horaSalida'],
+                $params['costoServicio'] ?? null,
             ]);
 
             return ['status' => 'success', 'message' => 'Servicio mixto registrado exitosamente.'];

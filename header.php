@@ -87,6 +87,13 @@ $host = "http://localhost/haras";
                             </nav>
                         </div>
 
+                        <!-- Campos -->
+                        <div class="sb-sidenav-menu-heading">Usuarios</div>
+                        <a class="nav-link" href="<?= $host ?>/views/campos">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-group-arrows-rotate"></i></div>
+                            Rotación Campos
+                        </a>
+
                         <!-- Medicamentos -->
                         <div class="sb-sidenav-menu-heading">Medicamentos</div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMedicamentos" aria-expanded="false" aria-controls="collapseMedicamentos">

@@ -17,7 +17,7 @@ class ServicioPropio extends Conexion
         try {
             error_log("Llamando a procedimiento almacenado con: " . print_r($params, true));
 
-            $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['idEquinoMacho'],
                 $params['idEquinoHembra'],
@@ -28,7 +28,8 @@ class ServicioPropio extends Conexion
                 $params['detalles'],
                 null,
                 $params['horaEntrada'],
-                $params['horaSalida']
+                $params['horaSalida'],
+                null
             ]);
 
             return ['status' => 'success', 'message' => 'Servicio propio registrado exitosamente.'];

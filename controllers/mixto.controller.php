@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'horaEntrada' => $data['horaEntrada'],
             'horaSalida' => $data['horaSalida'],
             'idMedicamento' => $data['idMedicamento'] ?? null,
-            'detalles' => $data['detalles'] ?? null
+            'detalles' => $data['detalles'] ?? null,
+            'costoServicio' => $data['costoServicio'] ?? null
         ];
 
         error_log("Intentando registrar servicio mixto con parámetros: " . print_r($params, true));

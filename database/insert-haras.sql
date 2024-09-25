@@ -7,22 +7,25 @@ VALUES
 -- 5. Insertar Datos en Personal
 INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso) 
 VALUES 
-('Juan', 'Pérez', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27');   -- Personal: Juan Pérez
+('Ruben', 'Marcos', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27');   -- Personal: Juan Pérez
 
 
 -- Insertar datos en la tabla Roles
 INSERT INTO Roles (nombreRol) 
-VALUES 
+VALUES
+('Gerente'), 
 ('Administrador'),
-('Empleado');
+('Supervisor Equino'),
+('Supervisor Campo'),
+('Médico'),
+('Herrero');
 
 -- 6. Insertar Datos en Usuarios
 INSERT INTO Usuarios (idPersonal, correo, clave, idRol) 
 VALUES 
-(1, 'juanperez@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 1),  -- Usuario: Juan Pérez, Rol: Administrador
+(1, 'ruben@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2),  -- Usuario: Juan Pérez, Rol: Administrador
 (2, 'anagarcia@gmail.com', '$2y$10$MRJu1.8gZKUVLvIaU6EeseekrcojOrG3KMEFmx/o5qAuNAyb/zfPy', 2);   -- Usuario: Ana García, Rol: Empleado
 
-select * from usuarios;
 -- 7. Insertar Datos en Implementos
 INSERT INTO Implementos (idTipoinventario, nombreProducto, descripcion, precioUnitario, idTipomovimiento, cantidad, stockFinal) 
 VALUES 
@@ -118,14 +121,22 @@ VALUES
 
 -- AGREGADOS:
 
-INSERT INTO Propietarios (nombreHaras, costoServicio) 
-    VALUES  ('Haras Sunrise', 1500.00),
-            ('Haras Luna', 1300.00);
+INSERT INTO Propietarios (nombreHaras) 
+    VALUES  ('Los Eucaliptos');
 
 INSERT INTO Medicamentos (nombreMedicamento, cantidad, caducidad, precioUnitario, idTipomovimiento, idUsuario)
     VALUES
         ('Antibiótico X', 50.00, '2025-12-31', 15.00, 1, 1),
         ('Analgesico Y', 30.00, '2026-06-15', 10.50, 1, 1);
+        
+INSERT INTO TipoRotaciones (nombreRotacion)
+ VALUES ('Riego'), ('Deshierve'),
+		('Arado'), ('Gradeado'),
+        ('Rufiado'), ('Potrillo'),
+        ('Potranca'),('Yeguas Preñadas'),
+        ('Yeguas con Crías'), ('Yeguas Vacías'),
+        ('Destetados');
+-- Riego, Deshierve, Arado, Gradeado, Rufiado, Potrillo, Potranca, Yeguas Preñadas, Yeguas con Crías, Yeguas vacías, Destetados
 
 -- 2. Insertar Datos en TipoMovimientos
 INSERT INTO TipoMovimientos (movimiento) 
@@ -146,5 +157,3 @@ INSERT INTO EstadoMonta (genero, nombreEstado)
         ('Macho', 'Activo'),   -- Estado de monta: Macho Activo
         ('Hembra', 'Preñada'); -- Estado de monta: Hembra Preñada
         
-select * from servicios;
-select * from equinos;

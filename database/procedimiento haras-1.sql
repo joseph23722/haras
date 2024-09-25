@@ -1,4 +1,3 @@
-
 -- procedimientos 
 
 -- login -------------------------------------------------------------------------------------------
@@ -660,6 +659,7 @@ CREATE PROCEDURE spu_equino_registrar(
     IN _idTipoEquino INT,                  -- ID del tipo de equino seleccionado
     IN _idPropietario INT,                  -- ID del propietario del equino (puede ser NULL si es propio)
     IN _nacionalidad VARCHAR(50)            -- Nacionalidad del equino (puede ser NULL)
+    -- IN _fotografia LONGBLOB
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
@@ -700,6 +700,7 @@ BEGIN
         detalles, 
         idPropietario,
         nacionalidad
+        -- fotografia
     ) 
     VALUES (
         _nombreEquino, 
@@ -709,13 +710,13 @@ BEGIN
         _detalles, 
         _idPropietario, 
         _nacionalidad
+        -- _fotografia
     );
     
     -- Devolver el ID del equino recién insertado
     SELECT LAST_INSERT_ID() AS idEquino;
 END $$
 DELIMITER ;
-
 
 -- Listar tipo equino
 DELIMITER $$
@@ -739,7 +740,8 @@ CREATE PROCEDURE registrarServicio(
     IN p_detalles TEXT,
     IN p_idMedicamento INT,
     IN p_horaEntrada TIME,
-    IN p_horaSalida TIME
+    IN p_horaSalida TIME,
+    IN p_costoServicio INT
 )
 BEGIN
     DECLARE v_sexoMacho ENUM('macho', 'hembra');
@@ -753,13 +755,21 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-    -- Validación para la hora de entrada
-    IF p_horaEntrada >= CURRENT_TIME THEN
-        SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor o igual a la hora actual.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    -- Validación para la hora de entrada solo si la fecha es hoy
+    IF p_fechaServicio = CURDATE() THEN
+        IF p_horaEntrada >= CURRENT_TIME THEN
+            SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor o igual a la hora actual.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
     END IF;
 
     -- Validación para la hora de salida
+    IF p_horaSalida <= p_horaEntrada THEN
+        SET v_mensajeError = 'Error: La hora de salida debe ser mayor que la hora de entrada.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Validación para la hora de salida solo si la fecha es hoy
     IF p_fechaServicio = CURDATE() THEN
         IF p_horaSalida > CURRENT_TIME THEN
             SET v_mensajeError = 'Error: La hora de salida no puede ser mayor que la hora actual si la fecha es hoy.';
@@ -767,13 +777,9 @@ BEGIN
         END IF;
     END IF;
 
-    IF p_horaSalida <= p_horaEntrada THEN
-        SET v_mensajeError = 'Error: La hora de salida debe ser mayor que la hora de entrada.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-    END IF;
-
-    -- Validación para servicios propios
+    -- Validaciones y lógica para los servicios propios y mixtos
     IF p_tipoServicio = 'propio' THEN
+        -- Validaciones de género para servicio propio
         SELECT sexo INTO v_sexoMacho
         FROM Equinos
         WHERE idEquino = p_idEquinoMacho;
@@ -792,6 +798,7 @@ BEGIN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
         END IF;
 
+        -- Registro del servicio propio
         INSERT INTO Servicios (
             idEquinoMacho,
             idEquinoHembra,
@@ -815,12 +822,13 @@ BEGIN
         );
 
     ELSEIF p_tipoServicio = 'mixto' THEN
+        -- Validaciones para servicio mixto
         IF p_idPropietario IS NULL THEN
             SET v_mensajeError = 'Debe seleccionar el ID del propietario para servicios mixtos.';
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
         END IF;
 
-        -- Obtener el sexo del equino externo basado en su ID
+        -- Obtener el sexo del equino externo
         SELECT sexo INTO v_sexoExterno
         FROM Equinos
         WHERE idEquino = p_idEquinoExterno;
@@ -830,6 +838,7 @@ BEGIN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
         END IF;
 
+        -- Validaciones para asegurar géneros opuestos
         IF p_idEquinoMacho IS NOT NULL THEN
             SELECT sexo INTO v_sexoMacho
             FROM Equinos
@@ -840,6 +849,7 @@ BEGIN
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
             END IF;
 
+            -- Registro del servicio mixto
             INSERT INTO Servicios (
                 idEquinoMacho,
                 idEquinoHembra,
@@ -849,7 +859,8 @@ BEGIN
                 idMedicamento,
                 horaEntrada,
                 horaSalida,
-                idPropietario
+                idPropietario,
+                costoServicio
             ) VALUES (
                 p_idEquinoMacho,
                 p_idEquinoExterno,
@@ -859,7 +870,8 @@ BEGIN
                 p_idMedicamento,
                 p_horaEntrada,
                 p_horaSalida,
-                p_idPropietario
+                p_idPropietario,
+                p_costoServicio
             );
         ELSE
             INSERT INTO Servicios (
@@ -871,7 +883,8 @@ BEGIN
                 idMedicamento,
                 horaEntrada,
                 horaSalida,
-                idPropietario
+                idPropietario,
+                costoServicio
             ) VALUES (
                 p_idEquinoExterno,
                 p_idEquinoHembra,
@@ -881,7 +894,8 @@ BEGIN
                 p_idMedicamento,
                 p_horaEntrada,
                 p_horaSalida,
-                p_idPropietario
+                p_idPropietario,
+                p_costoServicio
             );
         END IF;
     END IF;

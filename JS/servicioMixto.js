@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const idPropietarioSelect = document.querySelector("#idPropietario");
     const idEquinoExternoSelect = document.querySelector("#idEquinoExterno");
     const idDetalleMedSelect = document.querySelector("#idDetalleMed");
+    const costoServicioInput = document.querySelector("#costoServicio"); // El input de costoServicio
     const mensajeDiv = document.querySelector("#mensaje");
 
     const loadOptions = async (url, selectElement) => {
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error('Error al cargar opciones');
             }
             const data = await response.json();
-            console.log("Datos recibidos:", data);  // Agrega esto
+            console.log("Datos recibidos:", data);  // Agrega esto para depuración
             const items = Array.isArray(data) ? data : Object.values(data);
             selectElement.innerHTML = '<option value="">Seleccione</option>';
             items.forEach(item => {
@@ -27,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(`Error al cargar opciones: ${error}`);
         }
     };
-    
 
     const loadMedicamentos = async () => {
         try {
@@ -47,6 +47,19 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(`Error al cargar medicamentos: ${error}`);
         }
     };
+
+    // Validar que solo se ingresen números positivos en el campo costoServicio
+    const enforcePositiveNumbers = (inputElement) => {
+        inputElement.addEventListener('input', () => {
+            // Si el valor contiene algo que no es un número o si es negativo, lo limpia
+            if (!/^\d*\.?\d*$/.test(inputElement.value)) {
+                inputElement.value = inputElement.value.replace(/[^0-9.]/g, ''); // Permitir solo dígitos y punto decimal
+            }
+        });
+    };
+
+    // Llama a la función enforcePositiveNumbers solo para el campo costoServicio
+    enforcePositiveNumbers(costoServicioInput);
 
     // Carga padrillos (tipo = 2) y yeguas (tipo = 1)
     loadOptions('../../controllers/mixto.controller.php?tipoEquino=2', idEquinoMachoSelect); // Padrillos

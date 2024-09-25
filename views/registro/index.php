@@ -61,10 +61,16 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-floating">
                             <textarea name="detalles" id="detalles" class="form-control" style="height: 90px;"></textarea>
                             <label for="detalles"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
+                        </div>
+                        </div>
+                        <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="file" name="fotografia" id="fotografia" class="form-control" accept="image/*"> <!-- Campo para la fotografía -->
+                            <label for="fotografia"><i class="fas fa-camera" style="color: #007bff;"></i> Fotografía del Equino</label>
                         </div>
                     </div>
 
@@ -168,10 +174,11 @@
                 nacionalidadInput.disabled = true;
                 fechaNacimientoInput.disabled = true;
                 nacionalidadInput.value = null;
-                fechaNacimientoInput.value = null; 
+                fechaNacimientoInput.value = null;
             } else {
                 // Si no hay propietario, habilitar los campos
                 nacionalidadInput.disabled = false;
+                fechaNacimientoInput.disabled = false;
             }
         });
 
