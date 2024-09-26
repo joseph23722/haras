@@ -23,14 +23,22 @@ class Alimento extends Conexion {
                 throw new Exception('Usuario no autenticado.');
             }
 
+            // Validar los parámetros
+            if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0 || $params['costo'] <= 0) {
+                throw new Exception('Datos inválidos. Verifique el nombre del alimento, cantidad y costo.');
+            }
+
             // Llamar al procedimiento almacenado para registrar el alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?)");
+            $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
+                $params['tipoAlimento'],
                 $params['cantidad'],
+                $params['unidadMedida'],
                 $params['costo'],
-                $params['idTipoEquino'],
+                $params['lote'],
+                $params['fechaCaducidad'],
                 $params['fechaIngreso']
             ]);
 
@@ -50,23 +58,36 @@ class Alimento extends Conexion {
     // Método para actualizar el stock de un alimento (entrada/salida)
     public function actualizarStockAlimento($params = []) {
         try {
-            // Llamar al procedimiento almacenado correcto para gestionar la entrada/salida
-            $query = $this->pdo->prepare("CALL spu_alimentos_movimiento(?,?,?)");
+            // Validar que idTipoEquino sea proporcionado en caso de salida
+            if ($params['idTipomovimiento'] == 2 && empty($params['idTipoEquino'])) {
+                throw new Exception('idTipoEquino es obligatorio para las salidas.');
+            }
+
+            // Llamar al procedimiento almacenado para gestionar la entrada/salida
+            $query = $this->pdo->prepare("CALL spu_alimentos_movimiento(?,?,?,?,?,?,?,?,?,?)");
             $query->execute([
+                $_SESSION['idUsuario'], // Usar idUsuario de la sesión
                 $params['nombreAlimento'],
+                $params['tipoAlimento'],
                 $params['cantidad'],
-                $params['idTipomovimiento']
+                $params['unidadMedida'],
+                $params['costo'],
+                $params['lote'],
+                $params['fechaCaducidad'],
+                $params['idTipomovimiento'],
+                $params['idTipoEquino'] ?? null,
+                $params['merma'] ?? 0
             ]);
 
             return ['status' => 'success', 'message' => 'Stock actualizado exitosamente.'];
         } catch (PDOException $e) {
-            error_log($e->getMessage()); // Registrar el mensaje de error
-            if ($e->getCode() == '45000') {
+            if ($e->getCode() == '45000') { // Código SQLSTATE personalizado para errores del procedimiento
                 return ['status' => 'error', 'message' => $e->getMessage()];
             }
+            error_log($e->getMessage());
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
-            error_log($e->getMessage()); // Registrar el mensaje de error
+            error_log($e->getMessage());
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
@@ -108,7 +129,6 @@ class Alimento extends Conexion {
         }
     }
 
-
     // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {
@@ -118,6 +138,30 @@ class Alimento extends Conexion {
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return [];
+        }
+    }
+
+    // Método para generar el reporte de inventario (próximos a caducar o con stock bajo)
+    public function reporteInventario($dias) {
+        try {
+            $query = $this->pdo->prepare("CALL spu_reporte_inventario(?)");
+            $query->execute([$dias]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return [];
+        }
+    }
+
+    // Método para verificar si hay alimentos caducados
+    public function verificarCaducidad() {
+        try {
+            $query = $this->pdo->prepare("CALL spu_verificar_caducidad()");
+            $query->execute();
+            return $query->fetch(PDO::FETCH_ASSOC); // Esperar un solo registro
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
         }
     }
 }

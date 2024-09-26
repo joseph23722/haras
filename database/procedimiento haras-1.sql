@@ -168,6 +168,7 @@ DELIMITER ;
 -- -------------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar los alimentos  y manejar los movimintos entrada y salida 
 DELIMITER $$
+
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -178,6 +179,12 @@ CREATE PROCEDURE spu_alimentos_nuevo(
 BEGIN
     DECLARE _exists INT DEFAULT 0;
     DECLARE _compra DECIMAL(10,2);
+
+    -- Verificar que la cantidad y el costo sean válidos
+    IF _cantidad <= 0 OR _costo <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La cantidad y el costo deben ser mayores que cero.';
+    END IF;
 
     -- Convertir el nombre del alimento a minúsculas antes de la verificación
     SET _nombreAlimento = LOWER(_nombreAlimento);
@@ -220,11 +227,13 @@ BEGIN
         );
     END IF;
 END $$
+
 DELIMITER ;
 
 -- ------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento Entrada y Salida de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_alimentos_movimiento(
     IN _nombreAlimento VARCHAR(100),
     IN _cantidad INT,
@@ -235,6 +244,12 @@ BEGIN
     DECLARE _currentStock INT;
     DECLARE _newStock INT;
     DECLARE _idAlimento INT;
+
+    -- Verificar que la cantidad sea positiva
+    IF _cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La cantidad debe ser mayor que cero.';
+    END IF;
 
     -- Convertir el nombre del alimento a minúsculas antes de la verificación
     SET _nombreAlimento = LOWER(_nombreAlimento);
@@ -266,6 +281,12 @@ BEGIN
             IF _currentStock >= _cantidad THEN
                 SET _newStock = _currentStock - _cantidad;
 
+                -- Validar que se proporcione idTipoEquino para la salida
+                IF _idTipoEquino IS NULL THEN
+                    SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'idTipoEquino es obligatorio para las salidas.';
+                END IF;
+
                 -- Actualizar el stock final y registrar la salida
                 UPDATE Alimentos
                 SET stockFinal = _newStock, 
@@ -283,7 +304,9 @@ BEGIN
         END IF;
     END IF;
 END $$
+
 DELIMITER ;
+
 
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$

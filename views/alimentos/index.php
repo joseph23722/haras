@@ -22,11 +22,32 @@
                         </div>
                     </div>
 
+                    <!-- Tipo de Alimento -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" name="tipoAlimento" id="tipoAlimento" class="form-control" required>
+                            <label for="tipoAlimento"><i class="fas fa-apple-alt" style="color: #00b4d8;"></i> Tipo de Alimento</label>
+                        </div>
+                    </div>
+
                     <!-- Cantidad -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="number" name="cantidad" id="cantidad" class="form-control" required min="0">
                             <label for="cantidad"><i class="fas fa-balance-scale" style="color: #0096c7;"></i> Cantidad</label>
+                        </div>
+                    </div>
+
+                    <!-- Unidad de Medida -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select id="unidadMedida" name="unidadMedida" class="form-select" required>
+                                <option value="">Seleccione Unidad de Medida</option>
+                                <option value="Kg">Kg</option>
+                                <option value="Gr">Gr</option>
+                                <option value="Lt">Lt</option>
+                            </select>
+                            <label for="unidadMedida">Unidad de Medida</label>
                         </div>
                     </div>
 
@@ -38,13 +59,27 @@
                         </div>
                     </div>
 
-                    <!-- Tipo de Equino -->
+                    <!-- Lote -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="idTipoEquino" id="idTipoEquino" class="form-select" required>
-                                <option value="">Seleccione Tipo de Equino</option>
-                            </select>
-                            <label for="idTipoEquino"><i class="fas fa-horse" style="color: #005f73;"></i> Tipo de Equino</label>
+                            <input type="text" name="lote" id="lote" class="form-control" required>
+                            <label for="lote"><i class="fas fa-box" style="color: #0077b6;"></i> Lote</label>
+                        </div>
+                    </div>
+
+                    <!-- Fecha de Caducidad -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" name="fechaCaducidad" id="fechaCaducidad" class="form-control">
+                            <label for="fechaCaducidad"><i class="fas fa-calendar-alt" style="color: #0077b6;"></i> Fecha de Caducidad</label>
+                        </div>
+                    </div>
+
+                    <!-- Fecha de Ingreso -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="datetime-local" name="fechaIngreso" id="fechaIngreso" class="form-control" required>
+                            <label for="fechaIngreso"><i class="fas fa-calendar-alt" style="color: #0077b6;"></i> Fecha de Ingreso</label>
                         </div>
                     </div>
 
@@ -73,13 +108,12 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>stockFinal</th>
+                        <th>Stock Final</th>
                         <th>Costo</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="alimentos-table">
-                </tbody>
+                <tbody id="alimentos-table"></tbody>
             </table>
         </div>
     </div>
@@ -98,7 +132,6 @@
                         <div class="form-floating">
                             <select id="alimento-select" name="nombreAlimento" class="form-select" required>
                                 <option value="">Seleccione un Alimento</option>
-                                <!-- Opciones se cargarán dinámicamente -->
                             </select>
                             <label for="alimento-select">Alimento</label>
                         </div>
@@ -109,6 +142,16 @@
                         <div class="form-floating">
                             <input type="number" name="cantidad" id="cantidad-movimiento" class="form-control" required min="0">
                             <label for="cantidad-movimiento"><i class="fas fa-balance-scale" style="color: #0096c7;"></i> Cantidad</label>
+                        </div>
+                    </div>
+
+                    <!-- Tipo de Equino para Salida -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select id="tipoEquinoMovimiento" name="idTipoEquino" class="form-select">
+                                <option value="">Seleccione Tipo de Equino (Solo para salida)</option>
+                            </select>
+                            <label for="tipoEquinoMovimiento">Tipo de Equino</label>
                         </div>
                     </div>
 
@@ -127,18 +170,19 @@
             </form>
         </div>
     </div>
-
 </div>
 
 <?php require_once '../../footer.php'; ?>
 
 <script>
+// Cargar tipos de equinos y alimentos registrados
 document.addEventListener("DOMContentLoaded", () => {
     const formRegistrarAlimento = document.querySelector("#form-registrar-alimento");
     const formMovimientoAlimento = document.querySelector("#form-movimiento-alimento");
     const alimentosTable = document.querySelector("#alimentos-table");
     const alimentoSelect = document.querySelector("#alimento-select");
     const idTipomovimientoMovimiento = document.querySelector("#idTipomovimiento-movimiento");
+    const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
 
     // Validar cantidad positiva en movimiento
     document.querySelector("#cantidad-movimiento").addEventListener("input", (e) => {
@@ -173,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                     <td>${alim.idAlimento}</td>
                     <td>${alim.nombreAlimento}</td>
-                    <td>${alim.stockFinal}</td>  <!-- Cambiado a stockFinal -->
+                    <td>${alim.stockFinal}</td>
                     <td>${alim.costo}</td>
                     <td class="text-center">
                         <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
@@ -196,12 +240,52 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    // Función para cargar los tipos de equinos
+    const loadTipoEquinos = async () => {
+        try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'getTipoEquinos' })
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al cargar los tipos de equinos.");
+            }
+
+            const tipoEquinos = await response.json();
+
+            // Limpiar el select de opciones previas
+            tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino (Solo para salida)</option>';
+
+            // Llenar el select con las opciones
+            tipoEquinos.forEach(equino => {
+                const option = document.createElement("option");
+                option.value = equino.idTipoEquino;
+                option.textContent = equino.tipoEquino;
+                tipoEquinoMovimiento.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Llamar a la función para cargar los tipos de equinos al cargar la página
+    loadAlimentos();
+    loadTipoEquinos();
 
     // Evento para registrar un nuevo alimento
     formRegistrarAlimento.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const formData = new FormData(formRegistrarAlimento);
+        
+        // Asegurarse de que la fecha esté presente
+        const fechaIngreso = document.querySelector("#fechaIngreso").value;
+        if (!fechaIngreso) {
+            alert("Por favor, ingrese la fecha de ingreso.");
+            return;
+        }
+
         const data = new URLSearchParams(formData);
         data.append('operation', 'registrar');
 
@@ -238,6 +322,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         idTipomovimientoMovimiento.value = tipoMovimiento;
+
+        if (tipoMovimiento === 2 && !tipoEquinoMovimiento.value) {
+            alert("idTipoEquino es obligatorio para las salidas.");
+            return;
+        }
 
         const formData = new FormData(formMovimientoAlimento);
         const data = new URLSearchParams(formData);
@@ -309,7 +398,5 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarStock(2); // Salida
     });
 
-    // Inicializar la carga de alimentos
-    loadAlimentos();
 });
 </script>

@@ -73,22 +73,29 @@ CREATE TABLE Implementos (
 
 -- 9. Alimentos
 CREATE TABLE Alimentos (
-    idAlimento 			INT PRIMARY KEY AUTO_INCREMENT,
-    idUsuario 			INT NOT NULL,
-    nombreAlimento 		VARCHAR(100) NOT NULL,
-    cantidad 			INT NOT NULL, 
-    costo 				DECIMAL(10,2) NOT NULL,
-    idTipomovimiento 	INT NOT NULL, -- '1' para entrada, '2' para salida
-    idTipoEquino 		INT NULL, -- Solo se utiliza en salidas
-    stockFinal 			INT NOT NULL,
-    fechaIngreso 		DATETIME NULL,
-    compra 				DECIMAL(10,2) NOT NULL,
-    fechaMovimiento DATETIME DEFAULT NOW(), -- Registrar cuándo ocurrió la entrada o salida
-    CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento), -- Restringe duplicados sin importar mayúsculas/minúsculas
+    idAlimento           INT PRIMARY KEY AUTO_INCREMENT,
+    idUsuario            INT NOT NULL,
+    nombreAlimento       VARCHAR(100) NOT NULL,
+    tipoAlimento         VARCHAR(50), -- Grano, Heno, Suplementos, etc.
+    cantidad             DECIMAL(10,2) NOT NULL, -- Manejar diferentes unidades
+    unidadMedida         VARCHAR(10) NOT NULL, -- Kilos, Gramos, Litros, etc.
+    costo                DECIMAL(10,2) NOT NULL,
+    lote                 VARCHAR(50), -- Registro de lote
+    fechaCaducidad       DATE, -- Fecha de caducidad por lote
+    idTipomovimiento     INT NOT NULL, -- '1' para entrada, '2' para salida
+    idTipoEquino         INT NULL, -- Solo para salidas
+    merma                DECIMAL(10,2), -- Registro de la merma en salidas
+    stockFinal           DECIMAL(10,2) NOT NULL, -- Stock final del lote
+    fechaIngreso         DATETIME NULL,
+    compra               DECIMAL(10,2) NOT NULL,
+    fechaMovimiento      DATETIME DEFAULT NOW(), -- Registrar cuándo ocurrió la entrada o salida
+    CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento, lote), -- Duplicados por lote
     CONSTRAINT fk_alimento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
     CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
     CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
 ) ENGINE = INNODB;
+
+
 
 -- 10. Medicamentos
 CREATE TABLE Medicamentos (
