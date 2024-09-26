@@ -165,6 +165,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 -- -------------------------------------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar los alimentos  y manejar los movimintos entrada y salida 
 DELIMITER $$
@@ -172,8 +174,12 @@ DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
-    IN _cantidad INT,
+    IN _tipoAlimento VARCHAR(50),
+    IN _cantidad DECIMAL(10,2),
+    IN _unidadMedida VARCHAR(10),
     IN _costo DECIMAL(10,2),
+    IN _lote VARCHAR(50),
+    IN _fechaCaducidad DATE,
     IN _fechaIngreso DATETIME
 )
 BEGIN
@@ -192,33 +198,46 @@ BEGIN
     -- Calcular el costo total de la compra
     SET _compra = _cantidad * _costo;
 
-    -- Verificar si el alimento ya existe (sin importar mayúsculas/minúsculas)
+    -- Verificar si el alimento ya existe para ese lote
     SELECT COUNT(*) INTO _exists 
     FROM Alimentos
-    WHERE nombreAlimento = _nombreAlimento;
+    WHERE nombreAlimento = _nombreAlimento
+      AND lote = _lote;
 
+    -- Si el alimento ya existe, actualiza el stock
     IF _exists > 0 THEN
-        -- Si el alimento ya existe, lanzar un error
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El alimento ya existe en el inventario.';
+        UPDATE Alimentos
+        SET cantidad = cantidad + _cantidad,
+            stockFinal = stockFinal + _cantidad,
+            fechaMovimiento = NOW()
+        WHERE nombreAlimento = _nombreAlimento
+          AND lote = _lote;
     ELSE
-        -- Insertar un nuevo alimento en el inventario
+        -- Insertar un nuevo registro si es un alimento/lote nuevo
         INSERT INTO Alimentos (
             idUsuario, 
             nombreAlimento, 
+            tipoAlimento, 
             cantidad, 
+            unidadMedida, 
             costo, 
+            lote, 
+            fechaCaducidad, 
             idTipomovimiento, 
             stockFinal, 
-            fechaIngreso,
-            fechaMovimiento,
+            fechaIngreso, 
+            fechaMovimiento, 
             compra
         ) 
         VALUES (
             _idUsuario, 
             _nombreAlimento, 
+            _tipoAlimento,
             _cantidad, 
+            _unidadMedida,
             _costo, 
+            _lote, 
+            _fechaCaducidad,
             1,  -- '1' indica una entrada
             _cantidad,  -- El stock inicial es igual a la cantidad ingresada
             _fechaIngreso,
@@ -235,77 +254,215 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE PROCEDURE spu_alimentos_movimiento(
+    IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
-    IN _cantidad INT,
+    IN _tipoAlimento VARCHAR(50),
+    IN _cantidad DECIMAL(10,2),
+    IN _unidadMedida VARCHAR(10),
+    IN _costo DECIMAL(10,2),
+    IN _lote VARCHAR(50),
+    IN _fechaCaducidad DATE,
     IN _idTipomovimiento INT,
-    IN _idTipoEquino INT -- Puede ser NULL, pero no se debe declarar así
+    IN _idTipoEquino INT, -- Solo se usa en salidas
+    IN _merma DECIMAL(10,2) -- Registro de la merma en salida
 )
 BEGIN
-    DECLARE _currentStock INT;
-    DECLARE _newStock INT;
+    -- Declaraciones de variables
+    DECLARE _exists INT DEFAULT 0;
+    DECLARE _currentStock DECIMAL(10,2);
+    DECLARE _newStock DECIMAL(10,2);
+    DECLARE _compra DECIMAL(10,2);
     DECLARE _idAlimento INT;
+    DECLARE _stockMinimo DECIMAL(10,2);
 
-    -- Verificar que la cantidad sea positiva
-    IF _cantidad <= 0 THEN
+    -- Verificar que la cantidad y el costo sean válidos
+    IF _cantidad <= 0 OR _costo <= 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La cantidad debe ser mayor que cero.';
+        SET MESSAGE_TEXT = 'La cantidad y el costo deben ser mayores que cero.';
     END IF;
 
-    -- Convertir el nombre del alimento a minúsculas antes de la verificación
+    -- Calcular el costo total de la compra
+    SET _compra = _cantidad * _costo;
+
+    -- Convertir el nombre del alimento a minúsculas
     SET _nombreAlimento = LOWER(_nombreAlimento);
 
-    -- Obtener el stock actual del alimento
-    SELECT idAlimento, stockFinal INTO _idAlimento, _currentStock
+    -- Verificar si el alimento ya existe con el mismo lote
+    SELECT COUNT(*) INTO _exists 
     FROM Alimentos
     WHERE nombreAlimento = _nombreAlimento
-    ORDER BY fechaIngreso DESC
-    LIMIT 1;
+    AND lote = _lote;
 
-    -- Verificar si el alimento existe
-    IF _currentStock IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El alimento no existe.';
-    ELSE
-        -- Calcular el nuevo stock basado en el tipo de movimiento
-        IF _idTipomovimiento = 1 THEN -- Entrada
+    -- Manejar el movimiento según sea entrada o salida
+    IF _idTipomovimiento = 1 THEN -- Entrada
+        IF _exists > 0 THEN
+            -- Si el alimento con el lote ya existe, actualizar el stock
+            SELECT idAlimento, stockFinal INTO _idAlimento, _currentStock
+            FROM Alimentos
+            WHERE nombreAlimento = _nombreAlimento AND lote = _lote;
+
             SET _newStock = _currentStock + _cantidad;
 
-            -- Actualizar el stock final y registrar la entrada
+            -- Actualizar el stock final y fecha de ingreso
             UPDATE Alimentos
-            SET stockFinal = _newStock,
-                idTipomovimiento = 1,  -- Entrada
-                fechaMovimiento = NOW()
+            SET stockFinal = _newStock, 
+                fechaMovimiento = NOW(),
+                fechaIngreso = NOW(),
+                costo = _costo
             WHERE idAlimento = _idAlimento;
+        ELSE
+            -- Insertar un nuevo alimento en el inventario
+            INSERT INTO Alimentos (
+                idUsuario, 
+                nombreAlimento, 
+                tipoAlimento, 
+                cantidad, 
+                unidadMedida,
+                costo, 
+                lote, 
+                fechaCaducidad,
+                idTipomovimiento, 
+                stockFinal, 
+                fechaIngreso, 
+                compra, 
+                fechaMovimiento
+            ) 
+            VALUES (
+                _idUsuario, 
+                _nombreAlimento, 
+                _tipoAlimento, 
+                _cantidad, 
+                _unidadMedida,
+                _costo, 
+                _lote, 
+                _fechaCaducidad,
+                _idTipomovimiento, 
+                _cantidad, 
+                NOW(), 
+                _compra, 
+                NOW()
+            );
+        END IF;
 
-        ELSEIF _idTipomovimiento = 2 THEN -- Salida
-            IF _currentStock >= _cantidad THEN
-                SET _newStock = _currentStock - _cantidad;
+    ELSEIF _idTipomovimiento = 2 THEN -- Salida
+        -- Verificar si el alimento y lote existen
+        SELECT idAlimento, stockFinal, stockMinimo INTO _idAlimento, _currentStock, _stockMinimo
+        FROM Alimentos
+        WHERE nombreAlimento = _nombreAlimento
+        AND lote = _lote
+        ORDER BY fechaCaducidad ASC -- Priorizar el lote con caducidad más cercana
+        LIMIT 1;
 
-                -- Validar que se proporcione idTipoEquino para la salida
+        IF _currentStock IS NULL THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El alimento o el lote no existen.';
+        ELSE
+            -- Verificar si hay suficiente stock
+            IF _currentStock >= (_cantidad + _merma) THEN
+                SET _newStock = _currentStock - (_cantidad + _merma);
+
+                -- Verificar si el stock cae por debajo del stock mínimo
+                IF _newStock < _stockMinimo THEN
+                    SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Alerta: El stock está por debajo del mínimo.';
+                END IF;
+
+                -- Validar que se proporcione idTipoEquino para las salidas
                 IF _idTipoEquino IS NULL THEN
                     SIGNAL SQLSTATE '45000'
                     SET MESSAGE_TEXT = 'idTipoEquino es obligatorio para las salidas.';
                 END IF;
 
-                -- Actualizar el stock final y registrar la salida
+                -- Actualizar el stock y registrar la salida
                 UPDATE Alimentos
                 SET stockFinal = _newStock, 
-                    idTipomovimiento = 2,  -- Salida
-                    idTipoEquino = _idTipoEquino,  -- Registrar el tipo de equino
+                    idTipomovimiento = 2, 
+                    idTipoEquino = _idTipoEquino, 
+                    merma = _merma, 
                     fechaMovimiento = NOW()
                 WHERE idAlimento = _idAlimento;
+
+                -- Insertar en Historial de Movimientos
+                INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
+                VALUES (_idAlimento, 'Salida', _cantidad, _idUsuario, NOW());
             ELSE
                 SIGNAL SQLSTATE '45000'
                 SET MESSAGE_TEXT = 'Stock insuficiente para realizar la salida.';
             END IF;
-        ELSE
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
         END IF;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
 END $$
 
 DELIMITER ;
+
+
+-- ------------------------------------------------------------------------------------------------------------------------
+-- Procedimiento para Reporte de Alimentos Próximos a Caducar o con Stock Bajo-----------------------------------------
+DELIMITER $$
+
+CREATE PROCEDURE spu_reporte_inventario(
+    IN _dias INT -- Días para revisar los alimentos que caducarán en los próximos _dias
+)
+BEGIN
+    -- Alimentos que están por caducar en los próximos días
+    SELECT nombreAlimento, lote, stockFinal, fechaCaducidad
+    FROM Alimentos
+    WHERE fechaCaducidad BETWEEN CURDATE() AND CURDATE() + INTERVAL _dias DAY;
+
+    -- Alimentos cuyo stock está por debajo del mínimo
+    SELECT nombreAlimento, lote, stockFinal, stockMinimo
+    FROM Alimentos
+    WHERE stockFinal < stockMinimo;
+END $$
+
+DELIMITER ;
+
+
+-- ------------------------------------------------------------------------------------------------------------------------
+-- Procedimiento para Verificar Alimentos Caducados-----------------------------------------
+
+DELIMITER $$
+
+CREATE PROCEDURE spu_verificar_caducidad()
+BEGIN
+    DECLARE _caducados INT;
+    DECLARE _mensaje VARCHAR(255);
+
+    -- Seleccionar todos los alimentos caducados
+    SELECT COUNT(*) INTO _caducados 
+    FROM Alimentos
+    WHERE fechaCaducidad < CURDATE();
+    
+    IF _caducados > 0 THEN
+        -- Crear el mensaje concatenado
+        SET _mensaje = CONCAT('Hay ', _caducados, ' alimentos que han caducado.');
+        
+        -- Lanzar la señal con el mensaje concatenado
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = _mensaje;
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
