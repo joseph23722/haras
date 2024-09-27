@@ -86,6 +86,7 @@ CREATE TABLE Alimentos (
     idTipoEquino         INT NULL, -- Solo para salidas
     merma                DECIMAL(10,2), -- Registro de la merma en salidas
     stockFinal           DECIMAL(10,2) NOT NULL, -- Stock final del lote
+    stockMinimo DECIMAL(10,2) DEFAULT 0,
     fechaIngreso         DATETIME NULL,
     compra               DECIMAL(10,2) NOT NULL,
     fechaMovimiento      DATETIME DEFAULT NOW(), -- Registrar cuándo ocurrió la entrada o salida
@@ -95,6 +96,16 @@ CREATE TABLE Alimentos (
     CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
 ) ENGINE = INNODB;
 
+CREATE TABLE HistorialMovimientos (
+    idMovimiento INT AUTO_INCREMENT PRIMARY KEY, -- Identificador único para cada movimiento
+    idAlimento INT NOT NULL, -- ID del alimento relacionado con el movimiento
+    tipoMovimiento VARCHAR(50) NOT NULL, -- Tipo de movimiento ('Entrada' o 'Salida')
+    cantidad DECIMAL(10,2) NOT NULL, -- Cantidad involucrada en el movimiento
+    idUsuario INT NOT NULL, -- Usuario que realizó el movimiento
+    fechaMovimiento DATETIME DEFAULT NOW(), -- Fecha y hora del movimiento
+    FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento), -- Relación con la tabla Alimentos
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario) -- Relación con la tabla Usuarios
+) ENGINE=InnoDB;
 
 
 -- 10. Medicamentos

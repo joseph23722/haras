@@ -215,7 +215,8 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
+    <script src="plugins/js/scripts.js"></script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -228,16 +229,22 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
                 params.append("clave", document.querySelector("#inputPassword").value);
 
                 fetch(`./controllers/usuario.controller.php?${params}`)
-                    .then(response => response.json())
+                    .then(response => response.text())  // Cambia 'json' por 'text' para ver la respuesta en bruto
                     .then(acceso => {
-                        if (!acceso.permitido) {
-                            alert(acceso.status);
-                        } else {
-                            // El login ha sido exitoso; redirigir al dashboard
-                            window.location.href = './dashboard.php';
+                        console.log(acceso);  // Muestra lo que el servidor está enviando
+                        try {
+                            acceso = JSON.parse(acceso);  // Intenta convertirlo a JSON
+                            if (!acceso.permitido) {
+                                alert(acceso.status);
+                            } else {
+                                window.location.href = './dashboard.php';
+                            }
+                        } catch (error) {
+                            console.error('Error al procesar el JSON:', error);
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => console.error('Error en la solicitud:', error));
+
             });
         });
 
