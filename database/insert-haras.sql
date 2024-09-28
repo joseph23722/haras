@@ -149,11 +149,17 @@ INSERT INTO TipoEquinos (tipoEquino) VALUES
     ('Yegua'), 
     ('Padrillo'), 
     ('Potranca'), 
-    ('Potrillo');
+    ('Potrillo'),
+    ('Recién nacido'), 
+    ('Destete');
 
 -- 4. Insertar Datos en EstadoMonta
 INSERT INTO EstadoMonta (genero, nombreEstado) 
     VALUES 
         ('Macho', 'Activo'),   -- Estado de monta: Macho Activo
-        ('Hembra', 'Preñada'); -- Estado de monta: Hembra Preñada
-        
+        ('Macho', 'Inactivo'),
+        ('Hembra','Preñada'),
+		('Hembra','Servida'),
+        ('Hembra','S/S'),
+        ('Hembra','Por Servir'),
+        ('Hembra','Vacía');

@@ -29,4 +29,14 @@ class Conexion{
     }
   }
 
+  public function getData($spuName = ""):array{
+    try{
+      $cmd = $this->getConexion()->prepare("call {$spuName}()");
+      $cmd->execute();
+      return $cmd->fetchAll(PDO::FETCH_ASSOC);
+    }catch(Exception $e){
+      error_log("Error: " . $e->getMessage());
+    }
+  }
+
 }

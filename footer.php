@@ -25,6 +25,15 @@
 <script src="<?= $host ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $host ?>/plugins/js/adminlte.min.js"></script>
 
+<!-- Incluye jQuery antes que Bootstrap y DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap CSS y JS -->
+<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+
 <!-- Tus propios scripts -->
 <script src="<?= $host ?>/plugins/js/scripts.js"></script>
 

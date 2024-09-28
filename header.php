@@ -115,6 +115,10 @@ $host = "http://localhost/haras";
                             <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
                             Registro Equino
                         </a>
+                        <a class="nav-link" href="<?= $host ?>/views/registro/listadoequinos.php/">
+                            <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
+                            Listado Equinos
+                        </a>
 
                         <!-- Alimentos -->
                         <div class="sb-sidenav-menu-heading">Alimentos</div>

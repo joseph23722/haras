@@ -75,4 +75,8 @@ class Registrarequino extends Conexion {
             return [];
         }
     }
+
+    public function getAll():array{
+        return parent::getData("spu_equinos_listar");
+      }
 }

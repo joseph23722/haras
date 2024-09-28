@@ -22,7 +22,7 @@ CREATE TABLE TipoMovimientos (
 -- 4. TipoEquinos
 CREATE TABLE TipoEquinos (
     idTipoEquino 		INT PRIMARY KEY AUTO_INCREMENT,
-    tipoEquino 			ENUM('Yegua', 'Padrillo', 'Potranca', 'Potrillo') NOT NULL
+    tipoEquino 			ENUM('Yegua', 'Padrillo', 'Potranca', 'Potrillo', 'Recién nacido', 'Destete') NOT NULL
 ) ENGINE = INNODB;
 
 -- 5. EstadoMonta
@@ -31,6 +31,7 @@ CREATE TABLE EstadoMonta (
     genero 				ENUM('Macho', 'Hembra') NOT NULL,
     nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
 ) ENGINE = INNODB;
+
 
 -- 6. Personal
 CREATE TABLE Personal (
