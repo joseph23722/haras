@@ -44,20 +44,106 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para registrar usuarios en la tabla 'Usuarios'------------------------------------------------------------------------------------------------------------------
+-- Procedimiento para registrar persdonal -------------------------------------------------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
 DELIMITER $$
-CREATE PROCEDURE spu_usuarios_registrar(
-    IN _idPersonal INT,             -- ID del personal asociado al usuario
-    IN _idRol INT,                  -- ID del rol del usuario
-    IN _correo VARCHAR(50),         -- Correo electrónico del usuario
-    IN _clave VARCHAR(100)          -- Clave del usuario
+CREATE PROCEDURE spu_personal_registrar
+(
+    OUT _idPersonal       INT,      -- Negativo cuando ocurre un error (ej. restricción)
+    IN _nombres           VARCHAR(100),
+    IN _apellidos         VARCHAR(100),
+    IN _direccion         VARCHAR(255),
+    IN _tipodoc           VARCHAR(20),
+    IN _nrodocumento      VARCHAR(50),
+    IN _numeroHijos       INT,
+    IN _fechaIngreso      DATE
 )
 BEGIN
-    -- Insertar un nuevo registro en la tabla 'Usuarios'
-    INSERT INTO Usuarios (idPersonal, idRol, correo, clave)
-    VALUES (_idPersonal, _idRol, _correo, _clave);
-
-    -- Devolver el ID del usuario recién insertado
-    SELECT LAST_INSERT_ID() AS idUsuario;
+    -- Declaración de variables
+    DECLARE existe_error INT DEFAULT 0;
+    
+    -- Manejador de errores
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET existe_error = 1;
+    END;
+    
+    -- Intentar insertar los datos en la tabla Personal
+    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso)
+    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _numeroHijos, _fechaIngreso);
+    
+    -- Verificar si ocurrió un error
+    IF existe_error = 1 THEN
+        SET _idPersonal = -1;  -- Devuelve -1 si hay error
+    ELSE
+        SET _idPersonal = LAST_INSERT_ID();  -- Devuelve el ID del nuevo registro
+    END IF;
 END $$
 DELIMITER ;
+
+
+CALL spu_personal_registrar(@idPersonal, 'Joseph', ' Mateo Paullac', 'San Agustin', 'DNI', '72183871', 2, '2024-01-01');
+SELECT @idPersonal AS 'idPersonal';
+
+-- Procedimiento para registrar usuarios ------------------------------------------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_usuarios_registrar`;
+DELIMITER $$
+CREATE PROCEDURE spu_usuarios_registrar
+(
+    OUT _idUsuario      INT,      -- Negativo cuando ocurre un error (ej. restricción)
+    IN _idPersonal      INT,      -- ID del Personal que ya debe existir
+    IN _correo          VARCHAR(50),
+    IN _clave           VARCHAR(100),
+    IN _idRol           INT       -- ID del Rol asignado al usuario
+)
+BEGIN
+    -- Declaración de variables
+    DECLARE existe_error INT DEFAULT 0;
+    
+    -- Manejador de errores
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET existe_error = 1;
+    END;
+    
+    -- Intentar insertar los datos en la tabla Usuarios
+    INSERT INTO Usuarios (idPersonal, correo, clave, idRol)
+    VALUES (_idPersonal, _correo, _clave, _idRol);
+    
+    -- Verificar si ocurrió un error
+    IF existe_error = 1 THEN
+        SET _idUsuario = -1;  -- Devuelve -1 si hay error
+    ELSE
+        SET _idUsuario = LAST_INSERT_ID();  -- Devuelve el ID del nuevo registro
+    END IF;
+END $$
+DELIMITER ;
+
+
+CALL spu_usuarios_registrar(@idUsuario, @idPersonal, 'lcontreras', 'claveSegura', 1);
+SELECT @idUsuario AS 'idUsuario';
+
+-- Procedimiento para listar 'Usuarios'------------------------------------------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_usuarios_listar`;
+DELIMITER $$
+CREATE PROCEDURE spu_usuarios_listar()
+BEGIN
+    SELECT 
+        USU.idUsuario,
+        PER.nombres,
+        PER.apellidos,
+        PER.nrodocumento,
+        PER.direccion,
+        USU.correo,
+        USU.idRol
+    FROM 
+        Usuarios USU
+    INNER JOIN 
+        Personal PER ON USU.idPersonal = PER.idPersonal
+    ORDER BY 
+        USU.idUsuario DESC;
+END $$
+DELIMITER ;
+
+CALL spu_usuarios_listar();
+

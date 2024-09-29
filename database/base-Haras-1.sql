@@ -82,8 +82,7 @@ CREATE TABLE Alimentos (
     unidadMedida         VARCHAR(10) NOT NULL, -- Kilos, Gramos, Litros, etc.
     costo                DECIMAL(10,2) NOT NULL,
     lote                 VARCHAR(50), -- Registro de lote
-    fechaCaducidad       DATE, -- Fecha de caducidad por lote
-    idTipomovimiento     INT NOT NULL, -- '1' para entrada, '2' para salida
+    fechaCaducidad       DATE NULL, -- Fecha de caducidad por lote
     idTipoEquino         INT NULL, -- Solo para salidas
     merma                DECIMAL(10,2), -- Registro de la merma en salidas
     stockFinal           DECIMAL(10,2) NOT NULL, -- Stock final del lote
@@ -92,10 +91,10 @@ CREATE TABLE Alimentos (
     compra               DECIMAL(10,2) NOT NULL,
     fechaMovimiento      DATETIME DEFAULT NOW(), -- Registrar cuándo ocurrió la entrada o salida
     CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento, lote), -- Duplicados por lote
-    CONSTRAINT fk_alimento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
     CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
     CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
 ) ENGINE = INNODB;
+
 
 CREATE TABLE HistorialMovimientos (
     idMovimiento INT AUTO_INCREMENT PRIMARY KEY, -- Identificador único para cada movimiento
@@ -104,9 +103,11 @@ CREATE TABLE HistorialMovimientos (
     cantidad DECIMAL(10,2) NOT NULL, -- Cantidad involucrada en el movimiento
     idUsuario INT NOT NULL, -- Usuario que realizó el movimiento
     fechaMovimiento DATETIME DEFAULT NOW(), -- Fecha y hora del movimiento
+    merma DECIMAL(10,2) DEFAULT 0,
     FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento), -- Relación con la tabla Alimentos
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario) -- Relación con la tabla Usuarios
 ) ENGINE=InnoDB;
+SHOW COLUMNS FROM HistorialMovimientos;
 
 
 -- 10. Medicamentos
