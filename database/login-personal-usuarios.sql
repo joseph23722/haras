@@ -146,4 +146,4 @@ END $$
 DELIMITER ;
 
 CALL spu_usuarios_listar();
-
+--           ---------
