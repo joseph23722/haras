@@ -82,9 +82,6 @@ END $$
 DELIMITER ;
 
 
-CALL spu_personal_registrar(@idPersonal, 'Joseph', ' Mateo Paullac', 'San Agustin', 'DNI', '72183871', 2, '2024-01-01');
-SELECT @idPersonal AS 'idPersonal';
-
 -- Procedimiento para registrar usuarios ------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_usuarios_registrar`;
 DELIMITER $$
@@ -120,9 +117,6 @@ END $$
 DELIMITER ;
 
 
-CALL spu_usuarios_registrar(@idUsuario, @idPersonal, 'lcontreras', 'claveSegura', 1);
-SELECT @idUsuario AS 'idUsuario';
-
 -- Procedimiento para listar 'Usuarios'------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_usuarios_listar`;
 DELIMITER $$
@@ -145,5 +139,39 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+-- Procedimiento para listar 'Personal'------------------------------------------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_personal_listar`;
+DELIMITER $$
+
+CREATE PROCEDURE `spu_personal_listar`()
+BEGIN
+    -- Consulta para listar personal y verificar si ya tienen un usuario
+    SELECT 
+        p.idPersonal, 
+        p.nombres, 
+        p.apellidos, 
+        p.direccion,
+        p.nrodocumento,
+        CASE 
+            WHEN u.idUsuario IS NOT NULL THEN 1 
+            ELSE 0 
+        END AS tieneUsuario
+    FROM 
+        Personal p
+    LEFT JOIN 
+        Usuarios u ON p.idPersonal = u.idPersonal;
+END $$
+
+DELIMITER ;
+
+
+
+-- -------------------------------------------------------------
+CALL spu_personal_registrar(@idPersonal, 'Jorgue', ' Marron', 'Sanmm', 'DNI', '72183875', 20, '2024-01-01');
+SELECT @idPersonal AS 'idPersonal';
+select * from personal ;
+-- Ejecución del procedimiento
+CALL spu_personal_listar();
+
 CALL spu_usuarios_listar();
---           ---------
