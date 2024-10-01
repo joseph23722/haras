@@ -34,25 +34,20 @@ DELIMITER ;
 -- lista equinos por tipo en medicamento ----------------------------------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_para_medicamento (
-    IN _tipoEquino ENUM('yegua', 'padrillo', 'potrillo', 'potranca')  -- Tipo de equino: yegua, padrillo, potrillo o potranca
+    IN _tipoEquino ENUM('Yegua', 'Padrillo', 'Potrillo', 'Potranca', 'Recién nacido', 'Destete')
 )
 BEGIN
-    -- Seleccionamos el ID y el nombre del equino según su tipo
     SELECT 
-        e.idEquino,              -- ID del equino
-        e.nombreEquino           -- Nombre del equino
+        e.idEquino,
+        e.nombreEquino
     FROM 
         Equinos e
     INNER JOIN 
         TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
     WHERE 
-        te.tipoEquino = _tipoEquino;  -- Filtramos por el tipo de equino
+        te.tipoEquino = _tipoEquino;
 END $$
 DELIMITER ;
-
-CALL spu_listar_equinos_para_medicamento('yegua');
-CALL spu_listar_equinos_para_medicamento('potranca');
-
 
 -- Procedimiento para registrar la entrada y administración de medicamentos---------------------------------------------------------------------------------------------------------
 DELIMITER $$
@@ -67,17 +62,14 @@ CREATE PROCEDURE spu_medicamentos_registrar(
 BEGIN
     DECLARE _exists INT DEFAULT 0;
 
-    -- Verificar si el medicamento ya existe (independiente de mayúsculas/minúsculas)
     SELECT COUNT(*) INTO _exists 
     FROM Medicamentos
     WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento);
 
     IF _exists > 0 THEN
-        -- Si el medicamento ya existe, lanzar un error
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El medicamento ya existe en el inventario.';
     ELSE
-        -- Insertar un nuevo medicamento en el inventario
         INSERT INTO Medicamentos (
             nombreMedicamento, 
             cantidad, 
@@ -100,7 +92,6 @@ DELIMITER ;
 
 -- Procedimiento Entrada y Salida de Medicamentos-----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_movimiento(
     IN _nombreMedicamento VARCHAR(100),
     IN _cantidad INT, -- Cambiado a INT

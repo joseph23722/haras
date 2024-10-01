@@ -1,62 +1,3 @@
-
--- Agregados:
-DELIMITER $$
-CREATE PROCEDURE spu_listar_equinos_propios()
-BEGIN
-    SELECT 
-        idEquino,
-        nombreEquino,
-        sexo,
-        idTipoEquino
-    FROM 
-        Equinos
-    WHERE 
-        idPropietario IS NULL  -- Filtrar solo los equinos que no tienen propietario
-        AND idTipoEquino IN (1, 2);  -- Filtrar solo yeguas (1) y padrillos (2)
-END $$
-DELIMITER ;
-
--- Listar Medicamentos
-DELIMITER $$
-CREATE PROCEDURE listarMedicamentos()
-BEGIN
-    SELECT idMedicamento, nombreMedicamento
-    FROM Medicamentos;
-END $$
-DELIMITER ;
-
--- Listar Haras
-DELIMITER $$
-CREATE PROCEDURE spu_listar_haras()
-BEGIN
-		SELECT DISTINCT 
-        idPropietario,            -- ID del propietario
-        nombreHaras               -- Nombre del haras
-    FROM Propietarios;
-END $$
-DELIMITER ;
-
--- Listar por propietarios
-DELIMITER $$
-CREATE PROCEDURE spu_listar_equinos_por_propietario (
-    IN _idPropietario INT,    -- ID del propietario (Haras)
-    IN _genero INT            -- Género: 1 para hembra, 2 para macho
-)
-BEGIN
-    SELECT 
-        e.idEquino,           
-        e.nombreEquino,         
-        p.nombreHaras            
-    FROM 
-        Equinos e
-    JOIN 
-        Propietarios p ON e.idPropietario = p.idPropietario 
-    WHERE 
-        e.idPropietario = _idPropietario AND  
-        e.sexo = _genero;                      
-END $$
-DELIMITER ;
-
 -- Registrar Equino
 DELIMITER $$
 CREATE PROCEDURE spu_equino_registrar(
@@ -123,16 +64,6 @@ BEGIN
     
     -- Devolver el ID del equino recién insertado
     SELECT LAST_INSERT_ID() AS idEquino;
-END $$
-DELIMITER ;
-
--- Listar tipo equino
-DELIMITER $$
-CREATE PROCEDURE spu_listar_tipoequinos()
-BEGIN
-    -- Listar todos los tipos de equinos disponibles
-    SELECT idTipoEquino, tipoEquino
-    FROM TipoEquinos;
 END $$
 DELIMITER ;
 
@@ -333,38 +264,5 @@ BEGIN
         END IF;
     END IF;
 
-END $$
-DELIMITER ;
-
-DELIMITER $$
-CREATE PROCEDURE listarServiciosPorFechaYTipo(
-    IN p_fechaInicio DATE,
-    IN p_fechaFin DATE,
-    IN p_tipoServicio ENUM('Propio', 'Mixto')
-)
-BEGIN
-    SELECT 
-        s.idServicio,
-        em.nombreEquino AS nombrePadrillo,
-        eh.nombreEquino AS nombreYegua,
-        s.fechaServicio,
-        s.detalles,
-        s.horaEntrada,
-        s.horaSalida,
-        s.costoServicio,
-        CASE 
-            WHEN s.tipoServicio = 'Mixto' THEN p.nombreHaras 
-            ELSE NULL 
-        END AS nombreHaras
-    FROM 
-        Servicios s
-    LEFT JOIN Equinos em ON s.idEquinoMacho = em.idEquino
-    LEFT JOIN Equinos eh ON s.idEquinoHembra = eh.idEquino
-    LEFT JOIN Propietarios p ON s.idPropietario = p.idPropietario
-    WHERE 
-        s.fechaServicio BETWEEN p_fechaInicio AND p_fechaFin AND
-        s.tipoServicio = p_tipoServicio
-    ORDER BY 
-        s.fechaServicio DESC;
 END $$
 DELIMITER ;
