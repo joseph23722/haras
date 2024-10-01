@@ -11,12 +11,12 @@ $personal = new Personal();
 
 if (isset($_GET['operation'])) {
     switch ($_GET['operation']) {
-        case 'searchByDoc':
+        /* case 'searchByDoc':
             $nrodocumento = $_GET['nrodocumento'];
             $result = $personal->searchByDoc($nrodocumento);
             echo json_encode($result);
             break;
-
+ */
         case 'getAll': // Este es el caso nuevo que añade la lista del personal
             $result = $personal->getAll();
             echo json_encode($result);
@@ -34,7 +34,8 @@ if (isset($_POST['operation'])) {
                 "tipodoc" => $personal->limpiarCadena($_POST['tipodoc']),
                 "nrodocumento" => $personal->limpiarCadena($_POST['nrodocumento']),
                 "numeroHijos" => (int) $_POST['numeroHijos'],
-                "fechaIngreso" => !empty($_POST['fechaIngreso']) ? $_POST['fechaIngreso'] : null
+                "fechaIngreso" => $personal->limpiarCadena($_POST['fechaIngreso']),
+                "tipoContrato" => $personal->limpiarCadena($_POST['tipoContrato']),
             ];
 
             // Insertar el personal y obtener el ID generado

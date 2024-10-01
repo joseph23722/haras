@@ -1,30 +1,34 @@
 <?php require_once '../../header.php'; ?>
 
-<main>
-  <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center text-primary bg-light py-3 rounded shadow-sm">Lista de Personal</h1>
+<div class="container-fluid px-4">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #005b99;">LISTADO DE USUARIOS</h1>
 
-    <div class="card shadow-sm border-light">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Listado de Personal</h4>
-      </div>
-      <div class="card-body p-0">
-        <table class="table table-striped table-hover table-bordered align-middle" id="tabla-personal">
-          <thead class="bg-light text-primary">
-            <tr>
-              <th>#</th>
-              <th>DNI</th>
-              <th>Apellidos</th>
-              <th>Nombres</th>
-              <th>Dirección</th>
-              <th>Usuario</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">Datos de los Usuarios</div>
+                <div class="card-body">
+                    <table id="tabla-personal" class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>DNI</th>
+                                <th>Apellidos</th>
+                                <th>Nombres</th>
+                                <th>Dirección</th>
+                                <th>Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Los datos se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- .col-md-12 -->
+    </div> <!-- .row -->
+    <!-- Fin contenido -->
+</div>
 
   <!-- Modal para registrar usuario -->
   <div class="modal fade" id="modalRegistrarUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

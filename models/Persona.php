@@ -12,7 +12,7 @@ class Personal extends Conexion {
     // Método para registrar una persona
     public function add($params = []): int {
         try {
-            $cmd = $this->pdo->prepare("CALL spu_personal_registrar(@idPersonal, ?, ?, ?, ?, ?, ?, ?)");
+            $cmd = $this->pdo->prepare("CALL spu_personal_registrar(@idPersonal, ?, ?, ?, ?, ?, ?, ?, ?)");
             $cmd->execute([
                 $params['nombres'],
                 $params['apellidos'],
@@ -20,7 +20,8 @@ class Personal extends Conexion {
                 $params['tipodoc'],
                 $params['nrodocumento'],
                 $params['numeroHijos'],
-                !empty($params['fechaIngreso']) ? $params['fechaIngreso'] : null
+                $params['fechaIngreso'],
+                $params['tipoContrato']
             ]);
 
             // Obtenemos el ID del registro insertado
@@ -32,18 +33,7 @@ class Personal extends Conexion {
             return -1;
         }
     }
-
-    // Método para buscar una persona por su documento de identidad
-    public function searchByDoc($nrodocumento): array {
-        try {
-            $cmd = $this->pdo->prepare("CALL spu_personal_buscar_dni(?)");
-            $cmd->execute([$nrodocumento]);
-            return $cmd->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-    
+ 
     
     /**
      * Retorna una lista de personal

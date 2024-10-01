@@ -1,30 +1,3 @@
--- procedimiento para buscar por Dni -----------------------------------------------------------------------------------------------------------------------------
-DELIMITER $$
-CREATE PROCEDURE spu_personal_buscar_dni(
-    IN _nrodocumento VARCHAR(50) -- Número de documento a buscar
-)
-BEGIN
-    -- Seleccionar los datos de la persona y del usuario asociado según el número de documento proporcionado
-    SELECT 
-        p.idPersonal,
-        p.apellidos,
-        p.nombres,
-        p.nrodocumento,
-        p.direccion,
-        p.tipodoc,
-        p.numeroHijos,
-        p.fechaIngreso,
-        u.correo,          -- Incluir correo del usuario
-        u.clave            -- Incluir clave del usuario
-    FROM 
-        Personal p
-    LEFT JOIN 
-        Usuarios u ON p.idPersonal = u.idPersonal
-    WHERE 
-        p.nrodocumento = _nrodocumento;
-END $$
-DELIMITER ;
-
 -- Procedimiento para listar 'Usuarios'------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_usuarios_listar`;
 DELIMITER $$
@@ -34,6 +7,7 @@ BEGIN
         USU.idUsuario,
         PER.nombres,
         PER.apellidos,
+        PER.tipodoc,
         PER.nrodocumento,
         PER.direccion,
         USU.correo,
@@ -47,7 +21,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- Procedimiento para listar 'Personal'------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_personal_listar`;
 DELIMITER $$
@@ -59,6 +32,7 @@ BEGIN
         p.nombres, 
         p.apellidos, 
         p.direccion,
+        p.tipodoc,
         p.nrodocumento,
         CASE 
             WHEN u.idUsuario IS NOT NULL THEN 1 

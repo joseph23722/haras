@@ -10,7 +10,8 @@ CREATE PROCEDURE spu_personal_registrar
     IN _tipodoc           VARCHAR(20),
     IN _nrodocumento      VARCHAR(50),
     IN _numeroHijos       INT,
-    IN _fechaIngreso      DATE
+    IN _fechaIngreso      DATE,
+    IN _tipoContrato	  ENUM('Parcial', 'Completo', 'Por Prácticas', 'Otro')
 )
 BEGIN
     -- Declaración de variables
@@ -23,8 +24,8 @@ BEGIN
     END;
     
     -- Intentar insertar los datos en la tabla Personal
-    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso)
-    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _numeroHijos, _fechaIngreso);
+    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
+    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _numeroHijos, _fechaIngreso, _tipoContrato);
     
     -- Verificar si ocurrió un error
     IF existe_error = 1 THEN
