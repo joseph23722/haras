@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function registrarUsuario(event) {
         event.preventDefault();
         const parametros = new FormData();
-        parametros.append("operation", "registerUser");
+        parametros.append("operation", "add");
         parametros.append("idPersonal", $("#idPersonal").val());
         parametros.append("correo", $("#correo").val());
         parametros.append("clave", $("#clave").val());

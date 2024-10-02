@@ -7,7 +7,7 @@ VALUES
 -- 2. Insertar Datos en Personal
 INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
 VALUES 
-('Ruben', 'Marcos', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27');
+('Ruben', 'Marcos', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27', 'Completo');
 
 -- 3. Insertar datos en la tabla Roles
 INSERT INTO Roles (nombreRol) 
@@ -69,5 +69,3 @@ INSERT INTO EstadoMonta (genero, nombreEstado)
         ('Hembra','S/S'),
         ('Hembra','Por Servir'),
         ('Hembra','Vacía');
-        
-INSERT INTO Personal(tipoContrato) VALUES ('Parcial'), ('Completo'), ('Por Prácticas'), ('Otro');

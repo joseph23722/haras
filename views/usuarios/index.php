@@ -151,9 +151,13 @@
               <div class="mb-3">
                 <label for="idRol" class="form-label">Rol</label>
                 <select class="form-select form-select-lg border-1 shadow-sm" id="idRol" required>
-                  <option value="1">Administrador</option>
-                  <option value="2">Colaborador</option>
-                  <option value="3">Supervisor</option>
+                  <option value="">Seleccione un rol</option>
+                  <option value="1">Gerente</option>
+                  <option value="2">Administrador</option>
+                  <option value="3">Supervisor Equino</option>
+                  <option value="4">Supervisor Campo</option>
+                  <option value="5">Médico</option>
+                  <option value="6">Herrero</option>
                 </select>
               </div>
               <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">Registrar</button>
