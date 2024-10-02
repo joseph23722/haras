@@ -169,7 +169,7 @@ CREATE TABLE Propietarios (
 CREATE TABLE Equinos (
     idEquino 			INT PRIMARY KEY AUTO_INCREMENT,
     nombreEquino 		VARCHAR(100) NOT NULL,
-    fechaNacimiento 	DATETIME NULL,
+    fechaNacimiento 	DATE NULL,
     sexo 				ENUM('Macho', 'Hembra') NOT NULL,
     idTipoEquino 		INT NOT NULL,
     detalles			TEXT,

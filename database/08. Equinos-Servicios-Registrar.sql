@@ -1,18 +1,24 @@
 -- Registrar Equino
 DELIMITER $$
 CREATE PROCEDURE spu_equino_registrar(
-    IN _nombreEquino VARCHAR(100),         -- Nombre del equino
-    IN _fechaNacimiento DATE,               -- Fecha de nacimiento del equino (puede ser NULL)
-    IN _sexo ENUM('macho', 'hembra'),      -- Sexo del equino
-    IN _detalles TEXT,                     -- Detalles adicionales del equino
-    IN _idTipoEquino INT,                  -- ID del tipo de equino seleccionado
-    IN _idPropietario INT,                  -- ID del propietario del equino (puede ser NULL si es propio)
-    IN _nacionalidad VARCHAR(50)            -- Nacionalidad del equino (puede ser NULL)
+    IN _nombreEquino VARCHAR(100),
+    IN _fechaNacimiento DATE,
+    IN _sexo ENUM('Macho', 'Hembra'),
+    IN _detalles TEXT,
+    IN _idTipoEquino INT,
+    IN _idPropietario INT,
+    IN _nacionalidad VARCHAR(50)
     -- IN _fotografia LONGBLOB
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
     DECLARE _tipoEquinoNombre VARCHAR(50);
+    DECLARE _edadMeses INT;
+    DECLARE _edadAnios INT;
+
+    -- Calcular la edad en meses y años
+    SET _edadMeses = TIMESTAMPDIFF(MONTH, _fechaNacimiento, CURDATE());
+    SET _edadAnios = TIMESTAMPDIFF(YEAR, _fechaNacimiento, CURDATE());
 
     -- Validar si la fecha de nacimiento no es futura
     IF _fechaNacimiento > CURDATE() THEN
@@ -26,18 +32,41 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
 
-    -- Obtener el nombre del tipo de equino para validación
-    SELECT tipoequino INTO _tipoEquinoNombre FROM TipoEquinos WHERE idTipoEquino = _idTipoEquino;
-
-    -- Validar tipo de equino según el sexo
-    IF _sexo = 'macho' AND _tipoEquinoNombre NOT IN ('padrillo', 'potrillo') THEN
-        SET _errorMsg = 'Error: Un macho debe ser un padrillo o un potrillo.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-    END IF;
-
-    IF _sexo = 'hembra' AND _tipoEquinoNombre NOT IN ('yegua', 'potranca') THEN
-        SET _errorMsg = 'Error: Una hembra debe ser una yegua o una potranca.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    -- Reglas de validación de tipo de equino según la edad y sexo
+    IF _idPropietario IS NULL THEN
+        -- Recién nacido (<= 6 meses)
+        IF _edadMeses <= 6 THEN
+            IF _idTipoEquino NOT IN (5) THEN
+                SET _errorMsg = 'Error: Verifica la fecha de nacimiento, sexo y tipo de equino.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+        -- Destete (<= 12 meses)
+        ELSEIF _edadMeses > 6 AND _edadMeses <= 12 THEN
+			IF _idTipoEquino NOT IN (6) THEN
+				SET _errorMsg = 'Error: Un equino destete debe ser registrado como macho o hembra.';
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+			END IF;
+        -- Potrillo o potranca (<= 24 meses)
+        ELSEIF _edadMeses <= 24 THEN
+            IF _sexo = 'Macho' AND _idTipoEquino != 4 THEN
+                SET _errorMsg = 'Error: Un macho de esta edad debe ser registrado como potrillo.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+            IF _sexo = 'Hembra' AND _idTipoEquino != 3 THEN
+                SET _errorMsg = 'Error: Una hembra de esta edad debe ser registrada como potranca.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+        -- Equinos mayores de 4 años
+        ELSEIF _edadAnios > 4 THEN
+            IF _sexo = 'Macho' AND _idTipoEquino NOT IN (2, 4) THEN
+                SET _errorMsg = 'Error: Un macho mayor de 4 años debe ser registrado como padrillo o potrillo.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+            IF _sexo = 'Hembra' AND _idTipoEquino NOT IN (1, 3) THEN
+                SET _errorMsg = 'Error: Una hembra mayor de 4 años debe ser registrada como yegua o potranca.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+        END IF;
     END IF;
 
     -- Insertar un nuevo registro en la tabla 'Equinos'
@@ -67,6 +96,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+select * from TIPOEQUINOS;
 -- Registrar Servicio
 DELIMITER $$
 CREATE PROCEDURE registrarServicio(

@@ -1,4 +1,3 @@
-USE HarasDB;
 
 DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
 DELIMITER //
