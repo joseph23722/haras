@@ -116,7 +116,7 @@ $host = "http://localhost/haras";
                             Registro Equino
                         </a>
                         <a class="nav-link" href="<?= $host ?>/views/registro/listadoequinos.php/">
-                            <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
                             Listado Equinos
                         </a>
 

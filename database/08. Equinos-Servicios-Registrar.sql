@@ -96,7 +96,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-select * from TIPOEQUINOS;
 -- Registrar Servicio
 DELIMITER $$
 CREATE PROCEDURE registrarServicio(
