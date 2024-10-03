@@ -35,7 +35,7 @@ class ServicioPropio extends Conexion
             return ['status' => 'success', 'message' => 'Servicio propio registrado exitosamente.'];
         } catch (PDOException $e) {
             error_log("Error al registrar servicio propio: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al registrar el servicio propio.'];
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 

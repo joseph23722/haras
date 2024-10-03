@@ -55,10 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formPropio.addEventListener("submit", async (event) => {
         event.preventDefault();
-
+    
         const formData = new FormData(formPropio);
         const data = Object.fromEntries(formData.entries());
-
+    
         try {
             const response = await fetch('../../controllers/Propio.controller.php', {
                 method: 'POST',
@@ -70,15 +70,21 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 throw new Error('Error al procesar la solicitud');
             }
-
+    
             const result = await response.json();
-            mensajeDiv.innerText = result.message;
-            if (result.status === "success") {
+
+            // Manejo del mensaje de error
+            if (result.status === "error") {
+                const errorMessage = result.message;
+                const cleanMessage = errorMessage.replace(/SQLSTATE\[\d{5}\]: <<Unknown error>>: \d+ /, '');
+                alert(cleanMessage);
+            } else {
+                alert(result.message);
                 formPropio.reset();
             }
         } catch (error) {
-            console.error(`Error al registrar servicio propio: ${error}`);
-            mensajeDiv.innerText = "Error al registrar el servicio.";
+            alert(`Error: ${error.message}`); // Mostrar solo el mensaje de error
+            console.error(`Error al registrar servicio propio: ${error.message}`);
         }
     });
 });

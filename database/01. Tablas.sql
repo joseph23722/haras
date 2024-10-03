@@ -191,7 +191,7 @@ CREATE TABLE Servicios (
     tipoServicio 			ENUM('Propio', 'Mixto') NOT NULL,
     detalles 				TEXT NOT NULL,
     idMedicamento 			INT NULL,
-    horaEntrada 			TIME NOT NULL,
+    horaEntrada 			TIMESTAMP NOT NULL,
     horaSalida 				TIME NOT NULL,
     idPropietario 			INT NULL,                   -- Permitir NULL para servicios propios
 	costoServicio			DECIMAL(10,2) NULL,

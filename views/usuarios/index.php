@@ -50,6 +50,7 @@
                 <div class="col-md-2">
                   <div class="form-floating">
                     <select class="form-control" name="tipodoc" id="tipodoc" required>
+                      <option value="">Tipo de documento</option>
                       <option value="DNI">DNI</option>
                       <option value="Pasaporte">Pasaporte</option>
                       <option value="Carnet">Carnet</option>
@@ -83,6 +84,7 @@
                 <div class="col-md-2">
                   <div class="form-floating">
                     <select class="form-control" name="tipoContrato" id="tipoContrato" required>
+                      <option value="">Tipo de Contrato</option>
                       <option value="Parcial">Parcial</option>
                       <option value="Completo">Completo</option>
                       <option value="PorPracticas">Por Prácticas</option>
@@ -175,4 +177,4 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="../../JS/personal.js"></script>
+<script src="../../JS/registrarPersonal.js"></script>

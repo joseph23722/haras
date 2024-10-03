@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const idPropietarioSelect = document.querySelector("#idPropietario");
     const idEquinoExternoSelect = document.querySelector("#idEquinoExterno");
     const idDetalleMedSelect = document.querySelector("#idDetalleMed");
-    const costoServicioInput = document.querySelector("#costoServicio"); // El input de costoServicio
+    const costoServicioInput = document.querySelector("#costoServicio");
     const mensajeDiv = document.querySelector("#mensaje");
 
     const loadOptions = async (url, selectElement) => {
@@ -48,18 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Validar que solo se ingresen números positivos en el campo costoServicio
-    const enforcePositiveNumbers = (inputElement) => {
+    const soloNumerosPositivos = (inputElement) => {
         inputElement.addEventListener('input', () => {
-            // Si el valor contiene algo que no es un número o si es negativo, lo limpia
             if (!/^\d*\.?\d*$/.test(inputElement.value)) {
-                inputElement.value = inputElement.value.replace(/[^0-9.]/g, ''); // Permitir solo dígitos y punto decimal
+                inputElement.value = inputElement.value.replace(/[^0-9.]/g, '');
             }
         });
     };
 
-    // Llama a la función enforcePositiveNumbers solo para el campo costoServicio
-    enforcePositiveNumbers(costoServicioInput);
+    // Llama a la función soloNumerosPositivos solo para el campo costoServicio
+    soloNumerosPositivos(costoServicioInput);
 
     const loadServicios = async (fechaServicio, tipoServicio) => {
         try {

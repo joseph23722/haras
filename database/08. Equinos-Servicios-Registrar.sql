@@ -112,9 +112,9 @@ CREATE PROCEDURE registrarServicio(
     IN p_costoServicio INT
 )
 BEGIN
-    DECLARE v_sexoMacho ENUM('macho', 'hembra');
-    DECLARE v_sexoHembra ENUM('macho', 'hembra');
-    DECLARE v_sexoExterno ENUM('macho', 'hembra');
+    DECLARE v_sexoMacho ENUM('Macho', 'Hembra');
+    DECLARE v_sexoHembra ENUM('Macho', 'Hembra');
+    DECLARE v_sexoExterno ENUM('Macho', 'Hembra');
     DECLARE v_mensajeError VARCHAR(255);
     DECLARE v_count INT;
 
@@ -123,29 +123,42 @@ BEGIN
         SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
+    
+        -- Validación para evitar servicios duplicados en la misma fecha y hora
+    SELECT COUNT(*) INTO v_count
+    FROM Servicios
+    WHERE DATE(fechaServicio) = p_fechaServicio
+      AND ((horaEntrada = p_horaEntrada AND idEquinoHembra = p_idEquinoHembra) OR
+           (horaSalida = p_horaSalida AND idEquinoMacho = p_idEquinoMacho));
 
-    -- Validación para evitar que un padrillo y una yegua realicen más de un servicio en el mismo día
-    IF p_tipoServicio = 'propio' THEN
-        SELECT COUNT(*) INTO v_count
-        FROM Servicios
-        WHERE idEquinoHembra = p_idEquinoHembra
-          AND DATE(fechaServicio) = p_fechaServicio;
+    IF v_count > 0 THEN
+        SET v_mensajeError = 'Error: Ya existe un servicio registrado a la misma hora, por favor verifica nuevamente.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
 
-        IF v_count > 0 THEN
-            SET v_mensajeError = 'Error: La yegua ya tiene un servicio registrado en esta fecha.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-        END IF;
+    -- Validación para evitar conflictos de horario
+    SELECT COUNT(*) INTO v_count
+    FROM Servicios
+    WHERE DATE(fechaServicio) = p_fechaServicio
+      AND ((horaEntrada < p_horaSalida AND horaSalida > p_horaEntrada) AND 
+           (idEquinoHembra = p_idEquinoHembra OR 
+            idEquinoMacho = p_idEquinoMacho));
 
-    ELSEIF p_tipoServicio = 'mixto' THEN
-        SELECT COUNT(*) INTO v_count
-        FROM Servicios
-        WHERE (idEquinoHembra = p_idEquinoHembra OR idEquinoHembra IS NULL)
-          AND DATE(fechaServicio) = p_fechaServicio;
+    IF v_count > 0 THEN
+        SET v_mensajeError = 'Error: Ya existe un servicio registrado en el intervalo de tiempo especificado.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
 
-        IF v_count > 0 THEN
-            SET v_mensajeError = 'Error: La yegua ya tiene un servicio registrado en esta fecha.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-        END IF;
+
+    -- Validación para evitar que una yegua tenga más de un servicio en el mismo día
+    SELECT COUNT(*) INTO v_count
+    FROM Servicios
+    WHERE idEquinoHembra = p_idEquinoHembra
+      AND DATE(fechaServicio) = p_fechaServicio;
+
+    IF v_count > 0 THEN
+        SET v_mensajeError = 'Error: La yegua ya tiene un servicio registrado en esta fecha.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
     -- Validación para la hora de entrada solo si la fecha es hoy

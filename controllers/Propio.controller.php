@@ -18,13 +18,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Intentar registrar el servicio propio
     try {
         $result = $servicioPropio->registrarServicioPropio($data);
         echo json_encode($result);
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         error_log("Error al registrar servicio propio: " . $e->getMessage());
-        echo json_encode(["status" => "error", "message" => "Error al registrar el servicio propio."]);
+
+        // Extraer solo el mensaje específico del error
+        $mensaje = $e->getMessage();
+
+        // Verifica si el mensaje contiene "Error:" y extrae solo lo necesario
+        if (preg_match('/Error: (.+)/', $mensaje, $matches)) {
+            echo json_encode(["status" => "error", "message" => trim($matches[1])]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Ocurrió un error al registrar el servicio."]);
+        }
+    } catch (Exception $e) {
+        error_log("Error inesperado: " . $e->getMessage());
+        echo json_encode(["status" => "error", "message" => "Error inesperado. Intenta nuevamente."]);
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['tipoEquino'])) {

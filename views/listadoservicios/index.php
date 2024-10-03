@@ -26,7 +26,7 @@
       </select>
     </div>
   </div>
-  <button id="btnFiltrar" class="btn btn-primary">Filtrar</button>
+  <button id="btnFiltrar" class="btn btn-primary" style="margin-bottom: 20px;">Filtrar</button>
 
   <table id="serviciosTable" class="table table-hover mt-4">
     <thead>
@@ -58,6 +58,9 @@
   $(document).ready(function() {
     const table = $('#serviciosTable').DataTable();
 
+    const costoServicioColumn = table.column(8);
+    costoServicioColumn.visible(false);
+    
     $('#btnFiltrar').click(function() {
       const fechaInicio = $('#FechaInicio').val();
       const fechaFin = $('#FechaFin').val();
@@ -84,13 +87,20 @@
                 item.nombrePadrillo,
                 item.nombreYegua,
                 item.fechaServicio,
-                item.detalles || 'Indefinido',
+                item.detalles || '',
                 item.horaEntrada,
                 item.horaSalida,
                 item.nombreHaras || 'Haras Rancho Sur',
                 item.costoServicio || 'Por verificar',
               ]).draw();
             });
+            
+            // Mostrar u ocultar la columna de costo de servicio según el tipo
+            if (tipoServicio === 'Mixto') {
+              costoServicioColumn.visible(true); // Mostrar columna
+            } else {
+              costoServicioColumn.visible(false); // Ocultar columna
+            }
           },
           error: function(err) {
             console.error('Error al cargar datos:', err);
