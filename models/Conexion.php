@@ -43,36 +43,6 @@ class Conexion{
     }
   }
 
-  /**
-   * Listar Usuarios :Retorna una colección de datos de la fuente (SPU) especificada
-   */
-  public function getLisu($spuNombre = ""):array{
-    try{
-      $cmd = $this->getConexion()->prepare("call {$spuNombre}()");
-      $cmd->execute();
-      return $cmd->fetchAll(PDO::FETCH_ASSOC);
-    }catch(Exception $e){
-      error_log("Error: " . $e->getMessage());
-      return []; // Devuelve un array vacío o un valor predeterminado
-    }
-  }
-
-  /**
-   * Listar Personal :Retorna una colección de datos de la fuente (SPU) especificada
-   */
-  public function getPer($spuNombres = ""):array{
-    try{
-      $cmd = $this->getConexion()->prepare("call {$spuNombres}()");
-      $cmd->execute();
-      return $cmd->fetchAll(PDO::FETCH_ASSOC);
-    }catch(Exception $e){
-      error_log("Error: " . $e->getMessage());
-      return []; // Devuelve un array vacío o un valor predeterminado
-    }
-  }
-
-
-
 /**
    * Evita intentos de ataque a través de campos INPUT
    */

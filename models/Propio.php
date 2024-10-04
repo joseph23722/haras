@@ -55,17 +55,8 @@ class ServicioPropio extends Conexion
         }
     }
 
-    // Listar medicamentos
-    public function listarMedicamentos()
-    {
-        try {
-            $query = $this->pdo->prepare("CALL ListarMedicamentos()");
-            $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error al listar medicamentos: " . $e->getMessage());
-            return [];
-        }
+    public function listarMedicamentos(): array {
+        return parent::getData("ListarMedicamentos");
     }
 
     public function listarServiciosPorFechaYTipo($fechaInicio, $fechaFin, $tipoServicio)

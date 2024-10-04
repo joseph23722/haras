@@ -42,7 +42,6 @@ try {
                     }
                 }
 
-                // Guardar los detalles de la sesión
                 $_SESSION['login'] = $login;
                 $_SESSION['idUsuario'] = $login["idUsuario"];
 

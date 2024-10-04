@@ -34,42 +34,10 @@ class Personal extends Conexion {
         }
     }
  
-    
     /**
      * Retorna una lista de personal
      */
     public function getAll(): array {
-        return parent::getPer("spu_personal_listar");
+        return parent::getData("spu_personal_listar");
     }
 }
-
-
-
-/*
-
-// Ejemplo de cómo registrar personal
-$personal = new Personal();
-$datos = [
-    "nombres" => "Carlos",
-    "apellidos" => "Ramirez",
-    "direccion" => "Calle Falsa 123",
-    "tipodoc" => "DNI",
-    "nrodocumento" => "12345678",
-    "numeroHijos" => 2,
-    "fechaIngreso" => "2024-01-01"
-];
-
-$idPersonal = $personal->add($datos);
-echo "ID Generado: " . $idPersonal;
-
-// Ejemplo de cómo buscar por documento
-$result = $personal->searchByDoc("12345678");
-print_r($result);
-
-
-*/
-
-/* 
-$personal = new Personal();
-var_dump($personal->getAll()); 
-*/

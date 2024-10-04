@@ -75,6 +75,6 @@ class Usuario extends Conexion {
 
     // Función para obtener lista de usuarios
     public function getAll(): array {
-        return parent::getLisu("spu_usuarios_listar");
+        return parent::getData("spu_usuarios_listar");
     }
 }

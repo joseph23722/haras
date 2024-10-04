@@ -45,35 +45,12 @@ class Registrarequino extends Conexion {
         }
     }
     
-
-    // Lista propietarios usando un procedimiento almacenado
-    public function listarPropietarios() {
-        try {
-            $sql = "CALL spu_listar_haras()"; 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            // Loguear el error para revisión
-            error_log($e->getMessage());
-            return [];
-        }
+    public function listarPropietarios(): array {
+        return parent::getData("spu_listar_haras");
     }
 
-    // Lista tipos de equinos usando un procedimiento almacenado
-    public function listarTipoEquinos() {
-        try {
-            $sql = "CALL spu_listar_tipoequinos()"; 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            // Loguear el error para revisión
-            error_log($e->getMessage());
-            return [];
-        }
+    public function listarTipoEquinos(): array {
+        return parent::getData("spu_listar_tipoequinos");
     }
 
     public function getAll():array{
