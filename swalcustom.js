@@ -13,7 +13,7 @@ async function ask(pregunta = ``, modulo = `Haras Rancho Sur`){
     confirmButtonText: 'Aceptar',
     cancelButtonText: 'Cancelar',
     confirmButtonColor: '#3498db',
-    footer: 'Lino Fino App Ver. 1.0'
+    footer: 'Haras Rancho Sur App Ver. 1.0'
   });
 
   return respuesta.isConfirmed;
