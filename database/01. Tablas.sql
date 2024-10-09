@@ -97,6 +97,7 @@ CREATE TABLE Implementos (
     CONSTRAINT fk_implemento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento)
 ) ENGINE = INNODB;
 
+
 -- 9. Alimentos
 CREATE TABLE Alimentos (
     idAlimento           INT PRIMARY KEY AUTO_INCREMENT,
@@ -132,32 +133,53 @@ CREATE TABLE HistorialMovimientos (
     FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento), -- Relación con la tabla Alimentos
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario) -- Relación con la tabla Usuarios
 ) ENGINE=InnoDB;
-SHOW COLUMNS FROM HistorialMovimientos;
+
 
 
 -- 10. Medicamentos
+DROP TABLE IF EXISTS Medicamentos;
 CREATE TABLE Medicamentos (
-    idMedicamento 		INT PRIMARY KEY AUTO_INCREMENT,
-    nombreMedicamento 	VARCHAR(100) NOT NULL,
-    cantidad 			INT NOT NULL, -- Cambiado de DECIMAL a INT
-    caducidad 			DATE NOT NULL,
-    precioUnitario 		DECIMAL(10,2) NOT NULL,
-    idTipomovimiento 	INT NOT NULL,
-    idUsuario 			INT NOT NULL,
-    tratamiento 		TEXT,
-    CONSTRAINT fk_medicamento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
-    CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+    idMedicamento        INT PRIMARY KEY AUTO_INCREMENT,
+    nombreMedicamento    VARCHAR(255) NOT NULL, -- Nombre del medicamento
+    descripcion          TEXT NULL, -- Descripción del medicamento
+    lote                 VARCHAR(100) NOT NULL, -- Número de lote del medicamento
+    presentacion         VARCHAR(100) NOT NULL, -- Presentación del medicamento (Tabletas, Inyectable, etc.)
+    dosis                VARCHAR(50) NOT NULL, -- Dosis administrada (por ejemplo: 4 mg)
+    idTipo INT, -- Tipo de medicamento (Gastroprotector, Antibiótico, etc.)
+    cantidad_stock       INT NOT NULL, -- Cantidad disponible en stock
+    stockMinimo          INT DEFAULT 0, -- Stock mínimo antes de lanzar alertas
+    fecha_registro       DATE NOT NULL, -- Fecha de registro del medicamento
+    fecha_caducidad      DATE NOT NULL, -- Fecha de caducidad
+    precioUnitario       DECIMAL(10,2) NOT NULL, -- Precio unitario del medicamento
+    estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible', -- Estado del medicamento en el inventario
+    idUsuario            INT NOT NULL, -- Usuario que registró el medicamento
+    ultima_modificacion  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Última modificación
+    CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
+    CONSTRAINT fk_tipoMedicamento  FOREIGN KEY (idTipo) REFERENCES TiposMedicamentos(idTipo),
+    UNIQUE (lote, nombreMedicamento)
 ) ENGINE = INNODB;
 
+
 -- 11. DetalleMedicamentos
+DROP TABLE IF EXISTS DetalleMedicamentos;
 CREATE TABLE DetalleMedicamentos (
-    idDetalleMed 		INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento 		INT NOT NULL,
-    dosis 				INT NOT NULL, -- Cambiado de DECIMAL a INT
-    fechaInicio 		DATE NOT NULL,
-    fechaFin 			DATE NOT NULL,
-    CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
+    idDetalleMed            INT PRIMARY KEY AUTO_INCREMENT,
+    idMedicamento           INT NOT NULL, -- Relación con la tabla Medicamentos
+    idEquino                INT NOT NULL, -- Relación con la tabla Equinos (quién recibe el medicamento)
+    dosis                   VARCHAR(50) NOT NULL, -- Dosis administrada (en mg, ml, etc.)
+    frecuenciaAdministracion VARCHAR(50) NOT NULL, -- Frecuencia de administración (cada cuántas horas/días)
+    viaAdministracion       VARCHAR(50) NOT NULL, -- Vía de administración (Oral, Intramuscular, etc.)
+    pesoEquino              DECIMAL(10,2) NULL, -- Peso del equino al momento de la administración (opcional)
+    fechaInicio             DATE NOT NULL, -- Fecha de inicio del tratamiento
+    fechaFin                DATE NOT NULL, -- Fecha de finalización del tratamiento
+    observaciones           TEXT NULL, -- Observaciones adicionales (opcional)
+    reaccionesAdversas      TEXT NULL, -- Registrar posibles reacciones adversas (opcional)
+    idUsuario               INT NOT NULL, -- Usuario que administró el medicamento
+    CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
+    CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
+
 
 -- 12. Propietarios
 CREATE TABLE Propietarios (  

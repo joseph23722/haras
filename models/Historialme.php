@@ -24,15 +24,19 @@ class Historialme extends Conexion {
             }
 
             // Ejecutar el procedimiento almacenado
-            $query = $this->pdo->prepare("CALL spu_historial_medico_registrar(?,?,?,?,?,?,?)");
+            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?,?,?,?,?,?,?,?,?,?)");
             $query->execute([
                 $params['idEquino'],
                 $idUsuario, // Usar el idUsuario de la sesión
-                $params['fecha'],
-                $params['diagnostico'],
-                $params['tratamiento'],
+                $params['idMedicamento'],
+                $params['dosis'],
+                $params['frecuenciaAdministracion'],
+                $params['viaAdministracion'],
+                $params['pesoEquino'],
+                $params['fechaInicio'],
+                $params['fechaFin'],
                 $params['observaciones'],
-                $params['recomendaciones']
+                $params['reaccionesAdversas']
             ]);
 
             return $query->rowCount() > 0;
@@ -42,14 +46,36 @@ class Historialme extends Conexion {
         }
     }
 
-    // Método para listar equinos por tipo
-    public function listarEquinosPorTipo($tipoEquino) {
+    // Método para listar equinos propios (sin propietario) para medicamentos
+    public function listarEquinosPorTipo() {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_equinos_para_medicamento(?)");
-            $query->execute([$tipoEquino]);
-            $result = $query->fetchAll(PDO::FETCH_ASSOC);
-            error_log(print_r($result, true)); // Agrega este mensaje de depuración
-            return $result;
+            $query = $this->pdo->prepare("CALL spu_listar_equinos_propiosMedi()");
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return [];
+        }
+    }
+
+    // Método para consultar el historial médico de un equino
+    public function consultarHistorialMedico($idEquino) {
+        try {
+            $query = $this->pdo->prepare("CALL spu_consultar_historial_medicoMedi(?)");
+            $query->execute([$idEquino]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return [];
+        }
+    }
+
+    // Método para listar todos los medicamentos
+    public function listarMedicamentos() {
+        try {
+            $query = $this->pdo->prepare("CALL spu_listar_medicamentosMedi()");
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             error_log($e->getMessage());
             return [];

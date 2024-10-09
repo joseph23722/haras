@@ -50,113 +50,115 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
+
+
+
+
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,              -- Usuario que realiza la operación
     IN _nombreAlimento VARCHAR(100), -- Nombre del alimento
-    IN _cantidad DECIMAL(10,2),      -- Cantidad de alimento a ingresar
+    IN _tipoAlimento VARCHAR(50),    -- Tipo de alimento (ej. Grano, Heno, Suplemento)
     IN _unidadMedida VARCHAR(10),    -- Unidad de medida del alimento
     IN _lote VARCHAR(50),            -- Número de lote del alimento
     IN _fechaCaducidad DATE,         -- Fecha de caducidad del lote (puede ser NULL)
+    IN _cantidad DECIMAL(10,2),      -- Cantidad de alimento a ingresar
     IN _nuevoPrecio DECIMAL(10,2)    -- Nuevo precio opcional (puede ser NULL)
 )
 BEGIN
-    DECLARE _exists INT DEFAULT 0;
+    DECLARE _existsLote INT DEFAULT 0;
     DECLARE _idAlimento INT;
-    DECLARE _currentStock DECIMAL(10,2);
-    DECLARE _currentPrice DECIMAL(10,2);
-    DECLARE _currentFechaCaducidad DATE;
-    DECLARE _nuevoPrecioPonderado DECIMAL(10,2); -- Precio ponderado si el precio es diferente
-    DECLARE _cantidadTotal DECIMAL(10,2);        -- Nueva cantidad total para el lote
+    DECLARE _precioAnterior DECIMAL(10,2); -- Precio del lote anterior si existe
 
     -- Manejador de errores
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
     BEGIN
         ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error en el proceso de entrada de alimentos.';
     END;
-
-    -- Iniciar transacción para asegurar la consistencia de la operación
-    START TRANSACTION;
-
-    -- Validaciones estrictas
-    IF _cantidad <= 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La cantidad debe ser mayor que cero.';
-    END IF;
-
-    IF _nuevoPrecio IS NOT NULL AND (_nuevoPrecio < 0 OR _nuevoPrecio > 999999.99) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El precio no es válido.';
-    END IF;
-
-    IF _lote IS NULL OR _lote = '' THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El lote no puede ser vacío o nulo.';
-    END IF;
 
     -- Convertir el nombre del alimento a minúsculas para consistencia
     SET _nombreAlimento = LOWER(_nombreAlimento);
 
-    -- Verificar si ya existe un lote con el mismo nombre de alimento y número de lote
-    SELECT COUNT(*), idAlimento, stockFinal, costo, fechaCaducidad 
-    INTO _exists, _idAlimento, _currentStock, _currentPrice, _currentFechaCaducidad
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Verificar si el lote ya está registrado para este alimento y obtener el precio
+    SELECT COUNT(*), idAlimento, costo
+    INTO _existsLote, _idAlimento, _precioAnterior
     FROM Alimentos
     WHERE nombreAlimento = _nombreAlimento AND lote = _lote;
 
-    -- Caso 1: Si el lote ya existe y la fecha de caducidad es la misma (o NULL en ambos), actualizar el stock
-    IF _exists > 0 AND (_currentFechaCaducidad = _fechaCaducidad OR (_currentFechaCaducidad IS NULL AND _fechaCaducidad IS NULL)) THEN
-        SET _cantidadTotal = _currentStock + _cantidad;
-        UPDATE Alimentos
-        SET stockFinal = _cantidadTotal,
-            fechaMovimiento = NOW()
-        WHERE idAlimento = _idAlimento;
-
-        -- Calcular el precio ponderado si el precio nuevo es diferente
-        IF _nuevoPrecio IS NOT NULL AND _nuevoPrecio != _currentPrice THEN
-            SET _nuevoPrecioPonderado = (
-                (_currentPrice * _currentStock) + (_nuevoPrecio * _cantidad)
-            ) / _cantidadTotal;
-
-            -- Actualizar el nuevo precio ponderado
-            UPDATE Alimentos
-            SET costo = _nuevoPrecioPonderado
-            WHERE idAlimento = _idAlimento;
-        END IF;
-
-    -- Caso 2: Si el lote ya existe pero la fecha de caducidad es diferente, crear un nuevo lote
-    ELSEIF _exists > 0 AND _currentFechaCaducidad != _fechaCaducidad THEN
-        INSERT INTO Alimentos (
-            idUsuario, nombreAlimento, cantidad, unidadMedida, lote, fechaCaducidad, 
-            idTipomovimiento, stockFinal, fechaIngreso, fechaMovimiento, costo
-        ) 
-        VALUES (
-            _idUsuario, _nombreAlimento, _cantidad, _unidadMedida, _lote, _fechaCaducidad, 
-            1, _cantidad, NOW(), NOW(), _nuevoPrecio
-        );
-
-    -- Caso 3: Si el lote no existe, crear uno nuevo
+    -- Si el lote ya existe, revertimos la transacción (no se permite lote duplicado)
+    IF _existsLote > 0 THEN
+        ROLLBACK; -- Si el lote ya existe, no registramos otro lote igual
     ELSE
+        -- Si el lote no existe, registrar un nuevo lote para este alimento
+        -- Si no se proporciona un nuevo precio, usar el precio del lote anterior
         INSERT INTO Alimentos (
-            idUsuario, nombreAlimento, cantidad, unidadMedida, lote, fechaCaducidad, 
-            idTipomovimiento, stockFinal, fechaIngreso, fechaMovimiento, costo
+            idUsuario, nombreAlimento, tipoAlimento, unidadMedida, lote, costo, fechaCaducidad, cantidad, stockFinal, fechaIngreso, fechaMovimiento, compra
         ) 
         VALUES (
-            _idUsuario, _nombreAlimento, _cantidad, _unidadMedida, _lote, _fechaCaducidad, 
-            1, _cantidad, NOW(), NOW(), _nuevoPrecio
+            _idUsuario, _nombreAlimento, _tipoAlimento, _unidadMedida, _lote, 
+            IFNULL(_nuevoPrecio, _precioAnterior), -- Usar el nuevo precio si es proporcionado, o el anterior si es NULL
+            _fechaCaducidad, _cantidad, _cantidad, NOW(), NOW(), 
+            IFNULL(_nuevoPrecio, _precioAnterior) * _cantidad -- Calcular el total de compra
         );
+
+        -- Registrar la entrada en el historial de movimientos
+        INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
+        VALUES (LAST_INSERT_ID(), 'Entrada', _cantidad, _idUsuario, NOW());
+
+        -- Confirmar la transacción
+        COMMIT;
     END IF;
-
-    -- Registrar la entrada en el historial de movimientos
-    INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
-    VALUES (IFNULL(_idAlimento, LAST_INSERT_ID()), 'Entrada', _cantidad, _idUsuario, NOW());
-
-    -- Confirmar la transacción
-    COMMIT;
 
 END $$
 DELIMITER ;
+
+
+
+CALL spu_alimentos_entrada(
+    1,                   -- idUsuario
+    'maiz',              -- nombreAlimento
+    'Grano',             -- tipoAlimento
+    'Kilos',             -- unidadMedida
+    'MZ-002',            -- lote (nuevo lote)
+    '2025-01-01',        -- fechaCaducidad
+    100.00,              -- cantidad
+    12.50                -- nuevoPrecio
+);
+
+
+select * from alimentos ;
+
+
+CALL spu_alimentos_entrada(
+    1,                   -- idUsuario
+    'maiz',              -- nombreAlimento
+    'Grano',             -- tipoAlimento
+    'Kilos',             -- unidadMedida
+    'MZ-001',            -- lote (ya existente)
+    '2025-01-01',        -- fechaCaducidad
+    50.00,               -- cantidad
+    13.00                -- nuevoPrecio
+);
+
+CALL spu_alimentos_entrada(
+    1,                   -- idUsuario
+    'maiz',              -- nombreAlimento
+    'Grano',             -- tipoAlimento
+    'Kilos',             -- unidadMedida
+    'MZ-001',            -- lote (ya existente)
+    '2025-01-01',        -- fechaCaducidad
+    50.00,               -- cantidad
+    13.00                -- nuevoPrecio
+);
+
 
 -- Procedimiento Salida de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
@@ -313,6 +315,7 @@ DELIMITER ;
 
 -- Procedimiento para historial Alimentos -----------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_historial_completo(
     IN _tipoMovimiento VARCHAR(50),
     IN _fechaInicio DATE,
@@ -333,13 +336,33 @@ BEGIN
         SET MESSAGE_TEXT = 'El desplazamiento no puede ser negativo.';
     END IF;
 
-    SELECT idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento
-    FROM HistorialMovimientos
-    WHERE (_tipoMovimiento = '' OR tipoMovimiento = _tipoMovimiento)
-      AND (_fechaInicio = '1900-01-01' OR fechaMovimiento >= _fechaInicio)
-      AND (_fechaFin = CURDATE() OR fechaMovimiento <= _fechaFin)
-      AND (_idUsuario = 0 OR idUsuario = _idUsuario)
-    ORDER BY fechaMovimiento DESC
-    LIMIT _limit OFFSET _offset;
+    -- Consulta para obtener el historial completo, uniendo la tabla de movimientos y alimentos
+    SELECT 
+        h.idAlimento,
+        a.nombreAlimento,               -- Nombre del alimento
+        a.tipoAlimento,                 -- Tipo de alimento (Grano, Heno, etc.)
+        a.unidadMedida,                 -- Unidad de medida del alimento
+        a.lote,                         -- Lote del alimento
+        a.fechaCaducidad,               -- Fecha de caducidad del lote
+        h.tipoMovimiento,               -- Tipo de movimiento (Entrada/Salida)
+        h.cantidad,                     -- Cantidad del movimiento
+        h.merma,                        -- Merma (si aplica)
+        h.idUsuario,                    -- Usuario que hizo el movimiento
+        h.fechaMovimiento,              -- Fecha del movimiento
+        a.costo                         -- Costo del alimento en el momento del movimiento
+    FROM 
+        HistorialMovimientos h
+    JOIN 
+        Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
+    WHERE 
+        (_tipoMovimiento = '' OR h.tipoMovimiento = _tipoMovimiento)
+        AND (_fechaInicio = '1900-01-01' OR h.fechaMovimiento >= _fechaInicio)
+        AND (_fechaFin = CURDATE() OR h.fechaMovimiento <= _fechaFin)
+        AND (_idUsuario = 0 OR h.idUsuario = _idUsuario)
+    ORDER BY 
+        h.fechaMovimiento DESC
+    LIMIT 
+        _limit OFFSET _offset;
 END $$
+
 DELIMITER ;

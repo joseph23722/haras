@@ -50,43 +50,53 @@
                         </div>
                     </div>
 
-                    <!-- Fecha -->
+                    <!-- Select de Medicamentos -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="date" name="fecha" id="fecha" class="form-control" required>
-                            <label for="fecha"><i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha</label>
+                            <select id="selectMedicamento" class="form-select" name="idMedicamento" required>
+                                <option value="">Seleccione Medicamento</option>
+                            </select>
+                            <label for="selectMedicamento"><i class="fas fa-pills" style="color: #ffa500;"></i> Medicamento</label>
                         </div>
                     </div>
 
-                    <!-- Diagnóstico -->
+                    <!-- Fecha Inicio -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="diagnostico" id="diagnostico" class="form-control" style="height: 90px;" required></textarea>
-                            <label for="diagnostico"><i class="fas fa-stethoscope" style="color: #1e90ff;"></i> Diagnóstico</label>
+                            <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" required>
+                            <label for="fechaInicio"><i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha de Inicio</label>
                         </div>
                     </div>
 
-                    <!-- Tratamiento -->
+                    <!-- Fecha Fin -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="tratamiento" id="tratamiento" class="form-control" style="height: 90px;" required></textarea>
-                            <label for="tratamiento"><i class="fas fa-pills" style="color: #ffa500;"></i> Tratamiento</label>
+                            <input type="date" name="fechaFin" id="fechaFin" class="form-control" required>
+                            <label for="fechaFin"><i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha de Fin</label>
                         </div>
                     </div>
 
-                    <!-- Observaciones -->
+                    <!-- Dosis -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="observaciones" id="observaciones" class="form-control" style="height: 90px;"></textarea>
-                            <label for="observaciones"><i class="fas fa-notes-medical" style="color: #ff6347;"></i> Observaciones</label>
+                            <input type="text" name="dosis" id="dosis" class="form-control" required>
+                            <label for="dosis"><i class="fas fa-syringe" style="color: #ff6347;"></i> Dosis</label>
                         </div>
                     </div>
 
-                    <!-- Recomendaciones -->
+                    <!-- Frecuencia de Administración -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="recomendaciones" id="recomendaciones" class="form-control" style="height: 90px;"></textarea>
-                            <label for="recomendaciones"><i class="fas fa-clipboard-check" style="color: #6a5acd;"></i> Recomendaciones</label>
+                            <input type="text" name="frecuenciaAdministracion" id="frecuenciaAdministracion" class="form-control" required>
+                            <label for="frecuenciaAdministracion"><i class="fas fa-stopwatch" style="color: #6a5acd;"></i> Frecuencia de Administración</label>
+                        </div>
+                    </div>
+
+                    <!-- Vía de Administración -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" name="viaAdministracion" id="viaAdministracion" class="form-control" required>
+                            <label for="viaAdministracion"><i class="fas fa-route" style="color: #00b4d8;"></i> Vía de Administración</label>
                         </div>
                     </div>
 
@@ -103,155 +113,108 @@
             </form>
         </div>
     </div>
-
-    <!-- Tabla de Historial Médico Registrado -->
-    <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-            <h5><i class="fas fa-database"></i> Historial Médico Registrado</h5>
-        </div>
-        <div class="card-body" style="background-color: #f9f9f9;">
-            <table class="table table-striped table-hover table-bordered">
-                <thead style="background-color: #caf0f8; color: #003366;">
-                    <tr>
-                        <th>ID</th>
-                        <th>Equino</th>
-                        <th>Fecha</th>
-                        <th>Diagnóstico</th>
-                        <th>Tratamiento</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="historial-table">
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 <?php require_once '../../footer.php'; ?>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const equinoSelects = document.querySelectorAll(".equino-select");
+    document.addEventListener("DOMContentLoaded", () => {
+    const selectYegua = document.querySelector("#selectYegua");
+    const selectPadrillo = document.querySelector("#selectPadrillo");
+    const selectPotrillo = document.querySelector("#selectPotrillo");
+    const selectPotranca = document.querySelector("#selectPotranca");
+    const medicamentoSelect = document.querySelector("#selectMedicamento");
     const formHistorial = document.querySelector("#form-historial-medico");
-    const historialTable = document.querySelector("#historial-table");
-    let selectedEquinoId = null;
 
-    // Cargar listas de equinos para cada tipo
-    equinoSelects.forEach(select => {
-        const tipoEquino = select.dataset.tipo;
-        loadOptions(tipoEquino, select);
-    });
+    // Cargar equinos para los diferentes tipos
+    loadEquinos();
 
-    // Cargar equinos por tipo
-    async function loadOptions(tipo, selectElement) {
+    // Cargar medicamentos
+    loadMedicamentos();
+
+    // Cargar equinos y asignar a los selects correspondientes
+    async function loadEquinos() {
         try {
             const response = await fetch('../../controllers/historialme.controller.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ operation: 'listarEquinosPorTipo', tipoEquino: tipo })
+                body: JSON.stringify({ operation: 'listarEquinosPorTipo' })
             });
 
             const data = await response.json();
 
-            if (Array.isArray(data)) {
-                selectElement.innerHTML = `<option value="">Seleccione ${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</option>`;
-                data.forEach(equino => {
+            if (data.status === 'success' && Array.isArray(data.data)) {
+                // Limpiar los selects antes de agregar nuevos valores
+                clearSelect(selectYegua);
+                clearSelect(selectPadrillo);
+                clearSelect(selectPotrillo);
+                clearSelect(selectPotranca);
+
+                // Iterar sobre los equinos y asignarlos al select correspondiente
+                data.data.forEach(equino => {
+                    console.log(equino); // Para depuración
                     const option = document.createElement('option');
                     option.value = equino.idEquino;
                     option.textContent = equino.nombreEquino;
-                    selectElement.appendChild(option);
+
+                    // Convertir idTipoEquino a número antes de usarlo en el switch
+                    switch (parseInt(equino.idTipoEquino)) {
+                        case 1: // Yegua
+                            selectYegua.appendChild(option);
+                            break;
+                        case 2: // Padrillo
+                            selectPadrillo.appendChild(option);
+                            break;
+                        case 3: // Potranca
+                            selectPotranca.appendChild(option);
+                            break;
+                        case 4: // Potrillo
+                            selectPotrillo.appendChild(option);
+                            break;
+                        default:
+                            console.error("Tipo de equino no reconocido:", equino.idTipoEquino);
+                    }
                 });
+
             } else {
-                console.error(`No se encontraron equinos para el tipo: ${tipo}`);
+                console.error('No se encontraron equinos.');
             }
         } catch (error) {
-            console.error(`Error al cargar opciones de ${tipo}:`, error);
+            console.error('Error al cargar los equinos:', error);
         }
     }
 
-    // Manejar la selección de un equino y bloquear los demás selects
-    equinoSelects.forEach(select => {
-        select.addEventListener('change', () => {
-            if (select.value !== '') {
-                equinoSelects.forEach(otherSelect => {
-                    if (otherSelect !== select) {
-                        otherSelect.disabled = true;
-                    }
-                });
-                selectedEquinoId = select.value;
-            } else {
-                equinoSelects.forEach(otherSelect => {
-                    otherSelect.disabled = false;
-                });
-                selectedEquinoId = null;
-            }
-        });
-    });
-
-    // Manejar el envío del formulario
-    formHistorial.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(formHistorial);
-        const data = {};
-
-        formData.forEach((value, key) => { data[key] = value; });
-        data['idEquino'] = selectedEquinoId;
-
-        try {
-            const response = await fetch('../../controllers/historialme.controller.php', {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ operation: 'registrar', ...data })
-            });
-
-            const result = await response.json();
-            alert(result.message);
-
-            if (result.status === 'success') {
-                formHistorial.reset();
-                selectedEquinoId = null;
-                equinoSelects.forEach(select => select.disabled = false); // Desbloquear todos los selects
-                loadHistoriales();
-            }
-        } catch (error) {
-            alert('Hubo un problema al registrar el historial médico.');
-            console.error('Error en la solicitud:', error);
-        }
-    });
-
-    // Cargar la tabla de historiales médicos registrados
-    async function loadHistoriales() {
+    // Cargar lista de medicamentos
+    async function loadMedicamentos() {
         try {
             const response = await fetch('../../controllers/historialme.controller.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ operation: 'listarHistoriales' })
+                body: JSON.stringify({ operation: 'listarMedicamentos' })
             });
 
-            const historiales = await response.json();
+            const data = await response.json();
 
-            historialTable.innerHTML = historiales.map(historial => `
-                <tr>
-                    <td>${historial.idHistorial}</td>
-                    <td>${historial.nombreEquino}</td>
-                    <td>${historial.fecha}</td>
-                    <td>${historial.diagnostico}</td>
-                    <td>${historial.tratamiento}</td>
-                    <td class="text-center">
-                        <button class="btn btn-danger btn-sm" onclick="eliminarHistorial(${historial.idHistorial})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            if (data.status === 'success' && Array.isArray(data.data)) {
+                medicamentoSelect.innerHTML = '<option value="">Seleccione Medicamento</option>';
+                data.data.forEach(medicamento => {
+                    const option = document.createElement('option');
+                    option.value = medicamento.idMedicamento;
+                    option.textContent = medicamento.nombreMedicamento;
+                    medicamentoSelect.appendChild(option);
+                });
+            } else {
+                console.error('No se encontraron medicamentos.');
+            }
         } catch (error) {
-            console.error('Error al cargar los historiales:', error);
+            console.error('Error al cargar los medicamentos:', error);
         }
     }
 
-    // Inicializar la carga de historiales médicos
-    loadHistoriales();
+    // Limpiar select antes de agregar nuevas opciones
+    function clearSelect(selectElement) {
+        selectElement.innerHTML = `<option value="">Seleccione ${selectElement.id.replace('select', '')}</option>`;
+    }
 });
+
 </script>
