@@ -181,32 +181,70 @@
                 </div>
                 <div class="modal-body">
                     <form id="formEntrada">
+                        <!-- Medicamento -->
                         <div class="form-group mb-3">
                             <label for="entradaMedicamento" class="form-label">Medicamento</label>
-                            <select name="nombreMedicamento" id="entradaMedicamento" class="form-control" required></select>
+                            <select name="nombreMedicamento" id="entradaMedicamento" class="form-control" required>
+                                <!-- Aquí puedes cargar las opciones de medicamentos disponibles -->
+                            </select>
                         </div>
+                        
+                        <!-- Presentación -->
+                        <div class="form-group mb-3">
+                            <label for="entradaPresentacion" class="form-label">Presentación</label>
+                            <input type="text" name="presentacion" id="entradaPresentacion" class="form-control" required>
+                        </div>
+                        
+                        <!-- Dosis -->
+                        <div class="form-group mb-3">
+                            <label for="entradaDosis" class="form-label">Dosis</label>
+                            <input type="text" name="dosis" id="entradaDosis" class="form-control" required>
+                        </div>
+                        
+                        <!-- Tipo de medicamento -->
+                        <div class="form-group mb-3">
+                            <label for="entradaTipo" class="form-label">Tipo</label>
+                            <input type="text" name="tipo" id="entradaTipo" class="form-control" required>
+                        </div>
+                        
+                        <!-- Lote -->
                         <div class="form-group mb-3">
                             <label for="entradaLote" class="form-label">Lote</label>
                             <input type="text" name="lote" id="entradaLote" class="form-control" required>
                         </div>
+                        
+                        <!-- Cantidad -->
                         <div class="form-group mb-3">
                             <label for="entradaCantidad" class="form-label">Cantidad</label>
                             <input type="number" name="cantidad" id="entradaCantidad" class="form-control" required>
                         </div>
+                        
+                        <!-- Fecha de Caducidad -->
                         <div class="form-group mb-3">
                             <label for="entradaFechaCaducidad" class="form-label">Fecha de Caducidad</label>
                             <input type="date" name="fechaCaducidad" id="entradaFechaCaducidad" class="form-control" required>
                         </div>
+                        
+                        <!-- Precio Unitario -->
                         <div class="form-group mb-3">
                             <label for="entradaPrecio" class="form-label">Precio Unitario</label>
                             <input type="number" step="0.01" name="nuevoPrecio" id="entradaPrecio" class="form-control" required>
                         </div>
+                        
+                        <!-- Stock mínimo -->
+                        <div class="form-group mb-3">
+                            <label for="entradaStockMinimo" class="form-label">Stock Mínimo</label>
+                            <input type="number" name="stockMinimo" id="entradaStockMinimo" class="form-control" required>
+                        </div>
+
+                        <!-- Botón para enviar el formulario -->
                         <button type="submit" class="btn btn-primary">Registrar Entrada</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal para Registrar Salida de Medicamento -->
     <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" aria-hidden="true">
@@ -363,7 +401,7 @@
                         { data: 'lote' },
                         { data: 'presentacion', defaultContent: 'N/A' },
                         { data: 'dosis', defaultContent: 'N/A' },
-                        { data: 'nombreTipo', defaultContent: 'N/A' },
+                        { data: 'tipoMedicamento', defaultContent: 'N/A' },
                         { data: 'descripcion', defaultContent: 'N/A' },
                         { data: 'fecha_caducidad', defaultContent: 'N/A' },
                         { data: 'cantidad_stock', defaultContent: 'N/A' },

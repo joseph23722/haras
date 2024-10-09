@@ -277,13 +277,6 @@ CALL spu_consultar_historial_medicoMedi(5);
 
 
 
-
-
-
-
-
-
-
 -- Procedimiento para registrar medicamentos---------------------------------------------------------------------------------------------------------
 DELIMITER $$
 
@@ -303,21 +296,47 @@ CREATE PROCEDURE spu_medicamentos_registrar(
 BEGIN
     DECLARE _idTipo INT;
     DECLARE _exists INT DEFAULT 0;
+    DECLARE _existeCombinacion INT DEFAULT 0;
+
+    -- Iniciar la transacción
+    START TRANSACTION;
 
     -- Buscar el idTipo a partir del nombre del tipo
     SELECT idTipo INTO _idTipo
     FROM TiposMedicamentos
-    WHERE tipo = _tipo
+    WHERE LOWER(tipo) = LOWER(_tipo)
     LIMIT 1;
 
-    -- Si el tipo de medicamento no existe, lo agregamos utilizando el procedimiento spu_agregar_tipo_medicamento
+    -- Si el tipo de medicamento no existe, devolver un error
     IF _idTipo IS NULL THEN
-        CALL spu_agregar_tipo_medicamento(_tipo);
-        -- Buscar el idTipo nuevamente después de insertarlo
-        SELECT idTipo INTO _idTipo
-        FROM TiposMedicamentos
-        WHERE tipo = _tipo
-        LIMIT 1;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El tipo de medicamento no es válido.';
+    END IF;
+
+    -- Verificar si la combinación ya existe en CombinacionesValidas
+    SELECT COUNT(*) INTO _existeCombinacion
+    FROM CombinacionesValidas
+    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento)
+      AND LOWER(presentacion) = LOWER(_presentacion)
+      AND LOWER(dosis) = LOWER(_dosis)
+      AND LOWER(tipoMedicamento) = LOWER(_tipo);
+
+    -- Si la combinación es válida, registrar el medicamento; si no existe la combinación, se inserta en CombinacionesValidas.
+    IF _existeCombinacion = 0 THEN
+        -- Validar la presentación, dosis y tipo según la lógica
+        IF LOWER(_presentacion) NOT IN ('tabletas', 'cápsulas', 'inyección') THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: La presentación no es válida.';
+        END IF;
+
+        IF LOWER(_dosis) NOT LIKE '%mg%' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: La dosis no es válida.';
+        END IF;
+
+        -- Si pasa todas las validaciones, registrar la combinación en CombinacionesValidas
+        INSERT INTO CombinacionesValidas (nombreMedicamento, presentacion, dosis, tipoMedicamento)
+        VALUES (_nombreMedicamento, _presentacion, _dosis, _tipo);
     END IF;
 
     -- Verificar si el medicamento ya existe en ese lote
@@ -328,14 +347,14 @@ BEGIN
     LIMIT 1;
 
     IF _exists > 0 THEN
-        -- Si el medicamento ya existe, actualizamos el stock del lote
+        -- Si el medicamento ya existe, actualizar el stock del lote
         UPDATE Medicamentos
         SET cantidad_stock = cantidad_stock + _cantidad_stock,
             ultima_modificacion = NOW()
         WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento)
           AND LOWER(lote) = LOWER(_lote);
     ELSE
-        -- Si el medicamento no existe, lo insertamos en el inventario
+        -- Si el medicamento no existe, insertarlo en el inventario
         INSERT INTO Medicamentos (
             nombreMedicamento, 
             descripcion, 
@@ -368,7 +387,10 @@ BEGIN
         );
     END IF;
 
-    -- Después de registrar el medicamento, se muestra la información con el JOIN
+    -- Confirmar la transacción
+    COMMIT;
+
+    -- Mostrar la información del medicamento registrado
     SELECT 
         m.idMedicamento,
         m.nombreMedicamento,
@@ -393,17 +415,33 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+CALL spu_medicamentos_entrada(
+    1,                           -- idUsuario
+    'Amoxicilina',               -- nombreMedicamento
+    'LOTE17A',                   -- lote
+    'Cápsulas',                  -- presentacion
+    '500 mg',                    -- dosis
+    'Antibiótico',               -- tipo
+    200,                         -- cantidad_stock
+    20,                          -- stockMinimo
+    '2026-09-01',                -- fecha_caducidad
+    5.00                         -- precioUnitario
+);
+select * from Medicamentos;
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
 DELIMITER $$
 
 CREATE PROCEDURE spu_medicamentos_entrada(
     IN _idUsuario INT,              -- Usuario que realiza la operación
-    IN _nombreMedicamento VARCHAR(100), -- Nombre del medicamento
-    IN _cantidad DECIMAL(10,2),      -- Cantidad de medicamento a ingresar
-    IN _lote VARCHAR(50),            -- Número de lote del medicamento
-    IN _fechaCaducidad DATE,         -- Fecha de caducidad del lote
-    IN _nuevoPrecio DECIMAL(10,2)    -- Nuevo precio unitario (opcional)
+    IN _nombreMedicamento VARCHAR(255), -- Nombre del medicamento
+    IN _lote VARCHAR(100),            -- Número de lote del medicamento
+    IN _presentacion VARCHAR(100),     -- Presentación del medicamento
+    IN _dosis VARCHAR(50),             -- Dosis del medicamento
+    IN _tipo VARCHAR(100),             -- Tipo del medicamento
+    IN _cantidad_stock INT,            -- Cantidad de medicamento a ingresar
+    IN _stockMinimo INT,               -- Stock mínimo
+    IN _fecha_caducidad DATE,          -- Fecha de caducidad del lote
+    IN _precioUnitario DECIMAL(10,2)   -- Nuevo precio unitario (opcional)
 )
 BEGIN
     DECLARE _exists INT DEFAULT 0;
@@ -413,19 +451,19 @@ BEGIN
     DECLARE _currentFechaCaducidad DATE;
     DECLARE _nuevoPrecioPonderado DECIMAL(10,2); -- Precio ponderado si el precio es diferente
     DECLARE _cantidadTotal DECIMAL(10,2);        -- Nueva cantidad total para el lote
-    DECLARE _stockMinimo INT;
     DECLARE _estadoActual VARCHAR(20);
+    DECLARE _existeCombinacion INT DEFAULT 0;
 
     -- Iniciar transacción para asegurar la consistencia de la operación
     START TRANSACTION;
 
     -- Validaciones estrictas
-    IF _cantidad <= 0 THEN
+    IF _cantidad_stock <= 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'La cantidad debe ser mayor que cero.';
     END IF;
 
-    IF _nuevoPrecio IS NOT NULL AND (_nuevoPrecio < 0 OR _nuevoPrecio > 999999.99) THEN
+    IF _precioUnitario IS NOT NULL AND (_precioUnitario < 0 OR _precioUnitario > 999999.99) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El precio no es válido.';
     END IF;
@@ -435,26 +473,38 @@ BEGIN
         SET MESSAGE_TEXT = 'El lote no puede ser vacío o nulo.';
     END IF;
 
-    -- Convertir el nombre del medicamento a minúsculas para consistencia
-    SET _nombreMedicamento = LOWER(_nombreMedicamento);
+    -- Validación de combinaciones de nombre, presentación, dosis y tipo de medicamento
+    SELECT COUNT(*) INTO _existeCombinacion
+    FROM CombinacionesValidas
+    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento)
+      AND LOWER(presentacion) = LOWER(_presentacion)
+      AND LOWER(dosis) = LOWER(_dosis)
+      AND LOWER(tipoMedicamento) = LOWER(_tipo);
 
-    -- Verificar si ya existe un lote con el mismo nombre de medicamento y número de lote
-    SELECT COUNT(*), idMedicamento, cantidad_stock, precioUnitario, fecha_caducidad, stockMinimo 
-    INTO _exists, _idMedicamento, _currentStock, _currentPrice, _currentFechaCaducidad, _stockMinimo
+    -- Si la combinación no es válida, devolver un error
+    IF _existeCombinacion = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: La combinación de presentación, dosis y tipo no es válida para este medicamento.';
+    END IF;
+
+    -- Verificar si ya existe un lote con el mismo nombre de medicamento, número de lote y combinación válida
+    SELECT COUNT(*), idMedicamento, cantidad_stock, precioUnitario, fecha_caducidad
+    INTO _exists, _idMedicamento, _currentStock, _currentPrice, _currentFechaCaducidad
     FROM Medicamentos
-    WHERE nombreMedicamento = _nombreMedicamento AND lote = _lote;
+    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento)
+      AND LOWER(lote) = LOWER(_lote);
 
     -- Caso 1: Si el lote ya existe y la fecha de caducidad es la misma (o NULL en ambos), actualizar el stock
-    IF _exists > 0 AND (_currentFechaCaducidad = _fechaCaducidad OR (_currentFechaCaducidad IS NULL AND _fechaCaducidad IS NULL)) THEN
-        SET _cantidadTotal = _currentStock + _cantidad;
+    IF _exists > 0 AND (_currentFechaCaducidad = _fecha_caducidad OR (_currentFechaCaducidad IS NULL AND _fecha_caducidad IS NULL)) THEN
+        SET _cantidadTotal = _currentStock + _cantidad_stock;
         UPDATE Medicamentos
         SET cantidad_stock = _cantidadTotal
         WHERE idMedicamento = _idMedicamento;
 
         -- Calcular el precio ponderado si el precio nuevo es diferente
-        IF _nuevoPrecio IS NOT NULL AND _nuevoPrecio != _currentPrice THEN
+        IF _precioUnitario IS NOT NULL AND _precioUnitario != _currentPrice THEN
             SET _nuevoPrecioPonderado = (
-                (_currentPrice * _currentStock) + (_nuevoPrecio * _cantidad)
+                (_currentPrice * _currentStock) + (_precioUnitario * _cantidad_stock)
             ) / _cantidadTotal;
 
             -- Actualizar el nuevo precio ponderado
@@ -464,25 +514,25 @@ BEGIN
         END IF;
 
     -- Caso 2: Si el lote ya existe pero la fecha de caducidad es diferente, crear un nuevo lote
-    ELSEIF _exists > 0 AND _currentFechaCaducidad != _fechaCaducidad THEN
+    ELSEIF _exists > 0 AND _currentFechaCaducidad != _fecha_caducidad THEN
         INSERT INTO Medicamentos (
-            idUsuario, nombreMedicamento, cantidad_stock, lote, fecha_caducidad, 
-            precioUnitario
+            idUsuario, nombreMedicamento, presentacion, dosis, tipo, cantidad_stock, lote, fecha_caducidad, 
+            precioUnitario, stockMinimo
         ) 
         VALUES (
-            _idUsuario, _nombreMedicamento, _cantidad, _lote, _fechaCaducidad, 
-            _nuevoPrecio
+            _idUsuario, _nombreMedicamento, _presentacion, _dosis, _tipo, _cantidad_stock, _lote, _fecha_caducidad, 
+            _precioUnitario, _stockMinimo
         );
 
     -- Caso 3: Si el lote no existe, crear uno nuevo
     ELSE
         INSERT INTO Medicamentos (
-            idUsuario, nombreMedicamento, cantidad_stock, lote, fecha_caducidad, 
-            precioUnitario
+            idUsuario, nombreMedicamento, presentacion, dosis, tipo, cantidad_stock, lote, fecha_caducidad, 
+            precioUnitario, stockMinimo
         ) 
         VALUES (
-            _idUsuario, _nombreMedicamento, _cantidad, _lote, _fechaCaducidad, 
-            _nuevoPrecio
+            _idUsuario, _nombreMedicamento, _presentacion, _dosis, _tipo, _cantidad_stock, _lote, _fecha_caducidad, 
+            _precioUnitario, _stockMinimo
         );
     END IF;
 
@@ -502,13 +552,15 @@ BEGIN
 
     -- Registrar la entrada en el historial de movimientos
     INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
-    VALUES (IFNULL(_idMedicamento, LAST_INSERT_ID()), 'Entrada', _cantidad, _idUsuario, NOW());
+    VALUES (IFNULL(_idMedicamento, LAST_INSERT_ID()), 'Entrada', _cantidad_stock, _idUsuario, NOW());
 
     -- Confirmar la transacción
     COMMIT;
 
 END $$
 DELIMITER ;
+
+
 
 
 -- Procedimiento Salida de Medicamentos-----------------------------------------------------------------------------------

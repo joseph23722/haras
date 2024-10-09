@@ -25,8 +25,6 @@ class Admi extends Conexion {
     }
     
     
-    
-    
     // Registrar un nuevo medicamento
     public function registrarMedicamento($params = []) {
         try {
@@ -77,14 +75,18 @@ class Admi extends Conexion {
             }
 
             // Ejecutar el procedimiento almacenado para registrar la entrada de medicamentos
-            $query = $this->pdo->prepare("CALL spu_medicamentos_entrada(?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_medicamentos_entrada(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreMedicamento'],
-                $params['cantidad'],
                 $params['lote'],
-                $params['fechaCaducidad'],
-                $params['nuevoPrecio']
+                $params['presentacion'],      // Presentación del medicamento
+                $params['dosis'],             // Dosis del medicamento
+                $params['tipo'],              // Tipo del medicamento
+                $params['cantidad'],          // Cantidad de stock
+                $params['stockMinimo'],       // Stock mínimo
+                $params['fechaCaducidad'],    // Fecha de caducidad
+                $params['nuevoPrecio']        // Nuevo precio unitario (si aplica)
             ]);
 
             return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
@@ -93,6 +95,7 @@ class Admi extends Conexion {
             return false; // Devolver false en caso de error
         }
     }
+
 
     // Registrar salida de medicamentos
     public function salidaMedicamento($params = []) {

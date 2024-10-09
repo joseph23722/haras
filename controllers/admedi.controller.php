@@ -83,15 +83,27 @@ try {
         // Registrar entrada de medicamento
         case 'entrada':
             error_log("Iniciando registro de entrada de medicamento.");
+            
+            // Capturar los parámetros del POST y realizar validaciones básicas
             $params = [
                 'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
-                'cantidad' => floatval($_POST['cantidad'] ?? 0),
                 'lote' => $_POST['lote'] ?? '',
+                'presentacion' => $_POST['presentacion'] ?? '',  // Capturar la presentación
+                'dosis' => $_POST['dosis'] ?? '',                // Capturar la dosis
+                'tipo' => $_POST['tipo'] ?? '',                  // Capturar el tipo de medicamento
+                'cantidad' => floatval($_POST['cantidad'] ?? 0),
+                'stockMinimo' => intval($_POST['stockMinimo'] ?? 0), // Capturar el stock mínimo
                 'fechaCaducidad' => $_POST['fechaCaducidad'] ?? '',
                 'nuevoPrecio' => floatval($_POST['nuevoPrecio'] ?? 0)
             ];
+            
+            // Registrar los parámetros en los logs para depuración
             error_log("Parámetros recibidos para registrar entrada de medicamento: " . json_encode($params));
+
+            // Llamar al método para registrar la entrada de medicamentos
             $result = $admi->entradaMedicamento($params);
+
+            // Registrar el resultado en los logs
             error_log("Resultado del registro de entrada de medicamento: " . json_encode($result));
 
             if ($result) {
@@ -102,6 +114,7 @@ try {
                 sendResponse('error', 'No se pudo registrar la entrada del medicamento.');
             }
             break;
+
 
         // Registrar salida de medicamento
         case 'salida':
