@@ -50,7 +50,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
@@ -112,7 +111,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
 
 -- Procedimiento Salida de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$

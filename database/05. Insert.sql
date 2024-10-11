@@ -20,7 +20,7 @@ VALUES
 ('Médico'),
 ('Herrero');
 
--- 4. Insertar Datos en Usuarios
+-- 4. Insertar Datos en Usuario
 INSERT INTO Usuarios (idPersonal, correo, clave, idRol) 
 VALUES 
 (1, 'joseph@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2),

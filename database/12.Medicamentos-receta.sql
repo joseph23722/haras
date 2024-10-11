@@ -1,4 +1,3 @@
-
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE spu_historial_medico_registrarMedi(

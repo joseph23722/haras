@@ -1,5 +1,3 @@
-
-
 -- -------------------------------------------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentosMedi()
