@@ -73,7 +73,7 @@ class Historialme extends Conexion {
     // Método para listar todos los medicamentos
     public function listarMedicamentos() {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_medicamentosMedi()");
+            $query = $this->pdo->prepare("CALL spu_listar_medicamentosMedis()");
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {

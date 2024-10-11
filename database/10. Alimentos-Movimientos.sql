@@ -51,15 +51,8 @@ END $$
 DELIMITER ;
 
 
-
-
-
-
-
-
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,              -- Usuario que realiza la operación
     IN _nombreAlimento VARCHAR(100), -- Nombre del alimento
@@ -119,45 +112,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
-
-
-CALL spu_alimentos_entrada(
-    1,                   -- idUsuario
-    'maiz',              -- nombreAlimento
-    'Grano',             -- tipoAlimento
-    'Kilos',             -- unidadMedida
-    'MZ-002',            -- lote (nuevo lote)
-    '2025-01-01',        -- fechaCaducidad
-    100.00,              -- cantidad
-    12.50                -- nuevoPrecio
-);
-
-
-select * from alimentos ;
-
-
-CALL spu_alimentos_entrada(
-    1,                   -- idUsuario
-    'maiz',              -- nombreAlimento
-    'Grano',             -- tipoAlimento
-    'Kilos',             -- unidadMedida
-    'MZ-001',            -- lote (ya existente)
-    '2025-01-01',        -- fechaCaducidad
-    50.00,               -- cantidad
-    13.00                -- nuevoPrecio
-);
-
-CALL spu_alimentos_entrada(
-    1,                   -- idUsuario
-    'maiz',              -- nombreAlimento
-    'Grano',             -- tipoAlimento
-    'Kilos',             -- unidadMedida
-    'MZ-001',            -- lote (ya existente)
-    '2025-01-01',        -- fechaCaducidad
-    50.00,               -- cantidad
-    13.00                -- nuevoPrecio
-);
 
 
 -- Procedimiento Salida de Alimentos -----------------------------------------------------------------------------------
@@ -274,6 +228,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo(
@@ -313,9 +269,10 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 -- Procedimiento para historial Alimentos -----------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_completo(
     IN _tipoMovimiento VARCHAR(50),
     IN _fechaInicio DATE,
@@ -364,5 +321,4 @@ BEGIN
     LIMIT 
         _limit OFFSET _offset;
 END $$
-
 DELIMITER ;

@@ -1,30 +1,6 @@
--- tabla para veterinario 
-
--- Crear tabla HistorialMedicamentosMedi
-DROP TABLE IF EXISTS HistorialMedicamentosMedi;
-CREATE TABLE HistorialMedicamentosMedi (
-    idHistorial INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento INT NOT NULL, -- Relación con la tabla Medicamentos
-    accion VARCHAR(50) NOT NULL, -- Acción registrada (Agregar, Eliminar, Actualizar, etc.)
-    fecha DATETIME DEFAULT NOW(), -- Fecha de la acción
-    CONSTRAINT fk_historial_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
-) ENGINE = INNODB;
-
--- Crear tabla HistorialMovimientosMedi
-DROP TABLE IF EXISTS HistorialMovimientosMedi;
-CREATE TABLE HistorialMovimientosMedi (
-    idMovimiento INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento INT NOT NULL, -- Relación con la tabla Medicamentos
-    tipoMovimiento VARCHAR(50) NOT NULL, -- Tipo de movimiento (Entrada o Salida)
-    cantidad INT NOT NULL, -- Cantidad involucrada en el movimiento
-    fechaMovimiento DATETIME DEFAULT NOW(), -- Fecha del movimiento
-    CONSTRAINT fk_historial_movimiento_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
-) ENGINE = INNODB;
-
 
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _idEquino INT,
     IN _idUsuario INT,
@@ -129,8 +105,8 @@ BEGIN
         _idUsuario
     );
 END $$
-
 DELIMITER ;
+
 
 
 -- listar equinos propios para medicamentos;
@@ -150,9 +126,10 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 -- 
 DELIMITER $$
-
 CREATE PROCEDURE spu_consultar_historial_medicoMedi(
     IN _idEquino INT
 )
@@ -190,8 +167,9 @@ END $$
 DELIMITER ;
 
 
-DELIMITER $$
 
+
+DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentosMedi()
 BEGIN
     SELECT 
@@ -213,26 +191,6 @@ BEGIN
     JOIN 
         TiposMedicamentos T ON M.idTipo = T.idTipo;
 END $$
-
 DELIMITER ;
 
 
-CALL spu_listar_medicamentosMedi();
-
-
-CALL spu_historial_medico_registrarMedi(
-    5,                  -- _idEquino (ID del equino, asegúrate de que este equino exista en la tabla Equinos)
-    1,                  -- _idUsuario (ID del usuario que está registrando, asegúrate de que este usuario exista en la tabla Usuarios)
-    127,                  -- _idMedicamento (ID del medicamento, asegúrate de que este medicamento exista en la tabla Medicamentos)
-    5.00,               -- _dosis (dosis administrada en mg, ml, etc.)
-    'Cada 8 horas',     -- _frecuenciaAdministracion (frecuencia con la que se administra el medicamento)
-    'Oral',             -- _viaAdministracion (vía de administración, por ejemplo, 'Oral')
-    450.00,             -- _pesoEquino (peso del equino, puede ser NULL si no se proporciona)
-    '2024-10-01',       -- _fechaInicio (fecha en que se inicia el tratamiento)
-    '2024-10-07',       -- _fechaFin (fecha en que termina el tratamiento)
-    'El equino ha mostrado mejoría.', -- _observaciones (observaciones adicionales, puede ser NULL)
-    'Ninguna'           -- _reaccionesAdversas (si no hubo reacciones adversas, puede ser NULL)
-);
-
-select * from Medicamentos;
-CALL spu_consultar_historial_medicoMedi(5); 

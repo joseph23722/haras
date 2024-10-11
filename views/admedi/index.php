@@ -48,7 +48,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+(mg|g|ml|kg)$" title="Formato válido: número seguido de mg, g, ml, o kg">
-                            <label for="dosis"><i class="fas fa-weight" style="color: #0096c7;"></i> Dosis (ej. 500 mg)</label>
+                            <label for="dosis"><i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500 mg)</label>
                         </div>
                     </div>
 
@@ -197,7 +197,7 @@
                         
                         <!-- Dosis -->
                         <div class="form-group mb-3">
-                            <label for="entradaDosis" class="form-label">Dosis</label>
+                            <label for="entradaDosis" class="form-label">Composición</label>
                             <input type="text" name="dosis" id="entradaDosis" class="form-control" required>
                         </div>
                         

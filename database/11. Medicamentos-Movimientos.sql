@@ -1,44 +1,3 @@
--- tablas para la adminsitrar   |°|
-
--- HistorialMovimientosMedicamentos
-DROP TABLE IF EXISTS HistorialMovimientosMedicamentos;
-CREATE TABLE HistorialMovimientosMedicamentos (
-    idMovimiento INT PRIMARY KEY AUTO_INCREMENT,     -- ID único del movimiento
-    idMedicamento INT NOT NULL,                      -- Relación con el medicamento
-    tipoMovimiento ENUM('Entrada', 'Salida', 'Lote Eliminado') NOT NULL, -- Tipo de movimiento
-    cantidad DECIMAL(10,2) NOT NULL,                 -- Cantidad que entra o sale
-    idUsuario INT NOT NULL,                          -- Usuario que realiza el movimiento
-    fechaMovimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del movimiento
-    CONSTRAINT fk_movimiento_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
-    CONSTRAINT fk_movimiento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
-) ENGINE = INNODB;
-
-
--- Crear Tabla de Tipos Medicamentos
-DROP TABLE IF EXISTS TiposMedicamentos;
-CREATE TABLE TiposMedicamentos (
-    idTipo INT AUTO_INCREMENT PRIMARY KEY,
-    tipo VARCHAR(100) NOT NULL UNIQUE  -- Tipo de medicamento, debe ser único
-);
-
--- Crear Tabla de Presentaciones Medicamentos
-DROP TABLE IF EXISTS PresentacionesMedicamentos;
-CREATE TABLE PresentacionesMedicamentos (
-    idPresentacion INT AUTO_INCREMENT PRIMARY KEY,
-    presentacion VARCHAR(100) NOT NULL UNIQUE
-);
-
--- Crear Tabla de Combinaciones Medicamentos
-DROP TABLE IF EXISTS CombinacionesMedicamentos;
-CREATE TABLE CombinacionesMedicamentos (
-    idCombinacion INT AUTO_INCREMENT PRIMARY KEY,
-    idTipo INT NOT NULL,
-    idPresentacion INT NOT NULL,
-    dosis VARCHAR(50) NOT NULL,
-    FOREIGN KEY (idTipo) REFERENCES TiposMedicamentos(idTipo),
-    FOREIGN KEY (idPresentacion) REFERENCES PresentacionesMedicamentos(idPresentacion),
-    UNIQUE (idTipo, idPresentacion, dosis)
-);
 
 -- Insertar Tipos de Medicamentos
 INSERT INTO TiposMedicamentos (tipo) VALUES
@@ -131,7 +90,6 @@ INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis) VALUES
 
 -- -------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_listar_medicamentosMedi()
 BEGIN
     -- Mostrar la información de todos los medicamentos registrados
@@ -160,17 +118,11 @@ BEGIN
     ORDER BY 
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 END $$
-
 DELIMITER ;
-
-CALL spu_listar_medicamentosMedi();
-CALL spu_listar_medicamentosMedi();
-select * from medicamentos;
 
 
 -- Procedimiento para registrar medicamentos---------------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_registrar(
     IN _nombreMedicamento VARCHAR(255),
     IN _descripcion TEXT, 
@@ -316,7 +268,6 @@ DELIMITER ;
 
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_entrada(
     IN _idUsuario INT,              -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255), -- Nombre del medicamento
@@ -474,12 +425,8 @@ END $$
 DELIMITER ;
 
 
-
-
-
 -- Procedimiento Salida de Medicamentos-----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,               -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255), -- Nombre del medicamento
@@ -595,14 +542,8 @@ END $$
 DELIMITER ;
 
 
-
-
-
-
-
 -- 1. Notificación de Stock Bajo
 DELIMITER $$
-
 CREATE PROCEDURE spu_notificar_stock_bajo_medicamentos()
 BEGIN
     DECLARE done INT DEFAULT FALSE;
@@ -636,7 +577,6 @@ DELIMITER ;
 
 -- 2. Procedimiento para registrar historial de medicamentos y movimientos
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_medicamentos_movimientosMedi(
     IN _idMedicamento INT,
     IN _accion VARCHAR(50),       -- Ejemplo: 'Agregar', 'Eliminar', 'Actualizar', 'Entrada', 'Salida'
@@ -662,7 +602,6 @@ DELIMITER ;
 
 -- 1.Procedimiento para agregar un nuevo tipo
 DELIMITER $$
-
 CREATE PROCEDURE spu_agregar_tipo_medicamento(
     IN _tipo VARCHAR(100)
 )
@@ -681,12 +620,11 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El tipo ya existe.';
     END IF;
 END $$
-
 DELIMITER ;
+
 
 -- 2. Procedimiento para validar presentación y dosis:
 DELIMITER $$
-
 CREATE PROCEDURE spu_validar_presentacion_dosis(
     IN _nombreMedicamento VARCHAR(255),
     IN _presentacion VARCHAR(100),
@@ -710,7 +648,6 @@ DELIMITER ;
 
 -- 3. Procedimiento para auditoría:
 DELIMITER $$
-
 CREATE PROCEDURE spu_registrar_actividad(
     IN _idUsuario INT,
     IN _accion VARCHAR(50),
@@ -725,7 +662,6 @@ DELIMITER ;
 
 -- 4. Procedimiento para bloqueo de modificación:
 DELIMITER $$
-
 CREATE PROCEDURE spu_bloquear_campos_criticos(
     IN _idMedicamento INT
 )
@@ -737,30 +673,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-
---  nuevas mejoras para aprender - no borrar 
-CREATE TABLE SugerenciasMedicamentos (
-    idSugerencia INT AUTO_INCREMENT PRIMARY KEY,
-    idMedicamento INT,
-    sugerencia TEXT,
-    fechaRegistro DATETIME DEFAULT NOW(),
-    FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
-);
-
-CREATE TABLE CombinacionesValidas (
-    idCombinacion INT AUTO_INCREMENT PRIMARY KEY,
-    nombreMedicamento VARCHAR(255),
-    presentacion VARCHAR(100),
-    dosis VARCHAR(50),
-    tipoMedicamento VARCHAR(100),
-    fechaRegistro DATETIME DEFAULT NOW(),
-    UNIQUE (nombreMedicamento, presentacion, dosis, tipoMedicamento)
-);
-
-
-
 DELIMITER $$
-
 CREATE PROCEDURE spu_sugerir_combinaciones(
     IN _nombreMedicamento VARCHAR(255)
 )
@@ -775,7 +688,6 @@ DELIMITER ;
 
 
 DELIMITER $$
-
 CREATE PROCEDURE spu_validar_combinacion(
     IN _nombreMedicamento VARCHAR(255),
     IN _presentacion VARCHAR(100),
@@ -801,9 +713,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DELIMITER $$
-
 CREATE PROCEDURE spu_listar_tipos_medicamentos()
 BEGIN
     -- Selecciona todos los tipos de medicamentos
@@ -811,85 +721,10 @@ BEGIN
     FROM TiposMedicamentos
     ORDER BY tipo ASC;  -- Ordena alfabéticamente los tipos de medicamentos
 END $$
-
 DELIMITER ;
 
-call spu_listar_tipos_medicamentos();
 
 -- --------------------------------------------------------------------
-
-DELETE FROM HistorialMovimientosMedicamentos WHERE idMedicamento IN (SELECT idMedicamento FROM Medicamentos);
-DELETE FROM Medicamentos;
-
-
--- -------------------------------------------------------------------------------
-
--- Medicamentos para Yeguas
-CALL spu_medicamentos_registrar('Fenilbutazona', 'Antiinflamatorio para yeguas', 'LOTE-001', 'Tabletas', '500 mg', 'Antiinflamatorio', 100, 10, '2024-12-31', 12.50, 1);
-CALL spu_medicamentos_registrar('Ivermectina', 'Antiparasitario para yeguas', 'LOTE-002', 'Inyectable', '50 mg/ml', 'Antiparasitario', 200, 20, '2025-05-30', 25.00, 1);
-CALL spu_medicamentos_registrar('Omeprazol', 'Protector gástrico para yeguas', 'LOTE-003', 'Tabletas', '20 mg', 'Gastroprotector', 500, 50, '2025-03-01', 5.00, 1);
-CALL spu_medicamentos_registrar('Acepromacina', 'Sedante para yeguas', 'LOTE-004', 'Inyectable', '10 mg/ml', 'Sedante', 100, 10, '2025-02-15', 22.00, 1);
-CALL spu_medicamentos_registrar('Oxibendazol', 'Antiparasitario para yeguas', 'LOTE-005', 'Suspensión', '100 mg/ml', 'Antiparasitario', 250, 25, '2025-05-05', 12.00, 1);
-CALL spu_medicamentos_registrar('Furosemida', 'Diurético para yeguas', 'LOTE-006', 'Inyectable', '10 mg/ml', 'Diurético', 60, 6, '2025-10-01', 25.00, 1);
-
--- Medicamentos para Padrillos
-CALL spu_medicamentos_registrar('Dexametasona', 'Corticosteroide para padrillos', 'LOTE-007', 'Inyectable', '2 mg/ml', 'Corticosteroide', 100, 10, '2024-09-30', 18.50, 1);
-CALL spu_medicamentos_registrar('Meloxicam', 'Antiinflamatorio no esteroideo para padrillos', 'LOTE-008', 'Tabletas', '15 mg', 'Antiinflamatorio', 120, 12, '2025-09-12', 9.00, 1);
-CALL spu_medicamentos_registrar('Penicilina', 'Antibiótico para padrillos', 'LOTE-009', 'Inyectable', '300,000 UI', 'Antibiótico', 150, 15, '2024-11-15', 30.00, 1);
-CALL spu_medicamentos_registrar('Trimetoprima-sulfadiazina', 'Antibiótico de amplio espectro para padrillos', 'LOTE-010', 'Tabletas', '480 mg', 'Antibiótico', 120, 12, '2025-01-01', 14.50, 1);
-
--- Medicamentos para Potrillos
-CALL spu_medicamentos_registrar('Flunixina meglumina', 'Analgésico para potrillos', 'LOTE-011', 'Inyectable', '50 mg/ml', 'Analgésico', 80, 8, '2025-07-10', 20.00, 1);
-CALL spu_medicamentos_registrar('Clorhexidina', 'Antiséptico para potrillos', 'LOTE-012', 'Solución', '2%', 'Antiséptico', 500, 50, '2025-06-20', 7.50, 1);
-CALL spu_medicamentos_registrar('Ketamina', 'Anestésico para potrillos', 'LOTE-013', 'Inyectable', '50 mg/ml', 'Anestésico', 90, 9, '2024-11-01', 40.00, 1);
-CALL spu_medicamentos_registrar('Povidona yodada', 'Antiséptico para potrillos', 'LOTE-014', 'Solución', '10%', 'Antiséptico', 400, 40, '2025-08-15', 5.00, 1);
-
--- Medicamentos para Potrancas
-CALL spu_medicamentos_registrar('Ácido fólico', 'Suplemento vitamínico para potrancas', 'LOTE-015', 'Tabletas', '5 mg', 'Suplemento', 200, 20, '2024-12-15', 3.50, 1);
-CALL spu_medicamentos_registrar('Sulfato de cobre', 'Suplemento para potrancas', 'LOTE-016', 'Polvo', '1%', 'Suplemento', 300, 30, '2026-01-01', 2.50, 1);
-
--- Medicamentos Generales para Equinos
-CALL spu_medicamentos_registrar('Sulfato de condroitina', 'Suplemento articular para equinos', 'LOTE-017', 'Polvo', '500 mg', 'Suplemento', 180, 18, '2025-03-20', 15.00, 1);
-CALL spu_medicamentos_registrar('Glucosamina', 'Suplemento articular para equinos', 'LOTE-018', 'Tabletas', '1500 mg', 'Suplemento', 150, 15, '2026-04-05', 10.00, 1);
-CALL spu_medicamentos_registrar('Sulfato de condroitina', 'Suplemento articular para equinos', 'LOTE-019', 'Polvo', '500 mg', 'Suplemento', 200, 20, '2025-03-20', 15.00, 1);
-
--- Antiparasitarios para Equinos
-CALL spu_medicamentos_registrar('Fenbendazol', 'Antiparasitario de amplio espectro', 'LOTE-020', 'Suspensión', '100 mg/ml', 'Antiparasitario', 100, 10, '2026-03-25', 9.00, 1);
-CALL spu_medicamentos_registrar('Moxidectina', 'Antiparasitario para equinos', 'LOTE-021', 'Inyectable', '10 mg/ml', 'Antiparasitario', 120, 12, '2025-05-15', 12.50, 1);
-CALL spu_medicamentos_registrar('Pirantel', 'Antiparasitario para equinos', 'LOTE-022', 'Tabletas', '250 mg', 'Antiparasitario', 300, 30, '2026-02-10', 3.50, 1);
-
--- Otros Medicamentos para Equinos
-CALL spu_medicamentos_registrar('Betametasona', 'Corticosteroide para equinos', 'LOTE-023', 'Inyectable', '4 mg/ml', 'Corticosteroide', 80, 8, '2025-08-25', 19.00, 1);
-CALL spu_medicamentos_registrar('Sulfadiazina de plata', 'Antibacteriano para heridas de equinos', 'LOTE-024', 'Crema', '1%', 'Antibacteriano', 150, 15, '2024-12-01', 10.00, 1);
-CALL spu_medicamentos_registrar('Rifampicina', 'Antibiótico para infecciones severas en equinos', 'LOTE-025', 'Cápsulas', '300 mg', 'Antibiótico', 120, 12, '2026-03-01', 20.00, 1);
-CALL spu_medicamentos_registrar('Colchicina', 'Tratamiento de laminitis', 'LOTE-026', 'Tabletas', '500 µg', 'Antiinflamatorio', 50, 5, '2026-01-15', 35.00, 1);
-CALL spu_medicamentos_registrar('Vitamina E', 'Suplemento antioxidante para equinos', 'LOTE-027', 'Cápsulas', '500 IU', 'Suplemento', 300, 30, '2025-05-30', 12.00, 1);
-CALL spu_medicamentos_registrar('Vitamina A', 'Suplemento para el crecimiento óseo', 'LOTE-028', 'Tabletas', '25,000 IU', 'Suplemento', 200, 20, '2026-02-01', 8.50, 1);
-CALL spu_medicamentos_registrar('Biotina', 'Suplemento para el crecimiento del casco', 'LOTE-029', 'Polvo', '15 mg', 'Suplemento', 400, 40, '2025-04-10', 7.00, 1);
-CALL spu_medicamentos_registrar('Lisina', 'Suplemento de aminoácidos para equinos', 'LOTE-030', 'Polvo', '50 mg', 'Suplemento', 350, 35, '2026-01-20', 9.50, 1);
-CALL spu_medicamentos_registrar('Tiamina', 'Vitamina del complejo B para equinos', 'LOTE-031', 'Inyectable', '100 mg/ml', 'Vitamina', 200, 20, '2025-07-15', 5.00, 1);
-
--- Insertar medicamentos relacionados con la reproducción y mejora del rendimiento reproductivo en equinos.
-
-CALL spu_medicamentos_registrar('Sildenafil', 'Mejora el flujo sanguíneo en equinos', 'LOTE-001', 'Tabletas', '50mg', 'Reproductivo', 100, 10, '2025-12-31', 35.50, 1);
-
-CALL spu_medicamentos_registrar('Deslorelina', 'Inductor de ovulación en yeguas', 'LOTE-002', 'Inyectable', '1mg', 'Reproductivo', 50, 5, '2024-09-30', 75.00, 1);
-
-CALL spu_medicamentos_registrar('Altrenogest', 'Supresión del celo en yeguas', 'LOTE-003', 'Solución oral', '50ml', 'Reproductivo', 60, 10, '2026-01-15', 45.00, 1);
-
-CALL spu_medicamentos_registrar('Oxitocina', 'Inductor de contracciones uterinas en yeguas', 'LOTE-004', 'Inyectable', '10UI', 'Reproductivo', 200, 20, '2024-06-25', 12.00, 1);
-
-CALL spu_medicamentos_registrar('GnRH', 'Mejora la fertilidad en yeguas y padrillos', 'LOTE-005', 'Inyectable', '10mg', 'Reproductivo', 75, 15, '2025-03-10', 85.00, 1);
-
-CALL spu_medicamentos_registrar('HCG', 'Inductor de ovulación y mejora de fertilidad', 'LOTE-006', 'Inyectable', '5000UI', 'Reproductivo', 40, 5, '2024-08-22', 90.00, 1);
-
-CALL spu_medicamentos_registrar('Dinoprost', 'Sincronización del celo en yeguas', 'LOTE-007', 'Inyectable', '25mg', 'Reproductivo', 30, 5, '2025-11-02', 40.50, 1);
-
-CALL spu_medicamentos_registrar('Suplemento Vitamínico Reproductivo', 'Suplemento para mejorar fertilidad', 'LOTE-008', 'Polvo', '200g', 'Suplemento', 100, 20, '2025-05-15', 30.00, 1);
-
-CALL spu_medicamentos_registrar('Cloprostenol', 'Prostaglandina para inducción del parto', 'LOTE-009', 'Inyectable', '250mcg', 'Reproductivo', 80, 10, '2024-07-01', 60.00, 1);
-
-CALL spu_medicamentos_registrar('Progesterona', 'Regulación hormonal en yeguas', 'LOTE-010', 'Inyectable', '200mg', 'Reproductivo', 50, 10, '2024-12-15', 70.00, 1);
 
 
 
