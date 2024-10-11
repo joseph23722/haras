@@ -7,6 +7,7 @@ VALUES
 -- 2. Insertar Datos en Personal
 INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
 VALUES 
+('Joseph', 'Mateo', 'San Agustin ', 'DNI', '72183871', 2, '2024-08-27', 'Completo'),
 ('Ruben', 'Marcos', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27', 'Completo');
 
 -- 3. Insertar datos en la tabla Roles
@@ -22,6 +23,7 @@ VALUES
 -- 4. Insertar Datos en Usuarios
 INSERT INTO Usuarios (idPersonal, correo, clave, idRol) 
 VALUES 
+(1, 'joseph@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2),
 (1, 'ruben@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2);
 
 -- AGREGADOS:

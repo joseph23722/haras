@@ -140,24 +140,24 @@ CREATE TABLE HistorialMovimientos (
 DROP TABLE IF EXISTS Medicamentos;
 CREATE TABLE Medicamentos (
     idMedicamento        INT PRIMARY KEY AUTO_INCREMENT,
-    nombreMedicamento    VARCHAR(255) NOT NULL, -- Nombre del medicamento
-    descripcion          TEXT NULL, -- Descripción del medicamento
-    lote                 VARCHAR(100) NOT NULL, -- Número de lote del medicamento
-    presentacion         VARCHAR(100) NOT NULL, -- Presentación del medicamento (Tabletas, Inyectable, etc.)
-    dosis                VARCHAR(50) NOT NULL, -- Dosis administrada (por ejemplo: 4 mg)
-    idTipo INT, -- Tipo de medicamento (Gastroprotector, Antibiótico, etc.)
-    cantidad_stock       INT NOT NULL, -- Cantidad disponible en stock
-    stockMinimo          INT DEFAULT 0, -- Stock mínimo antes de lanzar alertas
-    fecha_registro       DATE NOT NULL, -- Fecha de registro del medicamento
-    fecha_caducidad      DATE NOT NULL, -- Fecha de caducidad
+    nombreMedicamento    VARCHAR(255) NOT NULL,  -- Nombre del medicamento
+    descripcion          TEXT NULL,              -- Descripción del medicamento
+    lote                 VARCHAR(100) NOT NULL,  -- Número de lote del medicamento
+    idCombinacion        INT NOT NULL,           -- ID de combinación de medicamento
+    cantidad_stock       INT NOT NULL,           -- Cantidad disponible en stock
+    stockMinimo          INT DEFAULT 0,          -- Stock mínimo antes de lanzar alertas
+    fecha_registro       DATE NOT NULL,          -- Fecha de registro del medicamento
+    fecha_caducidad      DATE NOT NULL,          -- Fecha de caducidad
     precioUnitario       DECIMAL(10,2) NOT NULL, -- Precio unitario del medicamento
     estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible', -- Estado del medicamento en el inventario
-    idUsuario            INT NOT NULL, -- Usuario que registró el medicamento
+    idUsuario            INT NOT NULL,           -- Usuario que registró el medicamento
     ultima_modificacion  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Última modificación
     CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
-    CONSTRAINT fk_tipoMedicamento  FOREIGN KEY (idTipo) REFERENCES TiposMedicamentos(idTipo),
-    UNIQUE (lote, nombreMedicamento)
+    CONSTRAINT fk_combinacion_medicamento FOREIGN KEY (idCombinacion) REFERENCES CombinacionesMedicamentos(idCombinacion),
+    UNIQUE (lote, nombreMedicamento) -- El lote y el nombre del medicamento deben ser únicos
 ) ENGINE = INNODB;
+
+
 
 
 -- 11. DetalleMedicamentos

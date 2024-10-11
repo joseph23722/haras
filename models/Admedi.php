@@ -28,16 +28,28 @@ class Admi extends Conexion {
     // Registrar un nuevo medicamento
     public function registrarMedicamento($params = []) {
         try {
+            // Verificar si la sesión está activa
             if (session_status() == PHP_SESSION_NONE) {
                 session_start(); // Iniciar la sesión si no está iniciada
             }
-
-            $idUsuario = $_SESSION['idUsuario'] ?? null; // Obtener idUsuario de la sesión
-
+    
+            // Obtener el idUsuario de la sesión
+            $idUsuario = $_SESSION['idUsuario'] ?? null; 
+    
+            // Verificar si el usuario está autenticado
             if ($idUsuario === null) {
-                throw new Exception('Usuario no autenticado.'); // Si no hay usuario, lanzar error
+                throw new Exception('Usuario no autenticado.');
             }
-
+    
+            // Verificar que los parámetros obligatorios estén presentes y válidos
+            if (empty($params['nombreMedicamento']) || empty($params['lote']) || empty($params['presentacion']) || 
+                empty($params['dosis']) || empty($params['tipo']) || $params['cantidad_stock'] <= 0) {
+                throw new Exception('Faltan datos obligatorios o hay valores incorrectos.');
+            }
+    
+            // Registrar el intento de ejecución del procedimiento en el log
+            error_log("Intentando registrar el medicamento con los siguientes valores: " . json_encode($params));
+    
             // Preparar y ejecutar el procedimiento almacenado para registrar un medicamento
             $query = $this->pdo->prepare("CALL spu_medicamentos_registrar(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
@@ -53,13 +65,30 @@ class Admi extends Conexion {
                 $params['precioUnitario'],
                 $idUsuario
             ]);
-
-            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
+    
+            // Verificar si la transacción fue confirmada (si el procedimiento almacenado devuelve el mensaje de confirmación)
+            $result = $query->fetch(PDO::FETCH_ASSOC);  // Obtener la fila con el mensaje de confirmación
+    
+            if ($result && isset($result['mensaje']) && $result['mensaje'] === 'Datos confirmados') {
+                error_log("Medicamento registrado correctamente y verificado.");
+                return true; // Devolver true si la inserción fue exitosa
+            } else {
+                error_log("No se pudo registrar el medicamento o no se confirmó correctamente.");
+                return false; // Devolver false si no se confirmó
+            }
+        } catch (PDOException $e) {
+            // Capturar errores específicos de PDO y registrarlos
+            error_log("Error al registrar medicamento (PDOException): " . $e->getMessage());
+            return false; // Devolver false en caso de error de base de datos
         } catch (Exception $e) {
-            error_log("Error al registrar medicamento: " . $e->getMessage()); // Registrar error en el log
-            return false; // Devolver false en caso de error
+            // Capturar cualquier otra excepción y registrarla
+            error_log("Error al registrar medicamento (Exception): " . $e->getMessage());
+            return false; // Devolver false en caso de otro tipo de error
         }
     }
+    
+
+
 
     // Registrar entrada de medicamentos
     public function entradaMedicamento($params = []) {

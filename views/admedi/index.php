@@ -284,10 +284,12 @@
         const tipoMedicamentoSelect = document.querySelector("#tipo");
         const formAgregarTipo = document.querySelector("#formAgregarTipo");
 
+        console.log("Log 1: Scripts cargados correctamente.");
 
         // Cargar los tipos de medicamentos desde el servidor
         const loadTiposMedicamentos = async () => {
             try {
+                console.log("Log 2: Cargando tipos de medicamentos...");
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: new URLSearchParams({ operation: 'listarTiposMedicamentos' })
@@ -295,6 +297,7 @@
                 const result = await response.json();
                 const tipos = result.data;
 
+                console.log("Log 3: Tipos de medicamentos recibidos:", tipos);
                 tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
                 tipos.forEach(tipo => {
                     const option = document.createElement("option");
@@ -302,10 +305,11 @@
                     option.textContent = tipo.tipo;
                     tipoMedicamentoSelect.appendChild(option);
                 });
-                // Agregar la opción para agregar nuevo tipo
-                tipoMedicamentoSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
 
+                tipoMedicamentoSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
+                console.log("Log 4: Tipos de medicamentos cargados en el selector.");
             } catch (error) {
+                console.error("Log 5: Error al cargar tipos de medicamentos:", error.message);
                 alert("Error en la solicitud: " + error.message);
             }
         };
@@ -313,6 +317,7 @@
         // Mostrar modal para agregar nuevo tipo
         tipoMedicamentoSelect.addEventListener('change', function () {
             if (this.value === 'nuevo') {
+                console.log("Log 6: Usuario seleccionó agregar nuevo tipo.");
                 $('#modalAgregarTipo').modal('show');
             }
         });
@@ -321,6 +326,7 @@
         formAgregarTipo.addEventListener('submit', async (event) => {
             event.preventDefault();
             const nuevoTipoMedicamento = document.querySelector("#nuevoTipoMedicamento").value;
+            console.log("Log 7: Nuevo tipo de medicamento enviado:", nuevoTipoMedicamento);
 
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
@@ -329,6 +335,7 @@
                 });
 
                 const result = await response.json();
+                console.log("Log 8: Resultado de agregar tipo de medicamento:", result);
                 if (result.status === "success") {
                     alert(result.message);
                     $('#modalAgregarTipo').modal('hide');
@@ -337,6 +344,7 @@
                     alert(result.message);
                 }
             } catch (error) {
+                console.error("Log 9: Error al agregar tipo de medicamento:", error.message);
                 alert("Error en la solicitud: " + error.message);
             }
         });
@@ -344,11 +352,13 @@
         // Cargar medicamentos en los selectores de entrada y salida
         const loadSelectMedicamentos = async () => {
             try {
+                console.log("Log 10: Cargando medicamentos en selectores...");
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: new URLSearchParams({ operation: 'getAllMedicamentos' })
                 });
                 const textResponse = await response.text();
+                console.log("Log 11: Texto de respuesta recibido:", textResponse);
                 const result = JSON.parse(textResponse);
                 const medicamentos = result.data;
 
@@ -368,19 +378,23 @@
                     document.querySelector("#salidaMedicamento").appendChild(optionSalida);
                 });
 
+                console.log("Log 12: Medicamentos cargados en selectores.");
             } catch (error) {
+                console.error("Log 13: Error al cargar medicamentos en selectores:", error.message);
                 alert("Error en la solicitud: " + error.message);
             }
         };
 
         const loadMedicamentos = async () => {
             try {
+                console.log("Log 14: Cargando lista de medicamentos...");
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: new URLSearchParams({ operation: 'getAllMedicamentos' })
                 });
                 const textResponse = await response.text();
                 if (textResponse.startsWith("<")) {
+                    console.error("Log 15: Error en la respuesta del servidor, se recibió HTML.");
                     alert("Error en la respuesta del servidor.");
                     return;
                 }
@@ -388,12 +402,11 @@
                 const result = JSON.parse(textResponse);
                 const medicamentos = result.data;
 
+                console.log("Log 16: Medicamentos recibidos:", medicamentos);
                 if ($.fn.dataTable.isDataTable('#medicamentosTable')) {
                     $('#medicamentosTable').DataTable().destroy();
                 }
-                console.log(medicamentos);  // Esto mostrará el array de medicamentos en la consola
 
-                // Configura DataTables después de verificar los datos
                 $('#medicamentosTable').DataTable({
                     data: medicamentos,
                     columns: [
@@ -414,7 +427,9 @@
                     }
                 });
 
+                console.log("Log 17: Medicamentos cargados en DataTable.");
             } catch (error) {
+                console.error("Log 18: Error al cargar medicamentos:", error.message);
                 alert("Error en la solicitud: " + error.message);
             }
         };
@@ -422,10 +437,13 @@
         // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
+            console.log("Log 19: Enviando formulario de registro de medicamento.");
 
             const formData = new FormData(formRegistrarMedicamento);
             const data = new URLSearchParams(formData);
             data.append('operation', 'registrar');
+
+            console.log("Log 20: Datos del formulario:", [...data]);
 
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
@@ -433,113 +451,29 @@
                     body: data
                 });
                 const result = await response.json();
+
+                console.log("Log 21: Resultado del registro de medicamento:", result);
 
                 if (result.status === "success") {
                     alert(result.message);
                     formRegistrarMedicamento.reset();
                     loadMedicamentos();
                 } else {
-                    alert(result.message);
+                    alert("Error en el registro: " + result.message);
+                    console.error("Log 22: Error en el registro:", result);
                 }
             } catch (error) {
-                alert("Error en la solicitud: " + error.message);
-            }
-        });
-
-        // Registrar entrada de medicamento
-        formEntrada.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(formEntrada);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'entrada');
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    alert(result.message);
-                    formEntrada.reset();
-                    loadMedicamentos();
-                    $('#modalEntrada').modal('hide');
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                alert("Error en la solicitud: " + error.message);
-            }
-        });
-
-        // Registrar salida de medicamento
-        formSalida.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(formSalida);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'salida');
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    alert(result.message);
-                    formSalida.reset();
-                    loadMedicamentos();
-                    $('#modalSalida').modal('hide');
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
+                console.error("Log 23: Error en la solicitud de registro:", error.message);
                 alert("Error en la solicitud: " + error.message);
             }
         });
 
         // Cargar medicamentos al iniciar
+        console.log("Log 24: Cargando medicamentos al iniciar la página.");
         loadMedicamentos();
 
-        // Recargar medicamentos cuando se abre el modal de entrada
-        $('#modalEntrada').on('shown.bs.modal', () => {
-            loadSelectMedicamentos();
-        });
-
-        // Recargar medicamentos cuando se abre el modal de salida
-        $('#modalSalida').on('shown.bs.modal', () => {
-            loadSelectMedicamentos();
-        });
         // Cargar tipos de medicamentos al cargar la página
+        console.log("Log 25: Cargando tipos de medicamentos al iniciar la página.");
         loadTiposMedicamentos();
-
-
-        // Control del campo "LOTE-" para que se pueda escribir después del prefijo
-        const loteInput = document.querySelector("#lote");
-
-        loteInput.addEventListener("input", (e) => {
-            const value = e.target.value;
-            if (!value.startsWith("LOTE-")) {
-                e.target.value = "LOTE-"; // Mantener el prefijo "LOTE-"
-            }
-        });
-
-        // Evitar que se borre el prefijo "LOTE-" con la tecla Backspace o Delete
-        loteInput.addEventListener("keydown", (e) => {
-            if ((e.key === "Backspace" || e.key === "Delete") && loteInput.selectionStart <= 5) {
-                e.preventDefault(); // Evitar borrar el prefijo "LOTE-"
-            }
-        });
-
-        // Asegurarse de que el cursor siempre se mantenga después del "LOTE-" cuando sea necesario
-        loteInput.addEventListener("focus", () => {
-            if (loteInput.value === "LOTE-") {
-                loteInput.setSelectionRange(5, 5); // Poner el cursor después de "LOTE-"
-            }
-        });
     });
 </script>
