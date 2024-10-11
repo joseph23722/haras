@@ -3,7 +3,7 @@ DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
 DELIMITER $$
 CREATE PROCEDURE spu_personal_registrar
 (
-    OUT _idPersonal       INT,      -- Negativo cuando ocurre un error (ej. restricción)
+    OUT _idPersonal       INT,
     IN _nombres           VARCHAR(100),
     IN _apellidos         VARCHAR(100),
     IN _direccion         VARCHAR(255),
@@ -67,7 +67,3 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-
--- INSERCCIONES:
-CALL spu_personal_registrar(@idPersonal, 'Jorgue', ' Marron', 'Sanmm', 'DNI', '72183875', 20, '2024-01-01');
-SELECT @idPersonal AS 'idPersonal';

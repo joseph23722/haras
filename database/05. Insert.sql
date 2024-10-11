@@ -24,7 +24,7 @@ VALUES
 INSERT INTO Usuarios (idPersonal, correo, clave, idRol) 
 VALUES 
 (1, 'joseph@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2),
-(1, 'ruben@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2);
+(2, 'ruben@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2);
 
 -- AGREGADOS:
 
