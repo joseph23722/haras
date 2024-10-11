@@ -170,7 +170,7 @@ DELIMITER ;
 
 
 DELIMITER $$
-CREATE PROCEDURE spu_listar_medicamentosMedi()
+CREATE PROCEDURE spu_listar_medicamentosMedis()
 BEGIN
     SELECT 
         M.idMedicamento, 

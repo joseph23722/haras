@@ -1,92 +1,4 @@
 
--- Insertar Tipos de Medicamentos
-INSERT INTO TiposMedicamentos (tipo) VALUES
-('Antibiótico'),
-('Analgésico'),
-('Antiinflamatorio'),
-('Gastroprotector'),
-('Desparasitante'),
-('Suplemento'),
-('Broncodilatador'),
-('Antifúngico'),
-('Sedante'),
-('Vacuna'),
-('Antiparasitario'),
-('Vitaminas');
-
--- Insertar Presentaciones de Medicamentos
-INSERT INTO PresentacionesMedicamentos (presentacion) VALUES
-('tabletas'),
-('jarabes'),
-('cápsulas'),
-('inyectable'),
-('suspensión'),
-('grageas'),
-('pomadas'),
-('ampollas'),
-('colirios'),
-('gotas nasales'),
-('píldoras'),
-('comprimidos'),
-('enemas'),
-('goteros'),
-('polvos medicinales'),
-('aerosoles'),
-('spray');
-
-
--- Insertar Combinaciones de Medicamentos
-INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis) VALUES
-(1, 1, '500 mg'),  -- Antibiótico, tabletas
-(2, 2, '10 ml'),   -- Analgésico, jarabes
-(3, 3, '200 mg'),  -- Antiinflamatorio, cápsulas
-(1, 4, '1 g'),     -- Antibiótico, inyectable
-(2, 1, '50 mg'),   -- Analgésico, tabletas
-(3, 5, '5 mg/ml'), -- Antiinflamatorio, suspensión
-(4, 6, '300 mg'),  -- Gastroprotector, grageas
-(5, 7, '100 g'),   -- Desparasitante, pomadas
-(6, 8, '1 ml'),    -- Suplemento, ampollas
-(7, 9, '0.5 ml'),  -- Broncodilatador, colirios
-(8, 10, '20 mg/ml'),-- Antifúngico, gotas nasales
-(9, 11, '5 mg'),   -- Sedante, píldoras
-(10, 12, '1 g'),   -- Vacuna, comprimidos
-(5, 13, '50 mg'),  -- Desparasitante, enemas
-(3, 14, '15 mg/ml'),-- Antiinflamatorio, goteros
-(1, 15, '250 mg'),  -- Antibiótico, polvos medicinales
-(3, 16, '100 mcg'), -- Antiinflamatorio, aerosoles
-(6, 1, '10 fL'),   -- Suplemento, tabletas
-(11, 4, '200 g/dL'),-- Antiparasitario, suspensión
-(1, 4, '5 g/L'),   -- Antibiótico, inyectable
-(2, 7, '50 mcg'),  -- Analgésico, pomadas
-(3, 2, '1 mcg/dL'),-- Antiinflamatorio, jarabes
-(5, 1, '10 mL'),   -- Desparasitante, tabletas
-(8, 14, '200 mcl'),-- Antifúngico, spray
-(12, 4, '300 mcmol/L'),-- Vitaminas, inyectable
-(9, 1, '15 mEq'),  -- Sedante, tabletas
-(3, 10, '5 mEq/L'),-- Antiinflamatorio, gotas nasales
-(1, 6, '100 mg'),  -- Antibiótico, grageas
-(2, 5, '50 mg/dL'),-- Analgésico, suspensión
-(5, 15, '5 mm'),   -- Desparasitante, polvos
-(3, 1, '10 mm Hg'),-- Antiinflamatorio, tabletas
-(6, 8, '1 mmol'),  -- Suplemento, ampollas
-(11, 2, '250 mmol/L'),-- Antiparasitario, jarabes
-(1, 4, '5 mOsm/kg'),-- Antibiótico, inyectable
-(3, 14, '20 mUI/L'),-- Antiinflamatorio, goteros
-(12, 11, '50 mU/g'),-- Vitaminas, comprimidos
-(8, 16, '100 mU/L'),-- Antifúngico, spray
-(2, 10, '10 ng/dL'),-- Analgésico, gotas nasales
-(5, 1, '5 ng/L'),  -- Desparasitante, tabletas
-(6, 5, '200 ng/mL'),-- Suplemento, suspensión
-(1, 2, '1 ng/mL/h'),-- Antibiótico, píldoras
-(3, 4, '5 nmol'),  -- Antiinflamatorio, inyectable
-(12, 1, '10 nmol/L'),-- Vitaminas, tabletas
-(8, 15, '20 pg'),  -- Antifúngico, polvos
-(3, 10, '5 pg/mL'), -- Antiinflamatorio, gotas nasales
-(1, 4, '1 pmol/L'), -- Antibiótico, inyectable
-(2, 1, '100 UI/L'), -- Analgésico, tabletas
-(5, 5, '50 UI/mL'), -- Desparasitante, suspensión
-(6, 8, '10 U/L'),  -- Suplemento, ampollas
-(3, 15, '200 U/mL');-- Antiinflamatorio, polvos
 
 -- -------------------------------------------------------------------------------------------
 DELIMITER $$
@@ -724,8 +636,96 @@ END $$
 DELIMITER ;
 
 
--- --------------------------------------------------------------------
+-- insert importante --------------------------------------------------------------------
 
+-- Insertar Tipos de Medicamentos
+INSERT INTO TiposMedicamentos (tipo) VALUES
+('Antibiótico'),
+('Analgésico'),
+('Antiinflamatorio'),
+('Gastroprotector'),
+('Desparasitante'),
+('Suplemento'),
+('Broncodilatador'),
+('Antifúngico'),
+('Sedante'),
+('Vacuna'),
+('Antiparasitario'),
+('Vitaminas');
+
+-- Insertar Presentaciones de Medicamentos
+INSERT INTO PresentacionesMedicamentos (presentacion) VALUES
+('tabletas'),
+('jarabes'),
+('cápsulas'),
+('inyectable'),
+('suspensión'),
+('grageas'),
+('pomadas'),
+('ampollas'),
+('colirios'),
+('gotas nasales'),
+('píldoras'),
+('comprimidos'),
+('enemas'),
+('goteros'),
+('polvos medicinales'),
+('aerosoles'),
+('spray');
+
+
+-- Insertar Combinaciones de Medicamentos
+INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis) VALUES
+(1, 1, '500 mg'),  -- Antibiótico, tabletas
+(2, 2, '10 ml'),   -- Analgésico, jarabes
+(3, 3, '200 mg'),  -- Antiinflamatorio, cápsulas
+(1, 4, '1 g'),     -- Antibiótico, inyectable
+(2, 1, '50 mg'),   -- Analgésico, tabletas
+(3, 5, '5 mg/ml'), -- Antiinflamatorio, suspensión
+(4, 6, '300 mg'),  -- Gastroprotector, grageas
+(5, 7, '100 g'),   -- Desparasitante, pomadas
+(6, 8, '1 ml'),    -- Suplemento, ampollas
+(7, 9, '0.5 ml'),  -- Broncodilatador, colirios
+(8, 10, '20 mg/ml'),-- Antifúngico, gotas nasales
+(9, 11, '5 mg'),   -- Sedante, píldoras
+(10, 12, '1 g'),   -- Vacuna, comprimidos
+(5, 13, '50 mg'),  -- Desparasitante, enemas
+(3, 14, '15 mg/ml'),-- Antiinflamatorio, goteros
+(1, 15, '250 mg'),  -- Antibiótico, polvos medicinales
+(3, 16, '100 mcg'), -- Antiinflamatorio, aerosoles
+(6, 1, '10 fL'),   -- Suplemento, tabletas
+(11, 4, '200 g/dL'),-- Antiparasitario, suspensión
+(1, 4, '5 g/L'),   -- Antibiótico, inyectable
+(2, 7, '50 mcg'),  -- Analgésico, pomadas
+(3, 2, '1 mcg/dL'),-- Antiinflamatorio, jarabes
+(5, 1, '10 mL'),   -- Desparasitante, tabletas
+(8, 14, '200 mcl'),-- Antifúngico, spray
+(12, 4, '300 mcmol/L'),-- Vitaminas, inyectable
+(9, 1, '15 mEq'),  -- Sedante, tabletas
+(3, 10, '5 mEq/L'),-- Antiinflamatorio, gotas nasales
+(1, 6, '100 mg'),  -- Antibiótico, grageas
+(2, 5, '50 mg/dL'),-- Analgésico, suspensión
+(5, 15, '5 mm'),   -- Desparasitante, polvos
+(3, 1, '10 mm Hg'),-- Antiinflamatorio, tabletas
+(6, 8, '1 mmol'),  -- Suplemento, ampollas
+(11, 2, '250 mmol/L'),-- Antiparasitario, jarabes
+(1, 4, '5 mOsm/kg'),-- Antibiótico, inyectable
+(3, 14, '20 mUI/L'),-- Antiinflamatorio, goteros
+(12, 11, '50 mU/g'),-- Vitaminas, comprimidos
+(8, 16, '100 mU/L'),-- Antifúngico, spray
+(2, 10, '10 ng/dL'),-- Analgésico, gotas nasales
+(5, 1, '5 ng/L'),  -- Desparasitante, tabletas
+(6, 5, '200 ng/mL'),-- Suplemento, suspensión
+(1, 2, '1 ng/mL/h'),-- Antibiótico, píldoras
+(3, 4, '5 nmol'),  -- Antiinflamatorio, inyectable
+(12, 1, '10 nmol/L'),-- Vitaminas, tabletas
+(8, 15, '20 pg'),  -- Antifúngico, polvos
+(3, 10, '5 pg/mL'), -- Antiinflamatorio, gotas nasales
+(1, 4, '1 pmol/L'), -- Antibiótico, inyectable
+(2, 1, '100 UI/L'), -- Analgésico, tabletas
+(5, 5, '50 UI/mL'), -- Desparasitante, suspensión
+(6, 8, '10 U/L'),  -- Suplemento, ampollas
+(3, 15, '200 U/mL');-- Antiinflamatorio, polvos
 
 
 
