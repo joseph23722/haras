@@ -29,7 +29,7 @@ BEGIN
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 END $$
 DELIMITER ;
-
+select * from medicamentos;
 
 -- Procedimiento para registrar medicamentos---------------------------------------------------------------------------------------------------------
 DELIMITER $$
@@ -481,8 +481,8 @@ BEGIN
             LEAVE read_loop;
         END IF;
 
-        -- Aquí puedes agregar el código para enviar una notificación
-        -- Ejemplo: CALL sp_send_notification(medicamentoNombre, medicamentoLote, medicamentoStock);
+        -- Imprimir el mensaje de notificación
+        SELECT CONCAT('Medicamento: ', medicamentoNombre, ', Lote: ', medicamentoLote, ', Stock: ', medicamentoStock) AS Notificacion;
     END LOOP;
 
     CLOSE cur;
@@ -538,6 +538,29 @@ END $$
 DELIMITER ;
 
 
+
+DELIMITER $$
+CREATE PROCEDURE spu_agregar_presentacion_medicamento(
+    IN _presentacion VARCHAR(100)
+)
+BEGIN
+    DECLARE _exists INT DEFAULT 0;
+    
+    -- Verificar si la presentación ya existe
+    SELECT COUNT(*) INTO _exists 
+    FROM PresentacionesMedicamentos
+    WHERE LOWER(presentacion) = LOWER(_presentacion);
+    
+    IF _exists = 0 THEN
+        -- Insertar nueva presentación si no existe
+        INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (_presentacion);
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La presentación ya existe.';
+    END IF;
+END $$
+DELIMITER ;
+
+
 -- 2. Procedimiento para validar presentación y dosis:
 DELIMITER $$
 CREATE PROCEDURE spu_validar_presentacion_dosis(
@@ -559,35 +582,6 @@ BEGIN
     -- Si todo es válido, proceder
 END $$
 DELIMITER ;
-
-
--- 3. Procedimiento para auditoría:
-DELIMITER $$
-CREATE PROCEDURE spu_registrar_actividad(
-    IN _idUsuario INT,
-    IN _accion VARCHAR(50),
-    IN _detalles TEXT
-)
-BEGIN
-    INSERT INTO AuditoriaActividades (idUsuario, accion, detalles, fecha)
-    VALUES (_idUsuario, _accion, _detalles, NOW());
-END $$
-DELIMITER ;
-
-
-
-DELIMITER $$
-CREATE PROCEDURE spu_sugerir_combinaciones(
-    IN _nombreMedicamento VARCHAR(255)
-)
-BEGIN
-    -- Mostrar todas las combinaciones válidas para el medicamento ingresado
-    SELECT presentacion, dosis, tipoMedicamento
-    FROM CombinacionesValidas
-    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento);
-END $$
-DELIMITER ;
-
 
 
 DELIMITER $$
@@ -635,6 +629,21 @@ BEGIN
         t.tipo
     ORDER BY 
         t.tipo ASC;  -- Ordena por tipo de medicamento
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE spu_listar_presentaciones_medicamentos()
+BEGIN
+    -- Selecciona todas las presentaciones de medicamentos
+    SELECT 
+        idPresentacion, 
+        presentacion 
+    FROM 
+        PresentacionesMedicamentos
+    ORDER BY 
+        presentacion ASC;  -- Ordena por el nombre de la presentación
 END $$
 DELIMITER ;
 
