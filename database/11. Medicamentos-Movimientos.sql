@@ -52,6 +52,13 @@ BEGIN
     DECLARE _idCombinacion INT;
     DECLARE _exists INT DEFAULT 0;
 
+    -- Manejador de errores: si ocurre un error, se revierte la transacción
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Error: Ocurrió un problema durante el registro, se ha revertido la transacción.' AS mensaje;
+    END;
+
     -- Iniciar la transacción
     START TRANSACTION;
 
@@ -139,11 +146,10 @@ BEGIN
     END IF;
 
     -- Confirmar la transacción
-	COMMIT;
+    COMMIT;
 
-	-- Verificación de la transacción
-	SELECT 'Datos confirmados' AS mensaje;
-
+    -- Mensaje de confirmación
+    SELECT 'Datos confirmados' AS mensaje;
 
     -- Mostrar la información del medicamento registrado
     SELECT 
@@ -173,7 +179,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
 
 
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
@@ -570,18 +575,6 @@ END $$
 DELIMITER ;
 
 
--- 4. Procedimiento para bloqueo de modificación:
-DELIMITER $$
-CREATE PROCEDURE spu_bloquear_campos_criticos(
-    IN _idMedicamento INT
-)
-BEGIN
-    -- Bloquear modificaciones a los campos críticos
-    IF EXISTS (SELECT 1 FROM Medicamentos WHERE idMedicamento = _idMedicamento AND bloqueado = 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pueden modificar campos críticos.';
-    END IF;
-END $$
-DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE spu_sugerir_combinaciones(
@@ -623,13 +616,25 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 DELIMITER $$
-CREATE PROCEDURE spu_listar_tipos_medicamentos()
+CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
 BEGIN
-    -- Selecciona todos los tipos de medicamentos
-    SELECT idTipo, tipo 
-    FROM TiposMedicamentos
-    ORDER BY tipo ASC;  -- Ordena alfabéticamente los tipos de medicamentos
+    -- Selecciona los tipos de medicamentos junto con la presentación y la dosis, agrupados
+    SELECT 
+        t.tipo, 
+        GROUP_CONCAT(DISTINCT p.presentacion ORDER BY p.presentacion ASC SEPARATOR ', ') AS presentaciones,
+        GROUP_CONCAT(DISTINCT c.dosis ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
+    FROM 
+        CombinacionesMedicamentos c
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN 
+        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    GROUP BY 
+        t.tipo
+    ORDER BY 
+        t.tipo ASC;  -- Ordena por tipo de medicamento
 END $$
 DELIMITER ;
 

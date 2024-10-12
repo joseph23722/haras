@@ -86,8 +86,6 @@ class Admi extends Conexion {
             return false; // Devolver false en caso de otro tipo de error
         }
     }
-    
-
 
 
     // Registrar entrada de medicamentos
@@ -199,6 +197,21 @@ class Admi extends Conexion {
         }
     }
 
+    // Agregar una nueva presentación de medicamento
+    public function agregarPresentacionMedicamento($presentacion) {
+        try {
+            // Ejecutar el procedimiento almacenado para agregar una presentación de medicamento
+            $query = $this->pdo->prepare("CALL spu_agregar_presentacion_medicamento(?)");
+            $query->execute([$presentacion]);
+
+            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
+        } catch (Exception $e) {
+            error_log("Error al agregar presentación de medicamento: " . $e->getMessage());
+            return false; // Devolver false en caso de error
+        }
+    }
+
+
     // Validar presentación y dosis del medicamento
     public function validarPresentacionDosis($params = []) {
         try {
@@ -218,29 +231,11 @@ class Admi extends Conexion {
         }
     }
 
-    // Registrar actividad de auditoría
-    public function registrarActividad($params = []) {
-        try {
-            // Ejecutar el procedimiento almacenado para registrar una actividad de auditoría
-            $query = $this->pdo->prepare("CALL spu_registrar_actividad(?, ?, ?)");
-            $query->execute([
-                $params['idUsuario'],
-                $params['accion'],
-                $params['detalles']
-            ]);
-
-            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
-        } catch (Exception $e) {
-            error_log("Error al registrar actividad de auditoría: " . $e->getMessage());
-            return false; // Devolver false en caso de error
-        }
-    }
-
      // Listar los tipos de movimeinto
     public function listarTiposMedicamentos() {
         try {
             // Ejecutar el procedimiento almacenado para listar los tipos de medicamentos
-            $query = $this->pdo->prepare("CALL spu_listar_tipos_medicamentos()");
+            $query = $this->pdo->prepare("CALL spu_listar_tipos_presentaciones_dosis()");
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC); // Devolver todos los tipos de medicamentos
         } catch (Exception $e) {
@@ -248,6 +243,20 @@ class Admi extends Conexion {
             return false;
         }
     }
+
+    // Listar las presentaciones de medicamentos
+    public function listarPresentacionesMedicamentos() {
+        try {
+            // Ejecutar el procedimiento almacenado para listar las presentaciones de medicamentos
+            $query = $this->pdo->prepare("CALL spu_listar_presentaciones_medicamentos()");
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC); // Devolver todas las presentaciones de medicamentos
+        } catch (Exception $e) {
+            error_log("Error al listar presentaciones de medicamentos: " . $e->getMessage());
+            return false;
+        }
+    }
+
 
 
     

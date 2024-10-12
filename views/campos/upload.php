@@ -1,8 +1,8 @@
 <?php
-header('Content-Type: application/json'); // Asegúrate de que la respuesta es JSON
+header('Content-Type: application/json');
 
 error_reporting(E_ALL);
-ini_set('display_errors', 1); // Mostrar errores de PHP para depurar
+ini_set('display_errors', 1);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_FILES['cadFile'])) {
@@ -14,11 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Validar el tipo de archivo
-        $allowedExtensions = ['dxf', 'dwg'];
+        $allowedExtensions = ['dxf'];
         $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         
         if (!in_array($fileExtension, $allowedExtensions)) {
-            echo json_encode(['message' => 'Tipo de archivo no permitido. Solo se aceptan .dxf y .dwg.']);
+            echo json_encode(['message' => 'Tipo de archivo no permitido. Solo se aceptan .dxf.']);
             exit;
         }
 
@@ -43,4 +43,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     echo json_encode(['message' => 'Método no permitido.']);
 }
-?>
