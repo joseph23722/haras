@@ -13,7 +13,7 @@ async function ask(pregunta = ``, modulo = `Haras Rancho Sur`){
     confirmButtonText: 'Aceptar',
     cancelButtonText: 'Cancelar',
     confirmButtonColor: '#3498db',
-    footer: 'Haras Rancho Sur App Ver. 1.0'
+    footer: 'Haras Rancho Sur '
   });
 
   return respuesta.isConfirmed;
@@ -29,7 +29,7 @@ document.querySelector("#btn1").addEventListener("click", async () => {
 */
 
 //Puede ser de 4 tipos: INFO, WARNING, ERROR, SUCCESS
-function showToast(message = ``, type = `INFO`, duration = 2500, url = null){
+function showToast(message = ``, type = `INFO`, duration = 4500, url = null){
   const bgColor = {
     'INFO'    : '#22a6b3',
     'WARNING' : '#f9ca24',
