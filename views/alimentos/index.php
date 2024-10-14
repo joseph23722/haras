@@ -2,14 +2,109 @@
 
 <div class="container-fluid px-4">
   <!-- Título principal -->
-  <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Gestionar
-    Alimentos</h1>
+  <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    Gestionar Alimentos
+  </h1>
 
-  <!-- Botón para abrir el modal de registrar alimentos -->
-  <div class="d-flex justify-content-end">
-    <button class="btn btn-primary btn-lg mb-3" style="background-color: #007bff; border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalRegistrarAlimento">
-      <i class="fas fa-plus-circle"></i> Registrar Nuevo Alimento
-    </button>
+  <!-- Formulario para Registrar Nuevo Alimento -->
+  <div class="card mb-4">
+    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+      <h5 class="text-center"><i class="fas fa-apple-alt" style="color: #3498db;"></i> Registrar Nuevo Alimento</h5>
+    </div>
+    <div class="card-body" style="background-color: #f9f9f9;">
+      <form action="" id="form-registrar-alimento" autocomplete="off">
+        <div class="row g-3">
+          <!-- Campos del formulario para registrar alimento -->
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required>
+              <label for="nombreAlimento"><i class="fas fa-seedling" style="color: #3498db;"></i> Nombre del Alimento</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" id="tipoAlimento" name="tipoAlimento" class="form-control" required>
+              <label for="tipoAlimento"><i class="fas fa-carrot" style="color: #3498db;"></i> Tipo de Alimento</label>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="number" name="stockActual" id="stockActual" class="form-control" required min="0">
+              <label for="stockActual"><i class="fas fa-weight" style="color: #3498db;"></i> Stock Actual</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" required min="0">
+              <label for="stockMinimo"><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Stock Mínimo</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <select id="unidadMedida" name="unidadMedida" class="form-select" required>
+                <option value="">Seleccione la Unidad de Medida</option>
+              </select>
+              <label for="unidadMedida"><i class="fas fa-balance-scale" style="color: #3498db;"></i> Unidad de Medida</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="number" step="0.01" name="costo" id="costo" class="form-control" required>
+              <label for="costo"><i class="fas fa-dollar-sign" style="color: #3498db;"></i> Costo</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" name="lote" id="lote" class="form-control" required>
+              <label for="lote"><i class="fas fa-box" style="color: #3498db;"></i> Lote</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="date" name="fechaCaducidad" id="fechaCaducidad" class="form-control" required>
+              <label for="fechaCaducidad"><i class="fas fa-calendar-alt" style="color: #3498db;"></i> Fecha de Caducidad</label>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="datetime-local" name="fechaIngreso" id="fechaIngreso" class="form-control" required>
+              <label for="fechaIngreso"><i class="fas fa-calendar-plus" style="color: #3498db;"></i> Fecha de Ingreso</label>
+            </div>
+          </div>
+
+          <div id="mensaje" style="margin-top: 10px; color: green; font-weight: bold;"></div>
+
+          <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+              <i class="fas fa-save"></i> Registrar Alimento
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Opciones de Movimiento -->
+  <div class="card mb-4">
+    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+      <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
+    </div>
+    <div class="card-body text-center" style="background-color: #f9f9f9;">
+      <button class="btn btn-outline-primary btn-lg me-3" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntradaAlimento">
+        <i class="fas fa-arrow-up"></i> Registrar Entrada de Alimento
+      </button>
+      <button class="btn btn-outline-danger btn-lg me-3" style="border-color: #dc3545;" data-bs-toggle="modal" data-bs-target="#modalSalidaAlimento">
+        <i class="fas fa-arrow-down"></i> Registrar Salida de Alimento
+      </button>
+      <button class="btn btn-outline-info btn-lg" style="border-color: #17a2b8;" data-bs-toggle="modal" data-bs-target="#modalHistorial">
+        <i class="fas fa-history"></i> Ver Historial de Movimientos
+      </button>
+    </div>
   </div>
 
   <!-- Tabla de Alimentos Registrados -->
@@ -33,93 +128,8 @@
     </div>
   </div>
 
-  <!-- Botón para abrir el modal de movimientos de entrada -->
-  <div class="d-flex justify-content-end mb-2">
-    <button class="btn btn-success btn-lg me-2" style="background-color: #28a745; border-color: #28a745;" data-bs-toggle="modal" data-bs-target="#modalEntradaAlimento">
-      <i class="fas fa-plus"></i> Registrar Entrada
-    </button>
-    <button class="btn btn-danger btn-lg" style="background-color: #dc3545; border-color: #dc3545;" data-bs-toggle="modal" data-bs-target="#modalSalidaAlimento">
-      <i class="fas fa-minus"></i> Registrar Salida
-    </button>
-  </div>
-
-  <!-- Modal para Registrar Nuevo Alimento -->
-  <div class="modal fade" id="modalRegistrarAlimento" tabindex="-1" aria-labelledby="modalRegistrarAlimentoLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header" style="background: #00b4d8; color: white;">
-          <h5 class="modal-title" id="modalRegistrarAlimentoLabel">Registrar Nuevo Alimento</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="" id="form-registrar-alimento" autocomplete="off">
-            <div class="row g-3">
-              <!-- Campos del formulario para registrar alimento -->
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required>
-                  <label for="nombreAlimento">Nombre del Alimento</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" id="tipoAlimento" name="tipoAlimento" class="form-control" required>
-                  <label for="tipoAlimento">Tipo de Alimento</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="number" name="cantidad" id="cantidad" class="form-control" required min="0">
-                  <label for="cantidad">Cantidad</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <select id="unidadMedida" name="unidadMedida" class="form-select" required>
-                    <option value="">Seleccione la Unidad de Medida</option>
-                  </select>
-                  <label for="unidadMedida">Unidad de Medida</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="number" step="0.01" name="costo" id="costo" class="form-control" required>
-                  <label for="costo">Costo</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" name="lote" id="lote" class="form-control" required>
-                  <label for="lote">Lote</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="date" name="fechaCaducidad" id="fechaCaducidad" class="form-control" required>
-                  <label for="fechaCaducidad">Fecha de Caducidad</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="datetime-local" name="fechaIngreso" id="fechaIngreso" class="form-control" required>
-                  <label for="fechaIngreso">Fecha de Ingreso</label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary" form="form-registrar-alimento">Registrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal para Movimientos de Entrada -->
-  <div class="modal fade" id="modalEntradaAlimento" tabindex="-1" aria-labelledby="modalEntradaAlimentoLabel"
-    aria-hidden="true">
+  <div class="modal fade" id="modalEntradaAlimento" tabindex="-1" aria-labelledby="modalEntradaAlimentoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header" style="background: #48cae4; color: white;">
@@ -139,8 +149,15 @@
               </div>
               <div class="col-md-6">
                 <div class="form-floating">
-                  <input type="number" name="cantidad" id="cantidad-entrada" class="form-control" required min="0">
-                  <label for="cantidad-entrada">Cantidad</label>
+                  <input type="number" name="stockActual" id="stockActual-entrada" class="form-control" required min="0">
+                  <label for="stockActual-entrada">Stock Actual</label>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="number" name="stockMinimo" id="stockMinimo-entrada" class="form-control" required min="0">
+                  <label for="stockMinimo-entrada">Stock Mínimo</label>
                 </div>
               </div>
               <div class="col-md-6">
@@ -158,7 +175,7 @@
               <div class="col-md-6">
                 <div class="form-floating">
                   <input type="text" name="tipoAlimento" id="tipoAlimentoEntrada" class="form-control" required>
-                  <label for="tipoAlimento">Tipo de Alimento</label>
+                  <label for="tipoAlimentoEntrada">Tipo de Alimento</label>
                 </div>
               </div>
               <div class="col-md-6">
@@ -166,14 +183,7 @@
                   <select id="unidadMedidaEntrada" name="unidadMedida" class="form-select" required>
                     <option value="">Seleccione la Unidad de Medida</option>
                   </select>
-                  <label for="unidadMedida">Unidad de Medida</label>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="number" name="nuevoPrecio" id="nuevo-precio-entrada" class="form-control" step="0.01">
-                  <label for="nuevo-precio-entrada">Nuevo Precio (opcional)</label>
+                  <label for="unidadMedidaEntrada">Unidad de Medida</label>
                 </div>
               </div>
             </div>
@@ -188,8 +198,7 @@
   </div>
 
   <!-- Modal para Movimientos de Salida -->
-  <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel"
-    aria-hidden="true">
+  <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header" style="background: #ff6b6b; color: white;">
@@ -221,6 +230,24 @@
                   <label for="tipoEquinoMovimiento">Tipo de Equino</label>
                 </div>
               </div>
+
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <select id="unidadMedidaSalida" name="unidadMedida" class="form-select" required>
+                    <option value="">Seleccione la Unidad de Medida</option>
+                  </select>
+                  <label for="unidadMedidaSalida"><i class="fas fa-balance-scale" style="color: #3498db;"></i> Unidad de Medida</label>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="text" name="lote" id="loteSalida" class="form-control">
+                  <label for="loteSalida"><i class="fas fa-box" style="color: #3498db;"></i> Lote (Opcional)</label>
+                </div>
+              </div>
+
+
               <div class="col-md-6">
                 <div class="form-floating">
                   <input type="number" step="0.01" name="merma" id="merma" class="form-control">
@@ -237,30 +264,76 @@
       </div>
     </div>
   </div>
+  <!-- Modal para Historial de Movimientos -->
+  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Pestañas para Entrada y Salida -->
+          <ul class="nav nav-tabs" id="historialTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="salidas-tab" data-bs-toggle="tab" data-bs-target="#salidas" type="button" role="tab" aria-controls="salidas" aria-selected="false">Salidas</button>
+            </li>
+          </ul>
 
-  <!-- Historial de Movimientos -->
-  <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-      <h5 class="text-center"><i class="fas fa-history"></i> Historial de Movimientos</h5>
-    </div>
-    <div class="card-body" style="background-color: #f9f9f9;">
-      <table class="table table-striped table-hover table-bordered">
-        <thead style="background-color: #caf0f8; color: #003366;">
-          <tr>
-            <th>ID</th>
-            <th>Alimento</th>
-            <th>Tipo Movimiento</th>
-            <th>Cantidad</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody id="historial-movimientos-table"></tbody>
-      </table>
+          <!-- Contenido de las pestañas -->
+          <div class="tab-content mt-3">
+            <!-- Tabla de Entradas -->
+            <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
+              <table id="tabla-entradas" class="table table-striped table-hover display nowrap" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Alimento</th>
+                    <th>Cantidad</th>
+                    <th>Unidad</th>
+                    <th>Fecha de Entrada</th>
+                  </tr>
+                </thead>
+                <tbody id="historial-entradas-table"></tbody>
+              </table>
+            </div>
+
+            <!-- Tabla de Salidas -->
+            <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
+              <table id="tabla-salidas" class="table table-striped table-hover display nowrap" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Alimento</th>
+                    <th>Tipo Equino</th>
+                    <th>Cantidad</th>
+                    <th>Unidad</th>
+                    <th>Merma</th>
+                    <th>Fecha de Salida</th>
+                  </tr>
+                </thead>
+                <tbody id="historial-salidas-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <?php require_once '../../footer.php'; ?>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
+<script src="../../swalcustom.js"></script>
+
+
 
 
 <script>
@@ -274,27 +347,96 @@
     const alimentoSelectEntrada = document.querySelector("#alimento-select-entrada");
     const alimentoSelectSalida = document.querySelector("#alimento-select-salida");
     const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
+    const mensajeDiv = document.querySelector("#mensaje");  // Div para mostrar los mensajes dinámicos
 
     // Elementos del tipo de alimento y unidad de medida para ambos modales
     const tipoAlimentoElementRegistrar = document.getElementById('tipoAlimento');
     const unidadMedidaElementRegistrar = document.getElementById('unidadMedida');
     const tipoAlimentoElementEntrada = document.getElementById('tipoAlimentoEntrada');
     const unidadMedidaElementEntrada = document.getElementById('unidadMedidaEntrada');
+    const unidadMedidaSelect = document.querySelector("#unidadMedidaSalida");
 
     // Elementos de fecha de caducidad e ingreso
     const fechaCaducidadElement = document.getElementById('fechaCaducidad');
     const fechaIngresoElement = document.getElementById('fechaIngreso');
 
+    // **Función para mostrar notificaciones en el div `mensaje`**
+    const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
+      const colores = {
+        'INFO': 'blue',
+        'SUCCESS': 'green',
+        'ERROR': 'red',
+        'WARNING': 'orange'
+      };
+      mensajeDiv.style.color = colores[tipo];
+      mensajeDiv.style.fontWeight = 'bold';
+      mensajeDiv.innerHTML = mensaje;
+    };
+
+    // **Función para mostrar notificaciones usando showToast**
+    const mostrarNotificacion = (mensaje, tipo = 'INFO') => {
+      showToast(mensaje, tipo);
+    };
+
     // Validar cantidad positiva en movimientos de entrada y salida
-    document.querySelector("#cantidad-entrada").addEventListener("input", (e) => {
-      if (e.target.value < 0) e.target.value = 0;
-    });
-    document.querySelector("#cantidad-salida").addEventListener("input", (e) => {
-      if (e.target.value < 0) e.target.value = 0;
+    const cantidadEntrada = document.querySelector("#cantidad-entrada");
+    const cantidadSalida = document.querySelector("#cantidad-salida");
+
+
+    // Función para cargar unidades de medida cuando se selecciona un alimento
+    alimentoSelectSalida.addEventListener("change", async function() {
+        const nombreAlimento = this.value;  // Capturar el alimento seleccionado
+
+        if (nombreAlimento) {
+            try {
+                const response = await fetch(`../../controllers/alimento.controller.php?operation=getUnidadesMedida&nombreAlimento=${nombreAlimento}`, {
+                    method: 'GET'
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    // Limpiar las opciones anteriores
+                    unidadMedidaSelect.innerHTML = '';
+                    // Agregar las nuevas opciones de unidades de medida al select
+                    result.data.unidadesMedida.forEach((unidad) => {
+                        unidadMedidaSelect.innerHTML += `<option value="${unidad}">${unidad}</option>`;
+                    });
+
+                    // Si no hay unidades de medida, mostrar un mensaje
+                    if (result.data.unidadesMedida.length === 0) {
+                        unidadMedidaSelect.innerHTML = '<option value="">No hay unidades disponibles</option>';
+                    }
+                } else {
+                    console.error("Error al cargar las unidades de medida:", result.message);
+                    unidadMedidaSelect.innerHTML = '<option value="">Error al cargar unidades</option>';
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error.message);
+                unidadMedidaSelect.innerHTML = '<option value="">Error en la solicitud</option>';
+            }
+        } else {
+            // Si no se ha seleccionado un alimento, limpiar el select de unidades de medida
+            unidadMedidaSelect.innerHTML = '<option value="">Seleccione un alimento primero</option>';
+        }
     });
 
+
+    if (cantidadEntrada) {
+      cantidadEntrada.addEventListener("input", (e) => {
+        if (e.target.value < 0) e.target.value = 0;
+      });
+    }
+
+    if (cantidadSalida) {
+      cantidadSalida.addEventListener("input", (e) => {
+        if (e.target.value < 0) e.target.value = 0;
+      });
+    }
+
     // **Fecha de Caducidad**: No permitir fechas pasadas
-    fechaCaducidadElement.setAttribute('min', new Date().toISOString().split('T')[0]);
+    if (fechaCaducidadElement) {
+      fechaCaducidadElement.setAttribute('min', new Date().toISOString().split('T')[0]);
+    }
 
     // Función para validar la fecha de caducidad
     const validarFechaCaducidad = () => {
@@ -303,14 +445,14 @@
       hoy.setHours(0, 0, 0, 0);
 
       if (fechaCaducidad < hoy) {
-        alert("La fecha de caducidad no puede ser en el pasado.");
+        mostrarMensajeDinamico("La fecha de caducidad no puede ser en el pasado.", 'ERROR');
         return false;
       }
       return true;
     };
 
-     // **Función para obtener la fecha y hora actuales en el formato correcto (local)**
-     const obtenerFechaHoraActual = () => {
+    // **Función para obtener la fecha y hora actuales en el formato correcto (local)**
+    const obtenerFechaHoraActual = () => {
       const ahora = new Date();
       const anio = ahora.getFullYear();
       const mes = String(ahora.getMonth() + 1).padStart(2, '0');
@@ -334,76 +476,83 @@
       const ahora = new Date();
 
       if (fechaIngreso.toISOString().slice(0, 16) !== ahora.toISOString().slice(0, 16)) {
-        alert("La fecha de ingreso debe ser la fecha y hora actuales.");
+        mostrarMensajeDinamico("La fecha de ingreso debe ser la fecha y hora actuales.", 'ERROR');
         return false;
       }
       return true;
     };
 
     // Actualizar la fecha de ingreso al abrir el modal
-    document.querySelector("#modalRegistrarAlimento").addEventListener("shown.bs.modal", actualizarFechaIngreso);
-
+    const modalRegistrarAlimento = document.querySelector("#modalRegistrarAlimento");
+    if (modalRegistrarAlimento) {
+      modalRegistrarAlimento.addEventListener("shown.bs.modal", actualizarFechaIngreso);
+    }
 
     // Función para cargar los alimentos registrados
     const loadAlimentos = async () => {
-        try {
-            const response = await fetch('../../controllers/alimento.controller.php', {
-                method: "POST",
-                body: new URLSearchParams({ operation: 'getAllAlimentos' })
-            });
+      try {
+        const response = await fetch('../../controllers/alimento.controller.php', {
+          method: "POST",
+          body: new URLSearchParams({ operation: 'getAllAlimentos' })
+        });
 
-            const textResponse = await response.text();
+        const textResponse = await response.text();
 
-            // Intentar convertir el texto en JSON
-            const alimentos = JSON.parse(textResponse);
+        // Intentar convertir el texto en JSON
+        const alimentos = JSON.parse(textResponse);
 
-            if (Array.isArray(alimentos)) {
-                // Limpiar las tablas antes de añadir contenido nuevo
-                alimentosTable.innerHTML = alimentos.map(alim => `
-                    <tr>
-                        <td>${alim.idAlimento}</td>
-                        <td>${alim.nombreAlimento}</td>
-                        <td>${alim.stockFinal}</td>
-                        <td>${alim.costo}</td>
-                        <td class="text-center">
-                            <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
+        if (Array.isArray(alimentos)) {
+          // Limpiar las tablas antes de añadir contenido nuevo
+          alimentosTable.innerHTML = alimentos.map(alim => `
+            <tr>
+              <td>${alim.idAlimento}</td>
+              <td>${alim.nombreAlimento}</td>
+              <td>${alim.tipoAlimento}</td>
+              <td>${alim.unidadMedida}</td>
+              <td>${alim.lote}</td>
+              <td>${alim.fechaCaducidad}</td>
+              <td>${alim.stockFinal}</td>
+              <td>${alim.fechaCaducidad}</td>
+              <td class="text-center">
+                <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
 
-                // Usar un Set para evitar duplicados en los selects
-                const uniqueAlimentos = new Set();
+          // Usar un Set para evitar duplicados en los selects
+          const uniqueAlimentos = new Set();
 
-                // Limpiar el contenido de los selects antes de añadir nuevas opciones
-                alimentoSelectEntrada.innerHTML = '<option value="">Seleccione un Alimento</option>';
-                alimentoSelectSalida.innerHTML = '<option value="">Seleccione un Alimento</option>';
+          // Limpiar el contenido de los selects antes de añadir nuevas opciones
+          alimentoSelectEntrada.innerHTML = '<option value="">Seleccione un Alimento</option>';
+          alimentoSelectSalida.innerHTML = '<option value="">Seleccione un Alimento</option>';
 
-                // Añadir los alimentos únicos a los selects
-                alimentos.forEach(alim => {
-                    if (!uniqueAlimentos.has(alim.nombreAlimento)) {
-                        uniqueAlimentos.add(alim.nombreAlimento); // Añadir al set para evitar duplicados
+          // Añadir los alimentos únicos a los selects
+          alimentos.forEach(alim => {
+            if (!uniqueAlimentos.has(alim.nombreAlimento)) {
+              uniqueAlimentos.add(alim.nombreAlimento); // Añadir al set para evitar duplicados
 
-                        // Añadir alimento a select de entrada
-                        const optionEntrada = document.createElement('option');
-                        optionEntrada.value = alim.nombreAlimento;
-                        optionEntrada.textContent = alim.nombreAlimento;
-                        alimentoSelectEntrada.appendChild(optionEntrada);
+              // Añadir alimento a select de entrada
+              const optionEntrada = document.createElement('option');
+              optionEntrada.value = alim.nombreAlimento;
+              optionEntrada.textContent = alim.nombreAlimento;
+              alimentoSelectEntrada.appendChild(optionEntrada);
 
-                        // Añadir alimento a select de salida
-                        const optionSalida = document.createElement('option');
-                        optionSalida.value = alim.nombreAlimento;
-                        optionSalida.textContent = alim.nombreAlimento;
-                        alimentoSelectSalida.appendChild(optionSalida);
-                    }
-                });
-            } else {
-                alimentosTable.innerHTML = '<tr><td colspan="5">No se encontraron alimentos.</td></tr>';
+              // Añadir alimento a select de salida
+              const optionSalida = document.createElement('option');
+              optionSalida.value = alim.nombreAlimento;
+              optionSalida.textContent = alim.nombreAlimento;
+              alimentoSelectSalida.appendChild(optionSalida);
             }
-        } catch (error) {
-            console.error('Error al cargar alimentos:', error);
+          });
+        } else {
+          mostrarMensajeDinamico('No se encontraron alimentos.', 'INFO');
+          alimentosTable.innerHTML = '<tr><td colspan="5">No se encontraron alimentos.</td></tr>';
         }
+      } catch (error) {
+        mostrarMensajeDinamico('Error al cargar alimentos.', 'ERROR');
+      }
     };
 
     // Función para cargar los tipos de equinos
@@ -427,76 +576,131 @@
           tipoEquinoMovimiento.appendChild(option);
         });
       } catch (error) {
-        console.error('Error al cargar tipos de equinos:', error);
+        mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
       }
     };
 
     // Función para registrar un nuevo alimento
-    formRegistrarAlimento.addEventListener("submit", async (event) => {
-      event.preventDefault(); // Previene la recarga de la página
+    if (formRegistrarAlimento) {
+      formRegistrarAlimento.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Previene la recarga de la página
 
-      if (!validarFechaCaducidad() || !validarFechaIngreso()) {
-        return;
-      }
-
-      const formData = new FormData(formRegistrarAlimento);
-      const data = new URLSearchParams(formData);
-      data.append('operation', 'registrar');
-
-      try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: data
-        });
-
-        const result = await response.json();
-        console.log(result); // Muestra el resultado de la respuesta para debug
-
-        // Aquí verifica la estructura correcta
-        if (result.status === "success" && result.data.status === "success") {
-          alert(result.data.message);  // Usa el mensaje correcto
-          formRegistrarAlimento.reset();
-          actualizarFechaIngreso(); // Restablecer la fecha de ingreso
-          loadAlimentos();
-        } else {
-          alert(result.data.message || "Error en la operación.");
+        // Validar que la fecha de caducidad y fecha de ingreso sean correctas
+        if (!validarFechaCaducidad() || !validarFechaIngreso()) {
+          return;
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert("Error en la solicitud: " + error.message);
-      }
-    });
 
-    // Función para cargar el historial de movimientos
+        // Obtener los valores de stock actual y stock mínimo directamente del formulario
+        const formData = new FormData(formRegistrarAlimento);
+        const stockActual = parseFloat(formData.get('stockActual')); // Campo dentro del form
+        const stockMinimo = parseFloat(formData.get('stockMinimo')); // Campo dentro del form
+
+        // Validación para asegurar que el stock mínimo no sea mayor que el stock actual
+        if (stockMinimo > stockActual) {
+          mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
+          return;
+        }
+
+        // Confirmar la operación con el usuario
+        if (await ask("¿Confirmar registro de nuevo alimento?")) {
+          const data = new URLSearchParams(formData); // Convertir el FormData a un formato URLSearchParams
+          data.append('operation', 'registrar'); // Agregar la operación
+
+          try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+              method: "POST",
+              body: data
+            });
+
+            const result = await response.json();
+
+            if (result.status === "success" && result.data.status === "success") {
+              mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+              formRegistrarAlimento.reset();
+              actualizarFechaIngreso(); // Restablecer la fecha de ingreso
+              loadAlimentos();
+            } else {
+              mostrarMensajeDinamico(result.data.message || "Error en la operación.", 'ERROR');
+            }
+          } catch (error) {
+            mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+          }
+        }
+      });
+    }
+
+
+    // Función para cargar el historial de movimientos de entradas y salidas
     const loadHistorialMovimientos = async () => {
-      try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: new URLSearchParams({ operation: 'historial' })
-        });
+        try {
+            // Cargar el historial de Entradas
+            const responseEntradas = await fetch('../../controllers/alimento.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'historial', tipoMovimiento: 'Entrada' }) // Cargar entradas
+            });
 
-        const textResponse = await response.text();
+            const textResponseEntradas = await responseEntradas.text();
+            const movimientosEntradas = JSON.parse(textResponseEntradas); // Convertir a JSON
 
-        // Intentar convertir el texto en JSON
-        const movimientos = JSON.parse(textResponse);
+            if (Array.isArray(movimientosEntradas)) {
+                // Inicializar DataTable para Entradas
+                $('#tabla-entradas').DataTable().clear().destroy(); // Limpiar DataTable antes de recargar
+                $('#tabla-entradas').DataTable({
+                    data: movimientosEntradas,
+                    columns: [
+                        { data: 'idAlimento' },
+                        { data: 'nombreAlimento' },
+                        { data: 'cantidad' },
+                        { data: 'unidadMedida' },
+                        { data: 'fechaMovimiento' }
+                    ],
+                    responsive: true,
+                    autoWidth: false,
+                    paging: true,
+                    searching: true,
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                    }
+                });
+            }
 
-        if (Array.isArray(movimientos)) {
-          historialMovimientosTable.innerHTML = movimientos.map(mov => `
-                    <tr>
-                        <td>${mov.idAlimento}</td>
-                        <td>${mov.nombreAlimento}</td>
-                        <td>${mov.tipoMovimiento}</td>
-                        <td>${mov.cantidad}</td>
-                        <td>${mov.fechaMovimiento}</td>
-                    </tr>
-                `).join('');
-        } else {
-          historialMovimientosTable.innerHTML = '<tr><td colspan="5">No se encontraron movimientos.</td></tr>';
+            // Cargar el historial de Salidas
+            const responseSalidas = await fetch('../../controllers/alimento.controller.php', {
+                method: "POST",
+                body: new URLSearchParams({ operation: 'historial', tipoMovimiento: 'Salida' }) // Cargar salidas
+            });
+
+            const textResponseSalidas = await responseSalidas.text();
+            const movimientosSalidas = JSON.parse(textResponseSalidas); // Convertir a JSON
+
+            if (Array.isArray(movimientosSalidas)) {
+                // Inicializar DataTable para Salidas
+                $('#tabla-salidas').DataTable().clear().destroy(); // Limpiar DataTable antes de recargar
+                $('#tabla-salidas').DataTable({
+                    data: movimientosSalidas,
+                    columns: [
+                        { data: 'idAlimento' },
+                        { data: 'nombreAlimento' },
+                        { data: 'tipoEquino' },
+                        { data: 'cantidad' },
+                        { data: 'unidadMedida' },
+                        { data: 'merma' },
+                        { data: 'fechaMovimiento' }
+                    ],
+                    responsive: true,
+                    autoWidth: false,
+                    paging: true,
+                    searching: true,
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                    }
+                });
+            }
+        } catch (error) {
+            mostrarMensajeDinamico('Error al cargar historial de movimientos.', 'ERROR');
         }
-      } catch (error) {
-        console.error('Error al cargar historial de movimientos:', error);
-      }
     };
+
 
     // Función dinámica para cambiar las unidades de medida según el tipo de alimento
     const actualizarOpcionesUnidadMedida = (tipoAlimento, unidadMedidaSelect) => {
@@ -528,139 +732,193 @@
       actualizarOpcionesUnidadMedida(tipoAlimentoElementEntrada.value, unidadMedidaElementEntrada);
     });
 
+    // **Función para manejar la notificación de stock bajo/agotado**
+    const notificarStockBajo = async () => {
+      try {
+        const response = await fetch('../../controllers/alimento.controller.php', {
+          method: "POST",
+          body: new URLSearchParams({ operation: 'spu_notificar_stock_bajo_alimentos' })
+        });
+
+        const textResponse = await response.text();
+        const result = JSON.parse(textResponse);
+
+        if (Array.isArray(result)) {
+          result.forEach(notificacion => {
+            mostrarMensajeDinamico(notificacion.Notificacion, 'WARNING');
+          });
+        }
+      } catch (error) {
+        mostrarMensajeDinamico('Error al notificar stock bajo.', 'ERROR');
+      }
+    };
+
     // Función para manejar entradas de alimentos
     const registrarEntrada = async () => {
+      const stockActualInput = document.querySelector("#stockActual-entrada");
+      const stockMinimoInput = document.querySelector("#stockMinimo-entrada");
+      const mensajeStock = document.querySelector("#mensaje-stock");
+
+      // Validar el stock antes de proceder
+      const validarStock = () => {
+        const stockActual = parseFloat(stockActualInput.value) || 0;
+        const stockMinimo = parseFloat(stockMinimoInput.value) || 0;
+
+        if (stockMinimo > stockActual) {
+          mensajeStock.textContent = "El stock mínimo no puede ser mayor que el stock actual.";
+          return false;
+        } else {
+          mensajeStock.textContent = ""; // Limpiar mensaje si está todo correcto
+          return true;
+        }
+      };
+
+      // Verificar si el stock es válido antes de continuar
+      if (!validarStock()) {
+        mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
+        return;
+      }
+
       if (!alimentoSelectEntrada.value) {
-        alert("Por favor, seleccione un alimento.");
+        mostrarMensajeDinamico("Por favor, seleccione un alimento.", 'ERROR');
         return;
       }
 
-      const formData = new FormData(formEntradaAlimento);
-      const data = new URLSearchParams(formData);
-      data.append('operation', 'entrada');  // Cambiar a 'entrada'
+      if (await ask("¿Confirmar entrada de alimento?")) {
+        const formData = new FormData(formEntradaAlimento);
+        const data = new URLSearchParams(formData);
+        data.append('operation', 'entrada');
 
-      try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: data
-        });
+        try {
+          const response = await fetch('../../controllers/alimento.controller.php', {
+            method: "POST",
+            body: data
+          });
 
-        const textResponse = await response.text();
-        console.log("Respuesta como texto (registrar entrada):", textResponse);
+          const result = JSON.parse(await response.text());
 
-        const result = JSON.parse(textResponse);
-        console.log("Resultado (registrar entrada):", result);
-
-        // Aquí verifica la estructura correcta
-        if (result.status === "success" && result.data.status === "success") {
-          alert(result.data.message);  // Usa el mensaje correcto
-          formEntradaAlimento.reset();
-          loadAlimentos();
-          loadHistorialMovimientos();
-        } else {
-          alert(result.data.message || "Error en la operación.");
+          if (result.status === "success" && result.data.status === "success") {
+            mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+            formEntradaAlimento.reset();
+            loadAlimentos();
+            loadHistorialMovimientos();
+          } else {
+            mostrarMensajeDinamico(result.data.message || "Error en la operación.", 'ERROR');
+          }
+        } catch (error) {
+          mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
         }
-      } catch (error) {
-        alert("Error en la solicitud: " + error.message);
-        console.error('Error:', error);
       }
     };
 
-    // Función para manejar salidas de alimentos
+
+    // Función para manejar la salida de alimentos
     const registrarSalida = async () => {
-      if (!alimentoSelectSalida.value) {
-        alert("Por favor, seleccione un alimento.");
-        return;
-      }
-
-      if (!tipoEquinoMovimiento.value) {
-        alert("Seleccione un tipo de equino para la salida.");
-        return;
-      }
-
-      const formData = new FormData(formSalidaAlimento);
-      const data = new URLSearchParams(formData);
-      data.append('operation', 'salida');  // Cambiar a 'salida'
-
-      try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: data
-        });
-
-        const textResponse = await response.text();
-
-        // Intentar parsear el JSON
-        const result = JSON.parse(textResponse);
-
-        if (result.status === "success") {
-          const message = result.data.message || result.message || "Salida registrada exitosamente.";
-          alert(message);
-
-          // Restablecer el formulario
-          formSalidaAlimento.reset();
-          // Cerrar el modal de salida
-          $('#modalSalidaAlimento').modal('hide');
-          // Recargar los alimentos y el historial de movimientos
-          loadAlimentos();
-          loadHistorialMovimientos();
-        } else {
-          alert(result.message || "Error al registrar la salida.");
+        // Validaciones básicas
+        if (!alimentoSelectSalida.value) {
+            mostrarMensajeDinamico("Por favor, seleccione un alimento.", 'ERROR');
+            return;
         }
-      } catch (error) {
-        alert("Error en la solicitud: " + error.message);
-        console.error('Error:', error);
-      }
+
+        if (!tipoEquinoMovimiento.value) {
+            mostrarMensajeDinamico("Seleccione un tipo de equino para la salida.", 'ERROR');
+            return;
+        }
+
+        if (!unidadMedidaSalida.value) {
+            mostrarMensajeDinamico("Seleccione una unidad de medida.", 'ERROR');
+            return;
+        }
+
+        // Confirmación del usuario
+        if (await ask("¿Confirmar salida de alimento?")) {
+            const formData = new FormData(formSalidaAlimento);
+
+            // Asegurarse de agregar la operación de salida
+            formData.append('operation', 'salida');
+
+            // Validar si el lote es opcional
+            const lote = loteSalida.value || null;
+            formData.set('lote', lote); // Establecer el lote como null si no se especifica
+
+            // Convertimos formData en URLSearchParams para enviar por POST
+            const data = new URLSearchParams(formData);
+
+            try {
+                // Realizar la solicitud al servidor
+                const response = await fetch('../../controllers/alimento.controller.php', {
+                    method: "POST",
+                    body: data
+                });
+
+                // Capturar la respuesta como texto para ver qué está sucediendo
+                const textResponse = await response.text();  // Obteniendo la respuesta como texto
+
+                // Ahora intentamos parsear el texto a JSON
+                const result = JSON.parse(textResponse);
+
+                // Verificar el estado del resultado y proceder
+                if (result.status === "success") {
+                    mostrarMensajeDinamico(result.data.message || "Salida registrada exitosamente.", 'SUCCESS');
+                    formSalidaAlimento.reset(); // Reiniciar el formulario
+                    $('#modalSalidaAlimento').modal('hide'); // Cerrar el modal
+                    loadAlimentos(); // Recargar la lista de alimentos
+                    loadHistorialMovimientos(); // Recargar el historial de movimientos
+                } else {
+                    mostrarMensajeDinamico(result.message || "Error al registrar la salida.", 'ERROR');
+                }
+            } catch (error) {
+                // Capturar y mostrar errores
+                console.error("Error en la solicitud:", error.message);
+                mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+            }
+        }
     };
+
+
+
     // Función para eliminar un alimento
     window.eliminarAlimento = async (idAlimento) => {
-        if (!confirm('¿Estás seguro de que deseas eliminar este alimento?')) return;
-
+      if (await ask('¿Estás seguro de que deseas eliminar este alimento?')) {
         const data = new URLSearchParams();
         data.append('operation', 'eliminar');
         data.append('idAlimento', idAlimento);
 
         try {
-            const response = await fetch('../../controllers/alimento.controller.php', {
-                method: "POST",
-                body: data
-            });
+          const response = await fetch('../../controllers/alimento.controller.php', {
+            method: "POST",
+            body: data
+          });
 
-            const resultText = await response.text(); // Obtener la respuesta como texto
-            console.log(resultText); // Mostrar la respuesta en la consola para depurar
+          const result = JSON.parse(await response.text());
 
-            // Intenta convertir la respuesta a JSON
-            let result;
-            try {
-                result = JSON.parse(resultText); // Convierte la respuesta a JSON
-            } catch (e) {
-                console.error('Error al convertir la respuesta a JSON', e);
-                alert('Ocurrió un error inesperado. Revisa la consola para más detalles.');
-                return;
-            }
-
-            // Verifica la estructura correcta del JSON
-            if (result.status === "success" && result.data && result.data.status === "success") {
-                alert(result.data.message); // Usa el mensaje dentro de 'data'
-                loadAlimentos(); // Recargar la lista de alimentos
-            } else {
-                alert(result.data?.message || result.message || "Error en la operación.");
-            }
+          if (result.status === "success" && result.data && result.data.status === "success") {
+            mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+            loadAlimentos();
+          } else {
+            mostrarMensajeDinamico(result.data?.message || result.message || "Error en la operación.", 'ERROR');
+          }
         } catch (error) {
-            alert("Error en la solicitud: " + error.message);
-            console.error('Error:', error);
+          mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
         }
+      }
     };
 
     // Cargar todos los datos al inicio
     loadAlimentos();
     loadTipoEquinos();
     loadHistorialMovimientos();
+    notificarStockBajo();
 
     // Eventos para botones de guardar
-    document.querySelector("#guardarEntrada").addEventListener("click", registrarEntrada);
-    document.querySelector("#guardarSalida").addEventListener("click", registrarSalida);
+    const guardarEntradaBtn = document.querySelector("#guardarEntrada");
+    if (guardarEntradaBtn) {
+      guardarEntradaBtn.addEventListener("click", registrarEntrada);
+    }
+
+    const guardarSalidaBtn = document.querySelector("#guardarSalida");
+    if (guardarSalidaBtn) {
+      guardarSalidaBtn.addEventListener("click", registrarSalida);
+    }
   });
 </script>
-
-

@@ -127,35 +127,40 @@ CREATE TABLE Alimentos (
     idUsuario            INT NOT NULL,
     nombreAlimento       VARCHAR(100) NOT NULL,
     tipoAlimento         VARCHAR(50),
-    cantidad             DECIMAL(10,2) NOT NULL,
-    unidadMedida         VARCHAR(10) NOT NULL,
-    costo                DECIMAL(10,2) NOT NULL,
-    lote                 VARCHAR(50), -- Registro de lote
-    fechaCaducidad       DATE NULL, -- Fecha de caducidad por lote
-    idTipoEquino         INT NULL, -- Solo para salidas
-    merma                DECIMAL(10,2), -- Registro de la merma en salidas
-    stockFinal           DECIMAL(10,2) NOT NULL, -- Stock final del lote
-    stockMinimo          DECIMAL(10,2) DEFAULT 0,
-    fechaIngreso         DATETIME NULL,
-    compra               DECIMAL(10,2) NOT NULL,
-    fechaMovimiento      DATETIME DEFAULT NOW(),
-    CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento, lote),
-    CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
-    CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
+    stockActual          DECIMAL(10,2) NOT NULL,   -- Stock actual del alimento
+    stockMinimo          DECIMAL(10,2) DEFAULT 0,  -- Stock mínimo para alerta
+    estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',  -- Estado del alimento
+    unidadMedida         VARCHAR(10) NOT NULL,     -- Unidad de medida del alimento (Kilos, Litros, etc.)
+    costo                DECIMAL(10,2) NOT NULL,   -- Precio unitario del alimento
+    lote                 VARCHAR(50),              -- Registro de lote
+    fechaCaducidad       DATE NULL,                -- Fecha de caducidad por lote
+    idTipoEquino         INT NULL,                 -- Solo para salidas (referencia a tipo de equino)
+    merma                DECIMAL(10,2) NULL,       -- Registro de la merma en salidas
+    fechaIngreso         DATETIME NULL,            -- Fecha de ingreso del lote
+    compra               DECIMAL(10,2) NOT NULL,   -- Costo total de compra (costo * cantidad)
+    fechaMovimiento      DATETIME DEFAULT NOW(),   -- Fecha del último movimiento
+    CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento, lote), -- Unicidad de alimento por lote
+    CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),  -- Relación con la tabla Usuarios
+    CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)  -- Relación con la tabla TipoEquinos
 ) ENGINE = INNODB;
+
 
 -- 12. HistorialMovimientos
 CREATE TABLE HistorialMovimientos (
     idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
-    idAlimento INT NOT NULL,
-    tipoMovimiento VARCHAR(50) NOT NULL,
-    cantidad DECIMAL(10,2) NOT NULL,
-    idUsuario INT NOT NULL,
-    fechaMovimiento DATETIME DEFAULT NOW(),
-    merma DECIMAL(10,2) DEFAULT 0,
+    idAlimento INT NOT NULL,            -- ID del alimento (relación con Alimentos)
+    tipoMovimiento VARCHAR(50) NOT NULL,-- Tipo de movimiento (Entrada/Salida)
+    cantidad DECIMAL(10,2) NOT NULL,    -- Cantidad de alimento
+    idTipoEquino INT NULL,              -- ID del tipo de equino (solo para Salida)
+    idUsuario INT NOT NULL,             -- ID del usuario que realiza el movimiento
+    unidadMedida VARCHAR(50) NOT NULL,  -- Unidad de medida (Kilos, Litros, etc.)
+    fechaMovimiento DATETIME DEFAULT NOW(), -- Fecha del movimiento
+    merma DECIMAL(10,2) NULL,           -- Merma (solo si aplica)
     FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
+    FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino), -- Relación con TipoEquinos
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE=InnoDB;
+
 
 -- 13. TiposMedicamentos ----°°°
 CREATE TABLE TiposMedicamentos (

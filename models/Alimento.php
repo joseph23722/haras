@@ -22,12 +22,12 @@ class Alimento extends Conexion {
             }
 
             // Validar los datos
-            if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0 || $params['costo'] <= 0) {
-                throw new Exception('Datos inválidos. Verifique el nombre del alimento, cantidad y costo.');
+            if (empty($params['nombreAlimento']) || $params['stockActual'] <= 0 || $params['costo'] <= 0 || $params['stockMinimo'] < 0) {
+                throw new Exception('Datos inválidos. Verifique el nombre del alimento, stock actual, stock mínimo y costo.');
             }
 
             // Llamar al procedimiento almacenado para registrar el alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?,?,?)");
+            $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
@@ -36,7 +36,8 @@ class Alimento extends Conexion {
                 $params['lote'],
                 $params['costo'],
                 $params['fechaCaducidad'],
-                $params['cantidad']
+                $params['stockActual'],
+                $params['stockMinimo']
             ]);
 
             return ['status' => 'success', 'message' => 'Alimento registrado exitosamente.'];
@@ -55,32 +56,40 @@ class Alimento extends Conexion {
     // Método para registrar una entrada de alimento
     public function registrarEntradaAlimento($params = []) {
         try {
+            // Iniciar sesión si no está iniciada
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
 
+            // Obtener el id del usuario autenticado
             $idUsuario = $_SESSION['idUsuario'] ?? null;
 
+            // Validar si el usuario está autenticado
             if ($idUsuario === null) {
                 throw new Exception('Usuario no autenticado.');
             }
 
-            // Validar los datos
-            if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0) {
-                throw new Exception('Datos inválidos. Verifique el nombre del alimento y la cantidad.');
+            // Validar los datos, incluyendo el stock actual y stock mínimo
+            if (empty($params['nombreAlimento']) || $params['stockActual'] <= 0 || $params['stockMinimo'] < 0) {
+                throw new Exception('Datos inválidos. Verifique el nombre del alimento, el stock actual y el stock mínimo.');
+            }
+
+            // Validar que el stock mínimo no sea mayor al stock actual
+            if ($params['stockMinimo'] > $params['stockActual']) {
+                throw new Exception('El stock mínimo no puede ser mayor que el stock actual.');
             }
 
             // Llamar al procedimiento almacenado para registrar la entrada de alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_entrada(?,?,?,?,?,?,?,?)");
+            $query = $this->pdo->prepare("CALL spu_alimentos_entrada(?,?,?,?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
-                $params['tipoAlimento'],  // Agregar el parámetro 'tipoAlimento'
+                $params['tipoAlimento'],   // Tipo de alimento
                 $params['unidadMedida'],
                 $params['lote'],
                 $params['fechaCaducidad'],
-                $params['cantidad'],
-                $params['nuevoPrecio'] ?? null
+                $params['stockActual'],    // Stock actual
+                $params['nuevoPrecio'] ?? null  // Nuevo precio (opcional)
             ]);
 
             return ['status' => 'success', 'message' => 'Entrada registrada exitosamente.'];
@@ -110,18 +119,20 @@ class Alimento extends Conexion {
             }
 
             // Validar los datos
-            if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0 || empty($params['idTipoEquino'])) {
-                throw new Exception('Datos inválidos. Verifique el nombre del alimento, la cantidad y el tipo de equino.');
+            if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0 || empty($params['idTipoEquino']) || empty($params['unidadMedida'])) {
+                throw new Exception('Datos inválidos. Verifique el nombre del alimento, la cantidad, la unidad de medida y el tipo de equino.');
             }
 
             // Llamar al procedimiento almacenado para registrar la salida de alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_salida(?,?,?,?,?)");
+            $query = $this->pdo->prepare("CALL spu_alimentos_salida(?,?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
+                $params['unidadMedida'],
                 $params['cantidad'],
                 $params['idTipoEquino'],
-                $params['merma'] ?? 0
+                $params['lote'] ?? null,  // Lote opcional
+                $params['merma'] ?? 0     // Merma opcional, por defecto es 0
             ]);
 
             return ['status' => 'success', 'message' => 'Salida registrada exitosamente.'];
@@ -155,21 +166,31 @@ class Alimento extends Conexion {
     // Método para obtener historial de movimientos de alimentos
     public function obtenerHistorialMovimientos($params = []) {
         try {
-            $query = $this->pdo->prepare("CALL spu_historial_completo(?,?,?,?,?,?)");
+            // Preparar la llamada al procedimiento almacenado con los 6 parámetros
+            $query = $this->pdo->prepare("CALL spu_historial_completo(?, ?, ?, ?, ?, ?)");
+
+            // Ejecutar el procedimiento almacenado pasando los parámetros necesarios
             $query->execute([
-                $params['tipoMovimiento'] ?? '',
-                $params['fechaInicio'] ?? '1900-01-01',
-                $params['fechaFin'] ?? date('Y-m-d'),
-                $params['idUsuario'] ?? 0,
-                $params['limit'] ?? 10,
-                $params['offset'] ?? 0
+                $params['tipoMovimiento'] ?? 'Entrada',          // Tipo de movimiento (Entrada/Salida)
+                $params['fechaInicio'] ?? '1900-01-01',         // Fecha de inicio (default: muy anterior)
+                $params['fechaFin'] ?? date('Y-m-d'),           // Fecha de fin (default: hoy)
+                $params['idUsuario'] ?? 0,                      // ID del usuario (0 para todos los usuarios)
+                $params['limit'] ?? 10,                         // Límite de resultados
+                $params['offset'] ?? 0                          // Desplazamiento para paginación
             ]);
+
+            // Devolver los resultados en forma de array asociativo
             return $query->fetchAll(PDO::FETCH_ASSOC);
+
         } catch (PDOException $e) {
+            // Registrar el error en el log en caso de que algo falle
             error_log($e->getMessage());
+
+            // Devolver un array vacío en caso de error
             return [];
         }
     }
+
 
     // Método para obtener todos los alimentos
     public function getAllAlimentos() {
@@ -210,12 +231,24 @@ class Alimento extends Conexion {
     // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {
-            $query = $this->pdo->prepare("SELECT idTipoEquino, tipoEquino FROM TipoEquinos");
-            $query->execute();
+            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+             $query->execute();
+            
             return $query->fetchAll(PDO::FETCH_ASSOC);
+            
         } catch (PDOException $e) {
             error_log($e->getMessage());
             return [];
         }
     }
+
+    public function getUnidadesMedida($nombreAlimento) {
+        $query = $this->pdo->prepare("SELECT unidadMedida FROM Alimentos WHERE nombreAlimento = :nombreAlimento");
+        $query->execute(['nombreAlimento' => $nombreAlimento]);
+    
+        // Asumimos que se puede devolver más de una unidad de medida
+        return $query->fetchAll(PDO::FETCH_COLUMN);
+    }
+    
+
 }
