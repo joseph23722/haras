@@ -126,115 +126,21 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+CALL spu_alimentos_entrada(
+    1,                       -- ID de usuario
+    'trigo',                 -- Nombre del alimento
+    'Grano',                 -- Tipo de alimento
+    'Kilos',                 -- Unidad de medida
+    'lote23',                -- Lote
+    '2025-01-23',            -- Fecha de caducidad
+    230,                     -- Cantidad
+    15.5                     -- Nuevo precio
+);
+
+
+
 -- Procedimiento Salida de Alimentos 
-DELIMITER $$
-CREATE PROCEDURE spu_alimentos_salida(
-    IN _idUsuario INT,               -- Usuario que realiza la operación
-    IN _nombreAlimento VARCHAR(100), -- Nombre del alimento
-    IN _unidadMedida VARCHAR(10),    -- Unidad de medida del alimento
-    IN _cantidad DECIMAL(10,2),      -- Cantidad que se retira
-    IN _idTipoEquino INT,            -- Tipo de equino que recibirá la salida
-    IN _lote VARCHAR(50),            -- Lote específico (opcional)
-    IN _merma DECIMAL(10,2)          -- Cantidad de merma (opcional)
-)
-BEGIN
-    DECLARE _idAlimento INT;                   -- ID del alimento (lote) a procesar
-    DECLARE _currentStock DECIMAL(10,2);       -- Stock actual del lote a procesar
-    DECLARE _unidadMedidaLote VARCHAR(10);     -- Unidad de medida del lote
-    DECLARE _totalStock DECIMAL(10,2);         -- Stock total disponible del alimento
-    DECLARE _cantidadNecesaria DECIMAL(10,2);  -- Cantidad total necesaria (cantidad + merma)
-
-    -- Manejador de errores: hacer ROLLBACK ante cualquier error
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
-    BEGIN
-        ROLLBACK;
-    END;
-
-    -- Iniciar transacción
-    START TRANSACTION;
-
-    -- Asegurar que la cantidad a retirar sea mayor que cero
-    IF _cantidad <= 0 THEN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La cantidad a retirar debe ser mayor que cero.';
-    END IF;
-
-    -- Asignar valor por defecto a la merma si es NULL
-    IF _merma IS NULL THEN
-        SET _merma = 0;
-    END IF;
-
-    -- Calcular la cantidad total necesaria (cantidad + merma)
-    SET _cantidadNecesaria = _cantidad + _merma;
-
-    -- Si el usuario **no proporciona un lote**, realizar salida por fecha de caducidad o último lote
-    IF _lote IS NULL THEN
-        -- Buscar el lote con la fecha de caducidad más cercana que coincida con la unidad de medida
-        SELECT idAlimento, stockActual, unidadMedida
-        INTO _idAlimento, _currentStock, _unidadMedidaLote
-        FROM Alimentos
-        WHERE nombreAlimento = LOWER(_nombreAlimento)
-          AND unidadMedida = _unidadMedida
-        ORDER BY fechaCaducidad ASC
-        LIMIT 1 FOR UPDATE;
-
-        -- Verificar si se encontró un lote con la unidad de medida correcta
-        IF _idAlimento IS NULL THEN
-            ROLLBACK;
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No se encontró un lote con la unidad de medida proporcionada.';
-        END IF;
-
-        -- Verificar si hay suficiente stock en el lote seleccionado
-        IF _currentStock < _cantidadNecesaria THEN
-            ROLLBACK;
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No hay suficiente stock disponible en el lote seleccionado.';
-        END IF;
-
-    -- Si el usuario **proporciona un lote**, procesar la salida por ese lote
-    ELSE
-        -- Buscar el lote específico
-        SELECT idAlimento, stockActual, unidadMedida
-        INTO _idAlimento, _currentStock, _unidadMedidaLote
-        FROM Alimentos
-        WHERE nombreAlimento = LOWER(_nombreAlimento)
-          AND lote = _lote
-          AND unidadMedida = _unidadMedida
-        LIMIT 1 FOR UPDATE;
-
-        -- Verificar si el lote proporcionado existe y la unidad de medida coincide
-        IF _idAlimento IS NULL THEN
-            ROLLBACK;
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El lote proporcionado no existe o la unidad de medida no coincide.';
-        END IF;
-
-        -- Verificar si hay suficiente stock en el lote proporcionado
-        IF _currentStock < _cantidadNecesaria THEN
-            ROLLBACK;
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No hay suficiente stock disponible en el lote proporcionado.';
-        END IF;
-    END IF;
-
-    -- Realizar la salida del stock en el lote seleccionado
-    UPDATE Alimentos
-    SET stockActual = stockActual - _cantidadNecesaria,
-        idTipoEquino = _idTipoEquino,
-        fechaMovimiento = NOW()
-    WHERE idAlimento = _idAlimento;
-
-    -- Registrar la salida y la merma en el historial de movimientos
-	INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, idTipoEquino, unidadMedida)
-	VALUES (_idAlimento, 'Salida', _cantidad, _merma, _idUsuario, NOW(), _idTipoEquino, _unidadMedida);
-
-
-    -- Si el stock del lote se agota, eliminar el lote
-    IF _currentStock - _cantidadNecesaria = 0 THEN
-        DELETE FROM Alimentos WHERE idAlimento = _idAlimento;
-    END IF;
-
-    -- Confirmar la transacción
-    COMMIT;
-END $$
-DELIMITER ;
 
 
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
@@ -373,4 +279,157 @@ END $$
 DELIMITER ;
 
 
+
+
+
+
+
+
+
+
+
+-- -------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE PROCEDURE spu_alimentos_salida(
+    IN _idUsuario INT,
+    IN _nombreAlimento VARCHAR(100),
+    IN _unidadMedida VARCHAR(10),
+    IN _cantidad DECIMAL(10,2),
+    IN _idTipoEquino INT,
+    IN _lote VARCHAR(50),
+    IN _merma DECIMAL(10,2)
+)
+BEGIN
+    DECLARE _idAlimento INT;
+    DECLARE _currentStock DECIMAL(10,2);
+    DECLARE _unidadMedidaLote VARCHAR(10);
+    DECLARE _cantidadNecesaria DECIMAL(10,2);
+    DECLARE _debugInfo VARCHAR(255) DEFAULT '';  -- Variable para depuración
+
+    -- Manejador de errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        ROLLBACK;
+        IF _debugInfo IS NULL OR _debugInfo = '' THEN
+            SET _debugInfo = 'Error desconocido en la transacción';
+        END IF;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
+    END;
+
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Validar que la cantidad a retirar sea mayor que cero
+    IF _cantidad <= 0 THEN
+        SET _debugInfo = 'La cantidad a retirar debe ser mayor que cero.';
+        ROLLBACK;
+    ELSE
+        -- Asignar valor por defecto a la merma si es NULL
+        IF _merma IS NULL THEN
+            SET _merma = 0;
+        END IF;
+
+        -- Calcular la cantidad total necesaria (cantidad + merma)
+        SET _cantidadNecesaria = _cantidad + _merma;
+
+        -- Si no se proporciona lote (NULL o vacío)
+        IF _lote IS NULL OR _lote = '' THEN
+            -- Buscar el lote con la fecha de caducidad más cercana
+            SET _debugInfo = 'Buscando lote con fecha de caducidad más cercana...';
+            SELECT idAlimento, stockActual, unidadMedida
+            INTO _idAlimento, _currentStock, _unidadMedidaLote
+            FROM Alimentos
+            WHERE LOWER(nombreAlimento) = LOWER(_nombreAlimento)
+              AND LOWER(unidadMedida) = LOWER(_unidadMedida)
+              AND fechaCaducidad >= CURDATE()
+            ORDER BY fechaCaducidad ASC
+            LIMIT 1 FOR UPDATE;
+
+            -- Si no se encuentra un lote con fecha de caducidad cercana, buscar el último lote registrado
+            IF _idAlimento IS NULL THEN
+                SET _debugInfo = 'No se encontró un lote con fecha cercana, buscando el último lote registrado...';
+                SELECT idAlimento, stockActual, unidadMedida
+                INTO _idAlimento, _currentStock, _unidadMedidaLote
+                FROM Alimentos
+                WHERE LOWER(nombreAlimento) = LOWER(_nombreAlimento)
+                  AND LOWER(unidadMedida) = LOWER(_unidadMedida)
+                ORDER BY fechaIngreso DESC
+                LIMIT 1 FOR UPDATE;
+
+                -- Si tampoco hay un último lote, devolver error
+                IF _idAlimento IS NULL THEN
+                    SET _debugInfo = 'No se encontró ningún lote registrado para este alimento.';
+                    ROLLBACK;
+                END IF;
+            END IF;
+
+        ELSE
+            -- Si el usuario proporciona un lote
+            SET _debugInfo = 'Buscando el lote proporcionado por el usuario...';
+            SELECT idAlimento, stockActual, unidadMedida
+            INTO _idAlimento, _currentStock, _unidadMedidaLote
+            FROM Alimentos
+            WHERE LOWER(nombreAlimento) = LOWER(_nombreAlimento)
+              AND lote = _lote
+              AND LOWER(unidadMedida) = LOWER(_unidadMedida)
+            LIMIT 1 FOR UPDATE;
+
+            -- Verificar si el lote proporcionado existe y la unidad de medida coincide
+            IF _idAlimento IS NULL THEN
+                SET _debugInfo = 'El lote proporcionado no existe o la unidad de medida no coincide.';
+                ROLLBACK;
+            END IF;
+        END IF;
+
+        -- Verificar si hay suficiente stock en el lote seleccionado
+        IF _currentStock < _cantidadNecesaria THEN
+            SET _debugInfo = 'No hay suficiente stock disponible en el lote seleccionado.';
+            ROLLBACK;
+        ELSE
+            -- Realizar la salida del stock en el lote seleccionado
+            UPDATE Alimentos
+            SET stockActual = stockActual - _cantidadNecesaria,
+                idTipoEquino = _idTipoEquino,
+                fechaMovimiento = NOW()
+            WHERE idAlimento = _idAlimento;
+
+            -- Registrar la salida y la merma en el historial de movimientos
+            INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, idTipoEquino, unidadMedida)
+            VALUES (_idAlimento, 'Salida', _cantidad, _merma, _idUsuario, NOW(), _idTipoEquino, _unidadMedida);
+
+            -- Si el stock del lote se agota, eliminar el lote
+            IF _currentStock - _cantidadNecesaria = 0 THEN
+                DELETE FROM Alimentos WHERE idAlimento = _idAlimento;
+            END IF;
+
+            -- Confirmar la transacción
+            COMMIT;
+
+            -- Confirmación de éxito
+            SET _debugInfo = 'Transacción completada exitosamente.';
+            SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
+        END IF;
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, NULL, 0);
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, 'L001', 0);
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, 'L001', 1);
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, NULL, 1);
+
+
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', -1, 1, NULL, 0);
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, 'L999', 0);
+CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1000, 1, NULL, 0);
+
+
+
+
+select * from alimentos  ; 
+select * from HistorialMovimientos  ; 
 

@@ -79,8 +79,16 @@ class Alimento extends Conexion {
                 throw new Exception('El stock mínimo no puede ser mayor que el stock actual.');
             }
 
+            // Validar que el lote y fecha de caducidad sean correctos
+            if (empty($params['lote']) || empty($params['fechaCaducidad'])) {
+                throw new Exception('Lote y fecha de caducidad son obligatorios.');
+            }
+
+            // Registrar en el log los datos enviados para depuración
+            error_log("Llamada al procedimiento spu_alimentos_entrada con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, tipoAlimento={$params['tipoAlimento']}, unidadMedida={$params['unidadMedida']}, lote={$params['lote']}, fechaCaducidad={$params['fechaCaducidad']}, cantidad={$params['stockActual']}, nuevoPrecio={$params['nuevoPrecio']}");
+
             // Llamar al procedimiento almacenado para registrar la entrada de alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_entrada(?,?,?,?,?,?,?,?,?)");
+            $query = $this->pdo->prepare("CALL spu_alimentos_entrada(?,?,?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
@@ -93,60 +101,107 @@ class Alimento extends Conexion {
             ]);
 
             return ['status' => 'success', 'message' => 'Entrada registrada exitosamente.'];
+
         } catch (PDOException $e) {
+            // Capturar errores SQL específicos del procedimiento almacenado (45000)
             if ($e->getCode() == '45000') {
                 return ['status' => 'error', 'message' => $e->getMessage()];
             }
-            error_log($e->getMessage());
+
+            // Registrar el error exacto de PDO en los logs
+            error_log("Error en la base de datos: " . $e->getMessage());
+
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            // Capturar y registrar otros errores generales
+            error_log("Error general: " . $e->getMessage());
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 
+
     // Método para registrar una salida de alimento
     public function registrarSalidaAlimento($params = []) {
         try {
+            // Iniciar sesión si no está iniciada
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
 
+            // Obtener el ID de usuario desde la sesión
             $idUsuario = $_SESSION['idUsuario'] ?? null;
 
+            // Verificar que el usuario esté autenticado
             if ($idUsuario === null) {
                 throw new Exception('Usuario no autenticado.');
             }
 
-            // Validar los datos
-            if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0 || empty($params['idTipoEquino']) || empty($params['unidadMedida'])) {
+            // Validar los datos necesarios
+            if (empty($params['nombreAlimento']) || !is_numeric($params['cantidad']) || $params['cantidad'] <= 0 || 
+                empty($params['idTipoEquino']) || empty($params['unidadMedida'])) {
                 throw new Exception('Datos inválidos. Verifique el nombre del alimento, la cantidad, la unidad de medida y el tipo de equino.');
             }
 
-            // Llamar al procedimiento almacenado para registrar la salida de alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_salida(?,?,?,?,?,?,?)");
+            // Asignar valores opcionales (lote y merma)
+            $lote = !empty($params['lote']) ? $params['lote'] : null;  // Lote opcional (convertir a null si está vacío)
+            $merma = isset($params['merma']) && is_numeric($params['merma']) ? $params['merma'] : 0;  // Merma opcional, por defecto es 0
+
+            // Validar que la merma sea numérica y mayor o igual a cero
+            if ($merma < 0) {
+                throw new Exception('La merma debe ser un valor numérico mayor o igual a 0.');
+            }
+
+            // Registrar la consulta para depuración (logging de parámetros)
+            error_log("Llamada al procedimiento almacenado: spu_alimentos_salida con parámetros: " . 
+                "idUsuario: $idUsuario, nombreAlimento: {$params['nombreAlimento']}, unidadMedida: {$params['unidadMedida']}, cantidad: {$params['cantidad']}, " . 
+                "idTipoEquino: {$params['idTipoEquino']}, lote: $lote, merma: $merma");
+
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_alimentos_salida(?, ?, ?, ?, ?, ?, ?)");
+
+            // Ejecutar la consulta con los parámetros proporcionados
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
                 $params['unidadMedida'],
                 $params['cantidad'],
                 $params['idTipoEquino'],
-                $params['lote'] ?? null,  // Lote opcional
-                $params['merma'] ?? 0     // Merma opcional, por defecto es 0
+                $lote,  // Lote opcional
+                $merma  // Merma opcional
             ]);
 
+            // Cerrar el cursor después de ejecutar la consulta
+            $query->closeCursor();  // Evitar problemas con resultados pendientes
+
+            // Capturar y registrar cualquier warning que haya ocurrido
+            $warnings = $this->pdo->query("SHOW WARNINGS")->fetchAll();
+            if ($warnings) {
+                foreach ($warnings as $warning) {
+                    error_log("Warning de MySQL: " . implode(", ", $warning));
+                }
+            }
+
+            // Si todo sale bien, devolver un mensaje de éxito
             return ['status' => 'success', 'message' => 'Salida registrada exitosamente.'];
+
         } catch (PDOException $e) {
+            // Capturar errores SQL específicos del procedimiento almacenado (45000)
             if ($e->getCode() == '45000') {
                 return ['status' => 'error', 'message' => $e->getMessage()];
             }
-            error_log($e->getMessage());
-            return ['status' => 'error', 'message' => 'Error en la base de datos.'];
+
+            // Registrar el error exacto de PDO en los logs
+            error_log("Error en la base de datos (PDO): " . $e->getMessage());
+
+            // Devolver un mensaje genérico de error de base de datos
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            // Capturar y registrar otros errores generales
+            error_log("Error general: " . $e->getMessage());
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
 
     // Método para notificar stock bajo
     public function notificarStockBajo($minimoStock) {

@@ -130,75 +130,85 @@
 
   <!-- Modal para Movimientos de Entrada -->
   <div class="modal fade" id="modalEntradaAlimento" tabindex="-1" aria-labelledby="modalEntradaAlimentoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header" style="background: #48cae4; color: white;">
-          <h5 class="modal-title" id="modalEntradaAlimentoLabel">Registrar Entrada de Alimento</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="" id="form-entrada-alimento" autocomplete="off">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <select id="alimento-select-entrada" name="nombreAlimento" class="form-select" required>
-                    <option value="">Seleccione un Alimento</option>
-                  </select>
-                  <label for="alimento-select-entrada">Alimento</label>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header" style="background: #48cae4; color: white;">
+            <h5 class="modal-title" id="modalEntradaAlimentoLabel">Registrar Entrada de Alimento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="" id="form-entrada-alimento" autocomplete="off">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <select id="alimento-select-entrada" name="nombreAlimento" class="form-select" required>
+                      <option value="">Seleccione un Alimento</option>
+                    </select>
+                    <label for="alimento-select-entrada">Alimento</label>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="number" name="stockActual" id="stockActual-entrada" class="form-control" required min="0">
-                  <label for="stockActual-entrada">Stock Actual</label>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="number" name="stockActual" id="stockActual-entrada" class="form-control" required min="0">
+                    <label for="stockActual-entrada">Stock Actual</label>
+                  </div>
                 </div>
-              </div>
 
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="number" name="stockMinimo" id="stockMinimo-entrada" class="form-control" required min="0">
-                  <label for="stockMinimo-entrada">Stock Mínimo</label>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="number" name="stockMinimo" id="stockMinimo-entrada" class="form-control" required min="0">
+                    <label for="stockMinimo-entrada">Stock Mínimo</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="text" name="lote" id="lote-entrada" class="form-control" required>
+                    <label for="lote-entrada">Lote</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="date" name="fechaCaducidad" id="fechaCaducidad-entrada" class="form-control" required>
+                    <label for="fechaCaducidad-entrada">Fecha de Caducidad</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="text" name="tipoAlimento" id="tipoAlimentoEntrada" class="form-control" required>
+                    <label for="tipoAlimentoEntrada">Tipo de Alimento</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <select id="unidadMedidaEntrada" name="unidadMedida" class="form-select" required>
+                      <option value="">Seleccione la Unidad de Medida</option>
+                    </select>
+                    <label for="unidadMedidaEntrada">Unidad de Medida</label>
+                  </div>
+                </div>
+                <!-- Agregar el campo de precio -->
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="number" name="nuevoPrecio" id="nuevoPrecio-entrada" class="form-control" min="0" step="0.01">
+                    <label for="nuevoPrecio-entrada">Nuevo Precio (opcional)</label>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" name="lote" id="lote-entrada" class="form-control" required>
-                  <label for="lote-entrada">Lote</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="date" name="fechaCaducidad" id="fechaCaducidad-entrada" class="form-control" required>
-                  <label for="fechaCaducidad-entrada">Fecha de Caducidad</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" name="tipoAlimento" id="tipoAlimentoEntrada" class="form-control" required>
-                  <label for="tipoAlimentoEntrada">Tipo de Alimento</label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <select id="unidadMedidaEntrada" name="unidadMedida" class="form-select" required>
-                    <option value="">Seleccione la Unidad de Medida</option>
-                  </select>
-                  <label for="unidadMedidaEntrada">Unidad de Medida</label>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-success" id="guardarEntrada">Guardar Entrada</button>
+            </form>
+          </div>
+          <div class="col-12">
+            <span id="mensaje-stock" style="color: red;"></span>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success" id="guardarEntrada">Guardar Entrada</button>
+          </div>
         </div>
       </div>
-    </div>
   </div>
-
   <!-- Modal para Movimientos de Salida -->
-  <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel" aria-hidden="true">
+  <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header" style="background: #ff6b6b; color: white;">
@@ -491,17 +501,20 @@
     // Función para cargar los alimentos registrados
     const loadAlimentos = async () => {
       try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: new URLSearchParams({ operation: 'getAllAlimentos' })
+        // Hacemos la solicitud GET con los parámetros en la URL
+        const response = await fetch('../../controllers/alimento.controller.php?operation=getAllAlimentos', {
+          method: "GET",
         });
 
         const textResponse = await response.text();
 
         // Intentar convertir el texto en JSON
-        const alimentos = JSON.parse(textResponse);
+        const parsedResponse = JSON.parse(textResponse);
 
-        if (Array.isArray(alimentos)) {
+        // Verificar si la respuesta es exitosa y contiene los datos de alimentos
+        if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
+          const alimentos = parsedResponse.data;
+
           // Limpiar las tablas antes de añadir contenido nuevo
           alimentosTable.innerHTML = alimentos.map(alim => `
             <tr>
@@ -510,8 +523,8 @@
               <td>${alim.tipoAlimento}</td>
               <td>${alim.unidadMedida}</td>
               <td>${alim.lote}</td>
-              <td>${alim.fechaCaducidad}</td>
-              <td>${alim.stockFinal}</td>
+              <td>${alim.stockActual}</td>
+              <td>${alim.stockMinimo}</td>
               <td>${alim.fechaCaducidad}</td>
               <td class="text-center">
                 <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
@@ -548,37 +561,51 @@
           });
         } else {
           mostrarMensajeDinamico('No se encontraron alimentos.', 'INFO');
-          alimentosTable.innerHTML = '<tr><td colspan="5">No se encontraron alimentos.</td></tr>';
+          alimentosTable.innerHTML = '<tr><td colspan="9">No se encontraron alimentos.</td></tr>';
         }
       } catch (error) {
+        console.error("Error al cargar alimentos:", error);
         mostrarMensajeDinamico('Error al cargar alimentos.', 'ERROR');
       }
     };
 
+
     // Función para cargar los tipos de equinos
     const loadTipoEquinos = async () => {
       try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: new URLSearchParams({ operation: 'getTipoEquinos' })
+        // Hacemos la solicitud GET con los parámetros en la URL
+        const response = await fetch('../../controllers/alimento.controller.php?operation=getTipoEquinos', {
+          method: "GET"
         });
 
         const textResponse = await response.text();
 
         // Intentar convertir el texto en JSON
-        const tipos = JSON.parse(textResponse);
+        const parsedResponse = JSON.parse(textResponse);
 
-        tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino (Solo para salida)</option>';
-        tipos.forEach(tipo => {
-          const option = document.createElement('option');
-          option.value = tipo.idTipoEquino;
-          option.textContent = tipo.tipoEquino;
-          tipoEquinoMovimiento.appendChild(option);
-        });
+        // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
+        if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
+          const tipos = parsedResponse.data;
+
+          // Limpiar el select antes de añadir contenido nuevo
+          tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino (Solo para salida)</option>';
+
+          // Añadir cada tipo de equino al select
+          tipos.forEach(tipo => {
+            const option = document.createElement('option');
+            option.value = tipo.idTipoEquino;
+            option.textContent = tipo.tipoEquino;
+            tipoEquinoMovimiento.appendChild(option);
+          });
+        } else {
+          mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+        }
       } catch (error) {
+        console.error("Error al cargar tipos de equinos:", error);
         mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
       }
     };
+
 
     // Función para registrar un nuevo alimento
     if (formRegistrarAlimento) {
@@ -759,16 +786,23 @@
       const stockMinimoInput = document.querySelector("#stockMinimo-entrada");
       const mensajeStock = document.querySelector("#mensaje-stock");
 
+      console.log("Iniciando la función registrarEntrada"); // Log inicial
+
       // Validar el stock antes de proceder
       const validarStock = () => {
         const stockActual = parseFloat(stockActualInput.value) || 0;
         const stockMinimo = parseFloat(stockMinimoInput.value) || 0;
 
+        console.log("Stock actual:", stockActual); // Verificar el valor del stock actual
+        console.log("Stock mínimo:", stockMinimo); // Verificar el valor del stock mínimo
+
         if (stockMinimo > stockActual) {
           mensajeStock.textContent = "El stock mínimo no puede ser mayor que el stock actual.";
+          console.log("Stock inválido: El stock mínimo es mayor que el stock actual.");
           return false;
         } else {
           mensajeStock.textContent = ""; // Limpiar mensaje si está todo correcto
+          console.log("Stock válido.");
           return true;
         }
       };
@@ -776,18 +810,25 @@
       // Verificar si el stock es válido antes de continuar
       if (!validarStock()) {
         mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
+        console.log("Validación de stock fallida. Deteniendo la operación.");
         return;
       }
 
       if (!alimentoSelectEntrada.value) {
         mostrarMensajeDinamico("Por favor, seleccione un alimento.", 'ERROR');
+        console.log("No se seleccionó ningún alimento.");
         return;
       }
 
+      // Confirmación del usuario
       if (await ask("¿Confirmar entrada de alimento?")) {
+        console.log("Usuario confirmó la entrada de alimento."); // Confirmación de usuario
+
         const formData = new FormData(formEntradaAlimento);
         const data = new URLSearchParams(formData);
         data.append('operation', 'entrada');
+
+        console.log("Datos enviados:", Array.from(formData.entries())); // Verificar los datos enviados
 
         try {
           const response = await fetch('../../controllers/alimento.controller.php', {
@@ -795,25 +836,53 @@
             body: data
           });
 
-          const result = JSON.parse(await response.text());
+          const textResponse = await response.text();
+          console.log("Respuesta cruda del servidor (texto):", textResponse); // Mostrar la respuesta cruda del servidor
 
-          if (result.status === "success" && result.data.status === "success") {
-            mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+          const result = JSON.parse(textResponse);
+          console.log("Respuesta procesada (JSON):", result); // Verificar el JSON resultante
+
+          // Aquí actualizamos el acceso al JSON con base en lo que devuelve realmente
+          if (result.status === "success") {
+            mostrarMensajeDinamico(result.message, 'SUCCESS');
             formEntradaAlimento.reset();
+            console.log("Formulario reseteado. Recargando alimentos y movimientos.");
             loadAlimentos();
             loadHistorialMovimientos();
           } else {
-            mostrarMensajeDinamico(result.data.message || "Error en la operación.", 'ERROR');
+            mostrarMensajeDinamico(result.message || "Error en la operación.", 'ERROR');
+            console.log("Error en la operación:", result.message || "Error desconocido");
           }
         } catch (error) {
           mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+          console.error("Error en la solicitud:", error.message);
         }
+      } else {
+        console.log("El usuario canceló la operación.");
       }
     };
 
 
+
     // Función para manejar la salida de alimentos
     const registrarSalida = async () => {
+        // Selecciona el campo de cantidad usando el ID correcto
+        const cantidadField = document.getElementById('cantidad-salida');
+        const cantidad = cantidadField.value;
+
+        // Selecciona el campo de merma (si está presente)
+        const mermaField = document.getElementById('merma-salida');
+        let merma = mermaField && mermaField.value ? mermaField.value : 0;  // Si no hay valor, asigna 0 por defecto
+
+        // Selecciona el campo de lote (si está presente)
+        const loteField = document.getElementById('lote-salida');
+        const lote = loteField && loteField.value ? loteField.value : null;  // Si no hay valor, asigna null
+
+        // Verificar los valores antes de enviar
+        console.log("Valor de la cantidad:", cantidad);
+        console.log("Valor de la merma:", merma);
+        console.log("Valor del lote:", lote);
+
         // Validaciones básicas
         if (!alimentoSelectSalida.value) {
             mostrarMensajeDinamico("Por favor, seleccione un alimento.", 'ERROR');
@@ -830,36 +899,50 @@
             return;
         }
 
+        // Validar la cantidad
+        if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
+            mostrarMensajeDinamico("Por favor, ingrese una cantidad válida.", 'ERROR');
+            return;
+        }
+
         // Confirmación del usuario
         if (await ask("¿Confirmar salida de alimento?")) {
-            const formData = new FormData(formSalidaAlimento);
+            // Crear un objeto params con los datos
+            const params = {
+                operation: 'salida', // Asegurarse de enviar el nombre de la operación correctamente
+                nombreAlimento: alimentoSelectSalida.value,
+                idTipoEquino: tipoEquinoMovimiento.value,
+                unidadMedida: unidadMedidaSalida.value,
+                lote: lote,  // Lote opcional, se envía como null si no se especifica
+                cantidad: cantidad,
+                merma: merma  // Asegurarse de que merma siempre se envíe (0 si está vacío)
+            };
 
-            // Asegurarse de agregar la operación de salida
-            formData.append('operation', 'salida');
-
-            // Validar si el lote es opcional
-            const lote = loteSalida.value || null;
-            formData.set('lote', lote); // Establecer el lote como null si no se especifica
-
-            // Convertimos formData en URLSearchParams para enviar por POST
-            const data = new URLSearchParams(formData);
+            // Convertimos el objeto en formato JSON para enviar por POST
+            const data = JSON.stringify(params);
 
             try {
                 // Realizar la solicitud al servidor
                 const response = await fetch('../../controllers/alimento.controller.php', {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: data
                 });
 
-                // Capturar la respuesta como texto para ver qué está sucediendo
+                // Capturar la respuesta como texto
                 const textResponse = await response.text();  // Obteniendo la respuesta como texto
+
+                // Mostrar la respuesta sin procesar para depuración
+                console.log("Respuesta cruda del servidor (texto):", textResponse);
 
                 // Ahora intentamos parsear el texto a JSON
                 const result = JSON.parse(textResponse);
 
                 // Verificar el estado del resultado y proceder
                 if (result.status === "success") {
-                    mostrarMensajeDinamico(result.data.message || "Salida registrada exitosamente.", 'SUCCESS');
+                    mostrarMensajeDinamico(result.data?.message || "Salida registrada exitosamente.", 'SUCCESS');
                     formSalidaAlimento.reset(); // Reiniciar el formulario
                     $('#modalSalidaAlimento').modal('hide'); // Cerrar el modal
                     loadAlimentos(); // Recargar la lista de alimentos
@@ -868,13 +951,11 @@
                     mostrarMensajeDinamico(result.message || "Error al registrar la salida.", 'ERROR');
                 }
             } catch (error) {
-                // Capturar y mostrar errores
                 console.error("Error en la solicitud:", error.message);
                 mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
             }
         }
     };
-
 
 
     // Función para eliminar un alimento
