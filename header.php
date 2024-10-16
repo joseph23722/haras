@@ -82,15 +82,15 @@ $host = "http://localhost/haras";
                         </a>
                         <div class="collapse" id="collapseServicios" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="<?= $host ?>/views/propio/"><i class="fas fa-cog"></i> Servicio Propio</a>
-                                <a class="nav-link" href="<?= $host ?>/views/mixto/"><i class="fas fa-exchange-alt"></i> Servicio Mixto</a>
-                                <a class="nav-link" href="<?= $host ?>/views/listadoservicios/"><i class="fa-solid fa-list-ol"></i> Listado Servicios</a>
+                                <a class="nav-link" href="<?= $host ?>/views/servicioPropio/"><i class="fas fa-cog"></i> Servicio Propio</a>
+                                <a class="nav-link" href="<?= $host ?>/views/servicioMixto/"><i class="fas fa-exchange-alt"></i> Servicio Mixto</a>
+                                <a class="nav-link" href="<?= $host ?>/views/listadoServicios/"><i class="fa-solid fa-list-ol"></i> Listado Servicios</a>
                             </nav>
                         </div>
 
                         <!-- Campos -->
                         <div class="sb-sidenav-menu-heading">Campos</div>
-                        <a class="nav-link" href="<?= $host ?>/views/campos">
+                        <a class="nav-link" href="<?= $host ?>/views/rotacionCampos">
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-group-arrows-rotate"></i></div>
                             Rotación Campos
                         </a>
@@ -104,34 +104,27 @@ $host = "http://localhost/haras";
                         </a>
                         <div class="collapse" id="collapseMedicamentos" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="<?= $host ?>/views/historialme/"><i class="fas fa-notes-medical"></i> Historial Médico</a>
-                                <a class="nav-link" href="<?= $host ?>/views/admedi/"><i class="fas fa-pills"></i> Administración de Medicamentos</a>
+                                <a class="nav-link" href="<?= $host ?>/views/historialMedico/"><i class="fas fa-notes-medical"></i> Historial Médico</a>
+                                <a class="nav-link" href="<?= $host ?>/views/inventarioMedicamentos/"><i class="fas fa-pills"></i> Administración de Medicamentos</a>
                             </nav>
                         </div>
 
                         <!-- Registro Equinos -->
                         <div class="sb-sidenav-menu-heading">Registro Equinos</div>
-                        <a class="nav-link" href="<?= $host ?>/views/registro/">
+                        <a class="nav-link" href="<?= $host ?>/views/registroEquinos/">
                             <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
                             Registro Equino
                         </a>
-                        <a class="nav-link" href="<?= $host ?>/views/registro/listadoequinos.php/">
+                        <a class="nav-link" href="<?= $host ?>/views/registroEquinos/listadoequinos.php/">
                             <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
                             Listado Equinos
                         </a>
 
                         <!-- Alimentos -->
                         <div class="sb-sidenav-menu-heading">Alimentos</div>
-                        <a class="nav-link" href="<?= $host ?>/views/alimentos/">
+                        <a class="nav-link" href="<?= $host ?>/views/inventarioAlimentos/">
                             <div class="sb-nav-link-icon"><i class="fas fa-apple-alt"></i></div>
                             Alimento Equino
-                        </a>
-
-                        <!-- Permisos -->
-                        <div class="sb-sidenav-menu-heading">Permisos</div>
-                        <a class="nav-link" href="<?= $host ?>/views/permisos/">
-                            <div class="sb-nav-link-icon"><i class="fas fa-apple-alt"></i></div>
-                            Permisos
                         </a>
 
                         <!-- Usuarios -->
