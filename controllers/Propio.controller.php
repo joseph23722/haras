@@ -11,8 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validación básica
     if (
-        empty($data['idEquinoMacho']) || empty($data['idEquinoHembra']) || empty($data['fechaServicio']) ||
-        empty($data['horaEntrada']) || empty($data['horaSalida'])
+        empty($data['idEquinoMacho']) || empty($data['idEquinoHembra']) || empty($data['fechaServicio'])
     ) {
         echo json_encode(["status" => "error", "message" => "Faltan parámetros necesarios."]);
         exit;
@@ -44,15 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_GET['listarMedicamentos'])) {
         $medicamentos = $servicioPropio->listarMedicamentos();
         echo json_encode($medicamentos);
-    } elseif (isset($_GET['fechaInicio']) && isset($_GET['fechaFin']) && isset($_GET['tipoServicio'])) {
-        // Listar servicios por rango de fechas y tipo
-        $fechaInicio = $_GET['fechaInicio'];
-        $fechaFin = $_GET['fechaFin'];
+    } elseif (isset($_GET['tipoServicio'])) {
+        // Listar servicios por tipo (Propio, Mixto o General)
         $tipoServicio = $_GET['tipoServicio'];
-
-        $servicios = $servicioPropio->listarServiciosPorFechaYTipo($fechaInicio, $fechaFin, $tipoServicio);
+    
+        $servicios = $servicioPropio->listarServiciosPorTipo($tipoServicio);
         echo json_encode($servicios);
-    } else {
+    }
+     else {
         echo json_encode(["status" => "error", "message" => "Parámetros no válidos."]);
     }
 } else {

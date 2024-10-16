@@ -27,8 +27,8 @@ class ServicioPropio extends Conexion
                 'propio',
                 $params['detalles'],
                 null,
-                $params['horaEntrada'],
-                $params['horaSalida'],
+                null,
+                null,
                 null
             ]);
 
@@ -55,15 +55,16 @@ class ServicioPropio extends Conexion
         }
     }
 
-    public function listarMedicamentos(): array {
+    public function listarMedicamentos(): array
+    {
         return parent::getData("ListarMedicamentos");
     }
 
-    public function listarServiciosPorFechaYTipo($fechaInicio, $fechaFin, $tipoServicio)
+    public function listarServiciosPorTipo($tipoServicio)
     {
         try {
-            $query = $this->pdo->prepare("CALL listarServiciosPorFechaYTipo(?, ?, ?)");
-            $query->execute([$fechaInicio, $fechaFin, $tipoServicio]);
+            $query = $this->pdo->prepare("CALL listarServiciosPorTipo(?)");
+            $query->execute([$tipoServicio]);
             return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error al listar servicios: " . $e->getMessage());

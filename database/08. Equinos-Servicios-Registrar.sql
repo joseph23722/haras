@@ -222,8 +222,8 @@ BEGIN
             p_tipoServicio,
             p_detalles,
             p_idMedicamento,
-            p_horaEntrada,
-            p_horaSalida,
+            NULL,
+            NULL,
             NULL  -- No hay propietario externo para servicios propios
         );
 

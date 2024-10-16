@@ -1,8 +1,6 @@
 DELIMITER $$
-CREATE PROCEDURE listarServiciosPorFechaYTipo(
-    IN p_fechaInicio DATE,
-    IN p_fechaFin DATE,
-    IN p_tipoServicio ENUM('Propio', 'Mixto')
+CREATE PROCEDURE listarServiciosPorTipo(
+    IN p_tipoServicio ENUM('Propio', 'Mixto', 'General')
 )
 BEGIN
     SELECT 
@@ -24,8 +22,7 @@ BEGIN
     LEFT JOIN Equinos eh ON s.idEquinoHembra = eh.idEquino
     LEFT JOIN Propietarios p ON s.idPropietario = p.idPropietario
     WHERE 
-        s.fechaServicio BETWEEN p_fechaInicio AND p_fechaFin AND
-        s.tipoServicio = p_tipoServicio
+        (p_tipoServicio = 'General' OR s.tipoServicio = p_tipoServicio)
     ORDER BY 
         s.fechaServicio DESC;
 END $$

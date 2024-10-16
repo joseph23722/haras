@@ -42,20 +42,6 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="time" name="horaEntrada" id="horaEntrada" min="06:00" max="18:00" class="form-control" required>
-                            <label for="horaEntrada"><i class="fas fa-clock" style="color: #007bff;"></i> Hora de Entrada</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="time" name="horaSalida" id="horaSalida" min="06:00" max="18:00" class="form-control" required>
-                            <label for="horaSalida"><i class="fas fa-clock" style="color: #007bff;"></i> Hora de Salida</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
                             <select name="idMedicamento" id="idDetalleMed" class="form-select">
                                 <option value="">Seleccione Medicamento (Opcional)</option>
                             </select>

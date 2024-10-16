@@ -4,30 +4,25 @@
   <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #005b99;">LISTADO DE SERVICIOS</h1>
   <ol class="breadcrumb mb-4 p-2 rounded" style="background-color: #e8f1f8;">
     <li class="breadcrumb-item active" style="color: #004085; font-weight: bold;">
-      <i class="fas fa-info-circle" style="color: #007bff;"></i> Seleccione la fecha y tipo de servicio para ver el listado de servicios de monta
+      <i class="fas fa-info-circle" style="color: #007bff;"></i> Seleccione el tipo de servicio para ver el listado de servicios de monta
     </li>
   </ol>
 
   <div class="row mb-4">
-    <div class="col-md-4">
-      <label for="FechaInicio" class="form-label">Fecha Inicio</label>
-      <input type="date" id="FechaInicio" class="form-control">
-    </div>
-    <div class="col-md-4">
-      <label for="FechaFin" class="form-label">Fecha Fin</label>
-      <input type="date" id="FechaFin" class="form-control">
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-8">
       <label for="filtroTipoServicio" class="form-label">Tipo de Servicio</label>
       <select id="filtroTipoServicio" class="form-select">
         <option value="">Seleccione Tipo de Servicio</option>
+        <option value="General">Todos</option>
         <option value="Propio">Propio</option>
         <option value="Mixto">Mixto</option>
       </select>
     </div>
+    <div class="col-md-4">
+      <label class="form-label" style="visibility: hidden;">Filtrar</label>
+      <button id="btnFiltrar" class="btn btn-primary w-100">Filtrar</button>
+    </div>
   </div>
-  <button id="btnFiltrar" class="btn btn-primary" style="margin-bottom: 20px;">Filtrar</button>
-
   <table id="serviciosTable" class="table table-hover mt-4">
     <thead>
       <tr>
@@ -58,27 +53,28 @@
   $(document).ready(function() {
     const table = $('#serviciosTable').DataTable();
 
+    // Identificar las columnas para controlarlas dinámicamente
     const costoServicioColumn = table.column(8);
+    const horaEntradaColumn = table.column(5); // Columna de Hora Entrada
+    const horaSalidaColumn = table.column(6); // Columna de Hora Salida
+
+    // Ocultar la columna de costo por defecto
     costoServicioColumn.visible(false);
-    
+
     $('#btnFiltrar').click(function() {
-      const fechaInicio = $('#FechaInicio').val();
-      const fechaFin = $('#FechaFin').val();
       const tipoServicio = $('#filtroTipoServicio').val();
 
-      if (fechaInicio && fechaFin && tipoServicio) {
+      if (tipoServicio) {
         $.ajax({
           url: '../../controllers/Propio.controller.php',
           method: 'GET',
           data: {
-            fechaInicio: fechaInicio,
-            fechaFin: fechaFin,
             tipoServicio: tipoServicio
           },
           dataType: 'json',
           success: function(data) {
             // Limpiar la tabla
-            table.clear();
+            table.clear(); // Limpia todas las filas de la tabla
 
             // Agregar los datos a la tabla
             data.forEach(function(item) {
@@ -92,14 +88,24 @@
                 item.horaSalida,
                 item.nombreHaras || 'Haras Rancho Sur',
                 item.costoServicio || 'Por verificar',
-              ]).draw();
+              ]);
             });
-            
-            // Mostrar u ocultar la columna de costo de servicio según el tipo
+
+            table.draw();
+
+            // Controlar la visibilidad de las columnas según el tipo de servicio
             if (tipoServicio === 'Mixto') {
-              costoServicioColumn.visible(true); // Mostrar columna
-            } else {
-              costoServicioColumn.visible(false); // Ocultar columna
+              costoServicioColumn.visible(true);
+              horaEntradaColumn.visible(true);
+              horaSalidaColumn.visible(true);
+            } else if (tipoServicio === 'Propio') {
+              costoServicioColumn.visible(false);
+              horaEntradaColumn.visible(false);
+              horaSalidaColumn.visible(false);
+            } else if (tipoServicio === 'General') {
+              costoServicioColumn.visible(true);
+              horaEntradaColumn.visible(true);
+              horaSalidaColumn.visible(true);
             }
           },
           error: function(err) {
@@ -107,7 +113,7 @@
           }
         });
       } else {
-        alert('Por favor, seleccione una fecha de inicio, una fecha de fin y un tipo de servicio.');
+        alert('Por favor, seleccione un tipo de servicio.');
       }
     });
   });

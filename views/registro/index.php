@@ -56,9 +56,20 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="nacionalidad" id="nacionalidad" class="form-control">
+                            <select name="nacionalidad" id="nacionalidad" class="form-select" required>
+                                <option value="">Seleccione Nacionalidad</option>
+                                <option value="Peruana">Peruana</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Estadounidense">Estadounidense</option>
+                                <option value="Mexicana">Mexicana</option>
+                                <option value="Chilena">Chilena</option>
+                                <option value="Colombiana">Colombiana</option>
+                                <option value="Brasileña">Brasileña</option>
+                                <option value="Venezolana">Venezolana</option>
+                            </select>
                             <label for="nacionalidad"><i class="fas fa-flag" style="color: #6a5acd;"></i> Nacionalidad</label>
                         </div>
+
                     </div>
 
                     <div class="col-md-6">
@@ -234,7 +245,7 @@
                 fechaNacimientoInput.disabled = true;
 
                 tipoEquinoSelect.innerHTML = '';
-                fechaNacimientoInput.removeEventListener("change", applyTipoEquinoLogic); 
+                fechaNacimientoInput.removeEventListener("change", applyTipoEquinoLogic);
                 sexoSelect.removeEventListener("change", applyTipoEquinoLogic);
 
             } else {
