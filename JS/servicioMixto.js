@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error('Error al cargar opciones');
             }
             const data = await response.json();
-            console.log("Datos recibidos:", data);  // Agrega esto para depuración
             const items = Array.isArray(data) ? data : Object.values(data);
             selectElement.innerHTML = '<option value="">Seleccione</option>';
             items.forEach(item => {
@@ -26,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error(`Error al cargar opciones: ${error}`);
+            showToast(`Error al cargar opciones: ${error.message}`, 'ERROR');
         }
     };
 
@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error(`Error al cargar medicamentos: ${error}`);
+            showToast(`Error al cargar medicamentos: ${error.message}`, 'ERROR');
         }
     };
 
@@ -56,40 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // Llama a la función soloNumerosPositivos solo para el campo costoServicio
     soloNumerosPositivos(costoServicioInput);
-
-    const loadServicios = async (fechaServicio, tipoServicio) => {
-        try {
-            const response = await fetch(`../../controllers/mixto.controller.php?fechaServicio=${fechaServicio}&tipoServicio=${tipoServicio}`);
-            if (!response.ok) {
-                throw new Error('Error al cargar servicios');
-            }
-            const data = await response.json();
-            serviciosTable.innerHTML = '';
-
-            data.forEach(servicio => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${servicio.idServicio}</td>
-                    <td>${servicio.nombrePadrillo}</td>
-                    <td>${servicio.nombreYegua}</td>
-                    <td>${servicio.fechaServicio}</td>
-                    <td>${servicio.detalles}</td>
-                    <td>${servicio.horaEntrada}</td>
-                    <td>${servicio.horaSalida}</td>
-                    <td>${servicio.nombreHaras || ''}</td>
-                `;
-                serviciosTable.appendChild(row);
-            });
-
-            // Inicializar DataTable
-            $('#serviciosTable').DataTable();
-        } catch (error) {
-            console.error(`Error al cargar servicios: ${error}`);
-            mensajeDiv.innerText = "Error al cargar los servicios.";
-        }
-    };
 
     // Carga padrillos (tipo = 2) y yeguas (tipo = 1)
     loadOptions('../../controllers/mixto.controller.php?tipoEquino=2', idEquinoMachoSelect); // Padrillos
@@ -131,6 +99,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formMixto.addEventListener("submit", async (event) => {
         event.preventDefault();
+        
+        // Preguntar si se quiere registrar
+        const confirmacion = await ask("¿Desea registrar este servicio mixto?", "Registro de Servicio Mixto");
+        if (!confirmacion) {
+            return; // Salir si el usuario cancela
+        }
+
         const formData = new FormData(formMixto);
         const data = Object.fromEntries(formData.entries());
 
@@ -155,19 +130,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const result = await response.json();
-            if (mensajeDiv) {
-                mensajeDiv.innerText = result.message;
-                mensajeDiv.style.display = "block"; // Mostrar el mensaje
-            }
-            if (result.status === "success") {
+            if (result.status === "error") {
+                const errorMessage = result.message;
+                const cleanMessage = errorMessage.replace(/SQLSTATE\[\d{5}\]: <<Unknown error>>: \d+ /, '');
+                showToast(cleanMessage, 'ERROR');
+            } else {
+                showToast(result.message, 'SUCCESS');
                 formMixto.reset();
             }
         } catch (error) {
-            console.error(`Error al registrar servicio mixto: ${error}`);
-            if (mensajeDiv) {
-                mensajeDiv.innerText = "Error al registrar el servicio.";
-                mensajeDiv.style.display = "block"; // Mostrar el mensaje de error
-            }
+            showToast(`Error: ${error.message}`, 'ERROR');
+            console.error(`Error al registrar servicio mixto: ${error.message}`);
         }
     });
 });

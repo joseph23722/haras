@@ -97,4 +97,6 @@
 </div>
 
 <?php require_once '../../footer.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../swalcustom.js"></script>
 <script src="../../JS/servicioMixto.js"></script>
