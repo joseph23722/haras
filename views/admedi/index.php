@@ -980,8 +980,6 @@
         });
 
 
-
-
         // Implementar para la entrada de medicamentos
         formEntrada.addEventListener("submit", async (event) => {
             event.preventDefault();

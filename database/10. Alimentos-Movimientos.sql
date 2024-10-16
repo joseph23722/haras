@@ -127,170 +127,8 @@ END $$
 DELIMITER ;
 
 
-CALL spu_alimentos_entrada(
-    1,                       -- ID de usuario
-    'trigo',                 -- Nombre del alimento
-    'Grano',                 -- Tipo de alimento
-    'Kilos',                 -- Unidad de medida
-    'lote23',                -- Lote
-    '2025-01-23',            -- Fecha de caducidad
-    230,                     -- Cantidad
-    15.5                     -- Nuevo precio
-);
-
-
-
 -- Procedimiento Salida de Alimentos 
-
-
--- Procedimiento para notificar Stock Bajo-----------------------------------------
 DELIMITER $$
-CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
-BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE alimentoNombre VARCHAR(100);
-    DECLARE alimentoLote VARCHAR(50);
-    DECLARE alimentoStock DECIMAL(10,2);
-
-    -- Cursor para seleccionar los alimentos con stock bajo o agotados, limitando a 5
-    DECLARE cur CURSOR FOR
-        SELECT nombreAlimento, lote, stockFinal 
-        FROM Alimentos
-        WHERE stockFinal < stockMinimo OR stockFinal = 0
-        LIMIT 5;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    -- Abrir el cursor
-    OPEN cur;
-
-    -- Bucle para recorrer los resultados
-    read_loop: LOOP
-        FETCH cur INTO alimentoNombre, alimentoLote, alimentoStock;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Imprimir el mensaje de notificación
-        IF alimentoStock = 0 THEN
-            -- Notificación de alimentos agotados
-            SELECT CONCAT('Alimento agotado: ', alimentoNombre, ', Lote: ', alimentoLote, ', Stock: ', alimentoStock) AS Notificacion;
-        ELSE
-            -- Notificación de alimentos con stock bajo
-            SELECT CONCAT('Alimento con stock bajo: ', alimentoNombre, ', Lote: ', alimentoLote, ', Stock: ', alimentoStock) AS Notificacion;
-        END IF;
-    END LOOP;
-
-    -- Cerrar cursor
-    CLOSE cur;
-END $$
-DELIMITER ;
-
--- Procedimiento para historial Alimentos -----------------------------------------
-DELIMITER $$
-CREATE PROCEDURE spu_historial_completo(
-    IN tipoMovimiento VARCHAR(50),
-    IN fechaInicio DATE,
-    IN fechaFin DATE,
-    IN idUsuario INT,
-    IN limite INT,
-    IN desplazamiento INT
-)
-BEGIN
-    -- Validar los límites de la paginación
-    IF limite <= 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El límite de registros debe ser mayor que cero.';
-    END IF;
-
-    IF desplazamiento < 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El desplazamiento no puede ser negativo.';
-    END IF;
-
-    -- Si el tipo de movimiento es 'Entrada', mostrar campos específicos para entradas
-    IF tipoMovimiento = 'Entrada' THEN
-        SELECT 
-            h.idAlimento,
-            a.nombreAlimento,               -- Nombre del alimento
-            a.tipoAlimento,                 -- Tipo de alimento (Grano, Heno, etc.)
-            a.unidadMedida,                 -- Unidad de medida del alimento
-            a.lote,                         -- Lote del alimento
-            a.fechaCaducidad,               -- Fecha de caducidad del lote
-            a.stockActual,                  -- Stock actual para entradas
-            h.fechaMovimiento               -- Fecha del movimiento
-        FROM 
-            HistorialMovimientos h
-        JOIN 
-            Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
-        WHERE 
-            h.tipoMovimiento = 'Entrada'  
-            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
-            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
-            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
-        ORDER BY 
-            h.fechaMovimiento DESC
-        LIMIT 
-            limite OFFSET desplazamiento;
-        
-    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos para salidas
-    ELSEIF tipoMovimiento = 'Salida' THEN
-        SELECT 
-            h.idAlimento,
-            a.nombreAlimento,               -- Nombre del alimento
-            te.tipoEquino,                  -- Tipo de equino (Yegua, Padrillo, Potranca, Potrillo)
-            h.cantidad,                     -- Cantidad de salida
-            h.unidadMedida,                 -- Unidad de medida
-            h.merma,                        -- Merma (si aplica)
-            a.lote,                         -- Lote del alimento
-            h.fechaMovimiento               -- Fecha del movimiento
-        FROM 
-            HistorialMovimientos h
-        JOIN 
-            Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
-        LEFT JOIN
-            TipoEquinos te ON h.idTipoEquino = te.idTipoEquino  -- Unimos con la tabla TipoEquinos (para la salida)
-        WHERE 
-            h.tipoMovimiento = 'Salida'
-            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
-            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
-            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
-        ORDER BY 
-            h.fechaMovimiento DESC
-        LIMIT 
-            limite OFFSET desplazamiento;
-    ELSE
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
-    END IF;
-END $$
-DELIMITER ;
-
-
-
--- tipo de equino - alimento ------ 
-DELIMITER $$
-CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
-BEGIN
-    SELECT idTipoEquino, tipoEquino
-    FROM TipoEquinos
-    WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
-END $$
-DELIMITER ;
-
-
-
-
-
-
-
-
-
-
-
--- -------------------------------------------------------------------------------
-DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_salida(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -413,23 +251,151 @@ BEGIN
     END IF;
 
 END $$
-
 DELIMITER ;
 
 
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, NULL, 0);
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, 'L001', 0);
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, 'L001', 1);
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, NULL, 1);
+
+-- Procedimiento para notificar Stock Bajo-----------------------------------------
+DELIMITER $$
+CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE alimentoNombre VARCHAR(100);
+    DECLARE alimentoLote VARCHAR(50);
+    DECLARE alimentoStock DECIMAL(10,2);
+
+    -- Cursor para seleccionar los alimentos con stock bajo o agotados, limitando a 5
+    DECLARE cur CURSOR FOR
+        SELECT nombreAlimento, lote, stockFinal 
+        FROM Alimentos
+        WHERE stockFinal < stockMinimo OR stockFinal = 0
+        LIMIT 5;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Abrir el cursor
+    OPEN cur;
+
+    -- Bucle para recorrer los resultados
+    read_loop: LOOP
+        FETCH cur INTO alimentoNombre, alimentoLote, alimentoStock;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Imprimir el mensaje de notificación
+        IF alimentoStock = 0 THEN
+            -- Notificación de alimentos agotados
+            SELECT CONCAT('Alimento agotado: ', alimentoNombre, ', Lote: ', alimentoLote, ', Stock: ', alimentoStock) AS Notificacion;
+        ELSE
+            -- Notificación de alimentos con stock bajo
+            SELECT CONCAT('Alimento con stock bajo: ', alimentoNombre, ', Lote: ', alimentoLote, ', Stock: ', alimentoStock) AS Notificacion;
+        END IF;
+    END LOOP;
+
+    -- Cerrar cursor
+    CLOSE cur;
+END $$
+DELIMITER ;
 
 
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', -1, 1, NULL, 0);
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1, 1, 'L999', 0);
-CALL spu_alimentos_salida(1, 'maíz', 'Kilos', 1000, 1, NULL, 0);
+
+-- Procedimiento para historial Alimentos -----------------------------------------
+DELIMITER $$
+CREATE PROCEDURE spu_historial_completo(
+    IN tipoMovimiento VARCHAR(50),
+    IN fechaInicio DATE,
+    IN fechaFin DATE,
+    IN idUsuario INT,
+    IN limite INT,
+    IN desplazamiento INT
+)
+BEGIN
+    -- Validar los límites de la paginación
+    IF limite <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El límite de registros debe ser mayor que cero.';
+    END IF;
+
+    IF desplazamiento < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El desplazamiento no puede ser negativo.';
+    END IF;
+
+    -- Si el tipo de movimiento es 'Entrada', mostrar campos específicos para entradas
+    IF tipoMovimiento = 'Entrada' THEN
+        SELECT 
+            h.idAlimento,
+            a.nombreAlimento,               -- Nombre del alimento
+            a.tipoAlimento,                 -- Tipo de alimento (Grano, Heno, etc.)
+            a.unidadMedida,                 -- Unidad de medida del alimento
+            a.lote,                         -- Lote del alimento
+            a.fechaCaducidad,               -- Fecha de caducidad del lote
+            a.stockActual,                  -- Stock actual para entradas
+            h.fechaMovimiento               -- Fecha del movimiento
+        FROM 
+            HistorialMovimientos h
+        JOIN 
+            Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
+        WHERE 
+            h.tipoMovimiento = 'Entrada'  
+            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
+            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
+        ORDER BY 
+            h.fechaMovimiento DESC
+        LIMIT 
+            limite OFFSET desplazamiento;
+        
+    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos para salidas
+    ELSEIF tipoMovimiento = 'Salida' THEN
+        SELECT 
+            h.idAlimento,
+            a.nombreAlimento,               -- Nombre del alimento
+            te.tipoEquino,                  -- Tipo de equino (Yegua, Padrillo, Potranca, Potrillo)
+            h.cantidad,                     -- Cantidad de salida
+            h.unidadMedida,                 -- Unidad de medida
+            h.merma,                        -- Merma (si aplica)
+            a.lote,                         -- Lote del alimento
+            h.fechaMovimiento               -- Fecha del movimiento
+        FROM 
+            HistorialMovimientos h
+        JOIN 
+            Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
+        LEFT JOIN
+            TipoEquinos te ON h.idTipoEquino = te.idTipoEquino  -- Unimos con la tabla TipoEquinos (para la salida)
+        WHERE 
+            h.tipoMovimiento = 'Salida'
+            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
+            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
+        ORDER BY 
+            h.fechaMovimiento DESC
+        LIMIT 
+            limite OFFSET desplazamiento;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
+    END IF;
+END $$
+DELIMITER ;
 
 
 
+-- tipo de equino - alimento ------ 
+DELIMITER $$
+CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
+BEGIN
+    SELECT idTipoEquino, tipoEquino
+    FROM TipoEquinos
+    WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
+END $$
+DELIMITER ;
 
-select * from alimentos  ; 
-select * from HistorialMovimientos  ; 
+
+
+-- -------------------------------------------------------------------------------
+
+
+
 

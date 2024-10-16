@@ -274,17 +274,33 @@
       </div>
     </div>
   </div>
+
   <!-- Modal para Historial de Movimientos -->
-  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-xl"> <!-- Aumentamos el tamaño del modal -->
       <div class="modal-content">
         <div class="modal-header bg-info text-white">
           <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <!-- Filtro de fechas con estilo -->
+          <div class="row align-items-center mb-4">
+            <div class="col-md-4">
+              <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+              <input type="date" id="fechaInicio" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label for="fechaFin" class="form-label">Fecha de Fin:</label>
+              <input type="date" id="fechaFin" class="form-control">
+            </div>
+            <div class="col-md-4 d-flex justify-content-start align-items-end">
+              <button type="button" id="buscarHistorial" class="btn btn-primary ms-2">Buscar</button>
+            </div>
+          </div>
+
           <!-- Pestañas para Entrada y Salida -->
-          <ul class="nav nav-tabs" id="historialTab" role="tablist">
+          <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
             <li class="nav-item" role="presentation">
               <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
             </li>
@@ -294,39 +310,47 @@
           </ul>
 
           <!-- Contenido de las pestañas -->
-          <div class="tab-content mt-3">
+          <div class="tab-content">
             <!-- Tabla de Entradas -->
             <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
-              <table id="tabla-entradas" class="table table-striped table-hover display nowrap" style="width:100%">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Alimento</th>
-                    <th>Cantidad</th>
-                    <th>Unidad</th>
-                    <th>Fecha de Entrada</th>
-                  </tr>
-                </thead>
-                <tbody id="historial-entradas-table"></tbody>
-              </table>
+              <div class="table-responsive">
+                <table id="tabla-entradas" class="table table-bordered table-hover" style="width:100%">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 10%;">ID</th>
+                      <th style="width: 24%;">Alimento</th> <!-- Más espacio para nombre del alimento -->
+                      <th style="width: 15%;">Cantidad</th>
+                      <th style="width: 15%;">TipoAlimento</th>
+                      <th style="width: 15%;">Unidad</th>
+                      <th style="width: 15%;">Lote</th>
+                      <th style="width: 15%;">Fecha Caducidad</th>
+                      <th style="width: 20%;">Fecha de Entrada</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historial-entradas-table"></tbody>
+                </table>
+              </div>
             </div>
 
             <!-- Tabla de Salidas -->
             <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
-              <table id="tabla-salidas" class="table table-striped table-hover display nowrap" style="width:100%">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Alimento</th>
-                    <th>Tipo Equino</th>
-                    <th>Cantidad</th>
-                    <th>Unidad</th>
-                    <th>Merma</th>
-                    <th>Fecha de Salida</th>
-                  </tr>
-                </thead>
-                <tbody id="historial-salidas-table"></tbody>
-              </table>
+              <div class="table-responsive">
+                <table id="tabla-salidas" class="table table-bordered table-hover" style="width:100%">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 10%;">ID</th>
+                      <th style="width: 20%;">Alimento</th>
+                      <th style="width: 15%;">Tipo Equino</th> <!-- Ampliamos esta columna -->
+                      <th style="width: 9%;">Cantidad</th>
+                      <th style="width: 8%;">Unidad</th>
+                      <th style="width: 9%;">Merma</th>
+                      <th style="width: 15%;">Lote</th>
+                      <th style="width: 15%;">Fecha de Salida</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historial-salidas-table"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -372,16 +396,37 @@
 
     // **Función para mostrar notificaciones en el div `mensaje`**
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
-      const colores = {
-        'INFO': 'blue',
-        'SUCCESS': 'green',
-        'ERROR': 'red',
-        'WARNING': 'orange'
-      };
-      mensajeDiv.style.color = colores[tipo];
-      mensajeDiv.style.fontWeight = 'bold';
-      mensajeDiv.innerHTML = mensaje;
+        const mensajeDiv = document.getElementById('mensaje'); // Asegúrate de tener un div con el id 'mensaje'
+        
+        if (mensajeDiv) {
+            const colores = {
+                'INFO': 'blue',
+                'SUCCESS': 'green',
+                'ERROR': 'red',
+                'WARNING': 'orange'
+            };
+            
+            // Estilos del mensaje
+            mensajeDiv.style.color = colores[tipo] || 'black';
+            mensajeDiv.style.fontWeight = 'bold';
+            mensajeDiv.style.padding = '10px';
+            mensajeDiv.style.marginBottom = '15px';
+            mensajeDiv.style.border = `2px solid ${colores[tipo] || 'black'}`;
+            mensajeDiv.style.backgroundColor = '#f9f9f9';
+            
+            // Mostrar el mensaje
+            mensajeDiv.innerHTML = mensaje;
+
+            // Eliminar el mensaje después de 5 segundos
+            setTimeout(() => {
+                mensajeDiv.innerHTML = '';
+                mensajeDiv.style.border = 'none';
+            }, 5000);
+        } else {
+            console.warn('El contenedor de mensajes no está presente en el DOM.');
+        }
     };
+
 
     // **Función para mostrar notificaciones usando showToast**
     const mostrarNotificacion = (mensaje, tipo = 'INFO') => {
@@ -660,51 +705,90 @@
     // Función para cargar el historial de movimientos de entradas y salidas
     const loadHistorialMovimientos = async () => {
         try {
+            // Obtener valores de fecha de inicio y fin
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+
+
+
+            if (!fechaInicio || !fechaFin) {
+                mostrarMensajeDinamico('Por favor, selecciona ambas fechas para la búsqueda.', 'WARNING');
+                return;
+            }
+
             // Cargar el historial de Entradas
+            console.log('Cargando historial de entradas...');
             const responseEntradas = await fetch('../../controllers/alimento.controller.php', {
                 method: "POST",
-                body: new URLSearchParams({ operation: 'historial', tipoMovimiento: 'Entrada' }) // Cargar entradas
+                body: new URLSearchParams({
+                    operation: 'historial',
+                    tipoMovimiento: 'Entrada',
+                    fechaInicio: fechaInicio,
+                    fechaFin: fechaFin
+                }) // Pasamos también las fechas
             });
 
             const textResponseEntradas = await responseEntradas.text();
-            const movimientosEntradas = JSON.parse(textResponseEntradas); // Convertir a JSON
+            console.log('Respuesta recibida para entradas:', textResponseEntradas);
 
-            if (Array.isArray(movimientosEntradas)) {
-                // Inicializar DataTable para Entradas
+            const parsedEntradas = JSON.parse(textResponseEntradas); // Convertir a JSON
+            console.log('Datos de entradas parseados:', parsedEntradas);
+
+            // Cambia la validación para verificar "data" dentro de la respuesta
+            if (Array.isArray(parsedEntradas.data) && parsedEntradas.data.length > 0) {
+                console.log('Entradas encontradas, inicializando DataTable...');
                 $('#tabla-entradas').DataTable().clear().destroy(); // Limpiar DataTable antes de recargar
                 $('#tabla-entradas').DataTable({
-                    data: movimientosEntradas,
+                    data: parsedEntradas.data,
                     columns: [
                         { data: 'idAlimento' },
                         { data: 'nombreAlimento' },
-                        { data: 'cantidad' },
+                        { data: 'tipoAlimento' },
                         { data: 'unidadMedida' },
+                        { data: 'lote' },
+                        { data: 'stockActual' },
+                        { data: 'fechaCaducidad' },
                         { data: 'fechaMovimiento' }
                     ],
                     responsive: true,
                     autoWidth: false,
                     paging: true,
                     searching: true,
+                    // Aquí aplicamos la traducción utilizando tu archivo JSON
                     language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                        url: '/haras/data/es_es.json' // Ruta correcta al archivo JSON de traducción
                     }
                 });
+                mostrarMensajeDinamico('Historial de entradas cargado exitosamente.', 'SUCCESS');
+            } else {
+                console.log('No se encontraron entradas en el rango de fechas seleccionado.');
+                mostrarMensajeDinamico('No se encontraron movimientos de entradas en el rango seleccionado.', 'WARNING');
             }
 
             // Cargar el historial de Salidas
+            console.log('Cargando historial de salidas...');
             const responseSalidas = await fetch('../../controllers/alimento.controller.php', {
                 method: "POST",
-                body: new URLSearchParams({ operation: 'historial', tipoMovimiento: 'Salida' }) // Cargar salidas
+                body: new URLSearchParams({
+                    operation: 'historial',
+                    tipoMovimiento: 'Salida',
+                    fechaInicio: fechaInicio,
+                    fechaFin: fechaFin
+                }) // Pasamos las fechas también
             });
 
             const textResponseSalidas = await responseSalidas.text();
-            const movimientosSalidas = JSON.parse(textResponseSalidas); // Convertir a JSON
+            console.log('Respuesta recibida para salidas:', textResponseSalidas);
 
-            if (Array.isArray(movimientosSalidas)) {
-                // Inicializar DataTable para Salidas
+            const parsedSalidas = JSON.parse(textResponseSalidas); // Convertir a JSON
+            console.log('Datos de salidas parseados:', parsedSalidas);
+
+            // Cambia la validación para verificar "data" dentro de la respuesta
+            if (Array.isArray(parsedSalidas.data) && parsedSalidas.data.length > 0) {
+                console.log('Salidas encontradas, inicializando DataTable...');
                 $('#tabla-salidas').DataTable().clear().destroy(); // Limpiar DataTable antes de recargar
                 $('#tabla-salidas').DataTable({
-                    data: movimientosSalidas,
+                    data: parsedSalidas.data,
                     columns: [
                         { data: 'idAlimento' },
                         { data: 'nombreAlimento' },
@@ -712,22 +796,34 @@
                         { data: 'cantidad' },
                         { data: 'unidadMedida' },
                         { data: 'merma' },
+                        { data: 'lote' },
                         { data: 'fechaMovimiento' }
                     ],
                     responsive: true,
                     autoWidth: false,
                     paging: true,
                     searching: true,
+                    // Aquí aplicamos la traducción utilizando tu archivo JSON
                     language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                        url: '/haras/data/es_es.json' // Ruta correcta al archivo JSON de traducción
                     }
                 });
+                mostrarMensajeDinamico('Historial de salidas cargado exitosamente.', 'SUCCESS');
+            } else {
+                console.log('No se encontraron salidas en el rango de fechas seleccionado.');
+                mostrarMensajeDinamico('No se encontraron movimientos de salidas en el rango seleccionado.', 'WARNING');
             }
+
         } catch (error) {
+            console.error('Error al cargar historial de movimientos:', error);
             mostrarMensajeDinamico('Error al cargar historial de movimientos.', 'ERROR');
         }
     };
 
+
+
+    // Vincular la función al botón de búsqueda
+    document.getElementById('buscarHistorial').addEventListener('click', loadHistorialMovimientos);
 
     // Función dinámica para cambiar las unidades de medida según el tipo de alimento
     const actualizarOpcionesUnidadMedida = (tipoAlimento, unidadMedidaSelect) => {
@@ -861,7 +957,6 @@
         console.log("El usuario canceló la operación.");
       }
     };
-
 
 
     // Función para manejar la salida de alimentos
