@@ -69,7 +69,6 @@
                             </select>
                             <label for="nacionalidad"><i class="fas fa-flag" style="color: #6a5acd;"></i> Nacionalidad</label>
                         </div>
-
                     </div>
 
                     <div class="col-md-6">
@@ -78,6 +77,7 @@
                             <label for="detalles"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="file" name="fotografia" id="fotografia" class="form-control" accept="image/*"> <!-- Campo para la fotografía -->
@@ -101,7 +101,8 @@
 </div>
 
 <?php require_once '../../footer.php'; ?>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../swalcustom.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const idPropietarioSelect = document.querySelector("#idPropietario");
@@ -198,30 +199,24 @@
             tipoEquinoSelect.innerHTML = '';
 
             if (mesesDiferencia <= 6) {
-                // Si tiene igual o menos de 6 meses: Recien nacido
                 tipoEquinoSelect.innerHTML = '<option value="5">Recién nacido</option>';
             } else if (mesesDiferencia <= 12) {
-                // Si tiene igual o menos de 12 meses: Destete
                 tipoEquinoSelect.innerHTML = '<option value="6">Destete</option>';
             } else if (mesesDiferencia > 6 && mesesDiferencia <= 24) {
-                // Si tiene igual o menos de 24 meses: Potrillo o Potranca
                 if (sexo === 'Macho') {
                     tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
                 } else if (sexo === 'Hembra') {
                     tipoEquinoSelect.innerHTML = '<option value="3">Potranca</option>';
                 }
             } else if (mesesDiferencia > 48) {
-                // Si tiene más de 4 años: Yegua o Padrillo
                 if (sexo === 'Macho') {
                     tipoEquinoSelect.innerHTML = `
-                <option value="2">Padrillo</option>
-                <option value="4">Potrillo</option>
-                `;
+                    <option value="2">Padrillo</option>
+                    <option value="4">Potrillo</option>`;
                 } else if (sexo === 'Hembra') {
                     tipoEquinoSelect.innerHTML = `
-                <option value="1">Yegua</option>
-                <option value="3">Potranca</option>
-                `;
+                    <option value="1">Yegua</option>
+                    <option value="3">Potranca</option>`;
                 }
             }
         }
@@ -258,7 +253,6 @@
             }
         });
 
-
         fechaNacimientoInput.addEventListener("change", applyTipoEquinoLogic);
         sexoSelect.addEventListener("change", applyTipoEquinoLogic);
 
@@ -271,10 +265,13 @@
 
             // Validación de campos obligatorios
             if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!nacionalidadInput.value || !fechaNacimientoInput.value))) {
-                alert('Los campos nombre, sexo, tipo de equino, y nacionalidad y fecha de nacimiento (si no hay propietario) son obligatorios.');
+                showToast('Los campos nombre, sexo, tipo de equino, y nacionalidad y fecha de nacimiento (si no hay propietario) son obligatorios.', 'ERROR');
                 console.log('Registro fallido: faltan campos obligatorios.');
                 return;
             }
+
+            const confirm = await ask("¿Está seguro de que desea registrar el equino?", "Registro de Equinos");
+            if (!confirm) return;
 
             const formData = new FormData(formEquino);
             const data = {
@@ -299,17 +296,18 @@
 
                 // Verifica el estado de la respuesta
                 if (result.status === "success") {
-                    alert('Equino registrado exitosamente.');
+                    showToast('Equino registrado exitosamente.', 'SUCCESS');
                     formEquino.reset();
                 } else {
-                    alert('Error al registrar el equino: ' + result.message);
+                    const cleanMessage = result.message.replace(/SQLSTATE\[\d{5}\]: <<Unknown error>>: \d+ /, '');
+                    showToast(cleanMessage, 'ERROR');
                 }
             } catch (error) {
                 console.error('Error en el envío del formulario:', error);
-                alert('Error en el registro del equino. Inténtalo de nuevo más tarde.');
+                showToast('Error en el registro del equino. Inténtalo de nuevo más tarde.', 'ERROR');
             }
-
         });
+
         // Cargar propietarios y tipos de equinos al iniciar
         loadPropietarios();
         loadTipoEquinos();

@@ -392,6 +392,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- Para darle salida a los alimentos se debe tener en cuenta los siguientes tipo de equinos:
+-- Yeguas: Vacias, preñadas, con crias, potrillos, potrancas, padrillos activos e inactivos.
 
 
 -- -------------------------------------------------------------------------------

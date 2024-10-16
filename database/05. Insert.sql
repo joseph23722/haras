@@ -53,8 +53,7 @@ INSERT INTO TipoEquinos (tipoEquino) VALUES
     ('Padrillo'), 
     ('Potranca'), 
     ('Potrillo'),
-    ('Recién nacido'), 
-    ('Destete');
+    ('Recién nacido');
     
 -- 4. Insertar Datos en EstadoMonta
 INSERT INTO EstadoMonta (genero, nombreEstado) 

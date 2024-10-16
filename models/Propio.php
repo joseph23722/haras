@@ -63,7 +63,7 @@ class ServicioPropio extends Conexion
     public function listarServiciosPorTipo($tipoServicio)
     {
         try {
-            $query = $this->pdo->prepare("CALL listarServiciosPorTipo(?)");
+            $query = $this->pdo->prepare("CALL spu_listarServiciosPorTipo(?)");
             $query->execute([$tipoServicio]);
             return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

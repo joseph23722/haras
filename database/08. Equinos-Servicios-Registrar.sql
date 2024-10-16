@@ -32,6 +32,12 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
 
+    -- Validar si ya existe un equino con el mismo nombre
+    IF EXISTS (SELECT * FROM Equinos WHERE nombreEquino = _nombreEquino) THEN
+        SET _errorMsg = 'Error: Ya existe un equino con ese nombre.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
     -- Reglas de validación de tipo de equino según la edad y sexo
     IF _idPropietario IS NULL THEN
         -- Recién nacido (<= 6 meses)
@@ -42,10 +48,10 @@ BEGIN
             END IF;
         -- Destete (<= 12 meses)
         ELSEIF _edadMeses > 6 AND _edadMeses <= 12 THEN
-			IF _idTipoEquino NOT IN (6) THEN
-				SET _errorMsg = 'Error: Un equino destete debe ser registrado como macho o hembra.';
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-			END IF;
+            IF _idTipoEquino NOT IN (6) THEN
+                SET _errorMsg = 'Error: Un equino destete debe ser registrado como macho o hembra.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
         -- Potrillo o potranca (<= 24 meses)
         ELSEIF _edadMeses <= 24 THEN
             IF _sexo = 'Macho' AND _idTipoEquino != 4 THEN

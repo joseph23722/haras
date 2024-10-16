@@ -136,7 +136,7 @@ CREATE TABLE Alimentos (
     fechaCaducidad       DATE NULL,                -- Fecha de caducidad por lote
     idTipoEquino         INT NULL,                 -- Solo para salidas (referencia a tipo de equino)
     merma                DECIMAL(10,2) NULL,       -- Registro de la merma en salidas
-    fechaIngreso         DATETIME NULL,            -- Fecha de ingreso del lote
+    fechaIngreso         DATETIME DEFAULT NOW(), -- Fecha de ingreso del lote
     compra               DECIMAL(10,2) NOT NULL,   -- Costo total de compra (costo * cantidad)
     fechaMovimiento      DATETIME DEFAULT NOW(),   -- Fecha del último movimiento
     CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento, lote), -- Unicidad de alimento por lote
