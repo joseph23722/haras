@@ -778,8 +778,5 @@ INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis) VALUES
 
 -- 
 DELETE FROM historialmovimientosmedicamentos WHERE idMedicamento IN (SELECT idMedicamento FROM medicamentos);
-
 DELETE FROM medicamentos;
-
 select * from medicamentos ; 
-

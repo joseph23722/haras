@@ -1,5 +1,5 @@
 DELIMITER $$
-CREATE PROCEDURE listarServiciosPorTipo(
+CREATE PROCEDURE spu_listarServiciosPorTipo(
     IN p_tipoServicio ENUM('Propio', 'Mixto', 'General')
 )
 BEGIN

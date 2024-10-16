@@ -38,11 +38,6 @@ INSERT INTO TipoMovimientos (movimiento)
         ('Entrada'),
         ('Salida');
         
-INSERT INTO Medicamentos (nombreMedicamento, cantidad, caducidad, precioUnitario, idTipomovimiento, idUsuario)
-    VALUES
-        ('Antibiótico X', 50.00, '2025-12-31', 15.00, 1, 2),
-        ('Analgesico Y', 30.00, '2026-06-15', 10.50, 1, 2);
-        
 INSERT INTO TipoRotaciones (nombreRotacion)
  VALUES ('Riego'), ('Deshierve'),
 		('Arado'), ('Gradeado'),
