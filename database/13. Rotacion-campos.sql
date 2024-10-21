@@ -69,4 +69,4 @@ INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
 VALUES (1, 12.50, 'Arenoso', 'Activo');
 
 INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, estadoRotacion, detalleRotacion)
-VALUES (1, 2, '2024-10-21 10:30:00', 'Completado', 'Desheirve del campo número 1');	
+VALUES (1, 2, '2024-10-21 10:30:00', 'Completado', 'Deshierve del campo número 1');	
