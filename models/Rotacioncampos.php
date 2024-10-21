@@ -11,11 +11,12 @@ class RotacionCampos extends Conexion
         $this->pdo = parent::getConexion();
     }
 
-    public function rotacionCampos($params = []): int {
+    public function rotacionCampos($params = []): int
+    {
         try {
             // Preparamos la llamada al procedimiento almacenado
             $cmd = $this->pdo->prepare("CALL spu_registrar_rotacion_campos(?, ?, ?, ?, ?)");
-            
+
             // Ejecutamos el procedimiento con los parámetros correspondientes
             $cmd->execute([
                 $params['idCampo'],
@@ -24,14 +25,35 @@ class RotacionCampos extends Conexion
                 $params['estadoRotacion'],
                 $params['detalleRotacion']
             ]);
-    
+
             return $cmd->rowCount();
-    
         } catch (Exception $e) {
             error_log("Error: " . $e->getMessage());
             return -1;
         }
-    }    
+    }
+
+    public function registrarCampos($params = []): int
+    {
+        try {
+            // Preparamos la llamada al procedimiento almacenado
+            $cmd = $this->pdo->prepare("CALL spu_registrar_campo(?, ?, ?, ?)");
+
+            // Ejecutamos el procedimiento con los parámetros correspondientes
+            $cmd->execute([
+                $params['numeroCampo'],
+                $params['tamanoCampo'],
+                $params['tipoSuelo'],
+                $params['estado']
+            ]);
+
+            return $cmd->rowCount(); // Retorna la cantidad de filas afectadas
+
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return -1; // Retorna -1 en caso de error
+        }
+    }
 
     public function listarCampos(): array
     {

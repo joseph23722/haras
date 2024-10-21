@@ -50,3 +50,23 @@ BEGIN
     VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_estadoRotacion, p_detalleRotacion);
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_registrar_campo`;
+DELIMITER //
+CREATE PROCEDURE `spu_registrar_campo`(
+    IN p_numeroCampo INT,
+    IN p_tamanoCampo DECIMAL(10,2),
+    IN p_tipoSuelo VARCHAR(100),
+    IN p_estado VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
+    VALUES (p_numeroCampo, p_tamanoCampo, p_tipoSuelo, p_estado);
+END //
+DELIMITER ;
+
+INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
+VALUES (1, 12.50, 'Arenoso', 'Activo');
+
+INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, estadoRotacion, detalleRotacion)
+VALUES (1, 2, '2024-10-21 10:30:00', 'Completado', 'Desheirve del campo número 1');	
