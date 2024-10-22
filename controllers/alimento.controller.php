@@ -92,7 +92,41 @@ try {
                         'message' => $result['message']
                     ]);
                 }
-                exit(); // Asegurar que solo se devuelva una respuesta
+                exit(); 
+
+            // Listar todos los lotes registrados
+            case 'listarLotes':
+                try {
+                    // Obtener los lotes
+                    $lotes = $alimento->listarLotes();
+                    
+                    // Verificar si es éxito
+                    if ($lotes['status'] === 'success') {
+                        // Envía la respuesta como JSON
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Lotes obtenidos correctamente.',
+                            'data' => $lotes['data']
+                        ]);
+                    } else {
+                        // Si hay error, responde con error en formato JSON
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => 'No se pudieron obtener los lotes.'
+                        ]);
+                    }
+                } catch (PDOException $e) {
+                    // Enviar cualquier error en formato JSON
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Error al listar los lotes: ' . $e->getMessage()
+                    ]);
+                }
+            
+                // Finalizar el script para asegurar que no haya más salida
+                exit();
+            
+            
 
             case 'eliminar':
                 $idAlimento = $params['idAlimento'] ?? null;

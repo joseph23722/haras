@@ -21,13 +21,55 @@
               <label for="nombreAlimento"><i class="fas fa-seedling" style="color: #3498db;"></i> Nombre del Alimento</label>
             </div>
           </div>
+
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="text" id="tipoAlimento" name="tipoAlimento" class="form-control" required>
+              <select id="tipoAlimento" name="tipoAlimento" class="form-select" required>
+                <option value="" disabled selected>Seleccione el tipo de alimento</option>
+
+                <!-- Separador visual para Granos -->
+                <option disabled>─────────── Cereales y Granos ───────────</option>
+                <option value="Grano">🌾 Grano (Avena, Cebada, Maíz, Trigo)</option>
+
+                <!-- Separador visual para Heno y Forraje -->
+                <option disabled>───────── Heno y Forraje ─────────</option>
+                <option value="Heno">🌿 Heno (Alfalfa, Ryegrass, Timothy)</option>
+                <option value="Forraje">🌿 Forraje fresco (Alfalfa, Ryegrass, Festuca)</option>
+
+                <!-- Separador visual para Suplementos y Concentrados -->
+                <option disabled>─────── Suplementos y Concentrados ───────</option>
+                <option value="Suplemento">💊 Suplemento (Vitaminas, Minerales, Proteínas)</option>
+                <option value="Concentrado">🧬 Concentrado (Potrillos, Caballos preñados)</option>
+
+                <!-- Separador visual para Fibras -->
+                <option disabled>─────────── Fibras ───────────</option>
+                <option value="Fibras">🪵 Fibras (Pulpa de remolacha, Paja)</option>
+
+                <!-- Separador visual para Líquidos y Complementos -->
+                <option disabled>──────── Líquidos y Complementos ────────</option>
+                <option value="Líquido">💧 Líquido (Aceite de linaza, Melaza)</option>
+                <option value="Complemento">🥕 Complemento (Zanahorias, Manzanas)</option>
+
+              </select>
               <label for="tipoAlimento"><i class="fas fa-carrot" style="color: #3498db;"></i> Tipo de Alimento</label>
             </div>
           </div>
-          
+
+          <!-- Estilo CSS para mejorar la apariencia visual -->
+          <style>
+            option[disabled] {
+              color: #95a5a6;
+              font-weight: bold;
+              font-style: italic;
+              background-color: #ecf0f1;
+              padding: 10px 0;
+            }
+
+            option {
+              padding: 8px;
+            }
+          </style>
+
           <div class="col-md-4">
             <div class="form-floating">
               <input type="number" name="stockActual" id="stockActual" class="form-control" required min="0">
@@ -64,13 +106,6 @@
             <div class="form-floating">
               <input type="date" name="fechaCaducidad" id="fechaCaducidad" class="form-control" required>
               <label for="fechaCaducidad"><i class="fas fa-calendar-alt" style="color: #3498db;"></i> Fecha de Caducidad</label>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="form-floating">
-              <input type="datetime-local" name="fechaIngreso" id="fechaIngreso" class="form-control" required>
-              <label for="fechaIngreso"><i class="fas fa-calendar-plus" style="color: #3498db;"></i> Fecha de Ingreso</label>
             </div>
           </div>
 
@@ -118,8 +153,12 @@
           <tr>
             <th>ID</th>
             <th>Nombre</th>
-            <th>Stock Final</th>
-            <th>Costo</th>
+            <th>Tipo</th>
+            <th>U.M</th>
+            <th>Lote</th>
+            <th>Cantidad</th>
+            <th>Stock minimo</th>
+            <th>Fecha Caducidad</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -147,52 +186,32 @@
                     <label for="alimento-select-entrada">Alimento</label>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="number" name="stockActual" id="stockActual-entrada" class="form-control" required min="0">
-                    <label for="stockActual-entrada">Stock Actual</label>
-                  </div>
+
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <select id="unidadMedidaEntrada" name="unidadMedida" class="form-select" required>
+                            <option value="">Seleccione la Unidad de Medida</option>
+                        </select>
+                        <label for="unidadMedidaEntrada"><i class="fas fa-balance-scale" style="color: #3498db;"></i> Unidad de Medida</label>
+                    </div>
                 </div>
+
 
                 <div class="col-md-6">
                   <div class="form-floating">
-                    <input type="number" name="stockMinimo" id="stockMinimo-entrada" class="form-control" required min="0">
-                    <label for="stockMinimo-entrada">Stock Mínimo</label>
+                    <input type="number" name="cantidad" id="stockActual-entrada" class="form-control" required min="0">
+                    <label for="stockActual-entrada">Cantidad</label>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="text" name="lote" id="lote-entrada" class="form-control" required>
-                    <label for="lote-entrada">Lote</label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="date" name="fechaCaducidad" id="fechaCaducidad-entrada" class="form-control" required>
-                    <label for="fechaCaducidad-entrada">Fecha de Caducidad</label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="text" name="tipoAlimento" id="tipoAlimentoEntrada" class="form-control" required>
-                    <label for="tipoAlimentoEntrada">Tipo de Alimento</label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <select id="unidadMedidaEntrada" name="unidadMedida" class="form-select" required>
-                      <option value="">Seleccione la Unidad de Medida</option>
+
+                <!-- Lote -->
+                <div class="form-group mb-3">
+                    <label for="entradaLote" class="form-label">Lote</label>
+                    <select name="lote" id="entradaLote" class="form-select" required>
+                        <option value="">Seleccione un Lote</option>
+                        <!-- Aquí se cargarán los lotes dinámicamente -->
                     </select>
-                    <label for="unidadMedidaEntrada">Unidad de Medida</label>
-                  </div>
-                </div>
-                <!-- Agregar el campo de precio -->
-                <div class="col-md-6">
-                  <div class="form-floating">
-                    <input type="number" name="nuevoPrecio" id="nuevoPrecio-entrada" class="form-control" min="0" step="0.01">
-                    <label for="nuevoPrecio-entrada">Nuevo Precio (opcional)</label>
-                  </div>
-                </div>
+                </div>   
               </div>
             </form>
           </div>
@@ -207,6 +226,8 @@
         </div>
       </div>
   </div>
+
+
   <!-- Modal para Movimientos de Salida -->
   <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel">
     <div class="modal-dialog modal-lg">
@@ -250,12 +271,15 @@
                 </div>
               </div>
 
-              <div class="col-md-4">
-                <div class="form-floating">
-                  <input type="text" name="lote" id="loteSalida" class="form-control">
-                  <label for="loteSalida"><i class="fas fa-box" style="color: #3498db;"></i> Lote (Opcional)</label>
-                </div>
+              <!-- Lote para Salida -->
+              <div class="form-group mb-3">
+                  <label for="salidaLote" class="form-label">Lote</label>
+                  <select name="lote" id="salidaLote" class="form-select" required>
+                      <option value="">Seleccione un Lote</option>
+                      <!-- Aquí se cargarán los lotes dinámicamente -->
+                  </select>
               </div>
+
 
 
               <div class="col-md-6">
@@ -386,14 +410,13 @@
     // Elementos del tipo de alimento y unidad de medida para ambos modales
     const tipoAlimentoElementRegistrar = document.getElementById('tipoAlimento');
     const unidadMedidaElementRegistrar = document.getElementById('unidadMedida');
-    const tipoAlimentoElementEntrada = document.getElementById('tipoAlimentoEntrada');
-    const unidadMedidaElementEntrada = document.getElementById('unidadMedidaEntrada');
+    
+    const unidadMedidaSelectEntrada = document.getElementById('unidadMedidaEntrada');
     const unidadMedidaSelect = document.querySelector("#unidadMedidaSalida");
 
     // Elementos de fecha de caducidad e ingreso
     const fechaCaducidadElement = document.getElementById('fechaCaducidad');
-    const fechaIngresoElement = document.getElementById('fechaIngreso');
-
+    
     // **Función para mostrar notificaciones en el div `mensaje`**
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
         const mensajeDiv = document.getElementById('mensaje'); // Asegúrate de tener un div con el id 'mensaje'
@@ -438,7 +461,49 @@
     const cantidadSalida = document.querySelector("#cantidad-salida");
 
 
-    // Función para cargar unidades de medida cuando se selecciona un alimento
+    // Función para cargar unidades de medida cuando se selecciona un alimento en la entrada
+    alimentoSelectEntrada.addEventListener("change", async function() {
+        const nombreAlimento = this.value;  // Capturar el alimento seleccionado
+
+        if (nombreAlimento) {
+            try {
+                const response = await fetch(`../../controllers/alimento.controller.php?operation=getUnidadesMedida&nombreAlimento=${nombreAlimento}`, {
+                    method: 'GET'
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    // Limpiar las opciones anteriores
+                    unidadMedidaSelectEntrada.innerHTML = '';
+
+                    // Usar un Set para evitar duplicados
+                    const unidadesUnicas = new Set(result.data.unidadesMedida);
+
+                    // Agregar las nuevas opciones de unidades de medida al select
+                    unidadesUnicas.forEach((unidad) => {
+                        unidadMedidaSelectEntrada.innerHTML += `<option value="${unidad}">${unidad}</option>`;
+                    });
+
+                    // Si no hay unidades de medida, mostrar un mensaje
+                    if (unidadesUnicas.size === 0) {
+                        unidadMedidaSelectEntrada.innerHTML = '<option value="">No hay unidades disponibles</option>';
+                    }
+                } else {
+                    console.error("Error al cargar las unidades de medida:", result.message);
+                    unidadMedidaSelectEntrada.innerHTML = '<option value="">Error al cargar unidades</option>';
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error.message);
+                unidadMedidaSelectEntrada.innerHTML = '<option value="">Error en la solicitud</option>';
+            }
+        } else {
+            // Si no se ha seleccionado un alimento, limpiar el select de unidades de medida
+            unidadMedidaSelectEntrada.innerHTML = '<option value="">Seleccione un alimento primero</option>';
+        }
+    });
+
+
+    // Función para cargar unidades de medida cuando se selecciona un alimento de salida
     alimentoSelectSalida.addEventListener("change", async function() {
         const nombreAlimento = this.value;  // Capturar el alimento seleccionado
 
@@ -452,13 +517,17 @@
                 if (result.status === "success") {
                     // Limpiar las opciones anteriores
                     unidadMedidaSelect.innerHTML = '';
+
+                    // Usar un Set para evitar duplicados
+                    const unidadesUnicas = new Set(result.data.unidadesMedida);
+
                     // Agregar las nuevas opciones de unidades de medida al select
-                    result.data.unidadesMedida.forEach((unidad) => {
+                    unidadesUnicas.forEach((unidad) => {
                         unidadMedidaSelect.innerHTML += `<option value="${unidad}">${unidad}</option>`;
                     });
 
                     // Si no hay unidades de medida, mostrar un mensaje
-                    if (result.data.unidadesMedida.length === 0) {
+                    if (unidadesUnicas.size === 0) {
                         unidadMedidaSelect.innerHTML = '<option value="">No hay unidades disponibles</option>';
                     }
                 } else {
@@ -475,6 +544,7 @@
         }
     });
 
+    
 
     if (cantidadEntrada) {
       cantidadEntrada.addEventListener("input", (e) => {
@@ -505,43 +575,6 @@
       }
       return true;
     };
-
-    // **Función para obtener la fecha y hora actuales en el formato correcto (local)**
-    const obtenerFechaHoraActual = () => {
-      const ahora = new Date();
-      const anio = ahora.getFullYear();
-      const mes = String(ahora.getMonth() + 1).padStart(2, '0');
-      const dia = String(ahora.getDate()).padStart(2, '0');
-      const hora = String(ahora.getHours()).padStart(2, '0');
-      const minutos = String(ahora.getMinutes()).padStart(2, '0');
-
-      return `${anio}-${mes}-${dia}T${hora}:${minutos}`;
-    };
-
-    // **Fecha de Ingreso**: Solo permitir la fecha y hora actuales
-    const actualizarFechaIngreso = () => {
-      const fechaActual = obtenerFechaHoraActual();
-      fechaIngresoElement.value = fechaActual;
-      fechaIngresoElement.setAttribute('readonly', true);
-    };
-
-    // Validar la fecha de ingreso
-    const validarFechaIngreso = () => {
-      const fechaIngreso = new Date(fechaIngresoElement.value);
-      const ahora = new Date();
-
-      if (fechaIngreso.toISOString().slice(0, 16) !== ahora.toISOString().slice(0, 16)) {
-        mostrarMensajeDinamico("La fecha de ingreso debe ser la fecha y hora actuales.", 'ERROR');
-        return false;
-      }
-      return true;
-    };
-
-    // Actualizar la fecha de ingreso al abrir el modal
-    const modalRegistrarAlimento = document.querySelector("#modalRegistrarAlimento");
-    if (modalRegistrarAlimento) {
-      modalRegistrarAlimento.addEventListener("shown.bs.modal", actualizarFechaIngreso);
-    }
 
     // Función para cargar los alimentos registrados
     const loadAlimentos = async () => {
@@ -633,7 +666,7 @@
           const tipos = parsedResponse.data;
 
           // Limpiar el select antes de añadir contenido nuevo
-          tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino (Solo para salida)</option>';
+          tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
 
           // Añadir cada tipo de equino al select
           tipos.forEach(tipo => {
@@ -659,6 +692,14 @@
 
         // Validar que la fecha de caducidad y fecha de ingreso sean correctas
         if (!validarFechaCaducidad() || !validarFechaIngreso()) {
+          mostrarMensajeDinamico('Error en las fechas de caducidad o ingreso.', 'ERROR');
+          return;
+        }
+
+        // Validar que el lote no esté vacío o inválido
+        const loteValido = await validarLote(loteInput);
+        if (!loteValido) {
+          mostrarMensajeDinamico('Lote inválido o ya registrado. Verifica los datos.', 'ERROR');
           return;
         }
 
@@ -673,7 +714,7 @@
           return;
         }
 
-        // Confirmar la operación con el usuario
+        // Confirmar la operación con el usuario solo para operaciones exitosas
         if (await ask("¿Confirmar registro de nuevo alimento?")) {
           const data = new URLSearchParams(formData); // Convertir el FormData a un formato URLSearchParams
           data.append('operation', 'registrar'); // Agregar la operación
@@ -688,6 +729,7 @@
 
             if (result.status === "success" && result.data.status === "success") {
               mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+              showToast(result.data.message, 'SUCCESS'); // Solo mostrar en Toast si es exitoso
               formRegistrarAlimento.reset();
               actualizarFechaIngreso(); // Restablecer la fecha de ingreso
               loadAlimentos();
@@ -697,9 +739,12 @@
           } catch (error) {
             mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
           }
+        } else {
+          mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO'); // Información de que el usuario canceló
         }
       });
     }
+
 
 
     // Función para cargar el historial de movimientos de entradas y salidas
@@ -712,12 +757,11 @@
 
 
             if (!fechaInicio || !fechaFin) {
-                mostrarMensajeDinamico('Por favor, selecciona ambas fechas para la búsqueda.', 'WARNING');
                 return;
             }
 
             // Cargar el historial de Entradas
-            console.log('Cargando historial de entradas...');
+
             const responseEntradas = await fetch('../../controllers/alimento.controller.php', {
                 method: "POST",
                 body: new URLSearchParams({
@@ -830,37 +874,57 @@
       // Limpiar las opciones anteriores
       unidadMedidaSelect.innerHTML = '';
 
-      // Agregar opciones válidas según el tipo de alimento
-      if (tipoAlimento === 'Grano') {
-        unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
-        unidadMedidaSelect.innerHTML += '<option value="Gramos">Gramos</option>';
-      } else if (tipoAlimento === 'Heno') {
-        unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
-        unidadMedidaSelect.innerHTML += '<option value="Fardos">Fardos</option>';
-      } else if (tipoAlimento === 'Suplemento') {
-        unidadMedidaSelect.innerHTML += '<option value="Gramos">Gramos</option>';
-        unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
-      } else if (tipoAlimento === 'Líquido') {
-        unidadMedidaSelect.innerHTML += '<option value="Litros">Litros</option>';
-        unidadMedidaSelect.innerHTML += '<option value="Mililitros">Mililitros</option>';
+      switch(tipoAlimento) {
+        case 'Grano':
+        case 'Avena':
+        case 'Cebada':
+          unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
+          unidadMedidaSelect.innerHTML += '<option value="Gramos">Gramos</option>';
+          break;
+        
+        case 'Heno':
+        case 'Forraje':
+          unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
+          unidadMedidaSelect.innerHTML += '<option value="Fardos">Fardos</option>';
+          break;
+        
+        case 'Concentrado':
+        case 'Suplemento':
+          unidadMedidaSelect.innerHTML += '<option value="Gramos">Gramos</option>';
+          unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
+          break;
+        
+        case 'Líquido':
+          unidadMedidaSelect.innerHTML += '<option value="Litros">Litros</option>';
+          unidadMedidaSelect.innerHTML += '<option value="Mililitros">Mililitros</option>';
+          break;
+
+        case 'Subproducto':
+        case 'Fibras':
+          unidadMedidaSelect.innerHTML += '<option value="Kilos">Kilos</option>';
+          unidadMedidaSelect.innerHTML += '<option value="Toneladas">Toneladas</option>';
+          break;
+
+        default:
+          unidadMedidaSelect.innerHTML += '<option value="">Seleccione la unidad de medida</option>';
+          break;
       }
     };
+
 
     // Aplicar la funcionalidad dinámica al cambiar el tipo de alimento
     tipoAlimentoElementRegistrar.addEventListener('input', () => {
       actualizarOpcionesUnidadMedida(tipoAlimentoElementRegistrar.value, unidadMedidaElementRegistrar);
     });
 
-    tipoAlimentoElementEntrada.addEventListener('input', () => {
-      actualizarOpcionesUnidadMedida(tipoAlimentoElementEntrada.value, unidadMedidaElementEntrada);
-    });
+
 
     // **Función para manejar la notificación de stock bajo/agotado**
     const notificarStockBajo = async () => {
       try {
         const response = await fetch('../../controllers/alimento.controller.php', {
           method: "POST",
-          body: new URLSearchParams({ operation: 'spu_notificar_stock_bajo_alimentos' })
+          body: new URLSearchParams({ operation: 'notificarStockBajo' })
         });
 
         const textResponse = await response.text();
@@ -876,10 +940,50 @@
       }
     };
 
+    // Función para cargar los lotes en los select de entrada y salida de alimentos
+    const cargarLotes = async () => {
+        const entradaLoteSelect = document.querySelector("#entradaLote");  // Select para entrada
+        const salidaLoteSelect = document.getElementById('salidaLote');    // Select para salida
+
+        try {
+            const response = await fetch('../../controllers/alimento.controller.php', {
+                method: 'POST',
+                body: new URLSearchParams({ operation: 'listarLotes' })  // Petición al controlador
+            });
+
+            // Asegurarse de obtener el resultado como JSON
+            const result = await response.json();
+
+            if (result.status === "success") {
+                // Limpiar los selects de entrada y salida
+                entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
+                salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
+                
+                // Insertar cada lote en ambos selects
+                result.data.forEach(lote => {
+                    const optionEntrada = document.createElement("option");
+                    optionEntrada.value = lote.lote;
+                    optionEntrada.textContent = `${lote.lote} - ${lote.nombreAlimento}`;
+                    entradaLoteSelect.appendChild(optionEntrada);
+
+                    const optionSalida = document.createElement("option");
+                    optionSalida.value = lote.lote;
+                    optionSalida.textContent = `${lote.lote} - ${lote.nombreAlimento}`;
+                    salidaLoteSelect.appendChild(optionSalida);
+                });
+            } else {
+                mostrarMensajeDinamico("No se encontraron lotes registrados.", 'error');
+            }
+        } catch (error) {
+            mostrarMensajeDinamico("Error al cargar los lotes: " + error.message, 'error');
+        }
+    };
+
+
+
     // Función para manejar entradas de alimentos
     const registrarEntrada = async () => {
       const stockActualInput = document.querySelector("#stockActual-entrada");
-      const stockMinimoInput = document.querySelector("#stockMinimo-entrada");
       const mensajeStock = document.querySelector("#mensaje-stock");
 
       console.log("Iniciando la función registrarEntrada"); // Log inicial
@@ -887,7 +991,6 @@
       // Validar el stock antes de proceder
       const validarStock = () => {
         const stockActual = parseFloat(stockActualInput.value) || 0;
-        const stockMinimo = parseFloat(stockMinimoInput.value) || 0;
 
         console.log("Stock actual:", stockActual); // Verificar el valor del stock actual
         console.log("Stock mínimo:", stockMinimo); // Verificar el valor del stock mínimo
@@ -905,18 +1008,18 @@
 
       // Verificar si el stock es válido antes de continuar
       if (!validarStock()) {
-        mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
+        showToast("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
         console.log("Validación de stock fallida. Deteniendo la operación.");
         return;
       }
 
       if (!alimentoSelectEntrada.value) {
-        mostrarMensajeDinamico("Por favor, seleccione un alimento.", 'ERROR');
+        showToast("Por favor, seleccione un alimento.", 'ERROR');
         console.log("No se seleccionó ningún alimento.");
         return;
       }
 
-      // Confirmación del usuario
+      // Confirmación del usuario usando SweetAlert (ask)
       if (await ask("¿Confirmar entrada de alimento?")) {
         console.log("Usuario confirmó la entrada de alimento."); // Confirmación de usuario
 
@@ -940,23 +1043,24 @@
 
           // Aquí actualizamos el acceso al JSON con base en lo que devuelve realmente
           if (result.status === "success") {
-            mostrarMensajeDinamico(result.message, 'SUCCESS');
+            showToast(result.message, 'SUCCESS');
             formEntradaAlimento.reset();
             console.log("Formulario reseteado. Recargando alimentos y movimientos.");
             loadAlimentos();
             loadHistorialMovimientos();
           } else {
-            mostrarMensajeDinamico(result.message || "Error en la operación.", 'ERROR');
+            showToast(result.message || "Error en la operación.", 'ERROR');
             console.log("Error en la operación:", result.message || "Error desconocido");
           }
         } catch (error) {
-          mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+          showToast("Error en la solicitud: " + error.message, 'ERROR');
           console.error("Error en la solicitud:", error.message);
         }
       } else {
         console.log("El usuario canceló la operación.");
       }
     };
+
 
 
     // Función para manejar la salida de alimentos
@@ -970,7 +1074,7 @@
         let merma = mermaField && mermaField.value ? mermaField.value : 0;  // Si no hay valor, asigna 0 por defecto
 
         // Selecciona el campo de lote (si está presente)
-        const loteField = document.getElementById('lote-salida');
+        const loteField = document.getElementById('salidaLote');
         const lote = loteField && loteField.value ? loteField.value : null;  // Si no hay valor, asigna null
 
         // Verificar los valores antes de enviar
@@ -980,28 +1084,30 @@
 
         // Validaciones básicas
         if (!alimentoSelectSalida.value) {
-            mostrarMensajeDinamico("Por favor, seleccione un alimento.", 'ERROR');
+            showToast("Por favor, seleccione un alimento.", 'ERROR');
             return;
         }
 
         if (!tipoEquinoMovimiento.value) {
-            mostrarMensajeDinamico("Seleccione un tipo de equino para la salida.", 'ERROR');
+            showToast("Seleccione un tipo de equino para la salida.", 'ERROR');
             return;
         }
 
         if (!unidadMedidaSalida.value) {
-            mostrarMensajeDinamico("Seleccione una unidad de medida.", 'ERROR');
+            showToast("Seleccione una unidad de medida.", 'ERROR');
             return;
         }
 
         // Validar la cantidad
         if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
-            mostrarMensajeDinamico("Por favor, ingrese una cantidad válida.", 'ERROR');
+            showToast("Por favor, ingrese una cantidad válida.", 'ERROR');
             return;
         }
 
-        // Confirmación del usuario
+        // Confirmación del usuario usando SweetAlert (ask)
         if (await ask("¿Confirmar salida de alimento?")) {
+            console.log("Usuario confirmó la salida de alimento.");
+
             // Crear un objeto params con los datos
             const params = {
                 operation: 'salida', // Asegurarse de enviar el nombre de la operación correctamente
@@ -1012,6 +1118,8 @@
                 cantidad: cantidad,
                 merma: merma  // Asegurarse de que merma siempre se envíe (0 si está vacío)
             };
+
+            console.log("Parámetros enviados:", params);
 
             // Convertimos el objeto en formato JSON para enviar por POST
             const data = JSON.stringify(params);
@@ -1026,31 +1134,32 @@
                     body: data
                 });
 
-                // Capturar la respuesta como texto
-                const textResponse = await response.text();  // Obteniendo la respuesta como texto
-
-                // Mostrar la respuesta sin procesar para depuración
-                console.log("Respuesta cruda del servidor (texto):", textResponse);
+                const textResponse = await response.text();
+                console.log("Respuesta cruda del servidor (texto):", textResponse); // Mostrar la respuesta cruda del servidor
 
                 // Ahora intentamos parsear el texto a JSON
                 const result = JSON.parse(textResponse);
+                console.log("Respuesta procesada (JSON):", result);
 
                 // Verificar el estado del resultado y proceder
                 if (result.status === "success") {
-                    mostrarMensajeDinamico(result.data?.message || "Salida registrada exitosamente.", 'SUCCESS');
+                    showToast(result.message || "Salida registrada exitosamente.", 'SUCCESS');
                     formSalidaAlimento.reset(); // Reiniciar el formulario
                     $('#modalSalidaAlimento').modal('hide'); // Cerrar el modal
                     loadAlimentos(); // Recargar la lista de alimentos
                     loadHistorialMovimientos(); // Recargar el historial de movimientos
                 } else {
-                    mostrarMensajeDinamico(result.message || "Error al registrar la salida.", 'ERROR');
+                    showToast(result.message || "Error al registrar la salida.", 'ERROR');
                 }
             } catch (error) {
                 console.error("Error en la solicitud:", error.message);
-                mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+                showToast("Error en la solicitud: " + error.message, 'ERROR');
             }
+        } else {
+            console.log("El usuario canceló la operación.");
         }
     };
+
 
 
     // Función para eliminar un alimento
@@ -1081,6 +1190,7 @@
     };
 
     // Cargar todos los datos al inicio
+    cargarLotes();
     loadAlimentos();
     loadTipoEquinos();
     loadHistorialMovimientos();

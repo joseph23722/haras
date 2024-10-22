@@ -69,62 +69,46 @@ DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,              -- Usuario que realiza la operación
     IN _nombreAlimento VARCHAR(100), -- Nombre del alimento
-    IN _tipoAlimento VARCHAR(50),    -- Tipo de alimento (ej. Grano, Heno, Suplemento)
-    IN _unidadMedida VARCHAR(10),    -- Unidad de medida del alimento
+    IN _unidadMedida VARCHAR(10),    -- Unidad de medida del alimento (Kilos, Litros, etc.)
     IN _lote VARCHAR(50),            -- Número de lote del alimento
-    IN _fechaCaducidad DATE,         -- Fecha de caducidad del lote (puede ser NULL)
-    IN _cantidad DECIMAL(10,2),      -- Cantidad de alimento a ingresar
-    IN _nuevoPrecio DECIMAL(10,2)    -- Nuevo precio opcional (puede ser NULL)
+    IN _cantidad DECIMAL(10,2)       -- Cantidad de alimento a ingresar
 )
 BEGIN
     DECLARE _existsLote INT DEFAULT 0;
     DECLARE _idAlimento INT DEFAULT NULL;
-    DECLARE _precioAnterior DECIMAL(10,2) DEFAULT 0; -- Precio del lote anterior si existe
 
     -- Convertir el nombre del alimento a minúsculas para consistencia
     SET _nombreAlimento = LOWER(_nombreAlimento);
 
-    -- Verificar si el lote ya está registrado para este alimento y obtener el precio
-    SELECT COUNT(*), idAlimento, IFNULL(costo, 0)
-    INTO _existsLote, _idAlimento, _precioAnterior
+    -- Verificar si el lote ya está registrado para este alimento y unidad de medida
+    SELECT COUNT(*), idAlimento
+    INTO _existsLote, _idAlimento
     FROM Alimentos
-    WHERE nombreAlimento = _nombreAlimento AND lote = _lote;
+    WHERE nombreAlimento = _nombreAlimento 
+      AND lote = _lote
+      AND unidadMedida = _unidadMedida;
 
-    -- Si el lote ya existe, actualizamos el stock y el precio si se proporciona uno nuevo
+    -- Si el lote ya existe, actualizamos el stock
     IF _existsLote > 0 THEN
-        -- Actualizar stock y opcionalmente el precio
+        -- Actualizar stock y la fecha de movimiento
         UPDATE Alimentos
         SET stockActual = stockActual + _cantidad, 
-            costo = IFNULL(_nuevoPrecio, costo),
-            compra = IFNULL(_nuevoPrecio, costo) * stockActual,
             fechaMovimiento = NOW()
         WHERE idAlimento = _idAlimento;
 
         -- Registrar la entrada en el historial de movimientos
-        INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
-        VALUES (_idAlimento, 'Entrada', _cantidad, _idUsuario, NOW());
+        INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
+        VALUES (_idAlimento, 'Entrada', _cantidad, _idUsuario, NOW(), _unidadMedida);
 
     ELSE
-        -- Si el lote no existe, registrar un nuevo lote para este alimento
-        INSERT INTO Alimentos (
-            idUsuario, nombreAlimento, tipoAlimento, unidadMedida, lote, 
-            costo, fechaCaducidad, stockActual, stockMinimo, estado, 
-            fechaIngreso, compra, fechaMovimiento
-        ) 
-        VALUES (
-            _idUsuario, _nombreAlimento, _tipoAlimento, _unidadMedida, _lote, 
-            _nuevoPrecio, _fechaCaducidad, _cantidad, 0, 'Disponible', 
-            NOW(), _nuevoPrecio * _cantidad, NOW()
-        );
-
-        -- Registrar la entrada en el historial de movimientos
-		INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
-		VALUES (LAST_INSERT_ID(), 'Entrada', _cantidad, _idUsuario, NOW(), _unidadMedida);
-
+        -- Si el lote no existe, generar un error
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El lote especificado no existe para este alimento y unidad de medida.';
     END IF;
 
 END $$
 DELIMITER ;
+
 
 
 -- Procedimiento Salida de Alimentos 
@@ -253,6 +237,17 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+-- -----------
+DELIMITER $$
+CREATE PROCEDURE spu_listar_lotes_alimentos()
+BEGIN
+    -- Seleccionar todos los lotes registrados en la tabla Alimentos
+    SELECT lote, nombreAlimento, tipoAlimento, stockActual, stockMinimo, 
+           fechaCaducidad, estado, unidadMedida, costo
+    FROM Alimentos;
+END $$
+DELIMITER ;
 
 
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
@@ -392,8 +387,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Para darle salida a los alimentos se debe tener en cuenta los siguientes tipo de equinos:
--- Yeguas: Vacias, preñadas, con crias, potrillos, potrancas, padrillos activos e inactivos.
 
 
 -- -------------------------------------------------------------------------------

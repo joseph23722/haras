@@ -47,19 +47,30 @@ class Admi extends Conexion {
                 return ['status' => 'error', 'message' => 'Faltan datos obligatorios o valores incorrectos.'];
             }
 
-            // Preparar la llamada al procedimiento almacenado
+            // Paso 1: Validar combinación de tipo, presentación y dosis
+            $validacion = $this->validarRegistrarCombinacion([
+                'tipoMedicamento' => $params['tipo'],
+                'presentacionMedicamento' => $params['presentacion'],
+                'dosisMedicamento' => $params['dosis']
+            ]);
+
+            if (!$validacion) {
+                return ['status' => 'error', 'message' => 'Error: La combinación de tipo, presentación y dosis no es válida.'];
+            }
+
+            // Paso 2: Proceder con el registro del medicamento si la combinación es válida
             $query = $this->pdo->prepare("CALL spu_medicamentos_registrar(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['nombreMedicamento'],
-                $params['descripcion'],
+                $params['descripcion'] ?? null,  // Puede ser nulo si no se proporciona
                 $params['lote'],
                 $params['presentacion'],
                 $params['dosis'],
                 $params['tipo'],
                 $params['cantidad_stock'],
-                $params['stockMinimo'],
+                $params['stockMinimo'] ?? 0,  // Valor por defecto si no se proporciona
                 $params['fecha_caducidad'],
-                $params['precioUnitario'],
+                $params['precioUnitario'] ?? 0.0,  // Valor por defecto si no se proporciona
                 $idUsuario
             ]);
 
@@ -75,7 +86,11 @@ class Admi extends Conexion {
             return ['status' => 'error', 'message' => 'No se pudo confirmar el registro del medicamento.'];
 
         } catch (PDOException $e) {
-            // Capturar y devolver el error de la base de datos
+            // Verificar si es un error relacionado con la dosis mal escrita
+            if (strpos($e->getMessage(), 'Dosis mal escrita o inexistente') !== false) {
+                return ['status' => 'error', 'message' => 'Error: La dosis ingresada es incorrecta o no existe en el sistema.'];
+            }
+            // Capturar y devolver otros errores de la base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
             // Capturar cualquier otro error
@@ -84,42 +99,49 @@ class Admi extends Conexion {
     }
 
 
-
-
     // Registrar entrada de medicamentos
     public function entradaMedicamento($params = []) {
         try {
+            // Iniciar la sesión si no está activa
             if (session_status() == PHP_SESSION_NONE) {
                 session_start(); // Iniciar la sesión si no está iniciada
             }
 
-            $idUsuario = $_SESSION['idUsuario'] ?? null; // Obtener idUsuario de la sesión
+            // Obtener el idUsuario de la sesión
+            $idUsuario = $_SESSION['idUsuario'] ?? null;
 
+            // Verificar si el usuario está autenticado
             if ($idUsuario === null) {
                 throw new Exception('Usuario no autenticado.'); // Si no hay usuario, lanzar error
             }
 
+            // Verificar que los parámetros obligatorios estén presentes y sean válidos
+            if (empty($params['nombreMedicamento']) || empty($params['lote']) || $params['cantidad'] <= 0) {
+                throw new Exception('Faltan datos obligatorios o valores incorrectos.');
+            }
+
             // Ejecutar el procedimiento almacenado para registrar la entrada de medicamentos
-            $query = $this->pdo->prepare("CALL spu_medicamentos_entrada(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_medicamentos_entrada(?, ?, ?, ?)");
             $query->execute([
-                $idUsuario,
-                $params['nombreMedicamento'],
-                $params['lote'],
-                $params['presentacion'],      // Presentación del medicamento
-                $params['dosis'],             // Dosis del medicamento
-                $params['tipo'],              // Tipo del medicamento
-                $params['cantidad'],          // Cantidad de stock
-                $params['stockMinimo'],       // Stock mínimo
-                $params['fechaCaducidad'],    // Fecha de caducidad
-                $params['nuevoPrecio']        // Nuevo precio unitario (si aplica)
+                $idUsuario,                     // Usuario que realiza la operación
+                $params['nombreMedicamento'],    // Nombre del medicamento
+                $params['lote'],                // Número de lote del medicamento
+                $params['cantidad']             // Cantidad de stock a ingresar
             ]);
 
-            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
+            // Verificar si la inserción fue exitosa
+            if ($query->rowCount() > 0) {
+                return ['status' => 'success', 'message' => 'Entrada de medicamento registrada correctamente.'];
+            } else {
+                return ['status' => 'error', 'message' => 'No se pudo registrar la entrada del medicamento.'];
+            }
         } catch (Exception $e) {
-            error_log("Error en entrada de medicamentos: " . $e->getMessage()); // Registrar error en el log
-            return false; // Devolver false en caso de error
+            // Registrar el error en el log del servidor
+            error_log("Error en entrada de medicamentos: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
+
 
 
     // Registrar salida de medicamentos
@@ -216,18 +238,37 @@ class Admi extends Conexion {
             // Ejecutar el procedimiento almacenado para validar y registrar la combinación
             $query = $this->pdo->prepare("CALL spu_validar_registrar_combinacion(?, ?, ?)");
             $query->execute([
-                $params['tipoMedicamento'],        // Tipo de medicamento
-                $params['presentacionMedicamento'],// Presentación del medicamento
-                $params['dosisMedicamento']        // Dosis del medicamento
+                $params['tipoMedicamento'],         // Tipo de medicamento
+                $params['presentacionMedicamento'], // Presentación del medicamento
+                $params['dosisMedicamento']         // Dosis del medicamento
             ]);
-    
-            // Validar si la combinación se insertó correctamente
-            return $query->rowCount() > 0; // Si rowCount > 0, se insertó con éxito
-        } catch (Exception $e) {
+
+            // Verificar si el procedimiento arrojó resultados (combinación válida)
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+
+            // Si el resultado contiene la clave 'mensaje', devolver éxito
+            if ($result && isset($result['mensaje']) && $result['mensaje'] === 'Combinación válida') {
+                return true; // Combinación validada correctamente
+            }
+
+            return false; // Si no se validó la combinación, devolver false
+
+        } catch (PDOException $e) {
+            // Verificar si es un error relacionado con la dosis mal escrita o no válida
+            if (strpos($e->getMessage(), 'La dosis está mal escrita o no es válida') !== false) {
+                return ['status' => 'error', 'message' => 'Error: La dosis ingresada es incorrecta o no válida.'];
+            }
+
+            // Registrar otros errores en el log y devolver false
             error_log("Error al validar o registrar la combinación: " . $e->getMessage());
+            return false; // Devolver false en caso de error
+        } catch (Exception $e) {
+            // Capturar cualquier otro error inesperado
+            error_log("Error inesperado al validar la combinación: " . $e->getMessage());
             return false; // Devolver false en caso de error
         }
     }
+
     
      // Listar los tipos de movimeinto
     public function listarTiposMedicamentos() {
@@ -292,6 +333,38 @@ class Admi extends Conexion {
             return false;
         } 
     }
+
+    // Listar todos los lotes registrados
+    public function listarLotes() {
+        try {
+            // Ejecutar el procedimiento almacenado para listar los lotes
+            $query = $this->pdo->prepare("CALL spu_listar_lotes()");
+            $query->execute();
+
+            // Obtener los resultados como un array asociativo
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Devolver los resultados si existen
+            if ($result) {
+                return ['status' => 'success', 'data' => $result];
+            } else {
+                return ['status' => 'error', 'message' => 'No se encontraron lotes registrados.'];
+            }
+
+        } catch (PDOException $e) {
+            // Capturar y devolver el error de la base de datos
+            error_log("Error al listar los lotes: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            // Capturar cualquier otro error
+            error_log("Error inesperado al listar los lotes: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
+        }
+    }
+
+    
+
+
 
     
 }

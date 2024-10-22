@@ -54,12 +54,11 @@ try {
                 'tipo' => $_POST['tipo'] ?? '',
                 'cantidad_stock' => intval($_POST['cantidad_stock'] ?? 0),
                 'stockMinimo' => intval($_POST['stockMinimo'] ?? 0),
-                'fecha_caducidad' => $_POST['fechaCaducidad'] ?? '',
+                'fecha_caducidad' => $_POST['fecha_caducidad'] ?? '',
                 'precioUnitario' => floatval($_POST['precioUnitario'] ?? 0)
             ];
 
             try {
-                // Validar combinación antes de registrar
                 $validarCombinacion = $admi->validarRegistrarCombinacion([
                     'tipoMedicamento' => $params['tipo'],
                     'presentacionMedicamento' => $params['presentacion'],
@@ -68,35 +67,25 @@ try {
 
                 if ($validarCombinacion) {
                     $result = $admi->registrarMedicamento($params);
-
                     if ($result) {
-                        // Retornar respuesta en formato JSON
-                        echo json_encode(['status' => 'success', 'message' => 'Medicamento registrado correctamente.']);
+                        sendResponse('success', 'Medicamento registrado correctamente.');
                     } else {
-                        echo json_encode(['status' => 'error', 'message' => 'Error: No se pudo registrar el medicamento. Verifique los parámetros.']);
+                        sendResponse('error', 'Error: No se pudo registrar el medicamento.');
                     }
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Error: La combinación de tipo, presentación y dosis no es válida.']);
+                    sendResponse('error', 'Error: La combinación de tipo, presentación y dosis no es válida.');
                 }
             } catch (PDOException $e) {
-                echo json_encode(['status' => 'error', 'message' => 'Error al registrar el medicamento: ' . $e->getMessage()]);
+                sendResponse('error', 'Error al registrar el medicamento: ' . $e->getMessage());
             }
             break;
-
-
 
         // Registrar entrada de medicamento
         case 'entrada':
             $params = [
                 'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
                 'lote' => $_POST['lote'] ?? '',
-                'presentacion' => $_POST['presentacion'] ?? '',
-                'dosis' => $_POST['dosis'] ?? '',
-                'tipo' => $_POST['tipo'] ?? '',
-                'cantidad' => floatval($_POST['cantidad'] ?? 0),
-                'stockMinimo' => intval($_POST['stockMinimo'] ?? 0),
-                'fechaCaducidad' => $_POST['fechaCaducidad'] ?? '',
-                'nuevoPrecio' => floatval($_POST['nuevoPrecio'] ?? 0)
+                'cantidad' => floatval($_POST['cantidad'] ?? 0)
             ];
 
             try {
@@ -104,7 +93,7 @@ try {
                 if ($result) {
                     sendResponse('success', 'Entrada de medicamento registrada correctamente.');
                 } else {
-                    sendResponse('error', 'Error: No se pudo registrar la entrada del medicamento. Verifique los datos.');
+                    sendResponse('error', 'Error: No se pudo registrar la entrada del medicamento.');
                 }
             } catch (PDOException $e) {
                 sendResponse('error', 'Error al registrar la entrada del medicamento: ' . $e->getMessage());
@@ -134,6 +123,21 @@ try {
             }
             break;
 
+
+        // Listar todos los lotes registrados
+        case 'listarLotes':
+            try {
+                $lotes = $admi->listarLotes();
+                if ($lotes['status'] === 'success') {
+                    sendResponse('success', 'Lotes obtenidos correctamente.', $lotes['data']);
+                } else {
+                    sendResponse('error', 'No se pudieron obtener los lotes.');
+                }
+            } catch (PDOException $e) {
+                sendResponse('error', 'Error al listar los lotes: ' . $e->getMessage());
+            }
+            break;
+
         // Notificar stock bajo
         case 'notificarStockBajo':
             try {
@@ -157,16 +161,22 @@ try {
             ];
 
             try {
+                // Llamar al método que valida la combinación
                 $result = $admi->validarRegistrarCombinacion($params);
+
                 if ($result) {
+                    // Si la validación es exitosa, retornar una respuesta positiva
                     sendResponse('success', 'Validación y registro de combinación exitoso.');
                 } else {
+                    // Si la combinación no es válida, retornar error
                     sendResponse('error', 'Error: La combinación de presentación, tipo o dosis no es válida o ya existe.');
                 }
             } catch (PDOException $e) {
+                // Manejar errores de la base de datos
                 sendResponse('error', 'Error al validar la combinación: ' . $e->getMessage());
             }
             break;
+
 
         // Agregar nuevo tipo de medicamento
         case 'agregarTipoMedicamento':

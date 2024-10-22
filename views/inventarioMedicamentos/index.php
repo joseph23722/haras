@@ -227,60 +227,23 @@
                             </select>
                         </div>
                         
-                        <!-- Presentación -->
-                        <div class="form-group mb-3">
-                            <label for="entradaPresentacion" class="form-label">Presentación</label>
-                            <select name="presentacion" id="entradaPresentacion" class="form-control" required>
-                                <option value="">Seleccione la Presentación</option>
-                                <option value="nuevo">Agregar nueva presentación...</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Dosis -->
-                        <div class="form-group mb-3">
-                            <label for="entradaDosis" class="form-label">Composición</label>
-                            <input type="text" name="dosis" id="entradaDosis" class="form-control" required>
-                        </div>
-
-                        <!-- Tipo de Medicamento -->
-                        <div class="form-group mb-3">
-                            <label for="tipoentrada" class="form-label">Tipo de Medicamento</label>
-                            <select name="tipo" id="tipoentrada" class="form-select" required>
-                                <option value="">Seleccione el Tipo de Medicamento</option>
-                                <option value="nuevo">Agregar nuevo tipo...</option>
-                            </select>
-                        </div>
-
                         <!-- Lote -->
                         <div class="form-group mb-3">
                             <label for="entradaLote" class="form-label">Lote</label>
-                            <input type="text" name="lote" id="entradaLote" class="form-control" required>
+                            <select name="lote" id="entradaLote" class="form-select" required>
+                                <option value="">Seleccione un Lote</option>
+                                <!-- Aquí se cargarán los lotes dinámicamente -->
+                            </select>
                         </div>
-                        
+
+                                                
                         <!-- Cantidad -->
                         <div class="form-group mb-3">
                             <label for="entradaCantidad" class="form-label">Cantidad</label>
                             <input type="number" name="cantidad" id="entradaCantidad" class="form-control" required min="0">
                         </div>
 
-                        <!-- Fecha de Caducidad -->
-                        <div class="form-group mb-3">
-                            <label for="entradaFechaCaducidad" class="form-label">Fecha de Caducidad</label>
-                            <input type="date" name="fechaCaducidad" id="entradaFechaCaducidad" class="form-control" required min="<?= date('Y-m-d'); ?>">
-                        </div>
-                        
-                        <!-- Precio Unitario -->
-                        <div class="form-group mb-3">
-                            <label for="entradaPrecio" class="form-label">Precio Unitario</label>
-                            <input type="number" step="0.01" name="nuevoPrecio" id="entradaPrecio" class="form-control" required min="0">
-                        </div>
-
-                        <!-- Stock Mínimo -->
-                        <div class="form-group mb-3">
-                            <label for="entradaStockMinimo" class="form-label">Stock Mínimo</label>
-                            <input type="number" name="stockMinimo" id="entradaStockMinimo" class="form-control" required min="0" value="10">
-                        </div>
-
+                
                         <!-- Botón para registrar la entrada -->
                         <button type="submit" class="btn btn-primary">Registrar Entrada</button>
                     </form>
@@ -308,6 +271,19 @@
                             <label for="salidaCantidad" class="form-label">Cantidad</label>
                             <input type="number" name="cantidad" id="salidaCantidad" class="form-control" required min="0">
                         </div>
+
+
+
+                        <!-- Lote -->
+                        <div class="form-group mb-3">
+                            <label for="salidaLote" class="form-label">Lote(opcional)</label>
+                            <select name="lote" id="salidaLote" class="form-control" required>
+                                <option value="">Seleccione un lote</option>
+                                <!-- Las opciones se cargarán dinámicamente con JavaScript -->
+                            </select>
+                        </div>
+
+
                         <!-- Botón para registrar la salida -->
                         <button type="submit" class="btn btn-danger">Registrar Salida</button>
                     </form>
@@ -387,6 +363,7 @@
                 messageArea.style.display = 'none';
             }, 5000);
         }
+    
 
         // Función para validar el campo lote
         async function validarLote(loteInput) {
@@ -455,18 +432,6 @@
             });
 
             tipoMedicamentoSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
-
-            // También cargar los tipos en el modal de entrada
-            const tipoEntradaSelect = document.querySelector("#tipoentrada");
-            tipoEntradaSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
-            tipos.forEach(tipo => {
-                const option = document.createElement("option");
-                option.value = tipo.tipo;
-                option.textContent = tipo.tipo;
-                tipoEntradaSelect.appendChild(option);
-            });
-
-            tipoEntradaSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
             } catch (error) {
             mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
             }
@@ -479,14 +444,6 @@
             }
         });
        
-        // Mostrar modal para agregar nuevo tipo en el modal de entrada
-        const tipoEntradaSelect = document.querySelector("#tipoentrada");
-        tipoEntradaSelect.addEventListener('change', function () {
-            if (this.value === 'nuevo') {
-            $('#modalAgregarTipo').modal('show');
-            }
-        });
-
         // Procesar la adición de un nuevo tipo de medicamento
         formAgregarTipo.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -534,18 +491,6 @@
                 presentacionSelect.appendChild(option);
             });
             presentacionSelect.innerHTML += '<option value="nuevo">Agregar nueva presentación...</option>';
-
-            // También cargar las presentaciones en el modal de entrada
-            const presentacionEntradaSelect = document.querySelector("#entradaPresentacion");
-            presentacionEntradaSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
-            presentaciones.forEach(presentacion => {
-                const option = document.createElement("option");
-                option.value = presentacion.presentacion;
-                option.textContent = presentacion.presentacion;
-                presentacionEntradaSelect.appendChild(option);
-            });
-            presentacionEntradaSelect.innerHTML += '<option value="nuevo">Agregar nueva presentación...</option>';
-
             } catch (error) {
             mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
             showToast("Error al cargar presentaciones", 'ERROR');
@@ -554,14 +499,6 @@
 
         // Mostrar modal para agregar nueva presentación
         presentacionSelect.addEventListener('change', function () {
-            if (this.value === 'nuevo') {
-            $('#modalAgregarPresentacion').modal('show');
-            }
-        });
-
-        // Mostrar modal para agregar nueva presentación en el modal de entrada
-        const presentacionEntradaSelect = document.querySelector("#entradaPresentacion");
-        presentacionEntradaSelect.addEventListener('change', function () {
             if (this.value === 'nuevo') {
             $('#modalAgregarPresentacion').modal('show');
             }
@@ -773,7 +710,7 @@
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
-       // Función para confirmar la eliminación del medicamento
+        // Función para confirmar la eliminación del medicamento
         window.borrarMedicamento = async (idMedicamento, nombreMedicamento) => {
             const confirmacion = await ask(`¿Estás seguro de que deseas eliminar el medicamento "${nombreMedicamento}"?`);
             if (confirmacion) {
@@ -798,58 +735,55 @@
             }
         };
 
-        // **Nuevo - Validar combinaciones antes de registrar un medicamento**
+       // **Nuevo - Validar combinaciones antes de registrar un medicamento**
         const validarCombinacion = async (params) => {
             try {
-                // Log para ver los parámetros que se van a enviar
-                console.log('Preparando los datos para validar combinación:', params);
+                console.log('Validando combinación de tipo, presentación y dosis:', params);
 
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: new URLSearchParams({
                         operation: 'validarRegistrarCombinacion',
-                        tipo: params.tipo,
-                        presentacion: params.presentacion,
-                        dosis: params.dosis,
+                        tipoMedicamento: params.tipo,        // Tipo del medicamento
+                        presentacionMedicamento: params.presentacion,  // Presentación del medicamento
+                        dosisMedicamento: params.dosis       // Dosis del medicamento
                     })
                 });
 
-                // Verifica si hubo un error en la solicitud antes de procesar el JSON
-                console.log('Estado de la respuesta HTTP:', response.status, response.statusText);
-
+                // Verificar que la respuesta del servidor sea exitosa
                 if (!response.ok) {
-                    console.log('Error en la solicitud: No se pudo conectar correctamente con el servidor.');
+                    console.error('Error al conectar con el servidor. Estado:', response.status);
                     mostrarMensaje("Error al conectar con el servidor. Estado: " + response.status, 'error');
                     showToast("Error al conectar con el servidor", 'ERROR');
                     return false;
                 }
 
-                // Log para ver la respuesta completa del servidor
+                // Procesar la respuesta en formato JSON
                 const result = await response.json();
-                console.log('Respuesta completa recibida del servidor:', result);
 
-                // Validación exitosa
+                // Verificar el estado de la respuesta
                 if (result.status === "success") {
-                    console.log('Validación exitosa: Combinación válida. Detalles:', result.data || 'Sin detalles adicionales.');
-                    return true;  // Combinación válida
-                } else {
-                    // Si la validación falla
-                    console.log('Error en la validación. Mensaje recibido del servidor:', result.message);
+                    console.log('Combinación válida:', result);
+                    return true;  // La combinación es válida
+                } else if (result.status === "error" && result.message.includes("La dosis está mal escrita")) {
+                    console.error('Dosis mal escrita o no válida:', result.message);
                     mostrarMensaje(result.message, 'error');
                     showToast(result.message, 'ERROR');
-                    return false;
+                    return false;  // La dosis está mal escrita
+                } else {
+                    console.error('Combinación inválida:', result.message);
+                    mostrarMensaje(result.message, 'error');
+                    showToast(result.message, 'ERROR');
+                    return false;  // La combinación es inválida por otros motivos
                 }
             } catch (error) {
-                // Log de errores en la solicitud
-                console.log('Excepción capturada durante la validación:', error.message);
-                console.log('Detalles de la excepción:', error);
+                console.error('Error durante la validación de la combinación:', error);
                 mostrarMensaje("Error al validar combinación: " + error.message, 'error');
                 showToast("Error al validar combinación", 'ERROR');
                 return false;
             }
         };
-
-
+ 
 
         // **Validar campos y mostrar mensajes específicos**
         const validarCampos = (formData) => {
@@ -890,92 +824,59 @@
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            // Validar el campo lote primero
+            // Obtener los valores del formulario
             const loteInput = document.querySelector('#lote');
-            console.log('Campo Lote ingresado:', loteInput.value);  // Muestra el valor del campo de lote
-            const loteValido = await validarLote(loteInput);
-            console.log('Resultado de la validación del lote:', loteValido);  // Verifica si el lote es válido
-
-            if (!loteValido) {
-                console.log('Lote inválido. Se detiene el registro.');  // Log para indicar que el lote es inválido
-                return;  // Detener la operación si el lote no es válido
-            }
-
-            // Confirmar con ask antes de registrar el medicamento
-            const confirmar = await ask("¿Estás seguro de que deseas registrar este medicamento?", "Registrar Medicamento");
-            console.log('Confirmación del usuario para proceder con el registro:', confirmar);  // Verifica si el usuario confirma
-
-            if (!confirmar) {
-                console.log('Operación cancelada por el usuario.');  // Log cuando el usuario cancela la operación
-                showToast("Operación cancelada.", "INFO");
-                return; // Detener la operación si se cancela
-            }
-
-            const formData = new FormData(formRegistrarMedicamento);
-            console.log('Datos del formulario antes de validación:', [...formData]);  // Log de todos los datos capturados del formulario
-
-            const errores = validarCampos(formData);
-            console.log('Errores de validación detectados:', errores);  // Muestra cualquier error de validación
-
-            if (errores.length > 0) {
-                console.log('Errores encontrados, deteniendo el registro.');  // Log para indicar que se encontraron errores
-                mostrarMensaje(errores.join(' '), 'error');
-                return; // Detener el registro hasta que se corrijan los errores
-            }
-
-            const tipo = tipoMedicamentoSelect.value;
-            const presentacion = presentacionSelect.value;
+            const tipo = document.querySelector('#tipo').value;
+            const presentacion = document.querySelector('#presentacion').value;
             const dosis = document.querySelector("#dosis").value;
-            console.log('Datos ingresados para validar combinación:', { tipo, presentacion, dosis });  // Muestra los datos que se están validando
 
-            // Validar la combinación de tipo, presentación y dosis
-            const esValido = await validarCombinacion({ tipo, presentacion, dosis });
-            console.log('Resultado de la validación de combinación:', esValido);  // Muestra si la combinación es válida
-
-            if (!esValido) {
-                console.log('Combinación inválida. Se detiene el registro.');  // Log cuando la combinación no es válida
-                return;  // Detener la operación si la combinación no es válida
+            // Validar que el lote no esté vacío o inválido
+            const loteValido = await validarLote(loteInput);
+            if (!loteValido) {
+                mostrarMensaje('Lote inválido o ya registrado. Verifica los datos.', 'error');
+                return;
             }
 
-            // Proceder con el registro del medicamento si no hay errores
+            // Confirmación del usuario
+            const confirmar = await ask("¿Estás seguro de que deseas registrar este medicamento?", "Registrar Medicamento");
+            if (!confirmar) {
+                showToast("Operación cancelada.", "INFO");
+                return;
+            }
+
+            // Validar combinación de tipo, presentación y dosis
+            const esValido = await validarCombinacion({ tipo, presentacion, dosis });
+            if (!esValido) {
+                mostrarMensaje('Combinación inválida de tipo, presentación y dosis.', 'error');
+                return;
+            }
+
+            // Proceder con el registro si la combinación y lote son válidos
+            const formData = new FormData(formRegistrarMedicamento);
             const data = new URLSearchParams(formData);
             data.append('operation', 'registrar');
-            console.log('Datos enviados al servidor:', [...data]);  // Muestra los datos enviados al servidor en formato de array
 
             try {
-                console.log('Enviando solicitud de registro al servidor...');
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: data
                 });
 
-                console.log('Estado de la respuesta HTTP:', response.status, response.statusText);  // Verifica si la solicitud fue exitosa
-
                 if (!response.ok) {
-                    console.log('Error en la solicitud al servidor. Estado:', response.status);  // Log para errores de conexión
                     mostrarMensaje("Error al conectar con el servidor. Estado: " + response.status, 'error');
-                    showToast("Error al conectar con el servidor", 'ERROR');
                     return;
                 }
 
                 const result = await response.json();
-                console.log('Respuesta del servidor:', result);  // Muestra la respuesta que devuelve el servidor
-
                 if (result.status === "success") {
-                    console.log('Medicamento registrado correctamente.');  // Log cuando el medicamento se registra con éxito
-                    mostrarMensaje(result.message, 'success');
                     showToast("Medicamento registrado correctamente", "SUCCESS");
                     formRegistrarMedicamento.reset();
                     loadMedicamentos();  // Recargar la lista de medicamentos
                 } else {
-                    console.log('Error en el registro del medicamento:', result.message);  // Log para cualquier error del servidor
                     mostrarMensaje("Error en el registro: " + result.message, 'error');
-                    showToast("Error en el registro", "ERROR");
                 }
             } catch (error) {
-                console.error('Error en la solicitud de registro:', error);  // Log cuando ocurre un error en la solicitud
-                mostrarMensaje("Error en la solicitud de registro: " + error.message, 'error');
-                showToast("Error en la solicitud de registro", "ERROR");
+                mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
             }
         });
 
@@ -984,6 +885,7 @@
         formEntrada.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            // Confirmar la operación
             const confirmar = await ask("¿Estás seguro de que deseas registrar la entrada de este medicamento?", "Registrar Entrada de Medicamento");
 
             if (!confirmar) {
@@ -1006,16 +908,48 @@
                     mostrarMensaje(result.message, 'success');
                     showToast("Entrada registrada correctamente", "SUCCESS");
                     formEntrada.reset();
-                    loadMedicamentos();
+                    loadLotes(); // Recargar la lista de lotes
+                    loadMedicamentos(); // Actualizar lista de medicamentos (si aplica)
                 } else {
                     mostrarMensaje("Error en el registro de entrada: " + result.message, 'error');
-                    showToast("Error en el registro de entrada", "ERROR");
                 }
             } catch (error) {
                 mostrarMensaje("Error en la solicitud de registro de entrada: " + error.message, 'error');
-                showToast("Error en la solicitud de registro de entrada", 'ERROR');
             }
         });
+
+        // Función para cargar los lotes en el select de entrada de medicamentos
+        const cargarLotes = async () => {
+            const loteSelect = document.querySelector("#entradaLote");
+
+            try {
+                const response = await fetch('../../controllers/admedi.controller.php', {
+                    method: 'POST',
+                    body: new URLSearchParams({ operation: 'listarLotes' }) // Petición al controlador
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    loteSelect.innerHTML = '<option value="">Seleccione un lote</option>'; // Opción por defecto
+
+                    // Insertar cada lote en el select
+                    result.data.forEach(lote => {
+                        const option = document.createElement("option");
+                        option.value = lote.lote;
+                        option.textContent = `${lote.lote} - ${lote.nombreMedicamento}`; // Mostrar lote y medicamento
+                        loteSelect.appendChild(option);
+                    });
+                } else {
+                    mostrarMensaje("No se encontraron lotes registrados.", 'error');
+                }
+            } catch (error) {
+                mostrarMensaje("Error al cargar los lotes: " + error.message, 'error');
+            }
+        };
+
+    
+
 
         // Implementar para la salida de medicamentos
         formSalida.addEventListener("submit", async (event) => {
@@ -1055,6 +989,7 @@
         });
 
         // Cargar datos al iniciar la página
+        cargarLotes();
         loadSelectMedicamentos();
         loadMedicamentos();
         loadTiposMedicamentos();

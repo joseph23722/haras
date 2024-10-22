@@ -255,25 +255,6 @@ CREATE TABLE HistorialMovimientosMedi (
     CONSTRAINT fk_historial_movimiento_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
 ) ENGINE = INNODB;
 
--- 21. SugerenciasMedicamentos ----°°°
-CREATE TABLE SugerenciasMedicamentos (
-    idSugerencia INT AUTO_INCREMENT PRIMARY KEY,
-    idMedicamento INT,
-    sugerencia TEXT,
-    fechaRegistro DATETIME DEFAULT NOW(),
-    FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
-) ENGINE = INNODB;
-
--- 22. CombinacionesValidas ----°°°
-CREATE TABLE CombinacionesValidas (
-    idCombinacion INT AUTO_INCREMENT PRIMARY KEY,
-    nombreMedicamento VARCHAR(255),
-    presentacion VARCHAR(100),
-    dosis VARCHAR(50),
-    tipoMedicamento VARCHAR(100),
-    fechaRegistro DATETIME DEFAULT NOW(),
-    UNIQUE (nombreMedicamento, presentacion, dosis, tipoMedicamento)
-) ENGINE = INNODB;
 
 -- 23. Servicios 
 CREATE TABLE Servicios (
