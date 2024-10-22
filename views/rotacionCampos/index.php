@@ -143,22 +143,25 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Cargar campos
-        fetch('../../controllers/campos.controller.php?operation=getCampos')
-            .then(response => response.json())
-            .then(data => {
-                const camposSelect = document.getElementById('campos');
-                if (data.status !== "error") {
-                    data.forEach(campo => {
-                        const option = document.createElement('option');
-                        option.value = campo.idCampo;
-                        option.textContent = campo.numeroCampo; 
-                        camposSelect.appendChild(option);
-                    });
-                } else {
-                    console.error(data.message);
-                }
-            })
-            .catch(error => console.error('Error fetching campos:', error));
+        function recargarCampos() {
+            fetch('../../controllers/campos.controller.php?operation=getCampos')
+                .then(response => response.json())
+                .then(data => {
+                    const camposSelect = document.getElementById('campos');
+                    camposSelect.innerHTML = ''; // Limpia antes de cargar
+                    if (data.status !== "error") {
+                        data.forEach(campo => {
+                            const option = document.createElement('option');
+                            option.value = campo.idCampo;
+                            option.textContent = campo.numeroCampo;
+                            camposSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error(data.message);
+                    }
+                })
+                .catch(error => console.error('Error fetching campos:', error));
+        }
 
         // Cargar tipos de rotación
         fetch('../../controllers/campos.controller.php?operation=getTiposRotaciones')
@@ -189,76 +192,72 @@
                     url: '../../controllers/campos.controller.php?operation=getCampos',
                     dataSrc: ''
                 },
-                columns: [
-                    { data: 'idCampo' },
-                    { data: 'numeroCampo' },
-                    { data: 'tamanoCampo' },
-                    { data: 'tipoSuelo' },
-                    { data: 'estado' }
+                columns: [{
+                        data: 'idCampo'
+                    },
+                    {
+                        data: 'numeroCampo'
+                    },
+                    {
+                        data: 'tamanoCampo'
+                    },
+                    {
+                        data: 'tipoSuelo'
+                    },
+                    {
+                        data: 'estado'
+                    }
                 ],
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/dataTables.spanish.json'
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json'
                 }
             });
         }
         inicializarDataTable();
 
-        // Registrar Rotación
-        document.getElementById('form-rotacion-campos').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch('../../controllers/rotaciones.controller.php?operation=registerRotacion', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status !== "error") {
-                    inicializarDataTable();
-                    this.reset();
-                    alert("Rotación registrada exitosamente.");
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => console.error('Error registrando rotación:', error));
-        });
-
         // Guardar nuevo campo
         document.getElementById('guardarCampo').addEventListener('click', function() {
             const nuevoCampoForm = document.getElementById('form-nuevo-campo');
             const formData = new FormData(nuevoCampoForm);
-            fetch('../../controllers/campos.controller.php?operation=registerCampo', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status !== "error") {
-                    $('#registerFieldModal').modal('hide');
-                    alert("Campo registrado exitosamente.");
-                    // Recargar campos
-                    camposSelect.innerHTML = '';
-                    fetch('../../controllers/campos.controller.php?operation=getCampos')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status !== "error") {
-                                data.forEach(campo => {
-                                    const option = document.createElement('option');
-                                    option.value = campo.idCampo;
-                                    option.textContent = campo.numeroCampo; 
-                                    camposSelect.appendChild(option);
-                                });
-                            } else {
-                                console.error(data.message);
-                            }
-                        })
-                        .catch(error => console.error('Error fetching campos:', error));
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => console.error('Error registrando campo:', error));
+            formData.append('operation', 'registrarCampo'); // Agregar la operación aquí
+
+            fetch('../../controllers/campos.controller.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== "error") {
+                        $('#registerFieldModal').modal('hide');
+                        alert("Campo registrado exitosamente.");
+                        recargarCampos();
+                        inicializarDataTable();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error registrando campo:', error));
+        });
+
+        // Registrar rotación
+        document.getElementById('form-rotacion-campos').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            formData.append('operation', 'rotacionCampos'); // Asegurarse de agregar la operación
+
+            fetch('../../controllers/campos.controller.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.idRotacion) {
+                        alert('Rotación registrada con éxito. ID Rotación: ' + data.idRotacion);
+                    } else {
+                        alert('Error registrando rotación.');
+                    }
+                })
+                .catch(error => console.error('Error registrando rotación:', error));
         });
     });
 </script>

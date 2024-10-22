@@ -33,7 +33,7 @@ class RotacionCampos extends Conexion
         }
     }
 
-    public function registrarCampos($params = []): int
+    public function registrarCampo($params = []): int
     {
         try {
             // Preparamos la llamada al procedimiento almacenado
