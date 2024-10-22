@@ -21,6 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     echo $jsonResponse;
                 }
                 break;
+            case 'getUltimaAccion':
+                $idCampo = $_GET['idCampo'] ?? null;
+
+                if ($idCampo) {
+                    $resultado = $controller->obtenerUltimaAccion($idCampo);
+                    echo json_encode($resultado);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "ID de campo no proporcionado."]);
+                }
+                break;
             default:
                 echo json_encode(["status" => "error", "message" => "Operación no válida."]);
                 break;
@@ -50,13 +60,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             case 'rotacionCampos':
                 $datosRecibidos = [
-                    "fechaRotacion" => $controller->limpiarCadena($_POST['fechaRotacion']),
-                    "estadoRotacion" => $controller->limpiarCadena($_POST['estadoRotacion']),
-                    "detalleRotacion" => $controller->limpiarCadena($_POST['detalleRotacion']),
+                    "idCampo"       => $_POST['campos'] ?? null,
+                    "idTipoRotacion"  => $_POST['tipoRotacion'] ?? null,
+                    "fechaRotacion" => $_POST['fechaRotacion'] ?? null,
+                    "detalleRotacion" => $_POST['detalleRotacion'] ?? null,
                 ];
 
+                // Validar datos recibidos
+                if (in_array(null, $datosRecibidos, true)) {
+                    echo json_encode(["status" => "error", "message" => "Faltan datos para registrar la rotación."]);
+                    break;
+                }
+
                 $idRotacion = $controller->rotacionCampos($datosRecibidos);
-                echo json_encode(['idRotacion' => $idRotacion]);
+
+                if ($idRotacion) {
+                    echo json_encode(['status' => 'success', 'idRotacion' => $idRotacion]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Error al registrar la rotación."]);
+                }
                 break;
 
             default:

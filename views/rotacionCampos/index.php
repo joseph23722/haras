@@ -46,8 +46,8 @@
 
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <textarea name="detalles" id="detalles" class="form-control" style="height: 50px;"></textarea>
-                            <label for="detalles"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
+                            <textarea name="detalleRotacion" id="detalleRotacion" class="form-control" style="height: 50px;"></textarea>
+                            <label for="detalleRotacion"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
                         </div>
                     </div>
 
@@ -85,8 +85,10 @@
                     <tr>
                         <th>ID CAMPO</th>
                         <th>Número de Campo</th>
-                        <th>Tamaño campo</th>
+                        <th>Tamaño campo (ha)</th>
                         <th>Tipo de suelo</th>
+                        <th>Ultima accion</th>
+                        <th>Fecha Ultima Accion</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
@@ -124,8 +126,8 @@
                     <div class="mb-3">
                         <label for="estado" class="form-label">Estado</label>
                         <select class="form-control" name="estado" id="estado" required>
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
                         </select>
                     </div>
                 </form>
@@ -201,15 +203,46 @@
                         data: 'tipoSuelo'
                     },
                     {
+                        data: 'ultimaAccionRealizada'
+                    },
+                    {
+                        data: 'fechaUltimaAccion'
+                    },
+                    {
                         data: 'estado'
                     }
-                ],
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json'
-                }
+                ]
             });
         }
         inicializarDataTable();
+
+        // Obtener y mostrar la última acción al cambiar el campo seleccionado
+        const camposSelect = document.getElementById('campos');
+        const ultimaAccionTextarea = document.getElementById('ultimaAccionRealizada');
+
+        camposSelect.addEventListener('change', function() {
+            const idCampoSeleccionado = this.value;
+
+            if (idCampoSeleccionado) {
+                fetch(`../../controllers/campos.controller.php?operation=getUltimaAccion&idCampo=${idCampoSeleccionado}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status !== "error") {
+                            ultimaAccionTextarea.value = data.nombreRotacion || "No hay acciones registradas.";
+                        } else {
+                            console.error(data.message);
+                            ultimaAccionTextarea.value = "No hay acciones registradas.";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching ultima accion:', error);
+                        ultimaAccionTextarea.value = "Error al obtener la última acción.";
+                    });
+            } else {
+                ultimaAccionTextarea.value = "Ultima Acción";
+            }
+        });
+
 
         // Registrar nuevo campo
         document.getElementById('guardarCampo').addEventListener('click', function() {
@@ -247,13 +280,17 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data)
                     if (data.idRotacion) {
                         alert('Rotación registrada con éxito. ID Rotación: ' + data.idRotacion);
+                        inicializarDataTable(); // Recargar la tabla de datos para mostrar la nueva rotación
+                        this.reset(); // Resetear el formulario después de registrar
                     } else {
-                        alert('Error registrando rotación.');
+                        alert('Error registrando rotación: ' + data.message);
                     }
                 })
                 .catch(error => console.error('Error registrando rotación:', error));
         });
+
     });
 </script>

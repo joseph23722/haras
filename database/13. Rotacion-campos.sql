@@ -8,7 +8,12 @@ BEGIN
         C.tamanoCampo,
         C.tipoSuelo,
         C.estado,
-        RC.estadoRotacion AS ultimaAccion,
+        (SELECT TR.nombreRotacion
+         FROM RotacionCampos RC
+         JOIN TipoRotaciones TR ON RC.idTipoRotacion = TR.idTipoRotacion
+         WHERE RC.idCampo = C.idCampo
+         ORDER BY RC.fechaRotacion DESC
+         LIMIT 1) AS ultimaAccionRealizada,
         MAX(RC.fechaRotacion) AS fechaUltimaAccion
     FROM 
         Campos C
@@ -18,6 +23,19 @@ BEGIN
         C.idCampo, C.numeroCampo, C.tamanoCampo, C.tipoSuelo, C.estado
     ORDER BY 
         C.numeroCampo DESC;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_obtener_ultima_accion`;
+DELIMITER //
+CREATE PROCEDURE spu_obtener_ultima_accion(IN idCampo INT)
+BEGIN
+    SELECT tr.nombreRotacion
+    FROM RotacionCampos rc
+    JOIN TipoRotaciones tr ON rc.idTipoRotacion = tr.idTipoRotacion
+    WHERE rc.idCampo = idCampo
+    ORDER BY rc.fechaRotacion DESC
+    LIMIT 1; -- Devuelve solo la última acción
 END //
 DELIMITER ;
 
@@ -42,12 +60,11 @@ CREATE PROCEDURE `spu_registrar_rotacion_campos`(
     IN p_idCampo INT,
     IN p_idTipoRotacion INT,
     IN p_fechaRotacion DATETIME,
-    IN p_estadoRotacion VARCHAR(50),
     IN p_detalleRotacion TEXT
 )
 BEGIN
-    INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, estadoRotacion, detalleRotacion)
-    VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_estadoRotacion, p_detalleRotacion);
+    INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
+    VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_detalleRotacion);
 END //
 DELIMITER ;
 
@@ -78,5 +95,5 @@ DELIMITER ;
 INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
 VALUES (1, 12.50, 'Arenoso', 'Activo');
 
-INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, estadoRotacion, detalleRotacion)
-VALUES (1, 2, '2024-10-21 10:30:00', 'Completado', 'Deshierve del campo número 1');	
+INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
+VALUES (1, 2, '2024-10-21', 'Deshierve del campo número 1');

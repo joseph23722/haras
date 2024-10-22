@@ -15,14 +15,13 @@ class RotacionCampos extends Conexion
     {
         try {
             // Preparamos la llamada al procedimiento almacenado
-            $cmd = $this->pdo->prepare("CALL spu_registrar_rotacion_campos(?, ?, ?, ?, ?)");
+            $cmd = $this->pdo->prepare("CALL spu_registrar_rotacion_campos(?, ?, ?, ?)");
 
             // Ejecutamos el procedimiento con los parámetros correspondientes
             $cmd->execute([
                 $params['idCampo'],
                 $params['idTipoRotacion'],
-                $params['fechaRotacion'],
-                $params['estadoRotacion'],
+                $params['fechaRotacion'], 
                 $params['detalleRotacion']
             ]);
 
@@ -63,5 +62,19 @@ class RotacionCampos extends Conexion
     public function listarTipoRotaciones(): array
     {
         return parent::getData("spu_tipos_rotaciones_listar");
+    }
+
+    public function obtenerUltimaAccion($idCampo): array
+    {
+        try {
+            // Preparamos la llamada al procedimiento almacenado
+            $cmd = $this->pdo->prepare("CALL spu_obtener_ultima_accion(?)");
+            $cmd->execute([$idCampo]);
+
+            return $cmd->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return ["status" => "error", "message" => "Error al obtener la última acción."];
+        }
     }
 }

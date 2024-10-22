@@ -336,7 +336,6 @@ CREATE TABLE RotacionCampos (
     idCampo 				INT NOT NULL,
     idTipoRotacion 			INT NOT NULL,
     fechaRotacion 			DATETIME NULL,
-    estadoRotacion 			VARCHAR(50) NOT NULL,
     detalleRotacion 		TEXT,
     CONSTRAINT fk_rotacioncampo_campo FOREIGN KEY (idCampo) REFERENCES Campos(idCampo),
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
