@@ -335,7 +335,7 @@ CREATE TABLE RotacionCampos (
     idRotacion 				INT PRIMARY KEY AUTO_INCREMENT,
     idCampo 				INT NOT NULL,
     idTipoRotacion 			INT NOT NULL,
-    fechaRotacion 			DATETIME NULL,
+    fechaRotacion 			DATE NOT NULL,
     detalleRotacion 		TEXT,
     CONSTRAINT fk_rotacioncampo_campo FOREIGN KEY (idCampo) REFERENCES Campos(idCampo),
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
