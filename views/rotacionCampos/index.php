@@ -23,8 +23,8 @@
 
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <textarea name="ultimaAccionRealizada" id="ultimaAccionRealizada" class="form-control" style="height: 50px;" readonly>Ultima Acción</textarea>
-                            <label for="ultimaAccionRealizada"><i class="fas fa-info-circle" style="color: #003300;"></i> Ultima Acción</label>
+                            <textarea name="ultimaAccionRealizada" id="ultimaAccionRealizada" class="form-control" style="height: 50px;" disabled>Ultima Acción</textarea>
+                            <label for="ultimaAccionRealizada"><i class="fas fa-sticky-note" style="color: #003300;"></i> Ultima Acción</label>
                         </div>
                     </div>
 
