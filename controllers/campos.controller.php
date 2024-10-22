@@ -1,5 +1,5 @@
 <?php
-require_once '../models/RotacionCampos.php'; // Incluye el modelo
+require_once '../models/RotacionCampos.php';
 
 $controller = new RotacionCampos();
 
@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             case 'getTiposRotaciones':
                 echo json_encode($controller->listarTipoRotaciones());
                 break;
-            case 'getCampos': // Operación para obtener campos
+            case 'getCampos':
                 $campos = $controller->listarCampos();
                 $jsonResponse = json_encode($campos);
 
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['operation'])) {
         switch ($_POST['operation']) {
-            case 'registrarCampo': // Registrar un nuevo campo
+            case 'registrarCampo':
                 $nuevoCampo = [
                     'numeroCampo' => $_POST['numeroCampo'],
                     'tamanoCampo' => $_POST['tamanoCampo'],
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     'estado' => $_POST['estado']
                 ];
 
-                $resultado = $controller->registrarCampo($nuevoCampo); // Asegúrate de tener esta función en tu modelo
+                $resultado = $controller->registrarCampo($nuevoCampo);
 
                 if ($resultado) {
                     echo json_encode(["status" => "success", "message" => "Campo registrado correctamente."]);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 }
                 break;
 
-            case 'rotacionCampos': // Rotación de campos
+            case 'rotacionCampos':
                 $datosRecibidos = [
                     "fechaRotacion" => $controller->limpiarCadena($_POST['fechaRotacion']),
                     "estadoRotacion" => $controller->limpiarCadena($_POST['estadoRotacion']),

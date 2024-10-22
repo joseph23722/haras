@@ -142,28 +142,24 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Cargar campos
-        function recargarCampos() {
-            fetch('../../controllers/campos.controller.php?operation=getCampos')
-                .then(response => response.json())
-                .then(data => {
-                    const camposSelect = document.getElementById('campos');
-                    camposSelect.innerHTML = ''; // Limpia antes de cargar
-                    if (data.status !== "error") {
-                        data.forEach(campo => {
-                            const option = document.createElement('option');
-                            option.value = campo.idCampo;
-                            option.textContent = campo.numeroCampo;
-                            camposSelect.appendChild(option);
-                        });
-                    } else {
-                        console.error(data.message);
-                    }
-                })
-                .catch(error => console.error('Error fetching campos:', error));
-        }
 
-        // Cargar tipos de rotación
+        fetch('../../controllers/campos.controller.php?operation=getCampos')
+            .then(response => response.json())
+            .then(data => {
+                const camposSelect = document.getElementById('campos');
+                if (data.status !== "error") {
+                    data.forEach(campo => {
+                        const option = document.createElement('option');
+                        option.value = campo.idCampo;
+                        option.textContent = campo.numeroCampo;
+                        camposSelect.appendChild(option);
+                    });
+                } else {
+                    console.error(data.message);
+                }
+            })
+            .catch(error => console.error('Error fetching campos:', error));
+
         fetch('../../controllers/campos.controller.php?operation=getTiposRotaciones')
             .then(response => response.json())
             .then(data => {
@@ -215,11 +211,11 @@
         }
         inicializarDataTable();
 
-        // Guardar nuevo campo
+        // Registrar nuevo campo
         document.getElementById('guardarCampo').addEventListener('click', function() {
             const nuevoCampoForm = document.getElementById('form-nuevo-campo');
             const formData = new FormData(nuevoCampoForm);
-            formData.append('operation', 'registrarCampo'); // Agregar la operación aquí
+            formData.append('operation', 'registrarCampo');
 
             fetch('../../controllers/campos.controller.php', {
                     method: 'POST',
@@ -243,7 +239,7 @@
         document.getElementById('form-rotacion-campos').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(this);
-            formData.append('operation', 'rotacionCampos'); // Asegurarse de agregar la operación
+            formData.append('operation', 'rotacionCampos');
 
             fetch('../../controllers/campos.controller.php', {
                     method: 'POST',

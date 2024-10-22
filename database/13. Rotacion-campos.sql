@@ -60,8 +60,18 @@ CREATE PROCEDURE `spu_registrar_campo`(
     IN p_estado VARCHAR(50)
 )
 BEGIN
-    INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
-    VALUES (p_numeroCampo, p_tamanoCampo, p_tipoSuelo, p_estado);
+    DECLARE campoExistente INT;
+
+    SELECT COUNT(*) INTO campoExistente
+    FROM Campos
+    WHERE numeroCampo = p_numeroCampo;
+
+    IF campoExistente > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Ya existe un campo con el mismo número.';
+    ELSE
+        INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
+        VALUES (p_numeroCampo, p_tamanoCampo, p_tipoSuelo, p_estado);
+    END IF;
 END //
 DELIMITER ;
 
