@@ -317,7 +317,7 @@ BEGIN
         SET MESSAGE_TEXT = 'El desplazamiento no puede ser negativo.';
     END IF;
 
-    -- Si el tipo de movimiento es 'Entrada', mostrar campos específicos para entradas
+    -- Si el tipo de movimiento es 'Entrada', mostrar campos específicos para entradas incluyendo cantidad
     IF tipoMovimiento = 'Entrada' THEN
         SELECT 
             h.idAlimento,
@@ -326,7 +326,9 @@ BEGIN
             a.unidadMedida,                 -- Unidad de medida del alimento
             a.lote,                         -- Lote del alimento
             a.fechaCaducidad,               -- Fecha de caducidad del lote
-            a.stockActual,                  -- Stock actual para entradas
+            a.stockActual,                  -- Stock actual
+            h.cantidad,                     -- Cantidad de entrada
+            h.unidadMedida,                 -- Unidad de medida para la cantidad
             h.fechaMovimiento               -- Fecha del movimiento
         FROM 
             HistorialMovimientos h
@@ -342,7 +344,7 @@ BEGIN
         LIMIT 
             limite OFFSET desplazamiento;
         
-    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos para salidas
+    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos para salidas incluyendo cantidad y merma
     ELSEIF tipoMovimiento = 'Salida' THEN
         SELECT 
             h.idAlimento,

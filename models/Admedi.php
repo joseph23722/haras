@@ -235,39 +235,31 @@ class Admi extends Conexion {
     // Validar presentación y dosis del medicamento
     public function validarRegistrarCombinacion($params = []) {
         try {
-            // Ejecutar el procedimiento almacenado para validar y registrar la combinación
             $query = $this->pdo->prepare("CALL spu_validar_registrar_combinacion(?, ?, ?)");
             $query->execute([
-                $params['tipoMedicamento'],         // Tipo de medicamento
-                $params['presentacionMedicamento'], // Presentación del medicamento
-                $params['dosisMedicamento']         // Dosis del medicamento
+                $params['tipoMedicamento'],         
+                $params['presentacionMedicamento'], 
+                $params['dosisMedicamento']
             ]);
-
-            // Verificar si el procedimiento arrojó resultados (combinación válida)
+    
             $result = $query->fetch(PDO::FETCH_ASSOC);
-
-            // Si el resultado contiene la clave 'mensaje', devolver éxito
-            if ($result && isset($result['mensaje']) && $result['mensaje'] === 'Combinación válida') {
-                return true; // Combinación validada correctamente
+    
+            if ($result && isset($result['mensaje']) && strpos($result['mensaje'], 'válida') !== false) {
+                return ['status' => 'success', 'message' => 'Validación y registro de combinación exitoso.', 'data' => $result];
             }
-
-            return false; // Si no se validó la combinación, devolver false
-
+    
+            return ['status' => 'error', 'message' => 'Combinación inválida de tipo, presentación y dosis.'];
         } catch (PDOException $e) {
-            // Verificar si es un error relacionado con la dosis mal escrita o no válida
             if (strpos($e->getMessage(), 'La dosis está mal escrita o no es válida') !== false) {
                 return ['status' => 'error', 'message' => 'Error: La dosis ingresada es incorrecta o no válida.'];
             }
-
-            // Registrar otros errores en el log y devolver false
+    
             error_log("Error al validar o registrar la combinación: " . $e->getMessage());
-            return false; // Devolver false en caso de error
-        } catch (Exception $e) {
-            // Capturar cualquier otro error inesperado
-            error_log("Error inesperado al validar la combinación: " . $e->getMessage());
-            return false; // Devolver false en caso de error
+            return ['status' => 'error', 'message' => 'Error en la validación de la combinación.'];
         }
     }
+    
+
 
     
      // Listar los tipos de movimeinto

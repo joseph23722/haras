@@ -145,7 +145,7 @@ CREATE TABLE Alimentos (
 ) ENGINE = INNODB;
 
 
--- 12. HistorialMovimientos
+-- 12. HistorialMovimientos alimentos
 CREATE TABLE HistorialMovimientos (
     idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
     idAlimento INT NOT NULL,            -- ID del alimento (relación con Alimentos)
@@ -320,8 +320,7 @@ CREATE TABLE Campos (
     numeroCampo 			INT NOT NULL,
     tamanoCampo				DECIMAL(10,2) NOT NULL,
     tipoSuelo 				VARCHAR(100) NOT NULL,
-    estado 					VARCHAR(50) NOT NULL,
-    CONSTRAINT UK_NumeroCampo UNIQUE (numeroCampo)
+    estado 					VARCHAR(50) NOT NULL
 ) ENGINE = INNODB;
 
 -- 28. TipoRotaciones
@@ -336,7 +335,8 @@ CREATE TABLE RotacionCampos (
     idRotacion 				INT PRIMARY KEY AUTO_INCREMENT,
     idCampo 				INT NOT NULL,
     idTipoRotacion 			INT NOT NULL,
-    fechaRotacion 			DATE NOT NULL,
+    fechaRotacion 			DATETIME NULL,
+    estadoRotacion 			VARCHAR(50) NOT NULL,
     detalleRotacion 		TEXT,
     CONSTRAINT fk_rotacioncampo_campo FOREIGN KEY (idCampo) REFERENCES Campos(idCampo),
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)

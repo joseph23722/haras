@@ -33,6 +33,7 @@ DELIMITER ;
 
 -- Procedimiento para registrar medicamentos---------------------------------------------------------------------------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_medicamentos_registrar(
     IN _nombreMedicamento VARCHAR(255),
     IN _descripcion TEXT, 
@@ -51,8 +52,7 @@ BEGIN
     DECLARE _idPresentacion INT;
     DECLARE _idCombinacion INT;
     DECLARE _exists INT DEFAULT 0;
-    DECLARE _dosisValid INT DEFAULT 0;
-
+    
     -- Manejador de errores: si ocurre un error, se revierte la transacción
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -72,16 +72,6 @@ BEGIN
     IF _exists > 0 THEN
         -- Si ya existe un medicamento con el mismo nombre y lote, devolver un error
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Ya existe un medicamento con el mismo nombre y lote.';
-    END IF;
-
-    -- Verificar si la dosis está mal escrita o no existe en la tabla CombinacionesMedicamentos
-    SELECT COUNT(*) INTO _dosisValid
-    FROM CombinacionesMedicamentos
-    WHERE LOWER(dosis) = LOWER(_dosis);
-
-    IF _dosisValid = 0 THEN
-        -- Si la dosis no existe en la tabla, lanzar un error
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Dosis mal escrita o inexistente.';
     END IF;
 
     -- Validar la combinación de tipo, presentación y dosis usando el procedimiento de validación
@@ -157,8 +147,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
-
 
 
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
@@ -244,31 +232,27 @@ DELIMITER ;
 
 -- Procedimiento Salida de Medicamentos-----------------------------------------------------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,               -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255), -- Nombre del medicamento
     IN _cantidad DECIMAL(10,2)       -- Cantidad de medicamento a retirar
 )
 BEGIN
-    DECLARE _cantidadNecesaria DECIMAL(10,2);    -- Cantidad total necesaria a retirar
     DECLARE _idMedicamento INT;                  -- ID del medicamento (lote) que se está procesando
     DECLARE _currentStock DECIMAL(10,2);         -- Stock actual del lote que se está procesando
-    DECLARE _lote VARCHAR(50);                   -- Lote del medicamento que se está procesando
     DECLARE _totalStock DECIMAL(10,2);           -- Stock total disponible del medicamento
     DECLARE _stockMinimo INT;                    -- Stock mínimo del medicamento
     DECLARE _estadoActual VARCHAR(20);           -- Nuevo estado calculado
-    DECLARE _cantidadRestante DECIMAL(10,2);     -- Cantidad restante de medicamento tras la salida
-    DECLARE _fecha_caducidad DATE;               -- Fecha de caducidad del lote
     DECLARE _cantidadOriginal DECIMAL(10,2);     -- Cantidad original solicitada
     DECLARE done INT DEFAULT 0;                  -- Control de finalización del cursor
 
-    -- Cursor para manejar los lotes de medicamentos, ahora ordenados por fecha de caducidad ascendente y luego por ID descendente
+    -- Cursor para manejar los lotes de medicamentos, ordenados por fecha de caducidad
     DECLARE curLote CURSOR FOR 
-        SELECT idMedicamento, lote, cantidad_stock, fecha_caducidad 
+        SELECT idMedicamento, cantidad_stock, stockMinimo
         FROM Medicamentos 
         WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento) AND cantidad_stock > 0 
-        ORDER BY fecha_caducidad ASC, idMedicamento DESC       -- Prioriza lotes más próximos a vencer y luego lotes más recientes
-        FOR UPDATE;  -- Bloquear filas seleccionadas para actualizar
+        ORDER BY fecha_caducidad ASC;
 
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
@@ -284,13 +268,13 @@ BEGIN
     END IF;
 
     -- Calcular el stock total disponible del medicamento
-    SELECT SUM(cantidad_stock), idMedicamento, stockMinimo
-    INTO _totalStock, _idMedicamento, _stockMinimo
+    SELECT SUM(cantidad_stock), stockMinimo
+    INTO _totalStock, _stockMinimo
     FROM Medicamentos
     WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento);
 
     -- Verificar si se encontró el medicamento
-    IF _idMedicamento IS NULL THEN
+    IF _totalStock IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El medicamento no fue encontrado.';
     END IF;
 
@@ -299,11 +283,11 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No hay suficiente stock disponible para esta cantidad.';
     END IF;
 
-    -- Procesar la salida del medicamento por lotes usando un cursor (priorizando lotes más próximos a caducar)
+    -- Procesar la salida del medicamento por lotes usando un cursor
     OPEN curLote;
 
     salida_loop: LOOP
-        FETCH curLote INTO _idMedicamento, _lote, _currentStock, _fecha_caducidad;
+        FETCH curLote INTO _idMedicamento, _currentStock, _stockMinimo;
 
         IF done THEN
             LEAVE salida_loop;
@@ -315,7 +299,6 @@ BEGIN
             SET cantidad_stock = cantidad_stock - _cantidad
             WHERE idMedicamento = _idMedicamento;
             SET _cantidad = 0;
-            LEAVE salida_loop;  -- Salir del bucle una vez que la cantidad se ha cubierto
         ELSE
             -- Si la cantidad es mayor que el stock del lote actual, restar todo el stock del lote y continuar con el siguiente lote
             SET _cantidad = _cantidad - _currentStock;
@@ -324,29 +307,28 @@ BEGIN
             WHERE idMedicamento = _idMedicamento;
         END IF;
 
+        -- Calcular el stock restante de este lote y actualizar su estado individualmente
+        SELECT cantidad_stock
+        INTO _currentStock
+        FROM Medicamentos
+        WHERE idMedicamento = _idMedicamento;
+
+        -- Actualizar el estado de cada lote individualmente
+        IF _currentStock > _stockMinimo THEN
+            SET _estadoActual = 'Disponible';
+        ELSEIF _currentStock > 0 AND _currentStock <= _stockMinimo THEN
+            SET _estadoActual = 'Por agotarse';
+        ELSE
+            SET _estadoActual = 'Agotado';
+        END IF;
+
+        UPDATE Medicamentos
+        SET estado = _estadoActual
+        WHERE idMedicamento = _idMedicamento;
+
     END LOOP;
 
     CLOSE curLote;
-
-    -- Calcular el stock restante del medicamento
-    SELECT SUM(cantidad_stock)
-    INTO _cantidadRestante
-    FROM Medicamentos
-    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento);
-
-    -- Verificar el estado del medicamento después de la salida
-    IF _cantidadRestante > _stockMinimo THEN
-        SET _estadoActual = 'Disponible';
-    ELSEIF _cantidadRestante > 0 AND _cantidadRestante <= _stockMinimo THEN
-        SET _estadoActual = 'Por agotarse';
-    ELSE
-        SET _estadoActual = 'Agotado';
-    END IF;
-
-    -- Actualizar el estado en la tabla de medicamentos
-    UPDATE Medicamentos
-    SET estado = _estadoActual
-    WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento);
 
     -- Registrar la salida en el historial de movimientos
     INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
@@ -357,6 +339,8 @@ BEGIN
 
 END $$
 DELIMITER ;
+
+
 
 
 -- 1. Notificación de Stock Bajo
@@ -426,6 +410,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 --  Mejortar los otros  ----------------------------------------------------------------------------
 
 -- 1.Procedimiento para agregar un nuevo tipo
@@ -476,7 +461,6 @@ DELIMITER ;
 
 -- 2. Procedimiento para validar presentación tipo y dosis:
 DELIMITER $$
-
 CREATE PROCEDURE spu_validar_registrar_combinacion(
     IN _tipoMedicamento VARCHAR(100),      -- Tipo de medicamento (ej. Antibiótico)
     IN _presentacionMedicamento VARCHAR(100), -- Presentación del medicamento (ej. Inyectable)
@@ -486,69 +470,86 @@ BEGIN
     DECLARE _idTipo INT;
     DECLARE _idPresentacion INT;
     DECLARE _idCombinacion INT;
+    DECLARE _validDosisFormat VARCHAR(50);   -- Para verificar si la dosis es coherente con la combinación
+    DECLARE _errorMensaje VARCHAR(255);      -- Variable para construir mensajes de error paso a paso
 
-    -- Manejador de errores: si ocurre un error, se revierte la transacción
+    -- Manejador de errores: Si ocurre un error, se revierte la transacción
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Problema durante la validación. Transacción revertida.';
+        -- Mostrar el mensaje específico construido
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
     END;
 
     -- Iniciar la transacción
     START TRANSACTION;
 
-    -- VALIDACIÓN 1: Verificar si la combinación de tipo, presentación y dosis ya existe en la tabla CombinacionesMedicamentos
+    -- VALIDACIÓN 1: Verificar si el tipo de medicamento existe
+    SELECT idTipo INTO _idTipo
+    FROM TiposMedicamentos
+    WHERE LOWER(tipo) = LOWER(_tipoMedicamento)
+    LIMIT 1;
+
+    IF _idTipo IS NULL THEN
+        SET _errorMensaje = CONCAT('Error: El tipo de medicamento "', _tipoMedicamento, '" no es válido o no existe.');
+        -- Salir del procedimiento con el error
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END IF;
+
+    -- VALIDACIÓN 2: Verificar si la presentación de medicamento existe
+    SELECT idPresentacion INTO _idPresentacion
+    FROM PresentacionesMedicamentos
+    WHERE LOWER(presentacion) = LOWER(_presentacionMedicamento)
+    LIMIT 1;
+
+    IF _idPresentacion IS NULL THEN
+        SET _errorMensaje = CONCAT('Error: La presentación "', _presentacionMedicamento, '" no es válida o no existe.');
+        -- Salir del procedimiento con el error
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END IF;
+
+    -- VALIDACIÓN 3: Verificar si ya existe la combinación de tipo, presentación y dosis
     SELECT idCombinacion INTO _idCombinacion
     FROM CombinacionesMedicamentos
-    WHERE idTipo = (SELECT idTipo FROM TiposMedicamentos WHERE LOWER(tipo) = LOWER(_tipoMedicamento))
-      AND idPresentacion = (SELECT idPresentacion FROM PresentacionesMedicamentos WHERE LOWER(presentacion) = LOWER(_presentacionMedicamento))
+    WHERE idTipo = _idTipo
+      AND idPresentacion = _idPresentacion
       AND LOWER(dosis) = LOWER(_dosisMedicamento)
     LIMIT 1;
 
-    -- Si la combinación ya existe, confirmar que es válida y salir
     IF _idCombinacion IS NOT NULL THEN
         COMMIT;
-        SELECT 'Combinación válida' AS mensaje, _idCombinacion AS idCombinacion;
+        SELECT 'Combinación válida, reutilizada' AS mensaje, _idCombinacion AS idCombinacion;
     ELSE
-        -- VALIDAR QUE LA DOSIS NO ESTÉ MAL ESCRITA (CONSULTANDO SI LA DOSIS YA EXISTE EN OTRAS COMBINACIONES)
-        IF EXISTS (SELECT 1 FROM CombinacionesMedicamentos WHERE LOWER(dosis) = LOWER(_dosisMedicamento)) THEN
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: La dosis está mal escrita o no es válida para esta combinación de tipo y presentación.';
-        END IF;
-
-        -- VALIDACIÓN 2: Insertar nuevo tipo si no existe
-        SELECT idTipo INTO _idTipo
-        FROM TiposMedicamentos
-        WHERE LOWER(tipo) = LOWER(_tipoMedicamento)
+        -- VALIDACIÓN 4: Verificar combinaciones previas y coherencia de la unidad (no la cantidad)
+        SELECT dosis INTO _validDosisFormat
+        FROM CombinacionesMedicamentos
+        WHERE idTipo = _idTipo
+          AND idPresentacion = _idPresentacion
         LIMIT 1;
 
-        IF _idTipo IS NULL THEN
-            INSERT INTO TiposMedicamentos (tipo) VALUES (_tipoMedicamento);
-            SET _idTipo = LAST_INSERT_ID();  -- Obtenemos el ID del nuevo tipo insertado
+        IF _validDosisFormat IS NOT NULL THEN
+            -- Validar que la unidad de la nueva dosis sea coherente con la combinación existente (ignoramos la cantidad)
+            IF NOT (LOWER(_dosisMedicamento) REGEXP LOWER(REPLACE(_validDosisFormat, '[0-9]+', ''))) THEN
+                SET _errorMensaje = CONCAT('Error: La unidad de dosis "', _dosisMedicamento, '" no es coherente con la combinación de tipo "', _tipoMedicamento, '" y presentación "', _presentacionMedicamento, '".');
+                ROLLBACK;
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+            END IF;
         END IF;
 
-        -- VALIDACIÓN 3: Insertar nueva presentación si no existe
-        SELECT idPresentacion INTO _idPresentacion
-        FROM PresentacionesMedicamentos
-        WHERE LOWER(presentacion) = LOWER(_presentacionMedicamento)
-        LIMIT 1;
-
-        IF _idPresentacion IS NULL THEN
-            INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (_presentacionMedicamento);
-            SET _idPresentacion = LAST_INSERT_ID();  -- Obtenemos el ID de la nueva presentación
-        END IF;
-
-        -- Insertar la nueva combinación válida en CombinacionesMedicamentos
+        -- Insertar la nueva combinación si es válida y no existe previamente
         INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis)
         VALUES (_idTipo, _idPresentacion, _dosisMedicamento);
+
         SET _idCombinacion = LAST_INSERT_ID();  -- Obtenemos el ID de la nueva combinación
 
         -- Confirmar la transacción
         COMMIT;
 
-        -- Devolver el ID de la nueva combinación
-        SELECT 'Combinación registrada y válida' AS mensaje, _idCombinacion AS idCombinacion;
+        -- Devolver el ID de la nueva combinación registrada
+        SELECT 'Nueva combinación registrada y válida' AS mensaje, _idCombinacion AS idCombinacion;
     END IF;
-
 END $$
 DELIMITER ;
 
@@ -617,6 +618,7 @@ INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Vacuna'),
 ('Antiparasitario'),
 ('Vitaminas');
+
 
 -- Insertar Presentaciones de Medicamentos
 INSERT INTO PresentacionesMedicamentos (presentacion) VALUES
@@ -691,13 +693,6 @@ INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis) VALUES
 (5, 5, '50 UI/mL'), -- Desparasitante, suspensión
 (6, 8, '10 U/L'),  -- Suplemento, ampollas
 (3, 15, '200 U/mL');-- Antiinflamatorio, polvos
-
-
--- 
-
-
-
-
 
 
 

@@ -125,7 +125,37 @@ try {
             
                 // Finalizar el script para asegurar que no haya más salida
                 exit();
+
             
+                
+            case 'verificarLote':
+                $lote = $params['lote'] ?? null;
+            
+                if (!$lote) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'El lote no puede estar vacío.'
+                    ]);
+                    exit();
+                }
+            
+                // Llamar al modelo para verificar si el lote existe
+                $resultado = $alimento->verificarLote($lote);
+            
+                // Verificar el resultado devuelto por el modelo
+                if ($resultado['status'] === 'error') {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => $resultado['message']  // Usar el mensaje devuelto por el modelo
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => $resultado['message']  // Usar el mensaje devuelto por el modelo
+                    ]);
+                }
+                exit();
+                
             
 
             case 'eliminar':

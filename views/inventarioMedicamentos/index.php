@@ -59,9 +59,9 @@
                     <!-- Composición (Dosis) -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+[a-zA-Z\.\/]*$" title="Formato válido: número seguido de una unidad de medida (ej. mg, g, ml, etc.)">
+                            <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+(\s?[a-zA-Z\.\/]+)?$" title="Formato válido: número seguido de una unidad de medida (ej. mg, g, ml, etc.)">
                             <label for="dosis">
-                                <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500 mg)
+                                <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500mg)
                             </label>
                         </div>
                     </div>
@@ -276,8 +276,8 @@
 
                         <!-- Lote -->
                         <div class="form-group mb-3">
-                            <label for="salidaLote" class="form-label">Lote(opcional)</label>
-                            <select name="lote" id="salidaLote" class="form-control" required>
+                            <label for="salidaLote" class="form-label">Lote(opcional)-no funcional</label>
+                            <select name="lote" id="salidaLote" class="form-control" >
                                 <option value="">Seleccione un lote</option>
                                 <!-- Las opciones se cargarán dinámicamente con JavaScript -->
                             </select>
@@ -542,20 +542,31 @@
                 const result = JSON.parse(textResponse);
                 const medicamentos = result.data;
 
+                // Crear un Set para almacenar nombres únicos de medicamentos
+                const medicamentosUnicos = new Set();
+
+                // Limpiar los selectores
                 document.querySelector("#entradaMedicamento").innerHTML = '<option value="">Seleccione un Medicamento</option>';
                 document.querySelector("#salidaMedicamento").innerHTML = '<option value="">Seleccione un Medicamento</option>';
 
+                // Recorrer los medicamentos y agregar solo los nombres únicos
                 medicamentos.forEach(med => {
-                    const optionEntrada = document.createElement("option");
-                    optionEntrada.value = med.nombreMedicamento;
-                    optionEntrada.textContent = med.nombreMedicamento;
+                    if (!medicamentosUnicos.has(med.nombreMedicamento)) {
+                        medicamentosUnicos.add(med.nombreMedicamento);
 
-                    const optionSalida = document.createElement("option");
-                    optionSalida.value = med.nombreMedicamento;
-                    optionSalida.textContent = med.nombreMedicamento;
+                        // Crear las opciones para los selectores
+                        const optionEntrada = document.createElement("option");
+                        optionEntrada.value = med.nombreMedicamento;
+                        optionEntrada.textContent = med.nombreMedicamento;
 
-                    document.querySelector("#entradaMedicamento").appendChild(optionEntrada);
-                    document.querySelector("#salidaMedicamento").appendChild(optionSalida);
+                        const optionSalida = document.createElement("option");
+                        optionSalida.value = med.nombreMedicamento;
+                        optionSalida.textContent = med.nombreMedicamento;
+
+                        // Añadir las opciones a los selectores
+                        document.querySelector("#entradaMedicamento").appendChild(optionEntrada);
+                        document.querySelector("#salidaMedicamento").appendChild(optionSalida);
+                    }
                 });
 
                 // **Notificaciones sobre stock bajo y agotado**
@@ -594,6 +605,7 @@
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
+
 
         // Cargar lista de medicamentos en la tabla
         const loadMedicamentos = async () => {
@@ -710,6 +722,7 @@
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
+       
         // Función para confirmar la eliminación del medicamento
         window.borrarMedicamento = async (idMedicamento, nombreMedicamento) => {
             const confirmacion = await ask(`¿Estás seguro de que deseas eliminar el medicamento "${nombreMedicamento}"?`);
@@ -736,53 +749,36 @@
         };
 
        // **Nuevo - Validar combinaciones antes de registrar un medicamento**
-        const validarCombinacion = async (params) => {
+       const validarCombinacion = async (params) => {
             try {
-                console.log('Validando combinación de tipo, presentación y dosis:', params);
-
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: new URLSearchParams({
                         operation: 'validarRegistrarCombinacion',
-                        tipoMedicamento: params.tipo,        // Tipo del medicamento
-                        presentacionMedicamento: params.presentacion,  // Presentación del medicamento
-                        dosisMedicamento: params.dosis       // Dosis del medicamento
+                        tipoMedicamento: params.tipo,        
+                        presentacionMedicamento: params.presentacion,  
+                        dosisMedicamento: params.dosis       
                     })
                 });
 
-                // Verificar que la respuesta del servidor sea exitosa
-                if (!response.ok) {
-                    console.error('Error al conectar con el servidor. Estado:', response.status);
-                    mostrarMensaje("Error al conectar con el servidor. Estado: " + response.status, 'error');
-                    showToast("Error al conectar con el servidor", 'ERROR');
-                    return false;
-                }
-
-                // Procesar la respuesta en formato JSON
                 const result = await response.json();
 
-                // Verificar el estado de la respuesta
                 if (result.status === "success") {
                     console.log('Combinación válida:', result);
                     return true;  // La combinación es válida
-                } else if (result.status === "error" && result.message.includes("La dosis está mal escrita")) {
-                    console.error('Dosis mal escrita o no válida:', result.message);
-                    mostrarMensaje(result.message, 'error');
-                    showToast(result.message, 'ERROR');
-                    return false;  // La dosis está mal escrita
                 } else {
                     console.error('Combinación inválida:', result.message);
                     mostrarMensaje(result.message, 'error');
-                    showToast(result.message, 'ERROR');
-                    return false;  // La combinación es inválida por otros motivos
+                    return false;  // La combinación es inválida
                 }
             } catch (error) {
                 console.error('Error durante la validación de la combinación:', error);
                 mostrarMensaje("Error al validar combinación: " + error.message, 'error');
-                showToast("Error al validar combinación", 'ERROR');
                 return false;
             }
         };
+
+    
  
 
         // **Validar campos y mostrar mensajes específicos**
@@ -908,7 +904,7 @@
                     mostrarMensaje(result.message, 'success');
                     showToast("Entrada registrada correctamente", "SUCCESS");
                     formEntrada.reset();
-                    loadLotes(); // Recargar la lista de lotes
+                    cargarLotes(); // Recargar la lista de lotes
                     loadMedicamentos(); // Actualizar lista de medicamentos (si aplica)
                 } else {
                     mostrarMensaje("Error en el registro de entrada: " + result.message, 'error');
@@ -929,6 +925,7 @@
                 });
 
                 const result = await response.json();
+                console.log(result);  // Para verificar la estructura de la respuesta
 
                 if (result.status === "success") {
                     loteSelect.innerHTML = '<option value="">Seleccione un lote</option>'; // Opción por defecto

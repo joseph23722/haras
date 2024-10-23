@@ -78,7 +78,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" required min="0">
+              <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" value="10" required min="0">
               <label for="stockMinimo"><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Stock Mínimo</label>
             </div>
           </div>
@@ -98,7 +98,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="text" name="lote" id="lote" class="form-control" required>
+              <input type="text" name="lote" id="lote" class="form-control" value="LOTE-"  required>
               <label for="lote"><i class="fas fa-box" style="color: #3498db;"></i> Lote</label>
             </div>
           </div>
@@ -343,10 +343,10 @@
                     <tr>
                       <th style="width: 10%;">ID</th>
                       <th style="width: 24%;">Alimento</th> <!-- Más espacio para nombre del alimento -->
-                      <th style="width: 15%;">Cantidad</th>
                       <th style="width: 15%;">TipoAlimento</th>
                       <th style="width: 15%;">Unidad</th>
-                      <th style="width: 15%;">Lote</th>
+                      <th style="width: 10%;">Cantidad</th>
+                      <th style="width: 12%;">Lote</th>
                       <th style="width: 15%;">Fecha Caducidad</th>
                       <th style="width: 20%;">Fecha de Entrada</th>
                     </tr>
@@ -684,66 +684,104 @@
       }
     };
 
+    // Función para validar si el lote ya existe o es válido
+    async function validarLote(loteInput) {
+        const lote = loteInput.value.trim(); // Obtener el valor del campo lote
 
-    // Función para registrar un nuevo alimento
-    if (formRegistrarAlimento) {
-      formRegistrarAlimento.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Previene la recarga de la página
-
-        // Validar que la fecha de caducidad y fecha de ingreso sean correctas
-        if (!validarFechaCaducidad() || !validarFechaIngreso()) {
-          mostrarMensajeDinamico('Error en las fechas de caducidad o ingreso.', 'ERROR');
-          return;
+        // Verificar si el campo está vacío
+        if (!lote) {
+            mostrarMensajeDinamico('El lote no puede estar vacío.', 'ERROR');
+            return false;
         }
 
-        // Validar que el lote no esté vacío o inválido
-        const loteValido = await validarLote(loteInput);
-        if (!loteValido) {
-          mostrarMensajeDinamico('Lote inválido o ya registrado. Verifica los datos.', 'ERROR');
-          return;
-        }
-
-        // Obtener los valores de stock actual y stock mínimo directamente del formulario
-        const formData = new FormData(formRegistrarAlimento);
-        const stockActual = parseFloat(formData.get('stockActual')); // Campo dentro del form
-        const stockMinimo = parseFloat(formData.get('stockMinimo')); // Campo dentro del form
-
-        // Validación para asegurar que el stock mínimo no sea mayor que el stock actual
-        if (stockMinimo > stockActual) {
-          mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
-          return;
-        }
-
-        // Confirmar la operación con el usuario solo para operaciones exitosas
-        if (await ask("¿Confirmar registro de nuevo alimento?")) {
-          const data = new URLSearchParams(formData); // Convertir el FormData a un formato URLSearchParams
-          data.append('operation', 'registrar'); // Agregar la operación
-
-          try {
+        try {
+            // Hacer una petición al servidor para verificar si el lote ya existe
             const response = await fetch('../../controllers/alimento.controller.php', {
-              method: "POST",
-              body: data
+                method: 'POST',
+                body: new URLSearchParams({
+                    operation: 'verificarLote',  // Operación que maneja el servidor para verificar lotes
+                    lote: lote
+                })
             });
 
             const result = await response.json();
 
-            if (result.status === "success" && result.data.status === "success") {
-              mostrarMensajeDinamico(result.data.message, 'SUCCESS');
-              showToast(result.data.message, 'SUCCESS'); // Solo mostrar en Toast si es exitoso
-              formRegistrarAlimento.reset();
-              actualizarFechaIngreso(); // Restablecer la fecha de ingreso
-              loadAlimentos();
-            } else {
-              mostrarMensajeDinamico(result.data.message || "Error en la operación.", 'ERROR');
+            // Si hay un error en la validación del lote
+            if (result.status === 'error') {
+                mostrarMensajeDinamico(result.message, 'ERROR');
+                return false;
             }
-          } catch (error) {
-            mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
-          }
-        } else {
-          mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO'); // Información de que el usuario canceló
+
+            return true; // El lote es válido
+        } catch (error) {
+            mostrarMensajeDinamico('Error al verificar el lote: ' + error.message, 'ERROR');
+            return false;
         }
-      });
     }
+
+
+
+    // Función para registrar un nuevo alimento
+    const loteInput = document.querySelector('#lote'); // Asegúrate de que este campo existe en el formulario
+
+    if (formRegistrarAlimento) {
+        formRegistrarAlimento.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Previene la recarga de la página
+
+            // Validar que la fecha de caducidad sea correcta
+            if (!validarFechaCaducidad()) {
+                mostrarMensajeDinamico('Error en las fechas de caducidad.', 'ERROR');
+                return;
+            }
+
+            // Validar que el lote no esté vacío o inválido
+            const loteValido = await validarLote(loteInput);
+            if (!loteValido) {
+                mostrarMensajeDinamico('Lote inválido o ya registrado. Verifica los datos.', 'ERROR');
+                return;
+            }
+
+            // Obtener los valores de stock actual y stock mínimo directamente del formulario
+            const formData = new FormData(formRegistrarAlimento);
+            const stockActual = parseFloat(formData.get('stockActual')); // Campo dentro del form
+            const stockMinimo = parseFloat(formData.get('stockMinimo')); // Campo dentro del form
+
+            // Validación para asegurar que el stock mínimo no sea mayor que el stock actual
+            if (stockMinimo > stockActual) {
+                mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
+                return;
+            }
+
+            // Confirmar la operación con el usuario solo para operaciones exitosas
+            if (await ask("¿Confirmar registro de nuevo alimento?")) {
+                const data = new URLSearchParams(formData); // Convertir el FormData a un formato URLSearchParams
+                data.append('operation', 'registrar'); // Agregar la operación
+
+                try {
+                    const response = await fetch('../../controllers/alimento.controller.php', {
+                        method: "POST",
+                        body: data
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status === "success" && result.data.status === "success") {
+                        mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+                        showToast(result.data.message, 'SUCCESS'); // Solo mostrar en Toast si es exitoso
+                        formRegistrarAlimento.reset();
+                        loadAlimentos();
+                    } else {
+                        mostrarMensajeDinamico(result.data.message || "Error en la operación.", 'ERROR');
+                    }
+                } catch (error) {
+                    mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+                }
+            } else {
+                mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO'); // Información de que el usuario canceló
+            }
+        });
+    }
+
 
 
 
@@ -789,8 +827,8 @@
                         { data: 'nombreAlimento' },
                         { data: 'tipoAlimento' },
                         { data: 'unidadMedida' },
+                        { data: 'cantidad' },
                         { data: 'lote' },
-                        { data: 'stockActual' },
                         { data: 'fechaCaducidad' },
                         { data: 'fechaMovimiento' }
                     ],

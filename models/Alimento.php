@@ -318,7 +318,38 @@ class Alimento extends Conexion {
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
+
+    // Verificar si un lote ya está registrado
+    public function verificarLote($lote) {
+        try {
+            // Prepara la consulta para verificar si el lote ya existe en la base de datos
+            $query = $this->pdo->prepare("SELECT COUNT(*) AS total FROM alimentos WHERE lote = :lote");
+            $query->bindParam(':lote', $lote, PDO::PARAM_STR);
+            $query->execute();
+            
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+
+            // Si el lote ya está registrado, devolver true
+            if ($result['total'] > 0) {
+                return ['status' => 'error', 'message' => 'El lote ya está registrado. Usa otro lote.'];
+            }
+
+            // Si no está registrado, devolver éxito
+            return ['status' => 'success', 'message' => 'Lote válido.'];
+
+        } catch (PDOException $e) {
+            error_log("Error al verificar el lote: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        } catch (Exception $e) {
+            error_log("Error inesperado al verificar el lote: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
+        }
+    }
+
+
+
     
+
     
 
 }
