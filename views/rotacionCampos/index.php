@@ -85,7 +85,7 @@
                     <tr>
                         <th>#</th>
                         <th>Número de Campo</th>
-                        <th>Tamaño campo (ha)</th>
+                        <th>Tamaño campo (m)</th>
                         <th>Tipo de suelo</th>
                         <th>Ultima accion</th>
                         <th>Fecha Ultima Accion</th>
@@ -118,12 +118,12 @@
                         <small class="form-text text-muted">Ingrese un número entre 1 y 99.</small>
                     </div>
                     <div class="mb-3">
-                        <label for="tamanoCampo" class="form-label">Tamaño del Campo (ha)</label>
+                        <label for="tamanoCampo" class="form-label">Tamaño del Campo (m)</label>
                         <input type="text" class="form-control" id="tamanoCampo" name="tamanoCampo" 
                             pattern="^\d+(\.\d{1,2})?$" required 
-                            title="Ingrese un número decimal. Ejemplo: 1.5 o 2.00" 
+                            title="Ingrese un número. Ejemplo: 1.5 o 2.00" 
                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.?\d{0,2}).*/, '$1');">
-                        <small class="form-text text-muted">Ingrese un número decimal, hasta dos decimales.</small>
+                        <small class="form-text text-muted">Ingrese un número expresado en metros</small>
                     </div>
                     <div class="mb-3">
                         <label for="tipoSuelo" class="form-label">Tipo de Suelo</label>

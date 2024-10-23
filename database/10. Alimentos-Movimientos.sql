@@ -63,7 +63,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
@@ -108,8 +107,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
-
 
 -- Procedimiento Salida de Alimentos 
 DELIMITER $$
@@ -237,7 +234,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- -----------
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
@@ -248,7 +244,6 @@ BEGIN
     FROM Alimentos;
 END $$
 DELIMITER ;
-
 
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
 DELIMITER $$
@@ -292,8 +287,6 @@ BEGIN
     CLOSE cur;
 END $$
 DELIMITER ;
-
-
 
 -- Procedimiento para historial Alimentos -----------------------------------------
 DELIMITER $$
@@ -377,8 +370,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 -- tipo de equino - alimento ------ 
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
@@ -388,11 +379,3 @@ BEGIN
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
 END $$
 DELIMITER ;
-
-
-
--- -------------------------------------------------------------------------------
-
-
-
-
