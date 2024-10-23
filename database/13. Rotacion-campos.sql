@@ -30,12 +30,20 @@ DROP PROCEDURE IF EXISTS `spu_obtener_ultima_accion`;
 DELIMITER //
 CREATE PROCEDURE spu_obtener_ultima_accion(IN idCampo INT)
 BEGIN
-    SELECT tr.nombreRotacion
+    DECLARE nombreRotacion VARCHAR(100);
+    
+    SELECT tr.nombreRotacion INTO nombreRotacion
     FROM RotacionCampos rc
     JOIN TipoRotaciones tr ON rc.idTipoRotacion = tr.idTipoRotacion
     WHERE rc.idCampo = idCampo
     ORDER BY rc.fechaRotacion DESC
-    LIMIT 1; -- Devuelve solo la última acción
+    LIMIT 1;
+
+    IF nombreRotacion IS NULL THEN
+        SELECT 'No hay acciones registradas' AS mensaje;
+    ELSE
+        SELECT nombreRotacion;
+    END IF;
 END //
 DELIMITER ;
 
@@ -63,8 +71,24 @@ CREATE PROCEDURE `spu_registrar_rotacion_campos`(
     IN p_detalleRotacion TEXT
 )
 BEGIN
-    INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
-    VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_detalleRotacion);
+    DECLARE v_count INT;
+
+    -- Verificar si ya existe una rotación del mismo tipo en la misma fecha
+    SELECT COUNT(*) INTO v_count
+    FROM RotacionCampos
+    WHERE idCampo = p_idCampo
+      AND idTipoRotacion = p_idTipoRotacion
+      AND DATE(fechaRotacion) = DATE(p_fechaRotacion);
+
+    IF v_count > 0 THEN
+        -- Si existe, se puede lanzar un error o manejarlo como desees
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ya existe una rotación del mismo tipo en la misma fecha.';
+    ELSE
+        -- Si no existe, proceder a insertar
+        INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
+        VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_detalleRotacion);
+    END IF;
 END //
 DELIMITER ;
 

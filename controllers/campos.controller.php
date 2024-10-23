@@ -51,7 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
                 $resultado = $controller->registrarCampo($nuevoCampo);
 
-                if ($resultado) {
+                if ($resultado === -2) {
+                    echo json_encode(["status" => "error", "message" => "Error: Ya existe un campo con ese número."]);
+                } elseif ($resultado > 0) {
                     echo json_encode(["status" => "success", "message" => "Campo registrado correctamente."]);
                 } else {
                     echo json_encode(["status" => "error", "message" => "Error al registrar el campo."]);
@@ -72,12 +74,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     break;
                 }
 
-                $idRotacion = $controller->rotacionCampos($datosRecibidos);
+                try {
+                    $idRotacion = $controller->rotacionCampos($datosRecibidos);
 
-                if ($idRotacion) {
-                    echo json_encode(['status' => 'success', 'idRotacion' => $idRotacion]);
-                } else {
-                    echo json_encode(["status" => "error", "message" => "Error al registrar la rotación."]);
+                    if ($idRotacion > 0) {
+                        echo json_encode(['status' => 'success', 'idRotacion' => $idRotacion]);
+                    } else {
+                        echo json_encode(["status" => "error", "message" => "Error al registrar la rotación. ID no válido."]);
+                    }
+                } catch (Exception $e) {
+                    $mensajeError = $e->getMessage();
+
+                    if ($mensajeError === 'Ya existe una rotación del mismo tipo en la misma fecha.') {
+                        echo json_encode(["status" => "error", "message" => "No se puede registrar: ya existe una rotación del mismo tipo en esta fecha."]);
+                    } else {
+                        echo json_encode(["status" => "error", "message" => "Error al registrar la rotación: " . $mensajeError]);
+                    }
                 }
                 break;
 

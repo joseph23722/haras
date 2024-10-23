@@ -83,7 +83,7 @@
             <table id="tabla-campos" class="table table-striped table-bordered" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th>ID CAMPO</th>
+                        <th>#</th>
                         <th>Número de Campo</th>
                         <th>Tamaño campo (ha)</th>
                         <th>Tipo de suelo</th>
@@ -113,14 +113,20 @@
                 <form id="form-nuevo-campo">
                     <div class="mb-3">
                         <label for="numeroCampo" class="form-label">Número del Campo</label>
-                        <input type="number" class="form-control" id="numeroCampo" name="numeroCampo" required>
+                        <input type="number" class="form-control" id="numeroCampo" name="numeroCampo" min="" max="99"
+                            required oninput="this.value = Math.max(0, Math.min(99, this.value));">
+                        <small class="form-text text-muted">Ingrese un número entre 1 y 99.</small>
                     </div>
                     <div class="mb-3">
-                        <label for="tamanoCampo" class="form-label">Tamaño del Campo</label>
-                        <input type="number" class="form-control" id="tamanoCampo" name="tamanoCampo" required>
+                        <label for="tamanoCampo" class="form-label">Tamaño del Campo (ha)</label>
+                        <input type="text" class="form-control" id="tamanoCampo" name="tamanoCampo" 
+                            pattern="^\d+(\.\d{1,2})?$" required 
+                            title="Ingrese un número decimal. Ejemplo: 1.5 o 2.00" 
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.?\d{0,2}).*/, '$1');">
+                        <small class="form-text text-muted">Ingrese un número decimal, hasta dos decimales.</small>
                     </div>
                     <div class="mb-3">
-                        <label for="tipoSuelo" class="form-label">Tipo de Campo</label>
+                        <label for="tipoSuelo" class="form-label">Tipo de Suelo</label>
                         <input type="text" class="form-control" id="tipoSuelo" name="tipoSuelo" required>
                     </div>
                     <div class="mb-3">
@@ -243,10 +249,17 @@
             }
         });
 
-
         // Registrar nuevo campo
         document.getElementById('guardarCampo').addEventListener('click', function() {
             const nuevoCampoForm = document.getElementById('form-nuevo-campo');
+            const numeroCampo = parseInt(document.getElementById('numeroCampo').value);
+
+            // Validar que el número del campo no sea 0
+            if (numeroCampo < 1) {
+                alert("El número del campo debe ser mayor que 0.");
+                return; // Salir de la función si la validación falla
+            }
+
             const formData = new FormData(nuevoCampoForm);
             formData.append('operation', 'registrarCampo');
 
@@ -283,8 +296,8 @@
                     console.log(data)
                     if (data.idRotacion) {
                         alert('Rotación registrada con éxito. ID Rotación: ' + data.idRotacion);
-                        inicializarDataTable(); // Recargar la tabla de datos para mostrar la nueva rotación
-                        this.reset(); // Resetear el formulario después de registrar
+                        inicializarDataTable();
+                        this.reset();
                     } else {
                         alert('Error registrando rotación: ' + data.message);
                     }

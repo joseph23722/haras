@@ -35,10 +35,8 @@ class RotacionCampos extends Conexion
     public function registrarCampo($params = []): int
     {
         try {
-            // Preparamos la llamada al procedimiento almacenado
             $cmd = $this->pdo->prepare("CALL spu_registrar_campo(?, ?, ?, ?)");
 
-            // Ejecutamos el procedimiento con los parámetros correspondientes
             $cmd->execute([
                 $params['numeroCampo'],
                 $params['tamanoCampo'],
@@ -46,11 +44,15 @@ class RotacionCampos extends Conexion
                 $params['estado']
             ]);
 
-            return $cmd->rowCount(); // Retorna la cantidad de filas afectadas
+            return $cmd->rowCount();
 
-        } catch (Exception $e) {
-            error_log("Error: " . $e->getMessage());
-            return -1; // Retorna -1 en caso de error
+        }  catch (PDOException $e) {
+            if ($e->getCode() === '45000') {
+                return -2;
+            } else {
+                error_log("Error: " . $e->getMessage());
+                return -1;
+            }
         }
     }
 

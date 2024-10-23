@@ -320,7 +320,8 @@ CREATE TABLE Campos (
     numeroCampo 			INT NOT NULL,
     tamanoCampo				DECIMAL(10,2) NOT NULL,
     tipoSuelo 				VARCHAR(100) NOT NULL,
-    estado 					VARCHAR(50) NOT NULL
+    estado 					VARCHAR(50) NOT NULL,
+    CONSTRAINT UK_NumeroCampo UNIQUE (numeroCampo)
 ) ENGINE = INNODB;
 
 -- 28. TipoRotaciones
