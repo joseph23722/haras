@@ -2,6 +2,22 @@
 session_start();
 
 require_once '../models/Usuario.php';
+
+header("Content-type: application/json; charset=utf-8");
+
+$accesos = [
+    "Gerente"           => ["dashboard", ""],
+    "Administrador"     => ["dashboard", "listadoServicios", "usuarios"],
+    "Supervisor Equino" => ["dashboard", "registroEquinos", "servicioMixto", "servicioPropio", "usuarios", "inventarioAlimentos", "inventarioMedicamentos", "listadoServicios"],
+    "Supervisor Campo"  => ["dashboard", "rotacionCampos"],
+    "Médico"            => ["dashboard", "historialMedico"],
+    "Herrero"           => ["dashboard", "listadoServicios"]
+];
+
+$accesosV2 = [
+    
+]
+
 $usuario = new Usuario();
 
 try {

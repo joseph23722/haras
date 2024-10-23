@@ -16,7 +16,7 @@ class Usuario extends Conexion {
             // Preparar la consulta para el procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_usuarios_login(?)");
             $query->execute([$params['correo']]);
-            return $query->fetchAll(PDO::FETCH_ASSOC); // Retornar los resultados
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             error_log("Error en login: " . $e->getMessage());
             return [];

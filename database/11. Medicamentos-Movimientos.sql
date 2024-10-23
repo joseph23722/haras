@@ -693,6 +693,3 @@ INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis) VALUES
 (5, 5, '50 UI/mL'), -- Desparasitante, suspensión
 (6, 8, '10 U/L'),  -- Suplemento, ampollas
 (3, 15, '200 U/mL');-- Antiinflamatorio, polvos
-
-
-
