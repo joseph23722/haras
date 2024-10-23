@@ -73,44 +73,43 @@ $host = "http://localhost/haras";
                             Dashboard
                         </a>
 
-                        <!-- Servicios -->
-                        <div class="sb-sidenav-menu-heading">Servicios</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseServicios" aria-expanded="false" aria-controls="collapseServicios">
-                            <div class="sb-nav-link-icon"><i class="fas fa-horse"></i></div>
-                            Servicio Equino
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        <!-- Servicio Propio -->
+                        <a class="nav-link" href="<?= $host ?>/views/servicioPropio/">
+                            <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
+                            Servicio Propio
                         </a>
-                        <div class="collapse" id="collapseServicios" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="<?= $host ?>/views/servicioPropio/"><i class="fas fa-cog"></i> Servicio Propio</a>
-                                <a class="nav-link" href="<?= $host ?>/views/servicioMixto/"><i class="fas fa-exchange-alt"></i> Servicio Mixto</a>
-                                <a class="nav-link" href="<?= $host ?>/views/listadoServicios/"><i class="fa-solid fa-list-ol"></i> Listado Servicios</a>
-                            </nav>
-                        </div>
+
+                        <!-- Servicio Mixto -->
+                        <a class="nav-link" href="<?= $host ?>/views/servicioMixto/">
+                            <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>
+                            Servicio Mixto
+                        </a>
+                        
+                        <!-- Listado de Servicios -->
+                        <a class="nav-link" href="<?= $host ?>/views/listadoServicios/">
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-list-ol"></i></div>
+                            Listado Servicios
+                        </a>
 
                         <!-- Campos -->
-                        <div class="sb-sidenav-menu-heading">Campos</div>
                         <a class="nav-link" href="<?= $host ?>/views/rotacionCampos">
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-group-arrows-rotate"></i></div>
                             Rotación Campos
                         </a>
 
-                        <!-- Medicamentos -->
-                        <div class="sb-sidenav-menu-heading">Medicamentos</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMedicamentos" aria-expanded="false" aria-controls="collapseMedicamentos">
-                            <div class="sb-nav-link-icon"><i class="fas fa-prescription-bottle-alt"></i></div>
-                            Medicamentos Equinos
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        <!-- Historial Médico -->
+                        <a class="nav-link" href="<?= $host ?>/views/historialMedico/">
+                            <div class="sb-nav-link-icon"><i class="fas fa-notes-medical"></i></div>
+                            Historial Médico
                         </a>
-                        <div class="collapse" id="collapseMedicamentos" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="<?= $host ?>/views/historialMedico/"><i class="fas fa-notes-medical"></i> Historial Médico</a>
-                                <a class="nav-link" href="<?= $host ?>/views/inventarioMedicamentos/"><i class="fas fa-pills"></i> Administración de Medicamentos</a>
-                            </nav>
-                        </div>
+
+                        <!-- Administrar medicamentos -->
+                        <a class="nav-link" href="<?= $host ?>/views/inventarioMedicamentos/">
+                            <div class="sb-nav-link-icon"><i class="fas fa-pills"></i></div>
+                            Administración de Medicamentos
+                        </a>
 
                         <!-- Registro Equinos -->
-                        <div class="sb-sidenav-menu-heading">Registro Equinos</div>
                         <a class="nav-link" href="<?= $host ?>/views/registroEquinos/">
                             <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
                             Registro Equino
@@ -121,14 +120,12 @@ $host = "http://localhost/haras";
                         </a>
 
                         <!-- Alimentos -->
-                        <div class="sb-sidenav-menu-heading">Alimentos</div>
                         <a class="nav-link" href="<?= $host ?>/views/inventarioAlimentos/">
                             <div class="sb-nav-link-icon"><i class="fas fa-apple-alt"></i></div>
                             Alimento Equino
                         </a>
 
                         <!-- Usuarios -->
-                        <div class="sb-sidenav-menu-heading">Usuarios</div>
                         <a class="nav-link" href="<?= $host ?>/views/usuarios">
                             <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                             Gestión de Usuarios
