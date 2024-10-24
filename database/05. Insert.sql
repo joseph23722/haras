@@ -7,8 +7,12 @@ VALUES
 -- 2. Insertar Datos en Personal
 INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
 VALUES 
-('Joseph', 'Mateo', 'San Agustin ', 'DNI', '72183871', 2, '2024-08-27', 'Completo'),
-('Ruben', 'Marcos', 'Calle Fatima', 'DNI', '12345678', 2, '2024-08-27', 'Completo');
+('Gerente', 'Mateo', 'San Agustin ', 'DNI', '11111111', 1, '2024-08-27', 'Completo'),
+('Administrador', 'Marcos', 'Calle Fatima', 'DNI', '22222222', 2, '2024-08-27', 'Completo'),
+('SupervisorE', 'Gereda', 'AV. Los Angeles', 'DNI', '33333333', 3, '2024-08-27', 'Completo'),
+('SupervisorC', 'Mamani', 'Calle Fatima', 'DNI', '44444444', '', '2024-08-27', 'Completo'),
+('Medico', 'Paullac', 'Calle Fatima', 'DNI', '55555555', '', '2024-08-27', 'Completo'),
+('Herrero', 'Nuñez', 'Calle Fatima', 'DNI', '66666666', 2, '2024-08-27', 'Parcial');
 
 -- 3. Insertar datos en la tabla Roles
 INSERT INTO Roles (nombreRol) 
@@ -21,10 +25,15 @@ VALUES
 ('Herrero');
 
 -- 4. Insertar Datos en Usuario
+-- Las contraseñas de los 6 usuarios es "haras", cabe mencionar que estan ordenadas conforme se encuentran los roles
 INSERT INTO Usuarios (idPersonal, correo, clave, idRol) 
 VALUES 
-(1, 'joseph@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2),
-(2, 'ruben@gmail.com', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2);
+(1, 'gerente', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 1),
+(2, 'admin', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 2),
+(3, 'superE', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 3),
+(4, 'superC', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 4),
+(5, 'medico', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 5),
+(6, 'herrero', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 6);
 
 -- AGREGADOS:
 

@@ -187,15 +187,15 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
                 <div class="cloud"></div>
                 <div class="cloud"></div>
                 <div class="cloud"></div>
-                <div class="cloud"></div> <!-- Nubes apiladas verticalmente -->
+                <div class="cloud"></div>
             </div>
         </div>
         <div class="login-form">
             <h3>Iniciar Sesión</h3>
             <form autocomplete="off" id="form-login">
                 <div class="form-floating mb-3">
-                    <input class="form-control" id="inputEmail" autofocus type="email" placeholder="correo@example.com" required />
-                    <label for="inputEmail"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                    <input class="form-control" id="inputEmail" autofocus type="text" placeholder="Nombre de usuario" required />
+                    <label for="inputEmail"><i class="fas fa-envelope"></i> Nombre de usuario</label>
                 </div>
                 <div class="form-floating mb-3">
                     <input class="form-control" id="inputPassword" type="password" placeholder="Contraseña" required />
