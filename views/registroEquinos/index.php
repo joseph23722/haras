@@ -1,4 +1,4 @@
-<?php require_once '../../header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Equino</h1>
@@ -100,7 +100,7 @@
 
 </div>
 
-<?php require_once '../../footer.php'; ?>
+<?php require_once '../footer.php'; ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 <script>

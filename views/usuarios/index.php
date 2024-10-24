@@ -1,4 +1,4 @@
-<?php require_once '../../header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <main>
   <div class="container-fluid px-4">
@@ -171,7 +171,7 @@
 
 </main>
 
-<?php require_once '../../footer.php'; ?>
+<?php require_once '../footer.php'; ?>
 
 <!-- Incluye DataTables -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">

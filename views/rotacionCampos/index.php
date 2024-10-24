@@ -1,4 +1,4 @@
-<?php require_once '../../header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #003300;">Registro de Rotación de Campos</h1>
@@ -146,7 +146,7 @@
     </div>
 </div>
 
-<?php require_once '../../footer.php'; ?>
+<?php require_once '../footer.php'; ?>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

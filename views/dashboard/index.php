@@ -1,4 +1,4 @@
-<?php require_once 'header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <!-- Encabezado del Dashboard -->
 <div class="content-header">
@@ -91,7 +91,7 @@
     </div>
 </section>
 
-<?php require_once 'footer.php'; ?>
+<?php require_once '../footer.php'; ?>
 
 <!-- Enlaces a Librerías de AdminLTE y Plugins -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -126,7 +126,7 @@
     // Función para obtener el total de alimentos en stock
     const loadAlimentosStock = async () => {
         try {
-            const response = await fetch('controllers/alimento.controller.php', {
+            const response = await fetch('../../controllers/alimento.controller.php', {
                 method: "POST",
                 body: new URLSearchParams({ operation: 'getAlimentosStockInfo' }) // Llamada al nuevo método
             });
@@ -151,7 +151,7 @@
     // Función para obtener el total de medicamentos en stock
     const loadMedicamentosStock = async () => {
         try {
-            const response = await fetch('controllers/admedi.controller.php', {
+            const response = await fetch('../../controllers/admedi.controller.php', {
                 method: "POST",
                 body: new URLSearchParams({ operation: 'getMedicamentosStockInfo' }) // Llamada al nuevo método para medicamentos
             });

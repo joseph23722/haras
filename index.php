@@ -1,15 +1,14 @@
 <?php
 session_start();
 
-// Si el usuario ya inició sesión, redirigir al dashboard
-if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
-    header('Location:dashboard.php');
-    exit;
+if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
+    header("Location:http://localhost/haras/views");
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -43,8 +42,10 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
         }
 
         .login-image {
-            background: url('imagen/caballo.png') no-repeat center center; /* Usamos la imagen de fondo */
-            background-size: cover; /* Cubrimos todo el contenedor con la imagen */
+            background: url('imagen/caballo.png') no-repeat center center;
+            /* Usamos la imagen de fondo */
+            background-size: cover;
+            /* Cubrimos todo el contenedor con la imagen */
             padding: 60px;
             color: white;
             width: 50%;
@@ -62,7 +63,8 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
             font-size: 30px;
             font-weight: bold;
             padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para mejorar la visibilidad */
+            background: rgba(0, 0, 0, 0.5);
+            /* Fondo semitransparente para mejorar la visibilidad */
             border-radius: 5px;
             color: white;
         }
@@ -96,7 +98,8 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
             position: relative;
         }
 
-        .cloud::before, .cloud::after {
+        .cloud::before,
+        .cloud::after {
             content: '';
             background: white;
             border-radius: 50%;
@@ -175,6 +178,7 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-image">
@@ -220,34 +224,36 @@ if (isset($_SESSION['login']) && $_SESSION['login']['permitido']){
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector("#form-login").addEventListener("submit", (event) => {
+            function $(object = null) {
+                return document.querySelector(object);
+            }
+
+            async function login() {
+                const parametros = new FormData();
+                parametros.append("operation", "login");
+                parametros.append("correo", $("#inputEmail").value);
+                parametros.append("clave", $("#inputPassword").value);
+
+                const response = await fetch(`./controllers/usuario.controller.php`, {
+                    method: 'POST',
+                    body: parametros
+                });
+                const data = await response.json();
+
+                if (data.login) {
+                    window.location.href = './views/dashboard/';
+                } else {
+                    $("#loginError").textContent = data.mensaje;
+                    $("#loginError").classList.remove("d-none");
+                }
+            }
+
+            $("#form-login").addEventListener("submit", async (event) => {
                 event.preventDefault();
-
-                const params = new URLSearchParams();
-                params.append("operation", "login");
-                params.append("correo", document.querySelector("#inputEmail").value);
-                params.append("clave", document.querySelector("#inputPassword").value);
-
-                fetch(`./controllers/usuario.controller.php?${params}`)
-                    .then(response => response.text())  // Cambia 'json' por 'text' para ver la respuesta en bruto
-                    .then(acceso => {
-                        console.log(acceso);  // Muestra lo que el servidor está enviando
-                        try {
-                            acceso = JSON.parse(acceso);  // Intenta convertirlo a JSON
-                            if (!acceso.permitido) {
-                                alert(acceso.status);
-                            } else {
-                                window.location.href = './dashboard.php';
-                            }
-                        } catch (error) {
-                            console.error('Error al procesar el JSON:', error);
-                        }
-                    })
-                    .catch(error => console.error('Error en la solicitud:', error));
-
+                await login();
             });
         });
-
     </script>
 </body>
+
 </html>

@@ -1,4 +1,4 @@
-<?php require_once '../../header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
     <!-- Título de la página -->
@@ -321,7 +321,7 @@
     </div>
 </div>
 
-<?php require_once '../../footer.php'; ?>
+<?php require_once '../footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
 <script src="../../swalcustom.js"></script>

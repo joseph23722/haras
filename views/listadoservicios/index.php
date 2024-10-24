@@ -1,4 +1,4 @@
-<?php require_once '../../header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
   <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #005b99;">LISTADO DE SERVICIOS</h1>
@@ -119,4 +119,4 @@
   });
 </script>
 
-<?php require_once '../../footer.php'; ?>
+<?php require_once '../footer.php'; ?>
