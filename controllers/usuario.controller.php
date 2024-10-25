@@ -5,10 +5,10 @@ session_start();
 header('Content-Type: application/json');
 
 $accesos = [
-    "1"             => ["dashboard", ""],
+    "1"             => ["dashboard", "listadoServicios"],
     "2"             => ["dashboard", "listadoServicios", "usuarios"],
     "3"             => ["dashboard", "registroEquinos", "servicioMixto", "servicioPropio", "usuarios", "inventarioAlimentos", "inventarioMedicamentos", "listadoServicios"],
-    "4"             => ["dashboard", "rotacionCampos"],
+    "4"             => ["dashboard", "rotacionCampos", "programacionCalendario"],
     "5"             => ["dashboard", "historialMedico"],
     "6"             => ["dashboard", "listadoServicios"]
 ];
@@ -16,6 +16,7 @@ $accesos = [
 $accesosV2 = [
     1 => [ // Gerente
         ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
+        ["ruta" => "listadoServicios", "texto" => "Listado de Servicios", "icono" => "fa-solid fa-list-ol"],
     ],
     2 => [ // Administrador
         ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
@@ -34,7 +35,8 @@ $accesosV2 = [
     ],
     4 => [ // Supervisor Campo
         ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "rotacionCampos", "texto" => "Rotación de Campos", "icono" => "fas fa-solid fa-group-arrows-rotate"]
+        ["ruta" => "rotacionCampos", "texto" => "Rotación de Campos", "icono" => "fas fa-solid fa-group-arrows-rotate"],
+        ["ruta" => "programacionCalendario", "texto" => "Programación Campos", "icono" => "fas fa-solid fa-group-arrows-rotate"]
     ],
     5 => [ // Médico
         ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],

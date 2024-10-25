@@ -116,6 +116,23 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `spu_listar_rotaciones`;
+DELIMITER //
+CREATE PROCEDURE `spu_listar_rotaciones`()
+BEGIN
+    SELECT 
+    c.numeroCampo,
+    tr.nombreRotacion, 
+    rc.fechaRotacion 
+	FROM 
+		RotacionCampos rc
+	JOIN 
+		TipoRotaciones tr ON rc.idTipoRotacion = tr.idTipoRotacion
+	JOIN
+        Campos c ON rc.idCampo = c.idCampo;
+END //
+DELIMITER ;
+
 INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
 VALUES (1, 12.50, 'Arenoso', 'Activo');
 

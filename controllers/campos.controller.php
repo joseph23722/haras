@@ -31,6 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     echo json_encode(["status" => "error", "message" => "ID de campo no proporcionado."]);
                 }
                 break;
+
+            case 'getRotaciones':
+                echo json_encode($controller->listarRotaciones());
+                break;
+
             default:
                 echo json_encode(["status" => "error", "message" => "Operación no válida."]);
                 break;

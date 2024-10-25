@@ -21,7 +21,7 @@ class RotacionCampos extends Conexion
             $cmd->execute([
                 $params['idCampo'],
                 $params['idTipoRotacion'],
-                $params['fechaRotacion'], 
+                $params['fechaRotacion'],
                 $params['detalleRotacion']
             ]);
 
@@ -45,8 +45,7 @@ class RotacionCampos extends Conexion
             ]);
 
             return $cmd->rowCount();
-
-        }  catch (PDOException $e) {
+        } catch (PDOException $e) {
             if ($e->getCode() === '45000') {
                 return -2;
             } else {
@@ -78,5 +77,10 @@ class RotacionCampos extends Conexion
             error_log("Error: " . $e->getMessage());
             return ["status" => "error", "message" => "Error al obtener la última acción."];
         }
+    }
+
+    public function listarRotaciones(): array
+    {
+        return parent::getData("spu_listar_rotaciones");
     }
 }
