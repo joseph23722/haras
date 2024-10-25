@@ -13,7 +13,7 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <select name="campos" id="campos" class="form-select">
+                            <select name="campos" id="campos" class="form-select" autofocus>
                                 <option value="">Seleccione un campo</option>
                                 <!-- Opciones se llenarán dinámicamente -->
                             </select>
@@ -119,15 +119,26 @@
                     </div>
                     <div class="mb-3">
                         <label for="tamanoCampo" class="form-label">Tamaño del Campo (m)</label>
-                        <input type="text" class="form-control" id="tamanoCampo" name="tamanoCampo" 
-                            pattern="^\d+(\.\d{1,2})?$" required 
-                            title="Ingrese un número. Ejemplo: 1.5 o 2.00" 
+                        <input type="text" class="form-control" id="tamanoCampo" name="tamanoCampo"
+                            pattern="^\d+(\.\d{1,2})?$" required
+                            title="Ingrese un número. Ejemplo: 1.5 o 2.00"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.?\d{0,2}).*/, '$1');">
                         <small class="form-text text-muted">Ingrese un número expresado en metros</small>
                     </div>
                     <div class="mb-3">
                         <label for="tipoSuelo" class="form-label">Tipo de Suelo</label>
-                        <input type="text" class="form-control" id="tipoSuelo" name="tipoSuelo" required>
+                        <select class="form-control" name="tipoSuelo" id="tipoSuelo" required>
+                            <option value="">Seleccione un tipo de suelo</option>
+                            <option value="Arcilloso">Arcilloso</option>
+                            <option value="Arenoso">Arenoso</option>
+                            <option value="Calizo">Calizo</option>
+                            <option value="Humiferos">Humífero</option>
+                            <option value="Mixto">Mixto</option>
+                            <option value="Pedregoso">Pedregoso</option>
+                            <option value="Salino">Salino</option>
+                            <option value="Urbano">Urbano</option>
+
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="estado" class="form-label">Estado</label>
