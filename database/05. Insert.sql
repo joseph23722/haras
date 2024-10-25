@@ -64,6 +64,11 @@ INSERT INTO TipoEquinos (tipoEquino) VALUES
     ('Potrillo'),
     ('Recién nacido');
     
+INSERT INTO tipoSuelo (nombreTipoSuelo) VALUES
+	('Arcilloso'), ('Arenoso'), ('Calizo'), 
+    ('Humiferos'), ('Mixto'), ('Pedregoso'), 
+    ('Salino'), ('Urbano');
+    
 -- 4. Insertar Datos en EstadoMonta
 INSERT INTO EstadoMonta (genero, nombreEstado) 
     VALUES 

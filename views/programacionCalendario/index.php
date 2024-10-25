@@ -33,9 +33,16 @@
                 fetch('../../controllers/campos.controller.php?operation=getRotaciones')
                     .then(response => response.json())
                     .then(data => {
+                        console.log(data)
                         if (data.status !== "error") {
                             const eventos = data.map(evento => {
-                                const fechaRotacion = new Date(evento.fechaRotacion + 'T00:00:00');
+                                const fechaRotacion = new Date(evento.fechaRotacion);
+
+                                if (isNaN(fechaRotacion.getTime())) {
+                                    console.error('Fecha no válida:', evento.fechaRotacion);
+                                    return null;
+                                }
+
                                 const hoy = new Date();
                                 hoy.setHours(0, 0, 0, 0);
 
@@ -47,14 +54,15 @@
                                 } else {
                                     color = '#dc3545';
                                 }
-                                //Color naranja por si hay dudas: #ff9800
+
                                 return {
                                     title: `Campo: ${evento.numeroCampo} - ${evento.nombreRotacion}`,
-                                    start: fechaRotacion,
+                                    start: fechaRotacion.toISOString().split('T')[0],
                                     allDay: true,
                                     color: color
                                 };
-                            });
+                            }).filter(evento => evento !== null);
+
                             successCallback(eventos);
                         } else {
                             failureCallback();

@@ -314,12 +314,18 @@ CREATE TABLE HistorialHerrero (
     CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
+-- Tipo Suelo
+CREATE TABLE tipoSuelo (
+	idTipoSuelo				INT PRIMARY KEY AUTO_INCREMENT,
+    nombreTipoSuelo			VARCHAR(50) UNIQUE NOT NULL
+) ENGINE = INNODB;
+
 -- 27. Campos
 CREATE TABLE Campos (
     idCampo 				INT PRIMARY KEY AUTO_INCREMENT,
     numeroCampo 			INT NOT NULL,
     tamanoCampo				DECIMAL(10,2) NOT NULL,
-    tipoSuelo 				VARCHAR(100) NOT NULL,
+    idTipoSuelo 			INT NOT NULL,
     estado 					VARCHAR(50) NOT NULL
 ) ENGINE = INNODB;
 
@@ -329,7 +335,6 @@ CREATE TABLE TipoRotaciones (
     nombreRotacion 			VARCHAR(100) NOT NULL,
     detalles 				TEXT
 ) ENGINE = INNODB;
-
 
 /*
 NOTA:

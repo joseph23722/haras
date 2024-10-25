@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             case 'getTiposRotaciones':
                 echo json_encode($controller->listarTipoRotaciones());
                 break;
+
             case 'getCampos':
                 $campos = $controller->listarCampos();
                 $jsonResponse = json_encode($campos);
@@ -21,6 +22,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     echo $jsonResponse;
                 }
                 break;
+
+            case 'getCampoID':
+                $idCampo = $_GET['idCampo'] ?? null;
+
+                if ($idCampo) {
+                    $resultado = $controller->obtenerCampoID($idCampo);
+                    echo json_encode($resultado);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "ID de campo no proporcionado."]);
+                }
+                break;
+
+            case 'getTipoSuelo':
+                echo json_encode($controller->listarTipoSuelo());
+                break;
+
             case 'getUltimaAccion':
                 $idCampo = $_GET['idCampo'] ?? null;
 
@@ -50,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $nuevoCampo = [
                     'numeroCampo' => $_POST['numeroCampo'],
                     'tamanoCampo' => $_POST['tamanoCampo'],
-                    'tipoSuelo' => $_POST['tipoSuelo'],
+                    'idTipoSuelo' => $_POST['tipoSuelo'],
                     'estado' => $_POST['estado']
                 ];
 
@@ -64,6 +81,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     echo json_encode(["status" => "error", "message" => "Error al registrar el campo."]);
                 }
                 break;
+
+            case 'editarCampo':
+                $params = [
+                    'idCampo' => $_POST['idCampo'],
+                    'numeroCampo' => $_POST['numeroCampo'],
+                    'tamanoCampo' => $_POST['tamanoCampo'],
+                    'idTipoSuelo' => $_POST['tipoSuelo'],
+                    'estado' => $_POST['estado']
+                ];
+
+                if (in_array(null, $params, true)) {
+                    echo json_encode(["status" => "error", "message" => "Faltan datos para editar el campo."]);
+                    break;
+                }
+
+                $resultado = $controller->editarCampo($params);
+                if ($resultado > 0) {
+                    echo json_encode(["status" => "success", "message" => "Campo editado correctamente."]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Error al editar el campo."]);
+                }
+                break;
+
+            case 'eliminarCampo':
+                $idCampo = $_POST['idCampo'] ?? null;
+
+                if ($idCampo) {
+                    $resultado = $controller->eliminarCampo($idCampo);
+                    if ($resultado > 0) {
+                        echo json_encode(["status" => "success", "message" => "Campo eliminado correctamente."]);
+                    } else {
+                        echo json_encode(["status" => "error", "message" => "Error al eliminar el campo."]);
+                    }
+                } else {
+                    echo json_encode(["status" => "error", "message" => "ID de campo no proporcionado."]);
+                }
+                break;
+
 
             case 'rotacionCampos':
                 $datosRecibidos = [

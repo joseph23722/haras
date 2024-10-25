@@ -6,7 +6,7 @@ BEGIN
         C.idCampo,
         C.numeroCampo,
         C.tamanoCampo,
-        C.tipoSuelo,
+        TS.nombreTipoSuelo,
         C.estado,
         (SELECT TR.nombreRotacion
          FROM RotacionCampos RC
@@ -19,10 +19,24 @@ BEGIN
         Campos C
     LEFT JOIN 
         RotacionCampos RC ON C.idCampo = RC.idCampo
+    LEFT JOIN 
+        TipoSuelo TS ON C.idTipoSuelo = TS.idTipoSuelo
     GROUP BY 
-        C.idCampo, C.numeroCampo, C.tamanoCampo, C.tipoSuelo, C.estado
+        C.idCampo, C.numeroCampo, C.tamanoCampo, TS.nombreTipoSuelo, C.estado
     ORDER BY 
         C.numeroCampo DESC;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_tiposuelo_listar`;
+DELIMITER //
+CREATE PROCEDURE `spu_tiposuelo_listar`()
+BEGIN
+    SELECT 
+        C.idTipoSuelo,
+        C.nombreTipoSuelo
+    FROM 
+        tipoSuelo C;
 END //
 DELIMITER ;
 
@@ -97,7 +111,7 @@ DELIMITER //
 CREATE PROCEDURE `spu_registrar_campo`(
     IN p_numeroCampo INT,
     IN p_tamanoCampo DECIMAL(10,2),
-    IN p_tipoSuelo VARCHAR(100),
+    IN p_idTipoSuelo INT,  -- Cambiado a idTipoSuelo
     IN p_estado VARCHAR(50)
 )
 BEGIN
@@ -110,8 +124,8 @@ BEGIN
     IF campoExistente > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Ya existe un campo con el mismo número.';
     ELSE
-        INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
-        VALUES (p_numeroCampo, p_tamanoCampo, p_tipoSuelo, p_estado);
+        INSERT INTO Campos (numeroCampo, tamanoCampo, idTipoSuelo, estado)  -- Cambiado a idTipoSuelo
+        VALUES (p_numeroCampo, p_tamanoCampo, p_idTipoSuelo, p_estado);
     END IF;
 END //
 DELIMITER ;
@@ -133,8 +147,71 @@ BEGIN
 END //
 DELIMITER ;
 
-INSERT INTO Campos (numeroCampo, tamanoCampo, tipoSuelo, estado)
-VALUES (1, 12.50, 'Arenoso', 'Activo');
+DROP PROCEDURE IF EXISTS `spu_eliminar_campo`;
+DELIMITER //
+CREATE PROCEDURE `spu_eliminar_campo`(
+    IN `p_idCampo` INT
+)
+BEGIN
+    -- Eliminar las rotaciones asociadas
+    DELETE FROM rotacioncampos WHERE idCampo = p_idCampo;
+
+    -- Ahora eliminar el campo
+    DELETE FROM campos WHERE idCampo = p_idCampo;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_editar_campo`;
+DELIMITER //
+CREATE PROCEDURE `spu_editar_campo`(
+    IN `p_idCampo` INT,
+    IN `p_numeroCampo` INT,
+    IN `p_tamanoCampo` DECIMAL(10,2),
+    IN `p_idTipoSuelo` INT,  -- Cambiado a idTipoSuelo
+    IN `p_estado` ENUM('Activo', 'Inactivo')
+)
+BEGIN
+    DECLARE campoExistente INT;
+
+    SELECT COUNT(*) INTO campoExistente
+    FROM Campos
+    WHERE idCampo = p_idCampo;
+
+    IF campoExistente = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El campo no existe.';
+    ELSE
+        UPDATE Campos
+        SET 
+            numeroCampo = p_numeroCampo,
+            tamanoCampo = p_tamanoCampo,
+            idTipoSuelo = p_idTipoSuelo,  -- Cambiado a idTipoSuelo
+            estado = p_estado
+        WHERE idCampo = p_idCampo;
+    END IF;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_obtener_campoID`;
+DELIMITER //
+CREATE PROCEDURE `spu_obtener_campoID`(
+    IN `p_idCampo` INT
+)
+BEGIN
+    SELECT 
+        c.idCampo,
+        c.numeroCampo,
+        c.tamanoCampo,
+        c.idTipoSuelo,  -- Asegúrate de incluir idTipoSuelo aquí
+        ts.nombreTipoSuelo,
+        c.estado
+    FROM Campos c
+    LEFT JOIN tipoSuelo ts ON c.idTipoSuelo = ts.idTipoSuelo
+    WHERE c.idCampo = p_idCampo;
+END //
+DELIMITER ;
+
+INSERT INTO Campos (numeroCampo, tamanoCampo, idTipoSuelo, estado)
+VALUES (1, 12.50, 1, 'Activo');
 
 INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
 VALUES (1, 2, '2024-10-21', 'Deshierve del campo número 1');
