@@ -67,7 +67,11 @@ try {
         switch ($operation) {
             case 'registrar':
                 $result = $alimento->registrarNuevoAlimento($params);
-                break;
+                 // Limpiar cualquier salida previa antes de enviar el JSON
+                ob_clean();
+                // Devolver la respuesta en formato JSON para que el frontend pueda interpretarla
+                echo json_encode($result);
+                exit;
 
             case 'entrada':
                 $result = $alimento->registrarEntradaAlimento($params);
@@ -127,37 +131,26 @@ try {
                 exit();
 
             
-                
+            // Verificar si un lote existe    
             case 'verificarLote':
-                $lote = $params['lote'] ?? null;
+                $lote = $_POST['lote'] ?? null;
+                $unidadMedida = $_POST['unidadMedida'] ?? null;
             
-                if (!$lote) {
+                if (!$lote || !$unidadMedida) {
                     echo json_encode([
                         'status' => 'error',
-                        'message' => 'El lote no puede estar vacío.'
+                        'message' => 'El lote y la unidad de medida no pueden estar vacíos.'
                     ]);
                     exit();
                 }
             
-                // Llamar al modelo para verificar si el lote existe
-                $resultado = $alimento->verificarLote($lote);
+                // Llamar al modelo para verificar si la combinación existe
+                $resultado = $alimento->verificarLote($lote, $unidadMedida);
             
-                // Verificar el resultado devuelto por el modelo
-                if ($resultado['status'] === 'error') {
-                    echo json_encode([
-                        'status' => 'error',
-                        'message' => $resultado['message']  // Usar el mensaje devuelto por el modelo
-                    ]);
-                } else {
-                    echo json_encode([
-                        'status' => 'success',
-                        'message' => $resultado['message']  // Usar el mensaje devuelto por el modelo
-                    ]);
-                }
+                echo json_encode($resultado);
                 exit();
-                
             
-
+                
             case 'eliminar':
                 $idAlimento = $params['idAlimento'] ?? null;
                 $result = $alimento->eliminarAlimento($idAlimento);

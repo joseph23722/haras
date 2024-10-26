@@ -121,6 +121,16 @@ CREATE TABLE Implementos (
     CONSTRAINT fk_implemento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento)
 ) ENGINE = INNODB;
 
+-- 
+CREATE TABLE LotesAlimento (
+    idLote       INT PRIMARY KEY AUTO_INCREMENT,
+    lote         VARCHAR(50) NOT NULL,          -- Número del lote
+    unidadMedida VARCHAR(10) NOT NULL,          -- Unidad de medida asociada al lote (Kilos, Litros, etc.)
+    fechaCaducidad DATE NULL,                   -- Fecha de caducidad del lote (opcional)
+    fechaIngreso DATETIME DEFAULT NOW(),        -- Fecha de ingreso del lote
+    CONSTRAINT UQ_lote_unidad UNIQUE (lote, unidadMedida)  -- Unicidad de lote por unidad de medida
+);
+
 -- 11. Alimentos
 CREATE TABLE Alimentos (
     idAlimento           INT PRIMARY KEY AUTO_INCREMENT,
@@ -132,15 +142,13 @@ CREATE TABLE Alimentos (
     estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',  -- Estado del alimento
     unidadMedida         VARCHAR(10) NOT NULL,     -- Unidad de medida del alimento (Kilos, Litros, etc.)
     costo                DECIMAL(10,2) NOT NULL,   -- Precio unitario del alimento
-    lote                 VARCHAR(50),              -- Registro de lote
-    fechaCaducidad       DATE NULL,                -- Fecha de caducidad por lote
+    idLote               INT NOT NULL,             -- Referencia al lote
     idTipoEquino         INT NULL,                 -- Solo para salidas (referencia a tipo de equino)
     merma                DECIMAL(10,2) NULL,       -- Registro de la merma en salidas
-    fechaIngreso         DATETIME DEFAULT NOW(), -- Fecha de ingreso del lote
     compra               DECIMAL(10,2) NOT NULL,   -- Costo total de compra (costo * cantidad)
     fechaMovimiento      DATETIME DEFAULT NOW(),   -- Fecha del último movimiento
-    CONSTRAINT UQ_nombreAlimento UNIQUE (nombreAlimento, lote), -- Unicidad de alimento por lote
     CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),  -- Relación con la tabla Usuarios
+    CONSTRAINT fk_alimento_lote FOREIGN KEY (idLote) REFERENCES LotesAlimento(idLote),  -- Relación con la tabla Lotes
     CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)  -- Relación con la tabla TipoEquinos
 ) ENGINE = INNODB;
 

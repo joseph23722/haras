@@ -1,4 +1,4 @@
-<?php require_once '../header.php'; ?>
+<?php require_once '../../header.php'; ?>
 
 <div class="container-fluid px-4">
   <!-- Título principal -->
@@ -158,7 +158,9 @@
             <th>Lote</th>
             <th>Cantidad</th>
             <th>Stock minimo</th>
+            <th>Costo</th>
             <th>Fecha Caducidad</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -386,7 +388,7 @@
   </div>
 </div>
 
-<?php require_once '../footer.php'; ?>
+<?php require_once '../../footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
 <script src="../../swalcustom.js"></script>
@@ -416,6 +418,19 @@
 
     // Elementos de fecha de caducidad e ingreso
     const fechaCaducidadElement = document.getElementById('fechaCaducidad');
+    
+    const loteInput = document.querySelector('#lote');
+    const nombreAlimentoInput = document.querySelector('#nombreAlimento');
+
+    // Asegúrate de que los elementos existen antes de acceder a sus propiedades
+    if (!loteInput || !nombreAlimentoInput) {
+        console.error("El campo 'lote' o 'nombreAlimento' no está definido.");
+    } else {
+        // Si existen, accede a sus propiedades
+        console.log(loteInput.value, nombreAlimentoInput.value);
+    }
+
+
     
     // **Función para mostrar notificaciones en el div `mensaje`**
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
@@ -548,40 +563,44 @@
 
     if (cantidadEntrada) {
       cantidadEntrada.addEventListener("input", (e) => {
-        if (e.target.value < 0) e.target.value = 0;
+        if (e.target.value < 1) e.target.value = 1; // Establecer el valor mínimo a 1
       });
     }
 
     if (cantidadSalida) {
       cantidadSalida.addEventListener("input", (e) => {
-        if (e.target.value < 0) e.target.value = 0;
+        if (e.target.value < 1) e.target.value = 1; // Establecer el valor mínimo a 1
       });
     }
 
-    // **Fecha de Caducidad**: No permitir fechas pasadas
+
+    // **Fecha de Caducidad**: No permitir fechas pasadas, establecer mínimo como hoy
     if (fechaCaducidadElement) {
-      fechaCaducidadElement.setAttribute('min', new Date().toISOString().split('T')[0]);
+        const hoy = new Date().toISOString().split('T')[0]; // Obtener solo la fecha en formato YYYY-MM-DD
+        fechaCaducidadElement.setAttribute('min', hoy); // Establecer la fecha mínima como hoy
     }
 
     // Función para validar la fecha de caducidad
     const validarFechaCaducidad = () => {
-      const fechaCaducidad = new Date(fechaCaducidadElement.value);
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
+      const fechaCaducidadStr = fechaCaducidadElement.value; // Obtener la fecha en formato YYYY-MM-DD
+      const hoyStr = new Date().toISOString().split('T')[0]; // Obtener la fecha de hoy en formato YYYY-MM-DD
 
-      if (fechaCaducidad < hoy) {
+      // Comparar las fechas en formato YYYY-MM-DD
+      if (fechaCaducidadStr < hoyStr) {
         mostrarMensajeDinamico("La fecha de caducidad no puede ser en el pasado.", 'ERROR');
+        console.log('Error: La fecha de caducidad es menor que hoy.');
         return false;
       }
       return true;
     };
 
+
     // Función para cargar los alimentos registrados
     const loadAlimentos = async () => {
       try {
-        // Hacemos la solicitud GET con los parámetros en la URL
+        // Hacemos la solicitud GET para obtener los alimentos registrados
         const response = await fetch('../../controllers/alimento.controller.php?operation=getAllAlimentos', {
-          method: "GET",
+          method: 'GET',
         });
 
         const textResponse = await response.text();
@@ -593,7 +612,7 @@
         if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
           const alimentos = parsedResponse.data;
 
-          // Limpiar las tablas antes de añadir contenido nuevo
+          // Limpiar la tabla antes de añadir contenido nuevo
           alimentosTable.innerHTML = alimentos.map(alim => `
             <tr>
               <td>${alim.idAlimento}</td>
@@ -603,7 +622,9 @@
               <td>${alim.lote}</td>
               <td>${alim.stockActual}</td>
               <td>${alim.stockMinimo}</td>
+              <td>${alim.costo}</td>
               <td>${alim.fechaCaducidad}</td>
+              <td>${alim.estado}</td>
               <td class="text-center">
                 <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
                   <i class="fas fa-trash"></i>
@@ -615,11 +636,11 @@
           // Usar un Set para evitar duplicados en los selects
           const uniqueAlimentos = new Set();
 
-          // Limpiar el contenido de los selects antes de añadir nuevas opciones
+          // Limpiar los selects antes de añadir nuevas opciones
           alimentoSelectEntrada.innerHTML = '<option value="">Seleccione un Alimento</option>';
           alimentoSelectSalida.innerHTML = '<option value="">Seleccione un Alimento</option>';
 
-          // Añadir los alimentos únicos a los selects
+          // Añadir alimentos únicos a los selects
           alimentos.forEach(alim => {
             if (!uniqueAlimentos.has(alim.nombreAlimento)) {
               uniqueAlimentos.add(alim.nombreAlimento); // Añadir al set para evitar duplicados
@@ -642,7 +663,7 @@
           alimentosTable.innerHTML = '<tr><td colspan="9">No se encontraron alimentos.</td></tr>';
         }
       } catch (error) {
-        console.error("Error al cargar alimentos:", error);
+        console.error('Error al cargar alimentos:', error);
         mostrarMensajeDinamico('Error al cargar alimentos.', 'ERROR');
       }
     };
@@ -684,35 +705,49 @@
       }
     };
 
-    // Función para validar si el lote ya existe o es válido
-    async function validarLote(loteInput) {
-        const lote = loteInput.value.trim(); // Obtener el valor del campo lote
+    // Función para validar si el lote ya existe para el mismo alimento y unidad de medida
+    async function validarLote() {
+        // Verificar si los inputs existen en el DOM
+        if (!loteInput || !nombreAlimentoInput || !unidadMedidaElementRegistrar) {
+            console.error('Uno o más elementos de entrada no están definidos.');
+            mostrarMensajeDinamico('Error: Uno o más campos están vacíos o no existen.', 'ERROR');
+            return false;
+        }
 
-        // Verificar si el campo está vacío
-        if (!lote) {
-            mostrarMensajeDinamico('El lote no puede estar vacío.', 'ERROR');
+        // Obtener los valores de lote, nombreAlimento y unidadMedida
+        const lote = loteInput.value.trim();
+        const nombreAlimento = nombreAlimentoInput.value.trim();
+        const unidadMedida = unidadMedidaElementRegistrar.value.trim();  // Usar la variable correcta
+
+        // Verificar si los campos están vacíos
+        if (!lote || !nombreAlimento || !unidadMedida) {
+            mostrarMensajeDinamico('El lote, nombre del alimento y la unidad de medida no pueden estar vacíos.', 'ERROR');
             return false;
         }
 
         try {
-            // Hacer una petición al servidor para verificar si el lote ya existe
+            // Hacer una petición al servidor para verificar si el lote ya está registrado para el mismo alimento y unidad de medida
             const response = await fetch('../../controllers/alimento.controller.php', {
                 method: 'POST',
                 body: new URLSearchParams({
-                    operation: 'verificarLote',  // Operación que maneja el servidor para verificar lotes
-                    lote: lote
+                    operation: 'verificarLote',  // Operación para verificar lote, alimento y unidad
+                    lote: lote,
+                    nombreAlimento: nombreAlimento,
+                    unidadMedida: unidadMedida
                 })
             });
 
             const result = await response.json();
 
-            // Si hay un error en la validación del lote
+            // Si hay un error en la validación (combinación ya existente o lote con unidad de medida diferente)
             if (result.status === 'error') {
                 mostrarMensajeDinamico(result.message, 'ERROR');
                 return false;
             }
 
-            return true; // El lote es válido
+            // Si la combinación es válida
+            return true;
+
         } catch (error) {
             mostrarMensajeDinamico('Error al verificar el lote: ' + error.message, 'ERROR');
             return false;
@@ -720,70 +755,83 @@
     }
 
 
-
-    // Función para registrar un nuevo alimento
-    const loteInput = document.querySelector('#lote'); // Asegúrate de que este campo existe en el formulario
-
+    // **Función para registrar un nuevo alimento**
+    // **Función para registrar un nuevo alimento**
     if (formRegistrarAlimento) {
         formRegistrarAlimento.addEventListener("submit", async (event) => {
-            event.preventDefault(); // Previene la recarga de la página
+            event.preventDefault();
 
-            // Validar que la fecha de caducidad sea correcta
+            console.log("Formulario enviado. Iniciando validaciones...");
+
             if (!validarFechaCaducidad()) {
                 mostrarMensajeDinamico('Error en las fechas de caducidad.', 'ERROR');
+                console.log("Error en la validación de la fecha de caducidad.");
                 return;
             }
 
-            // Validar que el lote no esté vacío o inválido
-            const loteValido = await validarLote(loteInput);
+            console.log("Validando el lote...");
+            const loteValido = await validarLote(loteInput, nombreAlimentoInput);
             if (!loteValido) {
                 mostrarMensajeDinamico('Lote inválido o ya registrado. Verifica los datos.', 'ERROR');
+                console.log("Error en la validación del lote.");
                 return;
             }
+            console.log("Lote válido.");
 
-            // Obtener los valores de stock actual y stock mínimo directamente del formulario
             const formData = new FormData(formRegistrarAlimento);
-            const stockActual = parseFloat(formData.get('stockActual')); // Campo dentro del form
-            const stockMinimo = parseFloat(formData.get('stockMinimo')); // Campo dentro del form
+            const stockActual = parseFloat(formData.get('stockActual'));
+            const stockMinimo = parseFloat(formData.get('stockMinimo'));
 
-            // Validación para asegurar que el stock mínimo no sea mayor que el stock actual
             if (stockMinimo > stockActual) {
                 mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
+                console.log("Error: Stock mínimo mayor que el stock actual.");
                 return;
             }
+            console.log("Stock válido.");
 
-            // Confirmar la operación con el usuario solo para operaciones exitosas
             if (await ask("¿Confirmar registro de nuevo alimento?")) {
-                const data = new URLSearchParams(formData); // Convertir el FormData a un formato URLSearchParams
-                data.append('operation', 'registrar'); // Agregar la operación
+                console.log("Confirmación del usuario recibida. Enviando datos...");
+                const data = new URLSearchParams(formData);
+                data.append('operation', 'registrar');
 
                 try {
+                    console.log("Enviando solicitud al servidor...");
                     const response = await fetch('../../controllers/alimento.controller.php', {
                         method: "POST",
                         body: data
                     });
 
-                    const result = await response.json();
+                    const textResult = await response.text();
+                    console.log("Respuesta en texto recibida:", textResult);
 
-                    if (result.status === "success" && result.data.status === "success") {
-                        mostrarMensajeDinamico(result.data.message, 'SUCCESS');
-                        showToast(result.data.message, 'SUCCESS'); // Solo mostrar en Toast si es exitoso
-                        formRegistrarAlimento.reset();
-                        loadAlimentos();
-                    } else {
-                        mostrarMensajeDinamico(result.data.message || "Error en la operación.", 'ERROR');
+                    try {
+                        const jsonResult = JSON.parse(textResult);
+                        console.log("Respuesta en JSON recibida:", jsonResult);
+
+                        if (jsonResult.status === "success") {
+                            mostrarMensajeDinamico(jsonResult.message, 'SUCCESS');
+                            showToast(jsonResult.message, 'SUCCESS');
+                            formRegistrarAlimento.reset();
+                            loadAlimentos();
+                            console.log("Alimento registrado exitosamente.");
+                        } else {
+                            mostrarMensajeDinamico(jsonResult.message || "Error en la operación.", 'ERROR');
+                            console.log("Error en la respuesta del servidor:", jsonResult.message || "Error en la operación.");
+                        }
+                    } catch (jsonParseError) {
+                        mostrarMensajeDinamico("Error inesperado en la respuesta del servidor. Ver consola.", 'ERROR');
+                        console.log("Error al parsear el JSON. Respuesta cruda:", textResult);
                     }
                 } catch (error) {
                     mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+                    console.log("Error en la solicitud:", error);
                 }
             } else {
-                mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO'); // Información de que el usuario canceló
+                mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO');
+                console.log("El usuario canceló la operación.");
             }
         });
     }
-
-
-
 
     // Función para cargar el historial de movimientos de entradas y salidas
     const loadHistorialMovimientos = async () => {
@@ -980,32 +1028,29 @@
 
     // Función para cargar los lotes en los select de entrada y salida de alimentos
     const cargarLotes = async () => {
-        const entradaLoteSelect = document.querySelector("#entradaLote");  // Select para entrada
-        const salidaLoteSelect = document.getElementById('salidaLote');    // Select para salida
+        const entradaLoteSelect = document.querySelector("#entradaLote");  
+        const salidaLoteSelect = document.getElementById('salidaLote');
 
         try {
             const response = await fetch('../../controllers/alimento.controller.php', {
                 method: 'POST',
-                body: new URLSearchParams({ operation: 'listarLotes' })  // Petición al controlador
+                body: new URLSearchParams({ operation: 'listarLotes' })
             });
 
-            // Asegurarse de obtener el resultado como JSON
             const result = await response.json();
 
             if (result.status === "success") {
-                // Limpiar los selects de entrada y salida
                 entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
                 salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-                
-                // Insertar cada lote en ambos selects
+
                 result.data.forEach(lote => {
                     const optionEntrada = document.createElement("option");
-                    optionEntrada.value = lote.lote;
+                    optionEntrada.value = lote.lote; // Usar el campo 'lote' como valor
                     optionEntrada.textContent = `${lote.lote} - ${lote.nombreAlimento}`;
                     entradaLoteSelect.appendChild(optionEntrada);
 
                     const optionSalida = document.createElement("option");
-                    optionSalida.value = lote.lote;
+                    optionSalida.value = lote.lote;  // Usar el campo 'lote' como valor
                     optionSalida.textContent = `${lote.lote} - ${lote.nombreAlimento}`;
                     salidaLoteSelect.appendChild(optionSalida);
                 });
@@ -1019,106 +1064,110 @@
 
 
 
+
+
+
+
+    // Función para manejar entradas de alimentos
     // Función para manejar entradas de alimentos
     const registrarEntrada = async () => {
-      const stockActualInput = document.querySelector("#stockActual-entrada");
-      const mensajeStock = document.querySelector("#mensaje-stock");
+        // Seleccionar los elementos del DOM
+        const cantidadField = document.getElementById('stockActual-entrada'); // Ajustado al ID correcto
+        const loteField = document.getElementById('entradaLote');
+        const alimentoSelectEntrada = document.getElementById('alimento-select-entrada');
+        const unidadMedidaEntrada = document.getElementById('unidadMedidaEntrada');
+        const formEntradaAlimento = document.querySelector("#form-entrada-alimento");
 
-      console.log("Iniciando la función registrarEntrada"); // Log inicial
+        // Validar si los elementos necesarios están en el DOM
+        if (!cantidadField || !loteField || !alimentoSelectEntrada || !unidadMedidaEntrada) {
+            console.error("Error: Uno o más elementos del formulario no se encontraron en el DOM.");
+            showToast("Error en el formulario: faltan elementos.", 'ERROR');
+            return;
+        }
 
-      // Validar el stock antes de proceder
-      const validarStock = () => {
-        const stockActual = parseFloat(stockActualInput.value) || 0;
+        // Obtener valores asegurándose de que los elementos existen
+        const cantidad = parseFloat(cantidadField.value) || 0;
+        const lote = loteField.value ? loteField.value : null;
 
-        console.log("Stock actual:", stockActual); // Verificar el valor del stock actual
-        console.log("Stock mínimo:", stockMinimo); // Verificar el valor del stock mínimo
+        // Validaciones básicas
+        if (!alimentoSelectEntrada.value) {
+            showToast("Por favor, seleccione un alimento.", 'ERROR');
+            return;
+        }
 
-        if (stockMinimo > stockActual) {
-          mensajeStock.textContent = "El stock mínimo no puede ser mayor que el stock actual.";
-          console.log("Stock inválido: El stock mínimo es mayor que el stock actual.");
-          return false;
+        if (!unidadMedidaEntrada.value) {
+            showToast("Seleccione una unidad de medida.", 'ERROR');
+            return;
+        }
+
+        if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
+            showToast("Por favor, ingrese una cantidad válida.", 'ERROR');
+            return;
+        }
+
+        // Confirmación del usuario
+        if (await ask("¿Confirmar entrada de alimento?")) {
+            console.log("Usuario confirmó la entrada de alimento.");
+
+            const params = {
+                operation: 'entrada',
+                nombreAlimento: alimentoSelectEntrada.value,
+                unidadMedida: unidadMedidaEntrada.value,
+                lote: lote,
+                cantidad: cantidad
+            };
+
+            console.log("Parámetros enviados:", params);
+
+            const data = JSON.stringify(params);
+
+            try {
+                const response = await fetch('../../controllers/alimento.controller.php', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: data
+                });
+
+                const result = await response.json();
+                console.log("Respuesta procesada (JSON):", result);
+
+                if (result.status === "success") {
+                    showToast(result.message || "Entrada registrada exitosamente.", 'SUCCESS');
+                    formEntradaAlimento.reset();
+                    $('#modalEntradaAlimento').modal('hide');
+
+                    // Recargar los datos actualizados de alimentos y movimientos
+                    await loadAlimentos();  
+                    await loadHistorialMovimientos();
+                    console.log("Stock actualizado en la interfaz.");
+                } else {
+                    showToast(result.message || "Error al registrar la entrada.", 'ERROR');
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error.message);
+                showToast("Error en la solicitud: " + error.message, 'ERROR');
+            }
         } else {
-          mensajeStock.textContent = ""; // Limpiar mensaje si está todo correcto
-          console.log("Stock válido.");
-          return true;
+            console.log("El usuario canceló la operación.");
         }
-      };
-
-      // Verificar si el stock es válido antes de continuar
-      if (!validarStock()) {
-        showToast("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
-        console.log("Validación de stock fallida. Deteniendo la operación.");
-        return;
-      }
-
-      if (!alimentoSelectEntrada.value) {
-        showToast("Por favor, seleccione un alimento.", 'ERROR');
-        console.log("No se seleccionó ningún alimento.");
-        return;
-      }
-
-      // Confirmación del usuario usando SweetAlert (ask)
-      if (await ask("¿Confirmar entrada de alimento?")) {
-        console.log("Usuario confirmó la entrada de alimento."); // Confirmación de usuario
-
-        const formData = new FormData(formEntradaAlimento);
-        const data = new URLSearchParams(formData);
-        data.append('operation', 'entrada');
-
-        console.log("Datos enviados:", Array.from(formData.entries())); // Verificar los datos enviados
-
-        try {
-          const response = await fetch('../../controllers/alimento.controller.php', {
-            method: "POST",
-            body: data
-          });
-
-          const textResponse = await response.text();
-          console.log("Respuesta cruda del servidor (texto):", textResponse); // Mostrar la respuesta cruda del servidor
-
-          const result = JSON.parse(textResponse);
-          console.log("Respuesta procesada (JSON):", result); // Verificar el JSON resultante
-
-          // Aquí actualizamos el acceso al JSON con base en lo que devuelve realmente
-          if (result.status === "success") {
-            showToast(result.message, 'SUCCESS');
-            formEntradaAlimento.reset();
-            console.log("Formulario reseteado. Recargando alimentos y movimientos.");
-            loadAlimentos();
-            loadHistorialMovimientos();
-          } else {
-            showToast(result.message || "Error en la operación.", 'ERROR');
-            console.log("Error en la operación:", result.message || "Error desconocido");
-          }
-        } catch (error) {
-          showToast("Error en la solicitud: " + error.message, 'ERROR');
-          console.error("Error en la solicitud:", error.message);
-        }
-      } else {
-        console.log("El usuario canceló la operación.");
-      }
     };
+
+
 
 
 
     // Función para manejar la salida de alimentos
     const registrarSalida = async () => {
-        // Selecciona el campo de cantidad usando el ID correcto
         const cantidadField = document.getElementById('cantidad-salida');
-        const cantidad = cantidadField.value;
+        const cantidad = parseFloat(cantidadField.value) || 0;  // Convertir a número o asignar 0 si está vacío
 
-        // Selecciona el campo de merma (si está presente)
-        const mermaField = document.getElementById('merma-salida');
-        let merma = mermaField && mermaField.value ? mermaField.value : 0;  // Si no hay valor, asigna 0 por defecto
+        const mermaField = document.getElementById('merma');  // Cambia a `merma` en lugar de `merma-salida`
+        let merma = mermaField && mermaField.value ? parseFloat(mermaField.value) : 0;  // Convertir a número o 0 si no hay valor
 
-        // Selecciona el campo de lote (si está presente)
         const loteField = document.getElementById('salidaLote');
-        const lote = loteField && loteField.value ? loteField.value : null;  // Si no hay valor, asigna null
-
-        // Verificar los valores antes de enviar
-        console.log("Valor de la cantidad:", cantidad);
-        console.log("Valor de la merma:", merma);
-        console.log("Valor del lote:", lote);
+        const lote = loteField && loteField.value ? loteField.value : null;
 
         // Validaciones básicas
         if (!alimentoSelectSalida.value) {
@@ -1136,7 +1185,6 @@
             return;
         }
 
-        // Validar la cantidad
         if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
             showToast("Por favor, ingrese una cantidad válida.", 'ERROR');
             return;
@@ -1146,24 +1194,21 @@
         if (await ask("¿Confirmar salida de alimento?")) {
             console.log("Usuario confirmó la salida de alimento.");
 
-            // Crear un objeto params con los datos
             const params = {
-                operation: 'salida', // Asegurarse de enviar el nombre de la operación correctamente
+                operation: 'salida',
                 nombreAlimento: alimentoSelectSalida.value,
                 idTipoEquino: tipoEquinoMovimiento.value,
                 unidadMedida: unidadMedidaSalida.value,
-                lote: lote,  // Lote opcional, se envía como null si no se especifica
+                lote: lote,
                 cantidad: cantidad,
-                merma: merma  // Asegurarse de que merma siempre se envíe (0 si está vacío)
+                merma: merma  // Asegúrate de que `merma` tenga el valor capturado
             };
 
             console.log("Parámetros enviados:", params);
 
-            // Convertimos el objeto en formato JSON para enviar por POST
             const data = JSON.stringify(params);
 
             try {
-                // Realizar la solicitud al servidor
                 const response = await fetch('../../controllers/alimento.controller.php', {
                     method: "POST",
                     headers: {
@@ -1172,20 +1217,19 @@
                     body: data
                 });
 
-                const textResponse = await response.text();
-                console.log("Respuesta cruda del servidor (texto):", textResponse); // Mostrar la respuesta cruda del servidor
-
-                // Ahora intentamos parsear el texto a JSON
-                const result = JSON.parse(textResponse);
+                const result = await response.json();
                 console.log("Respuesta procesada (JSON):", result);
 
-                // Verificar el estado del resultado y proceder
                 if (result.status === "success") {
                     showToast(result.message || "Salida registrada exitosamente.", 'SUCCESS');
-                    formSalidaAlimento.reset(); // Reiniciar el formulario
-                    $('#modalSalidaAlimento').modal('hide'); // Cerrar el modal
-                    loadAlimentos(); // Recargar la lista de alimentos
-                    loadHistorialMovimientos(); // Recargar el historial de movimientos
+                    formSalidaAlimento.reset();
+                    $('#modalSalidaAlimento').modal('hide');
+
+                    // Recargar los datos actualizados de alimentos y movimientos
+                    await loadAlimentos();
+                    await loadHistorialMovimientos();
+
+                    console.log("Stock actualizado en la interfaz.");
                 } else {
                     showToast(result.message || "Error al registrar la salida.", 'ERROR');
                 }
@@ -1197,6 +1241,9 @@
             console.log("El usuario canceló la operación.");
         }
     };
+
+
+
 
 
 
