@@ -35,6 +35,63 @@ try {
                 echo json_encode(['status' => 'success', 'data' => $result]);
                 exit();
 
+            // Listar todos los lotes registrados
+            case 'listarLotes':
+                try {
+                    // Obtener los lotes
+                    $lotes = $alimento->listarLotes();
+                    
+                    // Verificar si es éxito
+                    if ($lotes['status'] === 'success') {
+                        // Envía la respuesta como JSON
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Lotes obtenidos correctamente.',
+                            'data' => $lotes['data']
+                        ]);
+                    } else {
+                        // Si hay error, responde con error en formato JSON
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => 'No se pudieron obtener los lotes.'
+                        ]);
+                    }
+                } catch (PDOException $e) {
+                    // Enviar cualquier error en formato JSON
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Error al listar los lotes: ' . $e->getMessage()
+                    ]);
+                }
+            
+                // Finalizar el script para asegurar que no haya más salida
+                exit();
+
+            case 'historial':
+                try {
+                    $result = $alimento->obtenerHistorialMovimientos([
+                        'tipoMovimiento' => $_GET['tipoMovimiento'] ?? '',
+                        'fechaInicio' => $_GET['fechaInicio'] ?? '1900-01-01',
+                        'fechaFin' => $_GET['fechaFin'] ?? date('Y-m-d'),
+                        'idUsuario' => $_GET['idUsuario'] ?? 0,
+                        'limit' => $_GET['limit'] ?? 10,
+                        'offset' => $_GET['offset'] ?? 0
+                    ]);
+            
+                    // Asegurar que data sea un array
+                    $data = $result['data'] ?? [];
+                    if (!is_array($data)) {
+                        $data = [$data]; // Si no es un array, conviértelo en uno
+                    }
+            
+                    echo json_encode(['status' => 'success', 'data' => $data]);
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                }
+                exit();
+                
+                
+
             default:
                 echo json_encode(['status' => 'error', 'message' => 'Operación no válida para GET.']);
                 exit();
@@ -98,37 +155,7 @@ try {
                 }
                 exit(); 
 
-            // Listar todos los lotes registrados
-            case 'listarLotes':
-                try {
-                    // Obtener los lotes
-                    $lotes = $alimento->listarLotes();
-                    
-                    // Verificar si es éxito
-                    if ($lotes['status'] === 'success') {
-                        // Envía la respuesta como JSON
-                        echo json_encode([
-                            'status' => 'success',
-                            'message' => 'Lotes obtenidos correctamente.',
-                            'data' => $lotes['data']
-                        ]);
-                    } else {
-                        // Si hay error, responde con error en formato JSON
-                        echo json_encode([
-                            'status' => 'error',
-                            'message' => 'No se pudieron obtener los lotes.'
-                        ]);
-                    }
-                } catch (PDOException $e) {
-                    // Enviar cualquier error en formato JSON
-                    echo json_encode([
-                        'status' => 'error',
-                        'message' => 'Error al listar los lotes: ' . $e->getMessage()
-                    ]);
-                }
             
-                // Finalizar el script para asegurar que no haya más salida
-                exit();
 
             
             // Verificar si un lote existe    
@@ -163,28 +190,7 @@ try {
                 echo json_encode($result);
                 exit();
 
-            case 'historial':
-                try {
-                    if (!isset($params['tipoMovimiento']) || empty($params['tipoMovimiento'])) {
-                        throw new Exception("El tipo de movimiento ('Entrada' o 'Salida') es obligatorio.");
-                    }
-
-                    $result = $alimento->obtenerHistorialMovimientos([
-                        'tipoMovimiento' => $params['tipoMovimiento'],
-                        'fechaInicio' => $params['fechaInicio'] ?? '1900-01-01',
-                        'fechaFin' => $params['fechaFin'] ?? date('Y-m-d'),
-                        'idUsuario' => $params['idUsuario'] ?? 0,
-                        'limit' => $params['limit'] ?? 10,
-                        'offset' => $params['offset'] ?? 0
-                    ]);
-
-                    header('Content-Type: application/json');
-                    echo json_encode(['status' => 'success', 'data' => $result]);
-                } catch (Exception $e) {
-                    header('Content-Type: application/json');
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-                }
-                exit();
+            
 
             default:
                 echo json_encode([

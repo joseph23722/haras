@@ -1,4 +1,8 @@
+
 <?php
+
+header('Content-Type: application/json');
+
 session_start();
 
 
@@ -52,7 +56,7 @@ $accesosV2 = [
 if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     $sesion = [
         "estado"        => false,
-        "dashboard"        => "",
+        "dashboard"     => "",
         "idUsuario"     => -1,
         "apellidos"     => "",
         "nombres"       => "",
@@ -64,6 +68,8 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
 }
 
 require_once '../models/Usuario.php';
+
+
 
 $usuario = new Usuario();
 
@@ -78,7 +84,7 @@ if (isset($_GET['operation'])) {
             session_unset();
             session_destroy();
             header('Location: http://localhost/haras');
-            break;
+            exit();
 
         default:
             throw new Exception("Operación no válida.");
@@ -149,7 +155,7 @@ if (isset($_POST['operation'])) {
                 "mensaje"   => ""
             ];
 
-            if ($registro) {
+            if (!empty($registro) && isset($registro[0]['correo'], $registro[0]['clave'])) {
                 $claveEncriptada = $registro[0]['clave'];
                 $claveIngresada = $usuario->limpiarCadena($_POST['clave']);
                 if (password_verify($claveIngresada, $claveEncriptada)) {
@@ -165,6 +171,8 @@ if (isset($_POST['operation'])) {
                     $sesion["clave"] = $registro[0]['clave'];
                     $sesion["idRol"] = $registro[0]['idRol'];
                     $sesion["accesos"] = $accesosV2[$registro[0]['idRol']]; // Actualización
+                    // Añadimos el idUsuario a la sesión global
+                    $_SESSION['idUsuario'] = $registro[0]['idUsuario'];
                 } else {
                     $resultados["mensaje"] = "Error en la contraseña";
                     $sesion["estado"] = false;

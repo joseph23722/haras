@@ -201,6 +201,10 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
                     <input class="form-control" id="inputPassword" type="password" placeholder="Contraseña" required />
                     <label for="inputPassword"><i class="fas fa-lock"></i> Contraseña</label>
                 </div>
+                
+                <!-- Mensaje de error -->
+                <div id="loginError" class="text-danger d-none mb-3"></div>
+                
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="form-check">
                         <input class="form-check-input" id="inputRememberPassword" type="checkbox" />
