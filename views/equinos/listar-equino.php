@@ -1,4 +1,4 @@
-<?php require_once '../../header.php'; ?>
+<?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #005b99;">LISTADO DE EQUINOS</h1>
@@ -70,7 +70,7 @@
 
         async function obtenerDatos() {
             try {
-                const response = await fetch(`../../../controllers/registrarequino.controller.php?operation=getAll`, {
+                const response = await fetch(`../../controllers/registrarequino.controller.php?operation=getAll`, {
                     method: 'GET'
                 });
                 const data = await response.json();
@@ -123,4 +123,4 @@
     });
 </script>
 
-<?php require_once '../../footer.php'; ?>
+<?php require_once '../footer.php'; ?>

@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['operation'])) {
         switch ($_GET['operation']) {
             case 'getAll':
-                echo json_encode($controller->getAll());  // Ajusta para usar el método getAll del modelo
+                echo json_encode($controller->listadoEquinos());  // Ajusta para usar el método getAll del modelo
                 break;
 
             default:
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             break;
 
         case 'getAll':
-            echo json_encode($controller->getAll());  // Añade soporte para 'getAll' en POST
+            echo json_encode($controller->listadoEquinos());  // Añade soporte para 'getAll' en POST
             break;
 
         default:

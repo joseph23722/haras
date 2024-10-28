@@ -79,3 +79,78 @@ INSERT INTO EstadoMonta (genero, nombreEstado)
         ('Hembra','S/S'),
         ('Hembra','Por Servir'),
         ('Hembra','Vacía');
+        
+-- 28/10/2024
+INSERT INTO modulos (modulo) VALUES
+	('campos'), -- 1
+    ('equinos'), -- 2
+    ('historialMedico'), -- 3
+    ('inventarios'), -- 4
+    ('servicios'), -- 5
+    ('usuarios'); -- 6
+
+
+-- HOME
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(NULL, 'home', 'S', 'Inicio', 'fas fa-home');
+-- Campos
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(1, 'rotar-campo', 'S', 'Campos', 'fa-solid fa-group-arrows-rotate'),
+    (1, 'programar-rotacion', 'S', 'Rotacion Campos', 'fa-solid fa-calendar-days');
+-- Equinos
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(2, 'listar-equino', 'S', 'Listado Equinos', 'fa-solid fa-list'),
+	(2, 'registrar-equino', 'S', 'Registro Equinos', 'fa-solid fa-horse');
+-- historialMedico
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(3, 'diagnosticar-equino', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform');
+-- Inventarios
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
+	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills');
+-- Servicios
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+    (5, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools'),
+    (5, 'servir-mixto', 'S', 'Servicio Mixto', 'fas fa-exchange-alt'),
+	(5, 'listar-servicio', 'S', 'Listado Servicios', 'fa-solid fa-list');
+-- Usuarios
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
+    (6, 'registrar-usuario', 'N', NULL, NULL);
+   
+-- Gerente
+INSERT INTO permisos (idRol, idvista) VALUES
+	(1, 1),
+    (1, 4),
+    (1, 11);
+-- Administrador
+INSERT INTO permisos (idRol, idvista) VALUES
+	(2, 1),
+    (2, 4),
+    (2, 11);
+-- Supervisor Equino
+INSERT INTO permisos (idRol, idvista) VALUES
+	(3, 1),
+	(3, 5),
+    (3, 4),
+    (3, 6),
+    (3, 7),
+    (3, 8),
+    (3, 9),
+    (3, 10),
+    (3, 11),
+    (3, 12),
+    (3, 13);
+-- Supervisor Campo
+INSERT INTO permisos (idRol, idvista) VALUES
+	(4, 1),
+	(4, 2),
+    (4, 3);
+-- Medico
+INSERT INTO permisos (idRol, idvista) VALUES
+	(5, 1),
+	(5, 6);
+-- Herrero
+INSERT INTO permisos (idRol, idvista) VALUES
+	(6, 1),
+	(6, 4);

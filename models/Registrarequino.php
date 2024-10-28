@@ -53,7 +53,7 @@ class Registrarequino extends Conexion {
         return parent::getData("spu_listar_tipoequinos");
     }
 
-    public function getAll():array{
+    public function listadoEquinos():array{
         return parent::getData("spu_equinos_listar");
       }
 }

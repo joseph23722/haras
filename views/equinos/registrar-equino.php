@@ -21,7 +21,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select name="idPropietario" id="idPropietario" class="form-select">
-                                <option value="">Sin Propietario</option>
+                                <option value="">Haras Rancho Sur</option>
                             </select>
                             <label for="idPropietario"><i class="fas fa-home" style="color: #ffa500;"></i> Propietario (Opcional)</label>
                         </div>
@@ -92,6 +92,9 @@
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
+                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" onclick="window.location.href='listadoequinos.php';">
+                            <i class="fas fa-save"></i> Listado Equinos
+                        </button>
                     </div>
                 </div>
             </form>
@@ -126,7 +129,7 @@
                 });
 
                 const data = await response.json();
-                idPropietarioSelect.innerHTML = '<option value="">Sin Propietario</option>';
+                idPropietarioSelect.innerHTML = '<option value="">Haras Rancho Sur</option>';
 
                 if (Array.isArray(data) && data.length > 0) {
                     data.forEach(({

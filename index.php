@@ -245,7 +245,7 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
                 const data = await response.json();
 
                 if (data.login) {
-                    window.location.href = './views/dashboard/';
+                    window.location.href = './views/home/';
                 } else {
                     $("#loginError").textContent = data.mensaje;
                     $("#loginError").classList.remove("d-none");

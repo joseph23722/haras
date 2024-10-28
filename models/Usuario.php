@@ -2,16 +2,19 @@
 
 require_once 'Conexion.php';
 
-class Usuario extends Conexion {
+class Usuario extends Conexion
+{
 
     private $pdo;
 
-    public function __CONSTRUCT() {
+    public function __CONSTRUCT()
+    {
         $this->pdo = parent::getConexion();
     }
 
     // Función para el login
-    public function login($params = []): array {
+    public function login($params = []): array
+    {
         try {
             // Preparar la consulta para el procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_usuarios_login(?)");
@@ -23,8 +26,23 @@ class Usuario extends Conexion {
         }
     }
 
+    public function obtenerPermisos($params = []): array
+    {
+        try {
+            $cmd = $this->pdo->prepare("CALL spu_obtener_acceso_usuario(?)");
+            $cmd->execute(
+                array($params['idRol'])
+            );
+            return $cmd->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return [];
+        }
+    }
+
     // Función para agregar un usuario
-    public function add($params = []): array {
+    public function add($params = []): array
+    {
         $resultado = [
             'status' => 'error',
             'message' => '',
@@ -63,7 +81,6 @@ class Usuario extends Conexion {
             } else {
                 $resultado['message'] = 'Error: No se pudo obtener el ID del usuario.';
             }
-
         } catch (Exception $e) {
             // Log detallado para capturar cualquier error
             error_log("Error en la inserción de usuario: " . $e->getMessage());
@@ -74,7 +91,8 @@ class Usuario extends Conexion {
     }
 
     // Función para obtener lista de usuarios
-    public function getAll(): array {
+    public function getAll(): array
+    {
         return parent::getData("spu_usuarios_listar");
     }
 }

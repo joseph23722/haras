@@ -385,3 +385,37 @@ CREATE TABLE AsistenciaPersonal (
     observaciones 			TEXT,
     CONSTRAINT fk_asistencia_personal FOREIGN KEY (idPersonal) REFERENCES Personal(idPersonal)
 ) ENGINE = INNODB;
+
+
+-- 28/10/2024
+CREATE TABLE modulos
+(
+	idmodulo		INT AUTO_INCREMENT PRIMARY KEY,
+    modulo			VARCHAR(30)			NOT NULL,
+    create_at		DATETIME			NOT NULL DEFAULT NOW(),
+    CONSTRAINT uk_modulo_mod UNIQUE (modulo)
+) ENGINE = INNODB;
+
+CREATE TABLE vistas
+(
+	idvista			INT AUTO_INCREMENT PRIMARY KEY,
+    idmodulo		INT					NULL,
+    ruta			VARCHAR(50)			NOT NULL,
+    sidebaroption	CHAR(1)				NOT NULL,
+    texto			VARCHAR(20)			NULL,
+    icono			VARCHAR(20)			NULL,
+    CONSTRAINT fk_idmodulo_vis FOREIGN KEY (idmodulo) REFERENCES modulos (idmodulo),
+    CONSTRAINT uk_ruta_vis	UNIQUE(ruta),
+    CONSTRAINT ck_sidebaroption_vis CHECK (sidebaroption IN ('S', 'N'))
+) ENGINE = INNODB;
+
+CREATE TABLE permisos
+(
+	idpermiso			INT AUTO_INCREMENT PRIMARY KEY,
+    idRol				INT 				NOT NULL,
+    idvista				INT 				NOT NULL,
+    create_at			DATETIME			NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_idRol_per FOREIGN KEY (idRol) REFERENCES roles (idRol),
+    CONSTRAINT fk_idvisita_per FOREIGN KEY (idvista) REFERENCES vistas (idvista),
+    CONSTRAINT uk_vista_per UNIQUE (idRol, idvista)
+)ENGINE = INNODB;

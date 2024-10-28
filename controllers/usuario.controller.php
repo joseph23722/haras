@@ -8,7 +8,7 @@ session_start();
 
 header('Content-Type: application/json');
 
-$accesos = [
+/* $accesos = [
     "1"             => ["dashboard", "listadoServicios"],
     "2"             => ["dashboard", "listadoServicios", "usuarios"],
     "3"             => ["dashboard", "registroEquinos", "servicioMixto", "servicioPropio", "usuarios", "inventarioAlimentos", "inventarioMedicamentos", "listadoServicios"],
@@ -50,7 +50,7 @@ $accesosV2 = [
         ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
         ["ruta" => "listadoServicios", "texto" => "Listado de Servicios", "icono" => "fa-solid fa-list-ol"]
     ]
-];
+]; */
 
 
 if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
@@ -170,8 +170,10 @@ if (isset($_POST['operation'])) {
                     $sesion["correo"] = $registro[0]['correo'];
                     $sesion["clave"] = $registro[0]['clave'];
                     $sesion["idRol"] = $registro[0]['idRol'];
-                    $sesion["accesos"] = $accesosV2[$registro[0]['idRol']]; // Actualización
+                    //$sesion["accesos"] = $accesosV2[$registro[0]['idRol']]; // Actualización
                     // Añadimos el idUsuario a la sesión global
+                    $accesos = $usuario->obtenerPermisos(["idRol" => $registro[0]['idRol']]);
+                    $sesion["accesos"] = $accesos;
                     $_SESSION['idUsuario'] = $registro[0]['idUsuario'];
                 } else {
                     $resultados["mensaje"] = "Error en la contraseña";

@@ -143,8 +143,8 @@
             <form id="formulario-usuario">
               <input type="hidden" id="idPersonal">
               <div class="mb-3">
-                <label for="correo" class="form-label">Correo</label>
-                <input type="email" class="form-control form-control-lg border-1 shadow-sm" id="correo" required>
+                <label for="correo" class="form-label">Nombre de Usuario</label>
+                <input type="text" class="form-control form-control-lg border-1 shadow-sm" id="correo" required>
               </div>
               <div class="mb-3">
                 <label for="clave" class="form-label">Clave</label>

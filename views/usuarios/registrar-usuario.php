@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Datos de los Usuarios</div>
+                <div class="card-header">Datos de los sUsuarios</div>
                 <div class="card-body">
                     <table id="tabla-personal" class="table table-striped table-sm">
                         <thead>
@@ -42,8 +42,8 @@
           <form id="formulario-usuario">
             <input type="hidden" id="idPersonal">
             <div class="mb-3">
-              <label for="correo" class="form-label">Correo</label>
-              <input type="email" class="form-control form-control-lg border-1 shadow-sm" id="correo" required>
+              <label for="correo" class="form-label">Nombre de Usuario</label>
+              <input type="text" class="form-control form-control-lg border-1 shadow-sm" id="correo" required>
             </div>
             <div class="mb-3">
               <label for="clave" class="form-label">Clave</label>

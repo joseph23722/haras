@@ -34,7 +34,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
 
     // Validamos si se encontró...
     if (!$encontrado) {
-        header("Location: http://localhost/haras/views/dashboard/");
+        header("Location: http://localhost/haras/views/home/");
     }
 }
 ?>
@@ -99,12 +99,14 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
                         <div class="sb-sidenav-menu-heading">Inicio</div>
                         <?php
                         foreach ($listaAcceso as $acceso) {
-                            echo "
-                                <a class='nav-link' href='http://localhost/haras/views/{$acceso['ruta']}'>
-                                <div class='sb-nav-link-icon'><i class='fa-solid fa-plug-circle-check'></i></div>
-                                {$acceso['texto']}
-                                </a>
-                        ";
+                            if ($acceso['sidebaroption'] == 'S') {
+                                echo "
+                                    <a class='nav-link' href='http://localhost/haras/views/{$acceso['modulo']}/{$acceso['ruta']}'>
+                                    <div class='sb-nav-link-icon'><i class='{$acceso['icono']}'></i></div>
+                                    {$acceso['texto']}
+                                    </a>
+                            ";
+                            }
                         }
                         ?>
                     </div>
