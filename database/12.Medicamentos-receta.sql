@@ -121,7 +121,7 @@
 			Equinos
 		WHERE 
 			idPropietario IS NULL  -- Filtrar solo los equinos que no tienen propietario
-			AND idTipoEquino IN (1, 2, 3, 4);  -- Filtrar solo Yeguas (1), Padrillos (2), Potrancas (3), y Potrillos (4)
+			AND idTipoEquino IN (1, 2, 3, 4);
 	END $$
 	DELIMITER ;
 
