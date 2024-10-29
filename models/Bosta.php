@@ -10,7 +10,7 @@ class Bosta extends Conexion
     {
         $this->pdo = parent::getConexion();
     }
-
+    
     public function RegistroBostas($params = []): int
     {
         try {
@@ -21,11 +21,11 @@ class Bosta extends Conexion
                 $params['pesoaprox'],
             ]);
 
-            return 1;
+            return 1; // Indica que la inserción fue exitosa
 
         } catch (Exception $e) {
-            error_log("Error: " . $e->getMessage());
-            return -1;
+            // Relanzar la excepción para que sea capturada en el controlador
+            throw $e;
         }
     }
 

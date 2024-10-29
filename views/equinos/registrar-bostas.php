@@ -9,7 +9,6 @@
         <div class="card-body p-4" style="background-color: #f9f9f9;">
             <form action="" id="form-registro-bostas" autocomplete="off">
                 <div class="row g-3">
-
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="number" name="pesoaprox" id="pesoaprox" class="form-control" required>
@@ -59,9 +58,9 @@
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
-                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" onclick="window.location.href='listadobostas.php';">
+                        <!-- <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" onclick="window.location.href='listadobostas.php';">
                             <i class="fas fa-list"></i> Listado Bostas
-                        </button>
+                        </button> -->
                     </div>
                 </div>
             </form>
@@ -88,54 +87,42 @@
         document.getElementById('peso_diario').value = pesoDiario.toFixed(2);
     }
 
-    document.getElementById('form-registro-bostas').addEventListener('submit', function(event) {
+    document.getElementById('form-registro-bostas').addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const fechaRegistro = document.getElementById('fecha').value;
-        const cantidadBostas = document.getElementById('pesoaprox').value;
-        const cantidadSacos = document.getElementById('cantidadsacos').value;
+        if (await ask("¿Está seguro de registrar esta bosta?", "Registro de Bostas")) {
+            const fechaRegistro = document.getElementById('fecha').value;
+            const cantidadBostas = document.getElementById('pesoaprox').value;
+            const cantidadSacos = document.getElementById('cantidadsacos').value;
 
-        fetch('../../controllers/bostas.controller.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    operation: 'registrarBosta',
-                    fecha: fechaRegistro,
-                    cantidadsacos: cantidadSacos,
-                    pesoaprox: cantidadBostas,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: data.message,
-                    }).then(() => {
+            fetch('../../controllers/bostas.controller.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        operation: 'registrarBosta',
+                        fecha: fechaRegistro,
+                        cantidadsacos: cantidadSacos,
+                        pesoaprox: cantidadBostas,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showToast(data.message, 'SUCCESS');
                         obtenerPesos();
                         document.getElementById('form-registro-bostas').reset();
                         calcularPesoDiario();
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: '¡Error!',
-                        text: data.message,
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Error!',
-                    text: 'Ocurrió un error al registrar la bosta.',
+                    } else {
+                        showToast(data.message, 'ERROR');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Ocurrió un error al registrar la bosta.', 'ERROR');
                 });
-            });
+        }
     });
 
     // Función para obtener pesos
@@ -145,7 +132,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 if (data.status === 'success') {
                     document.getElementById('peso_semanal').value = data.data.peso_semanal || 0;
                     document.getElementById('peso_mensual').value = data.data.peso_mensual || 0;
