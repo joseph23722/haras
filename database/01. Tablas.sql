@@ -419,3 +419,15 @@ CREATE TABLE permisos
     CONSTRAINT fk_idvisita_per FOREIGN KEY (idvista) REFERENCES vistas (idvista),
     CONSTRAINT uk_vista_per UNIQUE (idRol, idvista)
 )ENGINE = INNODB;
+
+CREATE TABLE bostas
+(
+	idbosta				INT AUTO_INCREMENT PRIMARY KEY,
+    fecha				DATE 			NOT NULL UNIQUE,
+    cantidadsacos		INT				NOT NULL,
+    pesoaprox			DECIMAL(4,2)	NOT NULL,
+	peso_diario			DECIMAL(7,2) 	NULL,
+    peso_semanal		DECIMAL(9,2)	NULL,
+    peso_mensual		DECIMAL(12,2)   NULL,
+    numero_semana		INT NULL
+) ENGINE = INNODB;
