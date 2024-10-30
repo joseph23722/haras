@@ -117,3 +117,51 @@ BEGIN
         b.fecha ASC;
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_eliminar_bosta`;
+DELIMITER //
+CREATE PROCEDURE `spu_eliminar_bosta`(
+    IN p_idbosta INT
+)
+BEGIN
+    -- Eliminar el registro
+    DELETE FROM bostas
+    WHERE idbosta = p_idbosta;
+
+    -- Opcional: verificar si la eliminación fue exitosa
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se encontró un registro con el ID proporcionado.';
+    END IF;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_editar_bosta`;
+DELIMITER //
+CREATE PROCEDURE `spu_editar_bosta`(
+    IN p_idbosta INT,
+    IN p_fecha DATE,
+    IN p_cantidadsacos INT,
+    IN p_pesoaprox DECIMAL(4,2)
+)
+BEGIN
+    -- Verificar si la fecha es mayor a la fecha actual
+    IF p_fecha > CURRENT_DATE THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha no puede ser mayor a la fecha actual.';
+    END IF;
+
+    -- Verificar si la fecha es domingo
+    IF DAYOFWEEK(p_fecha) = 1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se permite registrar datos los domingos';
+    ELSE
+        -- Actualizar el registro
+        UPDATE bostas
+        SET 
+            fecha = p_fecha,
+            cantidadsacos = p_cantidadsacos,
+            pesoaprox = p_pesoaprox,
+            peso_diario = p_cantidadsacos * p_pesoaprox,
+            numero_semana = WEEK(p_fecha, 1) -- Actualiza el número de semana
+        WHERE idbosta = p_idbosta;
+    END IF;
+END //
+DELIMITER ;
