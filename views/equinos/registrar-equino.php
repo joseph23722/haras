@@ -204,7 +204,7 @@
             if (mesesDiferencia <= 6) {
                 tipoEquinoSelect.innerHTML = '<option value="5">Recién nacido</option>';
             } else if (mesesDiferencia <= 12) {
-                tipoEquinoSelect.innerHTML = '<option value="6">Destete</option>';
+                tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
             } else if (mesesDiferencia > 6 && mesesDiferencia <= 24) {
                 if (sexo === 'Macho') {
                     tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
