@@ -59,7 +59,7 @@ class Admi extends Conexion {
     
             if ($idLoteMedicamento === null) {
                 $queryLote = $this->pdo->prepare("INSERT INTO LotesMedicamento (lote, fechaCaducidad, fechaIngreso) VALUES (?, ?, NOW())");
-                $queryLote->execute([$params['lote'], $params['fecha_caducidad']]);
+                $queryLote->execute([$params['lote'], $params['fechaCaducidad']]);
                 $idLoteMedicamento = $this->pdo->lastInsertId();
             }
     
@@ -74,7 +74,7 @@ class Admi extends Conexion {
                 $params['tipo'],
                 $params['cantidad_stock'],
                 $params['stockMinimo'] ?? 0,
-                $params['fecha_caducidad'],
+                $params['fechaCaducidad'],
                 $params['precioUnitario'],
                 $idUsuario
             ]);
@@ -451,10 +451,6 @@ class Admi extends Conexion {
             return [];
         }
     }
-
-
-    
-
 
     
 }

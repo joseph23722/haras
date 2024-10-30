@@ -160,7 +160,7 @@ try {
                     'tipo' => $_POST['tipo'] ?? '',
                     'cantidad_stock' => intval($_POST['cantidad_stock'] ?? 0),
                     'stockMinimo' => intval($_POST['stockMinimo'] ?? 0),
-                    'fecha_caducidad' => $_POST['fecha_caducidad'] ?? '',
+                    'fechaCaducidad' => $_POST['fechaCaducidad'] ?? '',
                     'precioUnitario' => floatval($_POST['precioUnitario'] ?? 0)
                 ];
 

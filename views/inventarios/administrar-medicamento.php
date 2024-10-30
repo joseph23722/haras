@@ -73,7 +73,7 @@
                             <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+(\s?[a-zA-Z]+)?$" 
                             title="Formato válido: número seguido de una unidad de medida (ej. mg, g, ml, etc.)">
                             <label for="dosis">
-                                <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500mg)
+                                <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500 mg)
                             </label>
                         </div>
                     </div>
@@ -1095,12 +1095,15 @@
             const tipo = document.querySelector('#tipo').value;
             const presentacion = document.querySelector('#presentacion').value;
             const dosis = document.querySelector("#dosis").value;
+            const fechaCaducidad = document.querySelector("#fechaCaducidad").value;
 
             console.log("Datos obtenidos del formulario:");
             console.log("Lote:", loteInput.value);
             console.log("Tipo:", tipo);
             console.log("Presentación:", presentacion);
             console.log("Dosis:", dosis);
+            console.log("Fecha de Caducidad:", fechaCaducidad);
+            
 
             // Validar que el lote no esté vacío o inválido
             const loteValido = await validarLote(loteInput);
