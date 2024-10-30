@@ -18,6 +18,7 @@
                                 <th>Diario</th>
                                 <th>Semanal</th>
                                 <th>N. Semana</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -35,7 +36,11 @@
         </div> <!-- .col-md-12 -->
     </div> <!-- .row -->
 </div>
+
 <?php require_once '../footer.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../swalcustom.js"></script>
+
 <script>
     $(document).ready(function() {
         $('#tabla-bostas').DataTable({
@@ -67,6 +72,14 @@
                 },
                 {
                     "data": "numero_semana"
+                },
+                {
+                    "data": null,
+                    "render": function(data, type, row) {
+                        return `
+                        <button class="btn btn-warning btn-sm" onclick="editarBosta(${row.idbosta})"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarBosta(${row.idbosta})"><i class="fas fa-trash-alt"></i> Eliminar</button>`;
+                    }
                 }
             ],
             "drawCallback": function(settings) {
@@ -74,13 +87,34 @@
                 var totalAcumulado = 0;
 
                 api.data().each(function(value) {
-                    if (value.total_acumulado !== undefined && !isNaN(value.total_acumulado)) {
-                        totalAcumulado = parseFloat(value.total_acumulado);
-                    }
+                    totalAcumulado += parseFloat(value.peso_diario || 0);
                 });
 
                 $('#totalacumulado').text(totalAcumulado.toFixed(2));
             }
         });
     });
+
+    async function eliminarBosta(idbosta) {
+        if (await ask('¿Estás seguro de que deseas eliminar esta bosta?')) {
+            const formData = new FormData();
+            formData.append('operation', 'eliminarBosta');
+            formData.append('idbosta', idbosta);
+
+            fetch('../../controllers/bostas.controller.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== "error") {
+                        showToast('Bosta eliminada exitosamente.', 'SUCCESS');
+                        $('#tabla-bostas').DataTable().ajax.reload();
+                    } else {
+                        showToast(data.message, 'ERROR');
+                    }
+                })
+                .catch(error => console.error('Error eliminando bosta:', error));
+        }
+    }
 </script>

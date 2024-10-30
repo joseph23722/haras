@@ -51,4 +51,17 @@ class Bosta extends Conexion
             return [];
         }
     }
+
+     // Método para eliminar un registro de bostas
+     public function eliminarBosta($idbosta): int
+     {
+         try {
+             $cmd = $this->pdo->prepare("CALL spu_eliminar_bosta(?)");
+             $cmd->execute([$idbosta]);
+             return $cmd->rowCount();
+         } catch (Exception $e) {
+             error_log("Error: " . $e->getMessage());
+             return -1;
+         }
+     }
 }

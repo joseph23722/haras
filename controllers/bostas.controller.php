@@ -79,6 +79,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 }
                 break;
 
+            case 'eliminarBosta':
+                $idbosta = $_POST['idbosta'] ?? null;
+
+                if ($idbosta) {
+                    $resultado = $controller->eliminarBosta($idbosta);
+                    if ($resultado > 0) {
+                        echo json_encode(["status" => "success", "message" => "Campo eliminado correctamente."]);
+                    } else {
+                        echo json_encode(["status" => "error", "message" => "Error al eliminar el campo."]);
+                    }
+                } else {
+                    echo json_encode(["status" => "error", "message" => "ID de campo no proporcionado."]);
+                }
+                break;
+
             default:
                 echo json_encode(["status" => "error", "message" => "Operación no válida."]);
                 break;
