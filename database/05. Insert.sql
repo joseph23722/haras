@@ -72,7 +72,7 @@ INSERT INTO tipoSuelo (nombreTipoSuelo) VALUES
 -- 4. Insertar Datos en EstadoMonta
 INSERT INTO EstadoMonta (genero, nombreEstado) 
     VALUES 
-        ('Macho', 'Activo'),   -- Estado de monta: Macho Activo
+        ('Macho', 'Activo'),
         ('Macho', 'Inactivo'),
         ('Hembra','Preñada'),
 		('Hembra','Servida'),
@@ -88,7 +88,6 @@ INSERT INTO modulos (modulo) VALUES
     ('inventarios'), -- 4
     ('servicios'), -- 5
     ('usuarios'); -- 6
-
 
 -- HOME
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
@@ -120,43 +119,42 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
     (6, 'registrar-usuario', 'N', NULL, NULL);
    
-   
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
-    (1, 11);
+    (1, 13);
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
-    (2, 11);
+    (2, 13);
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
-	(3, 5),
-    (3, 4),
-    (3, 6),
-    (3, 7),
+	(3, 4),
+    (3, 5),
     (3, 8),
     (3, 9),
     (3, 10),
     (3, 11),
     (3, 12),
-    (3, 13);
+    (3, 13),
+    (3, 14),
+    (3, 15);
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
 	(4, 1),
 	(4, 2),
     (4, 3),
-    (4, 14),
-    (4, 15);
+    (4, 6),
+    (4, 7);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
 	(5, 1),
-	(5, 6);
+	(5, 8);
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
