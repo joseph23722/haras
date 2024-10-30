@@ -162,7 +162,7 @@ CREATE TABLE HistorialMovimientos (
     idTipoEquino INT NULL,              -- ID del tipo de equino (solo para Salida)
     idUsuario INT NOT NULL,             -- ID del usuario que realiza el movimiento
     unidadMedida VARCHAR(50) NOT NULL,  -- Unidad de medida (Kilos, Litros, etc.)
-    fechaMovimiento DATETIME DEFAULT NOW(), -- Fecha del movimiento
+    fechaMovimiento DATE DEFAULT NOW(), -- Fecha del movimiento
     merma DECIMAL(10,2) NULL,           -- Merma (solo si aplica)
     FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
     FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino), -- Relación con TipoEquinos
@@ -170,19 +170,19 @@ CREATE TABLE HistorialMovimientos (
 ) ENGINE=InnoDB;
 
 
--- 13. TiposMedicamentos ----°°°
+-- 13. TiposMedicamentos ----°°° admedi
 CREATE TABLE TiposMedicamentos (
     idTipo INT AUTO_INCREMENT PRIMARY KEY,
     tipo VARCHAR(100) NOT NULL UNIQUE  -- Tipo de medicamento, debe ser único
 ) ENGINE = INNODB;
 
--- 14. PresentacionesMedicamentos ----°°°
+-- 14. PresentacionesMedicamentos ----°°° admedi
 CREATE TABLE PresentacionesMedicamentos (
     idPresentacion INT AUTO_INCREMENT PRIMARY KEY,
     presentacion VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
--- 15. CombinacionesMedicamentos ----°°°
+-- 15. CombinacionesMedicamentos ----°°° admedi
 CREATE TABLE CombinacionesMedicamentos (
     idCombinacion INT AUTO_INCREMENT PRIMARY KEY,
     idTipo INT NOT NULL,
@@ -193,27 +193,39 @@ CREATE TABLE CombinacionesMedicamentos (
     UNIQUE (idTipo, idPresentacion, dosis)
 ) ENGINE = INNODB;
 
--- 16. Medicamentos
-CREATE TABLE Medicamentos (
-    idMedicamento        INT PRIMARY KEY AUTO_INCREMENT,
-    nombreMedicamento    VARCHAR(255) NOT NULL, 
-    descripcion          TEXT NULL,
-    lote                 VARCHAR(100) NOT NULL,
-    idCombinacion        INT NOT NULL,
-    cantidad_stock       INT NOT NULL,
-    stockMinimo          INT DEFAULT 0,
-    fecha_registro       DATE NOT NULL,
-    fecha_caducidad      DATE NOT NULL,
-    precioUnitario       DECIMAL(10,2) NOT NULL,
-    estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',
-    idUsuario            INT NOT NULL, 
-    ultima_modificacion  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
-    CONSTRAINT fk_combinacion_medicamento FOREIGN KEY (idCombinacion) REFERENCES CombinacionesMedicamentos(idCombinacion),
-    UNIQUE (lote, nombreMedicamento)
+-- Tabla de Lotes de Medicamentos - admedi
+CREATE TABLE LotesMedicamento (
+    idLoteMedicamento INT PRIMARY KEY AUTO_INCREMENT,      -- ID único del lote de medicamento
+    lote              VARCHAR(100) NOT NULL,               -- Código o número de lote
+    fechaCaducidad    DATE NOT NULL,                       -- Fecha de caducidad del lote
+    fechaIngreso      DATETIME DEFAULT NOW(),           -- Fecha en la que se ingresó el lote
+    CONSTRAINT UQ_lote_medicamento UNIQUE (lote)  -- Unicidad por lote y unidad de medida
 ) ENGINE = INNODB;
 
--- 17. DetalleMedicamentos
+-- 16  Tabla de Medicamentos
+CREATE TABLE Medicamentos (
+    idMedicamento         INT PRIMARY KEY AUTO_INCREMENT,
+    idUsuario             INT NOT NULL,                    -- Usuario responsable del registro
+    nombreMedicamento     VARCHAR(255) NOT NULL, 
+    descripcion           TEXT NULL,
+    idCombinacion         INT NOT NULL,                    -- Referencia a la combinación de ingredientes del medicamento
+    cantidad_stock        INT NOT NULL,                    -- Stock actual del medicamento
+    stockMinimo           INT DEFAULT 0,                   -- Stock mínimo para generar alertas
+    estado                ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible', -- Estado del medicamento
+    idTipoEquino INT NULL,
+    idLoteMedicamento     INT NOT NULL,                    -- Referencia al lote específico de medicamento
+    precioUnitario        DECIMAL(10,2) NOT NULL,          -- Precio unitario
+    fecha_registro        DATE NOT NULL,                   -- Fecha de registro en el sistema
+    ultima_modificacion   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Última modificación
+    CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),    -- Relación con Usuarios
+    CONSTRAINT fk_medicamento_combinacion FOREIGN KEY (idCombinacion) REFERENCES CombinacionesMedicamentos(idCombinacion), -- Relación con combinaciones
+    CONSTRAINT fk_medicamento_lote FOREIGN KEY (idLoteMedicamento) REFERENCES LotesMedicamento(idLoteMedicamento), -- Relación con LotesMedicamento
+    CONSTRAINT fk_medicamento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
+) ENGINE = INNODB;
+
+
+
+-- 17. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
     idDetalleMed            INT PRIMARY KEY AUTO_INCREMENT,
     idMedicamento           INT NOT NULL,
@@ -232,35 +244,19 @@ CREATE TABLE DetalleMedicamentos (
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
--- 18. HistorialMovimientosMedicamentos ----°°°
+
+-- 19. HistorialMedicamentosMedi ----°°° admedi..
 CREATE TABLE HistorialMovimientosMedicamentos (
-    idMovimiento INT PRIMARY KEY AUTO_INCREMENT,     -- ID único del movimiento
-    idMedicamento INT NOT NULL,                      -- Relación con el medicamento
-    tipoMovimiento ENUM('Entrada', 'Salida', 'Lote Eliminado') NOT NULL, -- Tipo de movimiento
-    cantidad DECIMAL(10,2) NOT NULL,                 -- Cantidad que entra o sale
-    idUsuario INT NOT NULL,                          -- Usuario que realiza el movimiento
-    fechaMovimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora del movimiento
-    CONSTRAINT fk_movimiento_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
-    CONSTRAINT fk_movimiento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
-) ENGINE = INNODB;
-
--- 19. HistorialMedicamentosMedi ----°°°
-CREATE TABLE HistorialMedicamentosMedi (
-    idHistorial INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento INT NOT NULL, -- Relación con la tabla Medicamentos
-    accion VARCHAR(50) NOT NULL, -- Acción registrada (Agregar, Eliminar, Actualizar, etc.)
-    fecha DATETIME DEFAULT NOW(), -- Fecha de la acción
-    CONSTRAINT fk_historial_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
-) ENGINE = INNODB;
-
--- 20. HistorialMovimientosMedi ----°°°
-CREATE TABLE HistorialMovimientosMedi (
     idMovimiento INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento INT NOT NULL, -- Relación con la tabla Medicamentos
-    tipoMovimiento VARCHAR(50) NOT NULL, -- Tipo de movimiento (Entrada o Salida)
-    cantidad INT NOT NULL, -- Cantidad involucrada en el movimiento
-    fechaMovimiento DATETIME DEFAULT NOW(), -- Fecha del movimiento
-    CONSTRAINT fk_historial_movimiento_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento)
+    idMedicamento INT NOT NULL,                -- ID del medicamento (relación con Medicamentos)
+    tipoMovimiento VARCHAR(50) NOT NULL,       -- Tipo de movimiento (Entrada/Salida)
+    cantidad INT NOT NULL,                     -- Cantidad de medicamento
+    idTipoEquino INT NULL,                     -- ID del tipo de equino (solo para Salida)
+    idUsuario INT NOT NULL,                    -- ID del usuario que realiza el movimiento
+    fechaMovimiento DATE DEFAULT NOW(), -- Fecha del movimiento
+    FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
+    FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino), -- Relación con TipoEquinos
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
 

@@ -9,8 +9,6 @@ class Alimento extends Conexion {
     }
 
     // Método para registrar un nuevo alimento
-    // Método para registrar un nuevo alimento
-    // Método para registrar un nuevo alimento
     public function registrarNuevoAlimento($params = []) {
         try {
             if (session_status() == PHP_SESSION_NONE) {

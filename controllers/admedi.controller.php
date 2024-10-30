@@ -7,6 +7,9 @@ error_reporting(E_ALL);
 
 require_once '../models/Admedi.php';
 
+$admi = new Admi();
+$method = $_SERVER['REQUEST_METHOD'];
+
 header('Content-Type: application/json');
 
 // Función para enviar una respuesta JSON al cliente
@@ -20,287 +23,275 @@ function sendResponse($status, $message, $data = []) {
 }
 
 try {
-    if (!isset($_POST['operation'])) {
-        sendResponse('error', 'Operación no especificada.');
-    }
+    // Si el método es GET, manejarlo aquí
+    if ($method === 'GET') {
+        $operation = $_GET['operation'] ?? '';
 
-    $admi = new Admi();
-    $operation = $_POST['operation'];
-
-    switch ($operation) {
-
-        // Obtener todos los medicamentos
-        case 'getAllMedicamentos':
-            try {
-                $medicamentos = $admi->getAllMedicamentos();
-                if ($medicamentos) {
-                    sendResponse('success', 'Medicamentos obtenidos correctamente.', $medicamentos);
-                } else {
-                    sendResponse('error', 'No se pudieron obtener los medicamentos.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al obtener los medicamentos: ' . $e->getMessage());
-            }
-            break;
-
-        // Registrar nuevo medicamento
-        case 'registrar':
-            $params = [
-                'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
-                'descripcion' => $_POST['descripcion'] ?? '',
-                'lote' => $_POST['lote'] ?? '',
-                'presentacion' => $_POST['presentacion'] ?? '',
-                'dosis' => $_POST['dosis'] ?? '',
-                'tipo' => $_POST['tipo'] ?? '',
-                'cantidad_stock' => intval($_POST['cantidad_stock'] ?? 0),
-                'stockMinimo' => intval($_POST['stockMinimo'] ?? 0),
-                'fecha_caducidad' => $_POST['fecha_caducidad'] ?? '',
-                'precioUnitario' => floatval($_POST['precioUnitario'] ?? 0)
-            ];
-
-            try {
-                $validarCombinacion = $admi->validarRegistrarCombinacion([
-                    'tipoMedicamento' => $params['tipo'],
-                    'presentacionMedicamento' => $params['presentacion'],
-                    'dosisMedicamento' => $params['dosis']
-                ]);
-
-                if ($validarCombinacion) {
-                    $result = $admi->registrarMedicamento($params);
-                    if ($result) {
-                        sendResponse('success', 'Medicamento registrado correctamente.');
-                    } else {
-                        sendResponse('error', 'Error: No se pudo registrar el medicamento.');
-                    }
-                } else {
-                    sendResponse('error', 'Error: La combinación de tipo, presentación y dosis no es válida.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al registrar el medicamento: ' . $e->getMessage());
-            }
-            break;
-
-        // Registrar entrada de medicamento
-        case 'entrada':
-            $params = [
-                'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
-                'lote' => $_POST['lote'] ?? '',
-                'cantidad' => floatval($_POST['cantidad'] ?? 0)
-            ];
-
-            try {
-                $result = $admi->entradaMedicamento($params);
-                if ($result) {
-                    sendResponse('success', 'Entrada de medicamento registrada correctamente.');
-                } else {
-                    sendResponse('error', 'Error: No se pudo registrar la entrada del medicamento.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al registrar la entrada del medicamento: ' . $e->getMessage());
-            }
-            break;
-
-        // Registrar salida de medicamento
-        case 'salida':
-            $params = [
-                'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
-                'cantidad' => floatval($_POST['cantidad'] ?? 0)
-            ];
-
-            if ($params['cantidad'] <= 0) {
-                sendResponse('error', 'Error: La cantidad debe ser mayor a 0.');
-            }
-
-            try {
-                $result = $admi->salidaMedicamento($params);
-                if ($result) {
-                    sendResponse('success', 'Salida de medicamento registrada correctamente.');
-                } else {
-                    sendResponse('error', 'Error: No se pudo registrar la salida del medicamento.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al registrar la salida del medicamento: ' . $e->getMessage());
-            }
-            break;
-
-
-        // Listar todos los lotes registrados
-        case 'listarLotes':
-            try {
-                $lotes = $admi->listarLotes();
-                if ($lotes['status'] === 'success') {
-                    sendResponse('success', 'Lotes obtenidos correctamente.', $lotes['data']);
-                } else {
-                    sendResponse('error', 'No se pudieron obtener los lotes.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al listar los lotes: ' . $e->getMessage());
-            }
-            break;
-
-        // Notificar stock bajo
-        case 'notificarStockBajo':
-            try {
-                $medicamentosBajoStock = $admi->notificarStockBajo();
-                if ($medicamentosBajoStock) {
-                    sendResponse('success', 'Medicamentos con stock bajo obtenidos correctamente.', $medicamentosBajoStock);
-                } else {
-                    sendResponse('error', 'No se pudieron obtener las notificaciones de stock bajo.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al obtener las notificaciones de stock bajo: ' . $e->getMessage());
-            }
-            break;
-
-        // Validar presentación, tipo y dosis
-        case 'validarRegistrarCombinacion':
-            $params = [
-                'tipoMedicamento' => $_POST['tipoMedicamento'] ?? '',           
-                'presentacionMedicamento' => $_POST['presentacionMedicamento'] ?? '', 
-                'dosisMedicamento' => $_POST['dosisMedicamento'] ?? ''         
-            ];
-
-            try {
-                // Llamar al método que valida la combinación
-                $result = $admi->validarRegistrarCombinacion($params);
-
-                if ($result) {
-                    // Si la validación es exitosa, retornar una respuesta positiva
-                    sendResponse('success', 'Validación y registro de combinación exitoso.');
-                } else {
-                    // Si la combinación no es válida, retornar error
-                    sendResponse('error', 'Error: La combinación de presentación, tipo o dosis no es válida o ya existe.');
-                }
-            } catch (PDOException $e) {
-                // Manejar errores de la base de datos
-                sendResponse('error', 'Error al validar la combinación: ' . $e->getMessage());
-            }
-            break;
-
-
-        // Agregar nuevo tipo de medicamento
-        case 'agregarTipoMedicamento':
-            $tipo = $_POST['tipo'] ?? '';
-            try {
-                $result = $admi->agregarTipoMedicamento($tipo);
-                if ($result) {
-                    sendResponse('success', 'Tipo de medicamento agregado correctamente.');
-                } else {
-                    sendResponse('error', 'Error: No se pudo agregar el tipo de medicamento.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al agregar el tipo de medicamento: ' . $e->getMessage());
-            }
-            break;
-
-        // Agregar nueva presentación de medicamento
-        case 'agregarPresentacion':
-            $presentacion = $_POST['presentacion'] ?? '';
-            try {
-                $result = $admi->agregarPresentacionMedicamento($presentacion);
-                if ($result) {
-                    sendResponse('success', 'Presentación de medicamento agregada correctamente.');
-                } else {
-                    sendResponse('error', 'Error: No se pudo agregar la presentación de medicamento.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al agregar la presentación del medicamento: ' . $e->getMessage());
-            }
-            break;
-
-        // Registrar historial de movimientos
-        case 'registrarHistorial':
-            $params = [
-                'idMedicamento' => intval($_POST['idMedicamento'] ?? 0),
-                'accion' => $_POST['accion'] ?? '',
-                'tipoMovimiento' => $_POST['tipoMovimiento'] ?? null,
-                'cantidad' => intval($_POST['cantidad'] ?? 0)
-            ];
-
-            try {
-                $result = $admi->registrarHistorialMedicamento($params);
-                if ($result) {
-                    sendResponse('success', 'Historial registrado correctamente.');
-                } else {
-                    sendResponse('error', 'Error: No se pudo registrar el historial.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al registrar el historial: ' . $e->getMessage());
-            }
-            break;
-
-        // Listar tipos de medicamentos
-        case 'listarTiposMedicamentos':
-            try {
-                $tipos = $admi->listarTiposMedicamentos();
-                if ($tipos) {
-                    sendResponse('success', 'Tipos de medicamentos obtenidos correctamente.', $tipos);
-                } else {
-                    sendResponse('error', 'Error: No se pudieron obtener los tipos de medicamentos.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al obtener los tipos de medicamentos: ' . $e->getMessage());
-            }
-            break;
-
-        // Listar presentaciones de medicamentos
-        case 'listarPresentacionesMedicamentos':
-            try {
-                $presentaciones = $admi->listarPresentacionesMedicamentos();
-                if ($presentaciones) {
-                    sendResponse('success', 'Presentaciones de medicamentos obtenidas correctamente.', $presentaciones);
-                } else {
-                    sendResponse('error', 'Error: No se pudieron obtener las presentaciones de medicamentos.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al obtener las presentaciones de medicamentos: ' . $e->getMessage());
-            }
-            break;
-
-        // Listar sugerencias de combinaciones de medicamentos (tipo, presentación, dosis)
-        case 'listarSugerenciasMedicamentos':
-            try {
-                $sugerencias = $admi->listarSugerenciasMedicamentos();
-                if ($sugerencias) {
-                    sendResponse('success', 'Sugerencias obtenidas correctamente.', $sugerencias);
-                } else {
-                    sendResponse('error', 'No se pudieron obtener las sugerencias de medicamentos.');
-                }
-            } catch (PDOException $e) {
-                sendResponse('error', 'Error al obtener las sugerencias: ' . $e->getMessage());
-            }
-            break;
-
-        // Borrar medicamento por ID
-        case 'borrarMedicamento':
-            $idMedicamento = intval($_POST['idMedicamento'] ?? 0);
-            
-            if ($idMedicamento > 0) {
+        switch ($operation) {
+            case 'getAllMedicamentos':
                 try {
-                    $result = $admi->borrarMedicamento($idMedicamento);
-                    if ($result) {
-                        sendResponse('success', 'Medicamento eliminado correctamente.');
+                    $medicamentos = $admi->getAllMedicamentos();
+                    if ($medicamentos) {
+                        sendResponse('success', 'Medicamentos obtenidos correctamente.', $medicamentos);
                     } else {
-                        sendResponse('error', 'Error: No se pudo eliminar el medicamento.');
+                        sendResponse('error', 'No se pudieron obtener los medicamentos.');
                     }
                 } catch (PDOException $e) {
-                    sendResponse('error', 'Error al eliminar el medicamento: ' . $e->getMessage());
+                    sendResponse('error', 'Error al obtener los medicamentos: ' . $e->getMessage());
                 }
-            } else {
-                sendResponse('error', 'ID de medicamento inválido.');
-            }
-            break;
+                break;
 
+            case 'getTipoEquinos':
+                try {
+                    $tiposEquinos = $admi->getTipoEquinos();
+                    if ($tiposEquinos) {
+                        sendResponse('success', 'Tipos de equinos obtenidos correctamente.', $tiposEquinos);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener los tipos de equinos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener los tipos de equinos: ' . $e->getMessage());
+                }
+                break;
 
-        // Si la operación no es válida
-        default:
-            sendResponse('error', 'Operación no válida.');
-            break;
-        
+            case 'listarTiposMedicamentos':
+                try {
+                    $tipos = $admi->listarTiposMedicamentos();
+                    if ($tipos) {
+                        sendResponse('success', 'Tipos de medicamentos obtenidos correctamente.', $tipos);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener los tipos de medicamentos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener los tipos de medicamentos: ' . $e->getMessage());
+                }
+                break;
+
+            case 'listarPresentacionesMedicamentos':
+                try {
+                    $presentaciones = $admi->listarPresentacionesMedicamentos();
+                    if ($presentaciones) {
+                        sendResponse('success', 'Presentaciones de medicamentos obtenidas correctamente.', $presentaciones);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener las presentaciones de medicamentos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener las presentaciones de medicamentos: ' . $e->getMessage());
+                }
+                break;
+
+            case 'listarSugerenciasMedicamentos':
+                try {
+                    $sugerencias = $admi->listarSugerenciasMedicamentos();
+                    if ($sugerencias) {
+                        sendResponse('success', 'Sugerencias obtenidas correctamente.', $sugerencias);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener las sugerencias de medicamentos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener las sugerencias: ' . $e->getMessage());
+                }
+                break;
+
+            case 'listarLotes':
+                try {
+                    $lotes = $admi->listarLotesMedicamentos();
+                    if ($lotes['status'] === 'success') {
+                        sendResponse('success', 'Lotes obtenidos correctamente.', $lotes['data']);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener los lotes de medicamentos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al listar los lotes de medicamentos: ' . $e->getMessage());
+                }
+                break;
+
+            case 'notificarStockBajo':
+                try {
+                    $medicamentosBajoStock = $admi->notificarStockBajo();
+                    if ($medicamentosBajoStock) {
+                        sendResponse('success', 'Medicamentos con stock bajo obtenidos correctamente.', $medicamentosBajoStock);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener las notificaciones de stock bajo.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener las notificaciones de stock bajo: ' . $e->getMessage());
+                }
+                break;
+
+            case 'obtenerHistorialMovimientosMedicamentos':
+                $params = [
+                    'tipoMovimiento' => $_GET['tipoMovimiento'] ?? 'Entrada',
+                    'fechaInicio' => $_GET['fechaInicio'] ?? '1900-01-01',
+                    'fechaFin' => $_GET['fechaFin'] ?? date('Y-m-d'),
+                    'idUsuario' => intval($_GET['idUsuario'] ?? 0),
+                    'limit' => intval($_GET['limit'] ?? 10),
+                    'offset' => intval($_GET['offset'] ?? 0)
+                ];
+                try {
+                    $result = $admi->obtenerHistorialMovimientosMedicamentos($params);
+                    if ($result['status'] === 'success') {
+                        sendResponse('success', 'Historial de movimientos obtenido correctamente.', $result['data']);
+                    } else {
+                        sendResponse('info', $result['message']);
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener el historial de movimientos: ' . $e->getMessage());
+                }
+                break;
+
+            default:
+                sendResponse('error', 'Operación no válida para GET.');
+        }
     }
 
-} catch (PDOException $e) {
-    sendResponse('error', 'Error en la base de datos: ' . $e->getMessage());
+    // Si el método es POST, manejarlo aquí
+    if ($method === 'POST') {
+        $operation = $_POST['operation'] ?? '';
+
+        switch ($operation) {
+            case 'registrar':
+                $params = [
+                    'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
+                    'descripcion' => $_POST['descripcion'] ?? '',
+                    'lote' => $_POST['lote'] ?? '',
+                    'presentacion' => $_POST['presentacion'] ?? '',
+                    'dosis' => $_POST['dosis'] ?? '',
+                    'tipo' => $_POST['tipo'] ?? '',
+                    'cantidad_stock' => intval($_POST['cantidad_stock'] ?? 0),
+                    'stockMinimo' => intval($_POST['stockMinimo'] ?? 0),
+                    'fecha_caducidad' => $_POST['fecha_caducidad'] ?? '',
+                    'precioUnitario' => floatval($_POST['precioUnitario'] ?? 0)
+                ];
+
+                try {
+                    $result = $admi->registrarMedicamento($params);
+                    if ($result['status'] === 'success') {
+                        sendResponse('success', 'Medicamento registrado correctamente.');
+                    } else {
+                        sendResponse('error', $result['message']);
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al registrar el medicamento: ' . $e->getMessage());
+                }
+                break;
+
+            case 'entrada':
+                $params = [
+                    'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
+                    'unidadMedida' => $_POST['unidadMedida'] ?? '',
+                    'lote' => $_POST['lote'] ?? '',
+                    'cantidad' => floatval($_POST['cantidad'] ?? 0)
+                ];
+
+                try {
+                    $result = $admi->entradaMedicamento($params);
+                    if ($result['status'] === 'success') {
+                        sendResponse('success', 'Entrada de medicamento registrada correctamente.');
+                    } else {
+                        sendResponse('error', $result['message']);
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al registrar la entrada del medicamento: ' . $e->getMessage());
+                }
+                break;
+
+            case 'salida':
+                $params = [
+                    'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
+                    'unidadMedida' => $_POST['unidadMedida'] ?? '',
+                    'cantidad' => floatval($_POST['cantidad'] ?? 0),
+                    'idTipoEquino' => intval($_POST['idTipoEquino'] ?? 0),
+                    'lote' => $_POST['lote'] ?? ''
+                ];
+
+                if ($params['cantidad'] <= 0) {
+                    sendResponse('error', 'Error: La cantidad debe ser mayor a 0.');
+                }
+
+                try {
+                    $result = $admi->salidaMedicamento($params);
+                    if ($result['status'] === 'success') {
+                        sendResponse('success', 'Salida de medicamento registrada correctamente.');
+                    } else {
+                        sendResponse('error', $result['message']);
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al registrar la salida del medicamento: ' . $e->getMessage());
+                }
+                break;
+
+            case 'agregarTipoMedicamento':
+                $tipo = $_POST['tipo'] ?? '';
+                try {
+                    $result = $admi->agregarTipoMedicamento($tipo);
+                    if ($result) {
+                        sendResponse('success', 'Tipo de medicamento agregado correctamente.');
+                    } else {
+                        sendResponse('error', 'No se pudo agregar el tipo de medicamento.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al agregar el tipo de medicamento: ' . $e->getMessage());
+                }
+                break;
+
+            case 'agregarPresentacion':
+                $presentacion = $_POST['presentacion'] ?? '';
+                try {
+                    $result = $admi->agregarPresentacionMedicamento($presentacion);
+                    if ($result) {
+                        sendResponse('success', 'Presentación de medicamento agregada correctamente.');
+                    } else {
+                        sendResponse('error', 'No se pudo agregar la presentación de medicamento.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al agregar la presentación del medicamento: ' . $e->getMessage());
+                }
+                break;
+
+            case 'validarRegistrarCombinacion':
+                try {
+                    // Extraer los parámetros recibidos desde la solicitud POST
+                    $params = [
+                        'tipoMedicamento' => $_POST['tipoMedicamento'] ?? '',
+                        'presentacionMedicamento' => $_POST['presentacionMedicamento'] ?? '',
+                        'dosisMedicamento' => $_POST['dosisMedicamento'] ?? ''
+                    ];
+            
+                    // Llamar al método para validar y registrar la combinación
+                    $resultado = $admi->validarRegistrarCombinacion($params);
+            
+                    // Enviar la respuesta basada en el resultado
+                    if ($resultado['status'] === 'success') {
+                        sendResponse('success', $resultado['message'], $resultado['data']);
+                    } else {
+                        sendResponse('error', $resultado['message']);
+                    }
+                } catch (PDOException $e) {
+                    // Manejo de errores en caso de falla en la base de datos
+                    sendResponse('error', 'Error en la validación de la combinación: ' . $e->getMessage());
+                }
+                break;
+
+            case 'deleteMedicamento':
+                // Obtener el ID del medicamento desde el POST
+                $idMedicamento = intval($_POST['idMedicamento'] ?? 0);
+        
+                // Llamar a la función para borrar el medicamento
+                $result = $admi->borrarMedicamento($idMedicamento);
+        
+                // Responder al cliente en formato JSON
+                header('Content-Type: application/json');
+                echo json_encode($result);
+                break;
+                
+
+            default:
+                sendResponse('error', 'Operación no válida para POST.');
+        }
+    } else {
+        throw new Exception('Método no permitido.');
+    }
 } catch (Exception $e) {
     sendResponse('error', 'Ocurrió un error: ' . $e->getMessage());
 }

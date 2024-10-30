@@ -10,8 +10,19 @@
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Medicamento</h5>
+            <!-- Botón de Sugerencias integrado en el header -->
+            <button type="button" class="btn btn-info btn-sm" 
+                    style="background-color: #17a2b8; border: none; position: absolute; right: 1px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
+                    id="btnSugerencias" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalSugerencias">
+                <i class="fas fa-lightbulb"></i>
+            </button>
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
+            
+            
+                
             <form action="" id="form-registrar-medicamento" autocomplete="off">
                 <div class="row g-3">
                     <!-- Nombre del Medicamento -->
@@ -59,7 +70,8 @@
                     <!-- Composición (Dosis) -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+(\s?[a-zA-Z\.\/]+)?$" title="Formato válido: número seguido de una unidad de medida (ej. mg, g, ml, etc.)">
+                            <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+(\s?[a-zA-Z]+)?$" 
+                            title="Formato válido: número seguido de una unidad de medida (ej. mg, g, ml, etc.)">
                             <label for="dosis">
                                 <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500mg)
                             </label>
@@ -130,10 +142,11 @@
                         <button type="reset" class="btn btn-secondary btn-lg" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
-                        <!-- Botón de Sugerencias -->
-                        <button type="button" class="btn btn-info btn-lg" style="background-color: #17a2b8; border: none;" id="btnSugerencias" data-bs-toggle="modal" data-bs-target="#modalSugerencias">
-                            <i class="fas fa-lightbulb"></i> Ver Sugerencias
+
+                        <button class="btn btn-outline-info btn-lg" style="border-color: #17a2b8;" data-bs-toggle="modal" data-bs-target="#modalHistorial">
+                            <i class="fas fa-history"></i> Ver Historial de Movimientos
                         </button>
+
                     </div>
                 </div>
             </form>
@@ -256,41 +269,60 @@
     <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Encabezado del Modal -->
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalSalidaLabel">Registrar Salida de Medicamento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+
+                <!-- Cuerpo del Modal -->
                 <div class="modal-body">
                     <form id="formSalida">
-                        <div class="form-group mb-3">
+                        <!-- Selección de Medicamento -->
+                        <div class="mb-3">
                             <label for="salidaMedicamento" class="form-label">Medicamento</label>
-                            <select name="nombreMedicamento" id="salidaMedicamento" class="form-control" required></select>
-                        </div>
-                        <!-- Cantidad -->
-                        <div class="form-group mb-3">
-                            <label for="salidaCantidad" class="form-label">Cantidad</label>
-                            <input type="number" name="cantidad" id="salidaCantidad" class="form-control" required min="0">
-                        </div>
-
-
-
-                        <!-- Lote -->
-                        <div class="form-group mb-3">
-                            <label for="salidaLote" class="form-label">Lote(opcional)-no funcional</label>
-                            <select name="lote" id="salidaLote" class="form-control" >
-                                <option value="">Seleccione un lote</option>
-                                <!-- Las opciones se cargarán dinámicamente con JavaScript -->
+                            <select name="nombreMedicamento" id="salidaMedicamento" class="form-control" required>
+                                <option value="" disabled selected>Seleccione un medicamento</option>
+                                <!-- Opciones cargadas dinámicamente -->
                             </select>
                         </div>
 
+                        <!-- Cantidad -->
+                        <div class="mb-3">
+                            <label for="salidaCantidad" class="form-label">Cantidad</label>
+                            <input type="number" name="cantidad" id="salidaCantidad" class="form-control" required min="1" placeholder="Ingrese cantidad">
+                        </div>
+
+                        <!-- Tipo de Equino -->
+                        <div class="mb-3">
+                            <label for="tipoEquinoMovimiento" class="form-label">Tipo de Equino</label>
+                            <select id="tipoEquinoMovimiento" name="idTipoEquino" class="form-select" required>
+                                <option value="" disabled selected>Seleccione Tipo de Equino</option>
+                                <!-- Opciones cargadas dinámicamente -->
+                            </select>
+                        </div>
+
+                        <!-- Lote (opcional) -->
+                        <div class="mb-3">
+                            <label for="salidaLote" class="form-label">Lote (opcional)</label>
+                            <select name="lote" id="salidaLote" class="form-control">
+                                <option value="" disabled selected>Seleccione un lote</option>
+                                <!-- Opciones cargadas dinámicamente -->
+                            </select>
+                        </div>
 
                         <!-- Botón para registrar la salida -->
-                        <button type="submit" class="btn btn-danger">Registrar Salida</button>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-danger">Registrar Salida</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+
+    
     <!-- Modal de Sugerencias -->
     <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -319,6 +351,91 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para Historial de Movimientos de Medicamentos -->
+    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Medicamentos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            <div class="modal-body">
+
+                <!-- Opciones de Filtrado Rápido -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex align-items-center">
+                        <label for="filtroRango" class="me-2">Ver movimientos de:</label>
+                        <select id="filtroRango" class="form-select">
+                            <option value="hoy">Hoy</option>
+                            <option value="ultimaSemana">Última semana</option>
+                            <option value="ultimoMes">Último mes</option>
+                            <option value="todos">Todos</option>
+                        </select>
+                    </div>
+                <button type="button" id="buscarHistorial" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+
+                <!-- Pestañas para Entrada y Salida -->
+                <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="salidas-tab" data-bs-toggle="tab" data-bs-target="#salidas" type="button" role="tab" aria-controls="salidas" aria-selected="false">Salidas</button>
+                </li>
+                </ul>
+
+                <!-- Contenido de las pestañas -->
+                <div class="tab-content">
+                <!-- Tabla de Entradas de Medicamentos -->
+                <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
+                    <div class="table-responsive">
+                        <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>ID Medicamento</th>
+                                    <th>Nombre Medicamento</th>
+                                    <th>Descripción</th>
+                                    <th>Stock Actual</th>
+                                    <th>Cantidad de Entrada</th>
+                                    <th>Fecha de Movimiento</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historial-entradas-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabla de Salidas de Medicamentos -->
+                <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
+                    <div class="table-responsive">
+                        <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
+                            <thead class="table-danger">
+                                <tr>
+                                    <th>ID Medicamento</th>
+                                    <th>Nombre Medicamento</th>
+                                    <th>Descripción</th>
+                                    <th>Tipo de Equino</th>
+                                    <th>Cantidad de Salida</th>
+                                    <th>Fecha de Movimiento</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historial-salidas-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 
 <?php require_once '../footer.php'; ?>
@@ -344,6 +461,8 @@
 
         const messageArea = document.getElementById("message-area");
         const btnSugerencias = document.getElementById("btnSugerencias");
+
+        const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
 
         // Función para mostrar mensajes dinámicos
         function mostrarMensaje(mensaje, tipo) {
@@ -378,12 +497,9 @@
         // Evento para el botón de sugerencias
         btnSugerencias.addEventListener("click", async () => {
             try {
-                // Hacer la solicitud al servidor para obtener todas las sugerencias
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({
-                        operation: 'listarSugerenciasMedicamentos'
-                    })
+                // Hacer la solicitud al servidor para obtener todas las sugerencias usando GET
+                const response = await fetch(`../../controllers/admedi.controller.php?operation=listarSugerenciasMedicamentos`, {
+                    method: "GET",
                 });
 
                 const result = await response.json();
@@ -413,29 +529,170 @@
             }
         });
 
+
+        // Función para cargar los tipos de equinos
+        const loadTipoEquinos = async () => {
+            try {
+                // Hacemos la solicitud GET con los parámetros en la URL
+                const response = await fetch('../../controllers/admedi.controller.php?operation=getTipoEquinos', {
+                method: "GET"
+                });
+
+                const textResponse = await response.text();
+
+                // Intentar convertir el texto en JSON
+                const parsedResponse = JSON.parse(textResponse);
+
+                // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
+                if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
+                const tipos = parsedResponse.data;
+
+                // Limpiar el select antes de añadir contenido nuevo
+                tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
+
+                // Añadir cada tipo de equino al select
+                tipos.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.idTipoEquino;
+                    option.textContent = tipo.tipoEquino;
+                    tipoEquinoMovimiento.appendChild(option);
+                });
+                } else {
+                mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+                }
+            } catch (error) {
+                console.error("Error al cargar tipos de equinos:", error);
+                mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
+            }
+        };
+
+        // Historial de movimientos de medicamentos
+        const loadHistorialMovimientos = async () => {
+            try {
+
+                const filtroRango = document.getElementById('filtroRango').value;
+                let fechaInicio, fechaFin;
+                const hoy = new Date();
+
+                // Definir el rango de fechas basado en el filtro
+                switch (filtroRango) {
+                    case 'hoy':
+                        fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
+                        break;
+                    case 'ultimaSemana':
+                        fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
+                        fechaFin = new Date().toISOString().split('T')[0];
+                        break;
+                    case 'ultimoMes':
+                        fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
+                        fechaFin = new Date().toISOString().split('T')[0];
+                        break;
+                    default:
+                        fechaInicio = '';
+                        fechaFin = '';
+                }
+
+
+                // Solicitud para Entradas de Medicamentos usando ruta relativa
+                const entradasURL = `../../controllers/admedi.controller.php?operation=obtenerHistorialMovimientosMedicamentos&tipoMovimiento=Entrada&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+                const responseEntradas = await fetch(entradasURL, { method: "GET" });
+                const parsedEntradas = await responseEntradas.json();
+
+                // Verificar que haya datos para Entradas de Medicamentos y cargarlos en DataTable
+                if (parsedEntradas.status === 'success' && Array.isArray(parsedEntradas.data)) {
+                    if (parsedEntradas.data.length > 0) {
+                        $('#tabla-entradas').DataTable().clear().destroy();
+                        $('#tabla-entradas').DataTable({
+                            data: parsedEntradas.data,
+                            columns: [
+                                { data: 'idMedicamento' },
+                                { data: 'nombreMedicamento' },
+                                { data: 'descripcion' },
+                                { data: 'stockActual' },
+                                { data: 'cantidad' },
+                                { data: 'fechaMovimiento' }
+                            ],
+                            responsive: true,
+                            autoWidth: false,
+                            paging: true,
+                            searching: true,
+                            language: {
+                                url: '/haras/data/es_es.json'
+                            }
+                        });
+                    }
+                }
+
+                // Solicitud para Salidas de Medicamentos usando ruta relativa
+                const salidasURL = `../../controllers/admedi.controller.php?operation=obtenerHistorialMovimientosMedicamentos&tipoMovimiento=Salida&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+                const responseSalidas = await fetch(salidasURL, { method: "GET" });
+                const parsedSalidas = await responseSalidas.json();
+
+                // Verificar que haya datos para Salidas de Medicamentos y cargarlos en DataTable
+                if (parsedSalidas.status === 'success' && Array.isArray(parsedSalidas.data)) {
+                    if (parsedSalidas.data.length > 0) {
+                        $('#tabla-salidas').DataTable().clear().destroy();
+                        $('#tabla-salidas').DataTable({
+                            data: parsedSalidas.data,
+                            columns: [
+                                { data: 'idMedicamento' },
+                                { data: 'nombreMedicamento' },
+                                { data: 'descripcion' },
+                                { data: 'tipoEquino' },
+                                { data: 'cantidad' },
+                                { data: 'fechaMovimiento' }
+                            ],
+                            responsive: true,
+                            autoWidth: false,
+                            paging: true,
+                            searching: true,
+                            language: {
+                                url: '/haras/data/es_es.json'
+                            }
+                        });
+                    } 
+                } 
+
+            } catch (error) {
+                console.error('Error al cargar historial de movimientos de medicamentos:', error);
+                mostrarMensajeDinamico('Error al cargar historial de movimientos de medicamentos.', 'ERROR');
+            }
+        };
+
+        // Vincular la función al cambio en el filtro de rango
+        document.getElementById('filtroRango').addEventListener('change', loadHistorialMovimientos);
+        document.getElementById('buscarHistorial').addEventListener('click', loadHistorialMovimientos);
+
+
+                
+
         // Cargar los tipos de medicamentos desde el servidor
         const loadTiposMedicamentos = async () => {
             try {
-            const response = await fetch('../../controllers/admedi.controller.php', {
-                method: "POST",
-                body: new URLSearchParams({ operation: 'listarTiposMedicamentos' })
-            });
-            const result = await response.json();
-            const tipos = result.data;
+                const response = await fetch(`../../controllers/admedi.controller.php?operation=listarTiposMedicamentos`, {
+                    method: "GET",
+                });
+                const result = await response.json();
 
-            tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
-            tipos.forEach(tipo => {
-                const option = document.createElement("option");
-                option.value = tipo.tipo;
-                option.textContent = tipo.tipo;
-                tipoMedicamentoSelect.appendChild(option);
-            });
+                // Limpiar el select y agregar opciones
+                tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
+                
+                result.data.forEach(tipo => {
+                    const option = document.createElement("option");
+                    option.value = tipo.tipo;
+                    option.textContent = tipo.tipo;
+                    tipoMedicamentoSelect.appendChild(option);
+                });
 
-            tipoMedicamentoSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
+                // Añadir la opción para agregar nuevo tipo
+                tipoMedicamentoSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
             } catch (error) {
-            mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
+                mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
             }
         };
+
 
         // Mostrar modal para agregar nuevo tipo
         tipoMedicamentoSelect.addEventListener('change', function () {
@@ -474,28 +731,30 @@
         // Cargar presentaciones de medicamentos desde el servidor
         const loadPresentaciones = async () => {
             try {
-            const response = await fetch('../../controllers/admedi.controller.php', {
-                method: "POST",
-                body: new URLSearchParams({ operation: 'listarPresentacionesMedicamentos' })
-            });
+                const response = await fetch(`../../controllers/admedi.controller.php?operation=listarPresentacionesMedicamentos`, {
+                    method: "GET",
+                });
 
-            const result = await response.json();
-            const presentaciones = result.data;
+                const result = await response.json();
+                const presentaciones = result.data;
 
-            // Limpiar y agregar opciones al select de presentaciones
-            presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
-            presentaciones.forEach(presentacion => {
-                const option = document.createElement("option");
-                option.value = presentacion.presentacion;
-                option.textContent = presentacion.presentacion;
-                presentacionSelect.appendChild(option);
-            });
-            presentacionSelect.innerHTML += '<option value="nuevo">Agregar nueva presentación...</option>';
+                // Limpiar y agregar opciones al select de presentaciones
+                presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
+                presentaciones.forEach(presentacion => {
+                    const option = document.createElement("option");
+                    option.value = presentacion.presentacion;
+                    option.textContent = presentacion.presentacion;
+                    presentacionSelect.appendChild(option);
+                });
+
+                // Añadir opción para agregar una nueva presentación
+                presentacionSelect.innerHTML += '<option value="nuevo">Agregar nueva presentación...</option>';
             } catch (error) {
-            mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
-            showToast("Error al cargar presentaciones", 'ERROR');
+                mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
+                showToast("Error al cargar presentaciones", 'ERROR');
             }
         };
+
 
         // Mostrar modal para agregar nueva presentación
         presentacionSelect.addEventListener('change', function () {
@@ -532,12 +791,15 @@
         });
 
         // Cargar medicamentos en los selectores de entrada y salida
+        // Cargar medicamentos en los selectores de entrada y salida
         const loadSelectMedicamentos = async () => {
             try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({ operation: 'getAllMedicamentos' })
+                // Definir los parámetros en la URL para el método GET
+                const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
+                const response = await fetch(`../../controllers/admedi.controller.php?${params.toString()}`, {
+                    method: "GET"  // Cambiar el método a GET
                 });
+
                 const textResponse = await response.text();
                 const result = JSON.parse(textResponse);
                 const medicamentos = result.data;
@@ -606,14 +868,15 @@
             }
         };
 
-
+        // Cargar lista de medicamentos en la tabla
         // Cargar lista de medicamentos en la tabla
         const loadMedicamentos = async () => {
             try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({ operation: 'getAllMedicamentos' })
+                const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
+                const response = await fetch(`../../controllers/admedi.controller.php?${params.toString()}`, {
+                    method: "GET"
                 });
+
                 const textResponse = await response.text();
                 if (textResponse.startsWith("<")) {
                     mostrarMensaje("Error en la respuesta del servidor.", 'error');
@@ -636,9 +899,10 @@
                         { data: 'presentacion', title: 'Presentación', defaultContent: 'N/A' },
                         { data: 'dosis', title: 'Dosis', defaultContent: 'N/A' },
                         { data: 'nombreTipo', title: 'Tipo', defaultContent: 'N/A' },
-                        { data: 'fecha_caducidad', title: 'Fecha Caducidad', defaultContent: 'N/A' },
+                        { data: 'fechaCaducidad', title: 'Fecha Caducidad', defaultContent: 'N/A' },
                         { data: 'cantidad_stock', title: 'Cantidad Stock', defaultContent: 'N/A' },
-                        { data: 'fecha_registro', title: 'Fecha Registro', defaultContent: 'N/A' },
+                        { data: 'precioUnitario', title: 'Costo', defaultContent: 'N/A' },
+                        { data: 'fechaIngreso', title: 'Fecha Registro', defaultContent: 'N/A' },
                         { data: 'estado', title: 'Estado', defaultContent: 'N/A' },
                         {
                             data: null,
@@ -651,7 +915,7 @@
                             orderable: false
                         }
                     ],
-                    pageLength: 9,
+                    pageLength: 5,
                     destroy: true,
                     autoWidth: false,
                     responsive: true,
@@ -722,7 +986,9 @@
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
-       
+
+
+
         // Función para confirmar la eliminación del medicamento
         window.borrarMedicamento = async (idMedicamento, nombreMedicamento) => {
             const confirmacion = await ask(`¿Estás seguro de que deseas eliminar el medicamento "${nombreMedicamento}"?`);
@@ -731,7 +997,7 @@
                     const response = await fetch('../../controllers/admedi.controller.php', {
                         method: "POST",
                         body: new URLSearchParams({
-                            operation: 'borrarMedicamento',
+                            operation: 'deleteMedicamento',
                             idMedicamento: idMedicamento
                         })
                     });
@@ -817,8 +1083,12 @@
         };
 
         // Registrar medicamento
+        // Registrar medicamento
+        // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
+
+            console.log("Inicio del proceso de registro de medicamento");
 
             // Obtener los valores del formulario
             const loteInput = document.querySelector('#lote');
@@ -826,8 +1096,15 @@
             const presentacion = document.querySelector('#presentacion').value;
             const dosis = document.querySelector("#dosis").value;
 
+            console.log("Datos obtenidos del formulario:");
+            console.log("Lote:", loteInput.value);
+            console.log("Tipo:", tipo);
+            console.log("Presentación:", presentacion);
+            console.log("Dosis:", dosis);
+
             // Validar que el lote no esté vacío o inválido
             const loteValido = await validarLote(loteInput);
+            console.log("Resultado de la validación de lote:", loteValido);
             if (!loteValido) {
                 mostrarMensaje('Lote inválido o ya registrado. Verifica los datos.', 'error');
                 return;
@@ -835,6 +1112,7 @@
 
             // Confirmación del usuario
             const confirmar = await ask("¿Estás seguro de que deseas registrar este medicamento?", "Registrar Medicamento");
+            console.log("Confirmación del usuario:", confirmar);
             if (!confirmar) {
                 showToast("Operación cancelada.", "INFO");
                 return;
@@ -842,6 +1120,7 @@
 
             // Validar combinación de tipo, presentación y dosis
             const esValido = await validarCombinacion({ tipo, presentacion, dosis });
+            console.log("Resultado de la validación de combinación:", esValido);
             if (!esValido) {
                 mostrarMensaje('Combinación inválida de tipo, presentación y dosis.', 'error');
                 return;
@@ -852,18 +1131,23 @@
             const data = new URLSearchParams(formData);
             data.append('operation', 'registrar');
 
+            console.log("Datos enviados al servidor:", Object.fromEntries(data));
+
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
                     body: data
                 });
 
+                console.log("Respuesta del servidor:", response);
                 if (!response.ok) {
                     mostrarMensaje("Error al conectar con el servidor. Estado: " + response.status, 'error');
                     return;
                 }
 
                 const result = await response.json();
+                console.log("Resultado de registro en el servidor:", result);
+
                 if (result.status === "success") {
                     showToast("Medicamento registrado correctamente", "SUCCESS");
                     formRegistrarMedicamento.reset();
@@ -872,9 +1156,12 @@
                     mostrarMensaje("Error en el registro: " + result.message, 'error');
                 }
             } catch (error) {
+                console.error("Error al registrar el medicamento:", error);
                 mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
             }
         });
+
+
 
 
         // Implementar para la entrada de medicamentos
@@ -915,27 +1202,32 @@
         });
 
         // Función para cargar los lotes en el select de entrada de medicamentos
+        // Función para cargar los lotes en los select de entrada y salida de medicamentos
         const cargarLotes = async () => {
-            const loteSelect = document.querySelector("#entradaLote");
+            const entradaLoteSelect = document.querySelector("#entradaLote");  
+            const salidaLoteSelect = document.getElementById('salidaLote');
 
             try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: 'POST',
-                    body: new URLSearchParams({ operation: 'listarLotes' }) // Petición al controlador
+                const response = await fetch('../../controllers/admedi.controller.php?operation=listarLotes', {
+                    method: 'GET',
                 });
 
                 const result = await response.json();
-                console.log(result);  // Para verificar la estructura de la respuesta
 
                 if (result.status === "success") {
-                    loteSelect.innerHTML = '<option value="">Seleccione un lote</option>'; // Opción por defecto
+                    entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
+                    salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
 
-                    // Insertar cada lote en el select
                     result.data.forEach(lote => {
-                        const option = document.createElement("option");
-                        option.value = lote.lote;
-                        option.textContent = `${lote.lote} - ${lote.nombreMedicamento}`; // Mostrar lote y medicamento
-                        loteSelect.appendChild(option);
+                        const optionEntrada = document.createElement("option");
+                        optionEntrada.value = lote.lote;
+                        optionEntrada.textContent = `${lote.lote} - ${lote.nombreMedicamento}`;
+                        entradaLoteSelect.appendChild(optionEntrada);
+
+                        const optionSalida = document.createElement("option");
+                        optionSalida.value = lote.lote;
+                        optionSalida.textContent = `${lote.lote} - ${lote.nombreMedicamento}`;
+                        salidaLoteSelect.appendChild(optionSalida);
                     });
                 } else {
                     mostrarMensaje("No se encontraron lotes registrados.", 'error');
@@ -945,7 +1237,9 @@
             }
         };
 
-    
+        // Llamar a la función para cargar lotes cuando el DOM esté listo
+        document.addEventListener("DOMContentLoaded", cargarLotes);
+
 
 
         // Implementar para la salida de medicamentos
@@ -987,6 +1281,8 @@
 
         // Cargar datos al iniciar la página
         cargarLotes();
+        loadTipoEquinos();
+        loadHistorialMovimientos();
         loadSelectMedicamentos();
         loadMedicamentos();
         loadTiposMedicamentos();

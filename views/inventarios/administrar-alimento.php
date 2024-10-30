@@ -402,7 +402,6 @@
     const formEntradaAlimento = document.querySelector("#form-entrada-alimento");
     const formSalidaAlimento = document.querySelector("#form-salida-alimento");
     const alimentosTable = document.querySelector("#alimentos-table");
-    const historialMovimientosTable = document.querySelector("#historial-movimientos-table");
     const alimentoSelectEntrada = document.querySelector("#alimento-select-entrada");
     const alimentoSelectSalida = document.querySelector("#alimento-select-salida");
     const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
@@ -828,10 +827,11 @@
                 }
             } else {
                 mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO');
-                console.log("El usuario canceló la operación.");
+                console.log("El usuario canceló la operación.");2314105089
             }
         });
     }
+    
     //historial de movimientos
     const loadHistorialMovimientos = async () => {
         try {

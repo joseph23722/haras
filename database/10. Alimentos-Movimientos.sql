@@ -101,7 +101,6 @@ DELIMITER ;
 
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -316,6 +315,8 @@ BEGIN
     CLOSE cur;
 END $$
 DELIMITER ;
+
+
 
 
 -- Procedimiento para historial Alimentos -----------------------------------------

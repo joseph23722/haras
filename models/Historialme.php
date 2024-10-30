@@ -23,20 +23,28 @@ class Historialme extends Conexion {
                 throw new Exception('Usuario no autenticado.');
             }
 
-            // Ejecutar el procedimiento almacenado
-            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?,?,?,?,?,?,?,?,?,?)");
+            // Validar que los parámetros obligatorios están presentes
+            if (empty($params['idEquino']) || empty($params['idMedicamento']) || empty($params['dosis']) ||
+                empty($params['cantidad']) || empty($params['frecuenciaAdministracion']) ||
+                empty($params['viaAdministracion']) || empty($params['fechaInicio']) || empty($params['fechaFin'])) {
+                throw new Exception('Faltan parámetros obligatorios.');
+            }
+
+            // Ejecutar el procedimiento almacenado con todos los parámetros
+            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['idEquino'],
                 $idUsuario, // Usar el idUsuario de la sesión
                 $params['idMedicamento'],
                 $params['dosis'],
+                $params['cantidad'],
                 $params['frecuenciaAdministracion'],
                 $params['viaAdministracion'],
-                $params['pesoEquino'],
+                $params['pesoEquino'] ?? null, // Permitir NULL
                 $params['fechaInicio'],
                 $params['fechaFin'],
                 $params['observaciones'],
-                $params['reaccionesAdversas']
+                $params['reaccionesAdversas'] ?? null // Permitir NULL
             ]);
 
             return $query->rowCount() > 0;
@@ -45,6 +53,7 @@ class Historialme extends Conexion {
             return false;
         }
     }
+
 
     // Método para listar equinos propios (sin propietario) para medicamentos
     public function listarEquinosPorTipo() {
@@ -70,15 +79,18 @@ class Historialme extends Conexion {
         }
     }
 
-    // Método para listar todos los medicamentos
-    public function listarMedicamentos() {
+    // Obtener todos los medicamentos
+    public function getAllMedicamentos() {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_medicamentosMedis()");
-            $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+            // Llamada al procedimiento almacenado para listar los medicamentos
+            $query = "CALL spu_listar_medicamentosMedi()"; // Llamada directa al procedimiento almacenado
+        
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Devolver todos los registros como un array asociativo
         } catch (Exception $e) {
-            error_log($e->getMessage());
-            return [];
+            error_log("Error al obtener medicamentos: " . $e->getMessage());
+            return false;
         }
     }
 }

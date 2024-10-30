@@ -1,110 +1,106 @@
 	-- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
-	DELIMITER $$
-	CREATE PROCEDURE spu_historial_medico_registrarMedi(
-		IN _idEquino INT,
-		IN _idUsuario INT,
-		IN _idMedicamento INT,
-		IN _dosis VARCHAR(50), -- Cambiado a VARCHAR(50)
-		IN _frecuenciaAdministracion VARCHAR(50),
-		IN _viaAdministracion VARCHAR(50),
-		IN _pesoEquino DECIMAL(10,2), -- Se manejará NULL dentro del procedimiento
-		IN _fechaInicio DATE,
-		IN _fechaFin DATE,
-		IN _observaciones TEXT,
-		IN _reaccionesAdversas TEXT -- Se manejará NULL dentro del procedimiento
-	)
-	BEGIN
-		DECLARE _nombreMedicamento VARCHAR(255);
-		DECLARE _presentacion VARCHAR(100);
-		DECLARE _tipoMedicamento VARCHAR(100);
+DELIMITER $$
 
-		-- Verificar que el equino exista
-		IF NOT EXISTS (SELECT 1 FROM Equinos WHERE idEquino = _idEquino) THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'El equino no existe.';
-		END IF;
-		
-		-- Verificar que el usuario exista
-		IF NOT EXISTS (SELECT 1 FROM Usuarios WHERE idUsuario = _idUsuario) THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'El usuario no existe.';
-		END IF;
-		
-		-- Verificar que el medicamento exista
-		IF NOT EXISTS (SELECT 1 FROM Medicamentos WHERE idMedicamento = _idMedicamento) THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'El medicamento no existe.';
-		END IF;
+CREATE PROCEDURE spu_historial_medico_registrarMedi(
+    IN _idEquino INT,
+    IN _idUsuario INT,
+    IN _idMedicamento INT,
+    IN _dosis VARCHAR(50),
+    IN _cantidad INT, -- Cantidad de medicamento a administrar
+    IN _frecuenciaAdministracion VARCHAR(50),
+    IN _viaAdministracion VARCHAR(50),
+    IN _pesoEquino DECIMAL(10,2), -- Permitir NULL
+    IN _fechaInicio DATE,
+    IN _fechaFin DATE,
+    IN _observaciones TEXT,
+    IN _reaccionesAdversas TEXT -- Permitir NULL
+)
+BEGIN
+    DECLARE _unidadDosis VARCHAR(50);
+    DECLARE _errorMensaje VARCHAR(255);
 
-		-- Obtener detalles del medicamento
-		SELECT nombreMedicamento, presentacion, tipo 
-		INTO _nombreMedicamento, _presentacion, _tipoMedicamento
-		FROM Medicamentos M
-		JOIN TiposMedicamentos T ON M.idTipo = T.idTipo
-		WHERE M.idMedicamento = _idMedicamento;
+    -- Manejador de errores para revertir la transacción si hay algún error
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error en la transacción de historial médico. Registro cancelado.';
+    END;
 
-		-- Validar la combinación de presentación, dosis y tipo de medicamento
-		CALL spu_validar_combinacion(_nombreMedicamento, _presentacion, _dosis, _tipoMedicamento);
+    -- Iniciar la transacción
+    START TRANSACTION;
 
-		-- Validar que la dosis no esté vacía
-		IF _dosis = '' THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'La dosis no puede estar vacía.';
-		END IF;
+    -- Verificar que el equino existe
+    IF NOT EXISTS (SELECT 1 FROM Equinos WHERE idEquino = _idEquino) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El equino no existe.';
+    END IF;
+    
+    -- Verificar que el usuario existe
+    IF NOT EXISTS (SELECT 1 FROM Usuarios WHERE idUsuario = _idUsuario) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El usuario no existe.';
+    END IF;
+    
+    -- Verificar que el medicamento existe
+    IF NOT EXISTS (SELECT 1 FROM Medicamentos WHERE idMedicamento = _idMedicamento) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El medicamento no existe.';
+    END IF;
 
-		-- Validar que la fecha de inicio y la fecha de fin sean correctas
-		IF _fechaInicio > _fechaFin THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'La fecha de inicio no puede ser posterior a la fecha de fin.';
-		END IF;
+    -- Validar la combinación de medicamento y dosis usando solo la unidad
+    SET _unidadDosis = TRIM(LOWER(REPLACE(_dosis, '[0-9]+', '')));
+    
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM CombinacionesMedicamentos
+        WHERE idMedicamento = _idMedicamento
+          AND LOWER(SUBSTRING_INDEX(dosis, ' ', -1)) = _unidadDosis
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La dosis no coincide con la unidad de dosis del medicamento.';
+    END IF;
 
-		-- Validar que el peso del equino no sea negativo (si se proporciona)
-		IF _pesoEquino IS NOT NULL AND _pesoEquino < 0 THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'El peso del equino no puede ser un valor negativo.';
-		END IF;
+    -- Validar que la fecha de inicio sea menor o igual a la fecha de fin
+    IF _fechaInicio > _fechaFin THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La fecha de inicio no puede ser posterior a la fecha de fin.';
+    END IF;
 
-		-- Validar que la frecuencia de administración no sea vacía
-		IF _frecuenciaAdministracion = '' THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'La frecuencia de administración no puede estar vacía.';
-		END IF;
+    -- Insertar el detalle del medicamento administrado al equino
+    INSERT INTO DetalleMedicamentos (
+        idMedicamento,
+        idEquino,
+        dosis,
+        cantidad,
+        frecuenciaAdministracion,
+        viaAdministracion,
+        pesoEquino,
+        fechaInicio,
+        fechaFin,
+        observaciones,
+        reaccionesAdversas,
+        idUsuario
+    ) VALUES (
+        _idMedicamento,
+        _idEquino,
+        _dosis,
+        _cantidad,
+        _frecuenciaAdministracion,
+        _viaAdministracion,
+        IFNULL(_pesoEquino, NULL),
+		NOW(),  -- Fecha de inicio como la fecha actual
+        _fechaFin,
+        _observaciones,
+        IFNULL(_reaccionesAdversas, NULL),
+        _idUsuario
+    );
 
-		-- Verificar que la vía de administración no sea vacía
-		IF _viaAdministracion = '' THEN
-			SIGNAL SQLSTATE '45000'
-			SET MESSAGE_TEXT = 'La vía de administración no puede estar vacía.';
-		END IF;
+    -- Confirmar la transacción
+    COMMIT;
 
-		-- Insertar el detalle del medicamento administrado al equino
-		INSERT INTO DetalleMedicamentos (
-			idMedicamento, 
-			idEquino, 
-			dosis, 
-			frecuenciaAdministracion, 
-			viaAdministracion, 
-			pesoEquino, 
-			fechaInicio, 
-			fechaFin, 
-			observaciones, 
-			reaccionesAdversas, 
-			idUsuario
-		) 
-		VALUES (
-			_idMedicamento, 
-			_idEquino, 
-			_dosis, 
-			_frecuenciaAdministracion, 
-			_viaAdministracion, 
-			IFNULL(_pesoEquino, NULL), -- Manejar NULL para pesoEquino
-			_fechaInicio, 
-			_fechaFin, 
-			_observaciones, 
-			IFNULL(_reaccionesAdversas, NULL), -- Manejar NULL para reaccionesAdversas
-			_idUsuario
-		);
-	END $$
-	DELIMITER ;
+END $$
+
+DELIMITER ;
 
 
 
@@ -167,29 +163,5 @@
 
 
 
-
-	DELIMITER $$
-	CREATE PROCEDURE spu_listar_medicamentosMedis()
-	BEGIN
-		SELECT 
-			M.idMedicamento, 
-			M.nombreMedicamento, 
-			M.descripcion, 
-			M.lote, 
-			M.presentacion, 
-			M.dosis, 
-			T.tipo AS tipoMedicamento, 
-			M.cantidad_stock, 
-			M.stockMinimo, 
-			M.fecha_registro, 
-			M.fecha_caducidad, 
-			M.precioUnitario, 
-			M.estado 
-		FROM 
-			Medicamentos M
-		JOIN 
-			TiposMedicamentos T ON M.idTipo = T.idTipo;
-	END $$
-	DELIMITER ;
 
 
