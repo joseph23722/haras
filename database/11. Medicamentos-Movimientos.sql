@@ -32,7 +32,34 @@ BEGIN
 END $$
 DELIMITER ;
 
+SELECT 
+        m.idMedicamento,
+        m.nombreMedicamento,
+        m.descripcion,
+        lm.lote,                         -- Lote del medicamento (desde LotesMedicamento)
+        p.presentacion,
+        c.dosis,
+        t.tipo AS nombreTipo,            -- Mostrar el nombre del tipo de medicamento
+        m.cantidad_stock,
+        m.stockMinimo,
+        lm.fechaIngreso,                 -- Fecha de ingreso del lote
+        lm.fechaCaducidad,               -- Fecha de caducidad del lote
+        m.precioUnitario,
+        m.estado
+    FROM 
+        Medicamentos m
+    JOIN 
+        CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN 
+        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    JOIN
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
+    ORDER BY 
+        m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 
+select * from lotesmedicamento;
 
 -- Procedimiento para registrar medicamentos---------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar medicamentos con verificación de lote en LotesMedicamento
