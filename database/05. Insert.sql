@@ -101,8 +101,8 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(2, 'listar-equino', 'S', 'Listado Equinos', 'fa-solid fa-list'),
 	(2, 'registrar-equino', 'S', 'Registro Equinos', 'fa-solid fa-horse'),
-   	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop');
-
+   	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop'),
+	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list');
 -- historialMedico
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(3, 'diagnosticar-equino', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform');
@@ -150,7 +150,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
 	(4, 1),
 	(4, 2),
     (4, 3),
-    (4, 14);
+    (4, 14),
+    (4, 15);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES

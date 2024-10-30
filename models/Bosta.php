@@ -21,10 +21,9 @@ class Bosta extends Conexion
                 $params['pesoaprox'],
             ]);
 
-            return 1; // Indica que la inserción fue exitosa
+            return 1;
 
         } catch (Exception $e) {
-            // Relanzar la excepción para que sea capturada en el controlador
             throw $e;
         }
     }
@@ -35,6 +34,18 @@ class Bosta extends Conexion
             $cmd = $this->pdo->prepare("CALL spu_obtener_pesos()");
             $cmd->execute();
             return $cmd->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function ListarBostas(): array
+    {
+        try {
+            $cmd = $this->pdo->prepare("CALL spu_listar_bostas()");
+            $cmd->execute();
+            return $cmd->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             error_log("Error: " . $e->getMessage());
             return [];

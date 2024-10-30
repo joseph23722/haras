@@ -58,9 +58,6 @@
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
-                        <!-- <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" onclick="window.location.href='listadobostas.php';">
-                            <i class="fas fa-list"></i> Listado Bostas
-                        </button> -->
                     </div>
                 </div>
             </form>

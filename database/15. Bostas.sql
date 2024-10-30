@@ -87,3 +87,33 @@ BEGIN
            v_peso_mensual AS peso_mensual;
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_listar_bostas`;
+DELIMITER //
+CREATE PROCEDURE `spu_listar_bostas`()
+BEGIN
+    SELECT 
+        b.idbosta,
+        b.fecha,
+        b.cantidadsacos,
+        b.pesoaprox,
+        b.peso_diario,
+        CASE 
+            WHEN ROW_NUMBER() OVER (PARTITION BY b.numero_semana ORDER BY b.fecha) = 1 THEN 
+                (SELECT SUM(peso_diario) 
+                 FROM bostas 
+                 WHERE WEEK(fecha, 1) = b.numero_semana 
+                   AND YEAR(fecha) = YEAR(b.fecha)) 
+            ELSE NULL 
+        END AS peso_semanal,
+        b.numero_semana,
+        (SELECT SUM(peso_diario) 
+         FROM bostas 
+         WHERE fecha <= CURDATE()) AS total_acumulado
+    FROM 
+        bostas b
+    ORDER BY 
+        b.numero_semana DESC,
+        b.fecha ASC;
+END //
+DELIMITER ;
