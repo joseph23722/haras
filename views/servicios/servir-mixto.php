@@ -18,7 +18,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="idEquinoMacho" id="idEquinoMacho" class="form-select">
+                            <select name="idEquinoMacho" id="idEquinoMacho" class="form-select" autofocus>
                                 <option value="">Seleccione Padrillo</option>
                             </select>
                             <label for="idEquinoMacho"><i class="fas fa-horse-head" style="color: #007bff;"></i> Padrillo</label>

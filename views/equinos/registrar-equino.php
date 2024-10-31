@@ -13,7 +13,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="nombreEquino" id="nombreEquino" class="form-control" required>
+                            <input type="text" name="nombreEquino" id="nombreEquino" class="form-control" required autofocus>
                             <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #00b4d8;"></i> Nombre del Equino</label>
                         </div>
                     </div>

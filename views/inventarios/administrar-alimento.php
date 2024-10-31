@@ -17,7 +17,7 @@
           <!-- Campos del formulario para registrar alimento -->
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required>
+              <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required autofocus>
               <label for="nombreAlimento"><i class="fas fa-seedling" style="color: #3498db;"></i> Nombre del Alimento</label>
             </div>
           </div>

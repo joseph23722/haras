@@ -28,7 +28,7 @@
                     <!-- Nombre del Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="nombreMedicamento" id="nombreMedicamento" class="form-control" required>
+                            <input type="text" name="nombreMedicamento" id="nombreMedicamento" class="form-control" required autofocus>
                             <label for="nombreMedicamento">
                                 <i class="fas fa-capsules" style="color: #00b4d8;"></i> Nombre del Medicamento
                             </label>

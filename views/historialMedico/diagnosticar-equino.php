@@ -16,7 +16,7 @@
                     <!-- Selectores de Equino -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select id="selectYegua" class="form-select equino-select" data-tipo="yegua" name="idEquino" required>
+                            <select id="selectYegua" class="form-select equino-select" data-tipo="yegua" name="idEquino" required autofocus>
                                 <option value="">Seleccione Yegua</option>
                             </select>
                             <label for="selectYegua"><i class="fas fa-horse" style="color: #00b4d8;"></i> Yegua</label>

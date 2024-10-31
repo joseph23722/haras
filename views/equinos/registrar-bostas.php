@@ -11,7 +11,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="pesoaprox" id="pesoaprox" class="form-control" required>
+                            <input type="number" name="pesoaprox" id="pesoaprox" class="form-control" required autofocus>
                             <label for="pesoaprox"><i class="fas fa-poop" style="color: #00b4d8;"></i> Cantidad de Bostas (kg)</label>
                         </div>
                     </div>
