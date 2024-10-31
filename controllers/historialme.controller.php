@@ -12,25 +12,65 @@ try {
         $operation = $params['operation'] ?? '';
 
         switch ($operation) {
-            case 'registrarHistorial':
+            case 'registrarHistorialMedico':
                 // Llamada al método para registrar el historial médico
                 $result = $historialme->registrarHistorial([
-                    'idEquino' => $params['idEquino'] ?? null,
-                    'idMedicamento' => $params['idMedicamento'] ?? null,
-                    'dosis' => $params['dosis'] ?? null,
-                    'cantidad' => $params['cantidad'] ?? null,
-                    'frecuenciaAdministracion' => $params['frecuenciaAdministracion'] ?? null,
-                    'viaAdministracion' => $params['viaAdministracion'] ?? null,
-                    'pesoEquino' => $params['pesoEquino'] ?? null,
-                    'fechaInicio' => $params['fechaInicio'] ?? null,
-                    'fechaFin' => $params['fechaFin'] ?? null,
-                    'observaciones' => $params['observaciones'] ?? null,
-                    'reaccionesAdversas' => $params['reaccionesAdversas'] ?? null
+                    'idEquino' => $_POST['idEquino'] ?? null,
+                    'idMedicamento' => $_POST['idMedicamento'] ?? null,
+                    'dosis' => $_POST['dosis'] ?? null,
+                    'frecuenciaAdministracion' => $_POST['frecuenciaAdministracion'] ?? null,
+                    'viaAdministracion' => $_POST['viaAdministracion'] ?? null,
+                    'pesoEquino' => $_POST['pesoEquino'] ?? null,
+                    'fechaInicio' => $_POST['fechaInicio'] ?? null,
+                    'fechaFin' => $_POST['fechaFin'] ?? null,
+                    'observaciones' => $_POST['observaciones'] ?? null,
+                    'reaccionesAdversas' => $_POST['reaccionesAdversas'] ?? null
                 ]);
-                
-                // Responder con el resultado de la operación
-                echo json_encode(['success' => $result]);
+            
+                // Enviar la respuesta según el resultado del método
+                if ($result['status'] === 'success') {
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => $result['message']
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => $result['message']
+                    ]);
+                }
                 break;
+
+            case 'deleteMedicamento':
+                // Verificar que el ID del medicamento esté en los parámetros POST
+                if (isset($_POST['idMedicamento'])) {
+                    $idMedicamento = $_POST['idMedicamento'];
+                    
+                    // Llamar al método para eliminar el medicamento
+                    $result = $medicamentoModel->deleteMedicamentoDirect($idMedicamento);
+                    
+                    // Verificar el resultado y enviar una respuesta adecuada
+                    if ($result) {
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Medicamento eliminado correctamente'
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => 'No se pudo eliminar el medicamento o el ID no existe'
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'ID de medicamento no proporcionado'
+                    ]);
+                }
+                break;
+            
+            
+            
 
             default:
                 echo json_encode(['error' => 'Operación no válida']);
@@ -48,15 +88,11 @@ try {
                 break;
 
             case 'consultarHistorialMedico':
-                // Llamada al método para consultar el historial médico de un equino
-                $idEquino = $_GET['idEquino'] ?? null;
-                if ($idEquino) {
-                    $result = $historialme->consultarHistorialMedico($idEquino);
-                    echo json_encode(['data' => $result]);
-                } else {
-                    echo json_encode(['error' => 'ID del equino es requerido']);
-                }
+                $result = $historialme->consultarHistorialMedico();
+                echo json_encode(['data' => $result]);
                 break;
+                
+                
 
             case 'getAllMedicamentos':
                 // Llamada al método para obtener todos los medicamentos

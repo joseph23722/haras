@@ -1,4 +1,5 @@
-	-- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
+select * from DetalleMedicamentos;
+-- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$
 
 CREATE PROCEDURE spu_historial_medico_registrarMedi(
@@ -6,11 +7,9 @@ CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _idUsuario INT,
     IN _idMedicamento INT,
     IN _dosis VARCHAR(50),
-    IN _cantidad INT, -- Cantidad de medicamento a administrar
     IN _frecuenciaAdministracion VARCHAR(50),
     IN _viaAdministracion VARCHAR(50),
     IN _pesoEquino DECIMAL(10,2), -- Permitir NULL
-    IN _fechaInicio DATE,
     IN _fechaFin DATE,
     IN _observaciones TEXT,
     IN _reaccionesAdversas TEXT -- Permitir NULL
@@ -47,31 +46,17 @@ BEGIN
         SET MESSAGE_TEXT = 'El medicamento no existe.';
     END IF;
 
-    -- Validar la combinación de medicamento y dosis usando solo la unidad
-    SET _unidadDosis = TRIM(LOWER(REPLACE(_dosis, '[0-9]+', '')));
-    
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM CombinacionesMedicamentos
-        WHERE idMedicamento = _idMedicamento
-          AND LOWER(SUBSTRING_INDEX(dosis, ' ', -1)) = _unidadDosis
-    ) THEN
+    -- Validar que la fecha de fin sea una fecha futura
+    IF _fechaFin < CURDATE() THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La dosis no coincide con la unidad de dosis del medicamento.';
+        SET MESSAGE_TEXT = 'La fecha de fin no puede ser anterior a hoy.';
     END IF;
 
-    -- Validar que la fecha de inicio sea menor o igual a la fecha de fin
-    IF _fechaInicio > _fechaFin THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'La fecha de inicio no puede ser posterior a la fecha de fin.';
-    END IF;
-
-    -- Insertar el detalle del medicamento administrado al equino
+    -- Insertar el detalle del medicamento administrado al equino con la fecha de inicio como la fecha actual
     INSERT INTO DetalleMedicamentos (
         idMedicamento,
         idEquino,
         dosis,
-        cantidad,
         frecuenciaAdministracion,
         viaAdministracion,
         pesoEquino,
@@ -84,11 +69,10 @@ BEGIN
         _idMedicamento,
         _idEquino,
         _dosis,
-        _cantidad,
         _frecuenciaAdministracion,
         _viaAdministracion,
         IFNULL(_pesoEquino, NULL),
-		NOW(),  -- Fecha de inicio como la fecha actual
+        NOW(),  -- Fecha de inicio se asigna a la fecha y hora actual
         _fechaFin,
         _observaciones,
         IFNULL(_reaccionesAdversas, NULL),
@@ -104,62 +88,59 @@ DELIMITER ;
 
 
 
-	-- listar equinos propios para medicamentos;
-	DELIMITER $$
-	CREATE PROCEDURE spu_listar_equinos_propiosMedi()
-	BEGIN
-		SELECT 
-			idEquino,
-			nombreEquino,
-			sexo,
-			idTipoEquino
-		FROM 
-			Equinos
-		WHERE 
-			idPropietario IS NULL  -- Filtrar solo los equinos que no tienen propietario
-			AND idTipoEquino IN (1, 2, 3, 4);
-	END $$
-	DELIMITER ;
+-- listar equinos propios para medicamentos;
+DELIMITER $$
+CREATE PROCEDURE spu_listar_equinos_propiosMedi()
+BEGIN
+	SELECT 
+		idEquino,
+		nombreEquino,
+		sexo,
+		idTipoEquino
+	FROM 
+		Equinos
+	WHERE 
+		idPropietario IS NULL  -- Filtrar solo los equinos que no tienen propietario
+		AND idTipoEquino IN (1, 2, 3, 4);
+END $$
+DELIMITER ;
 
 
 
-	-- 
-	DELIMITER $$
-	CREATE PROCEDURE spu_consultar_historial_medicoMedi(
-		IN _idEquino INT
-	)
-	BEGIN
-		SELECT 
-			DM.idDetalleMed AS idRegistro,
-			DM.idEquino,
-			E.nombreEquino,
-			DM.idMedicamento,
-			M.nombreMedicamento,
-			DM.dosis,
-			DM.frecuenciaAdministracion,
-			DM.viaAdministracion,
-			DM.pesoEquino,
-			DM.fechaInicio,
-			DM.fechaFin,
-			DM.observaciones,
-			DM.reaccionesAdversas,
-			-- No hay columna nombreUsuario, mostrar solo idUsuario como responsable
-			DM.idUsuario AS responsable,
-			DM.fechaInicio AS fechaRegistro
-		FROM 
-			DetalleMedicamentos DM
-		JOIN 
-			Medicamentos M ON DM.idMedicamento = M.idMedicamento
-		JOIN 
-			Equinos E ON DM.idEquino = E.idEquino
-		JOIN 
-			Usuarios U ON DM.idUsuario = U.idUsuario -- Aquí mostramos el idUsuario como responsable
-		WHERE 
-			DM.idEquino = _idEquino
-		ORDER BY 
-			DM.fechaInicio DESC;
-	END $$
-	DELIMITER ;
+-- 
+DELIMITER $$
+
+CREATE PROCEDURE spu_consultar_historial_medicoMedi()
+BEGIN
+    SELECT 
+        DM.idDetalleMed AS idRegistro,
+        DM.idEquino,
+        E.nombreEquino,
+        DM.idMedicamento,
+        M.nombreMedicamento,
+        DM.dosis,
+        DM.frecuenciaAdministracion,
+        DM.viaAdministracion,
+        DM.pesoEquino,
+        DM.fechaInicio,
+        DM.fechaFin,
+        DM.observaciones,
+        DM.reaccionesAdversas,
+        DM.idUsuario AS responsable,
+        DM.fechaInicio AS fechaRegistro
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    INNER JOIN 
+        Usuarios U ON DM.idUsuario = U.idUsuario
+    ORDER BY 
+        DM.fechaInicio DESC;
+END $$
+
+DELIMITER ;
 
 
 

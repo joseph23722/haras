@@ -76,13 +76,6 @@
                         </div>
                     </div>
 
-                    <!-- Cantidad -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="number" name="cantidad" id="cantidad" class="form-control" required>
-                            <label for="cantidad"><i class="fas fa-box" style="color: #20c997;"></i> Cantidad</label>
-                        </div>
-                    </div>
 
                     <!-- Peso Equino (opcional) -->
                     <div class="col-md-6">
@@ -103,10 +96,19 @@
                     <!-- Vía de Administración -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="viaAdministracion" id="viaAdministracion" class="form-control" required>
+                            <select name="viaAdministracion" id="viaAdministracion" class="form-select" required>
+                                <option value="">Seleccione Vía de Administración</option>
+                                <option value="Oral">Oral - Administración por la boca</option>
+                                <option value="Intramuscular">Intramuscular - Inyección en el músculo</option>
+                                <option value="Intravenosa">Intravenosa - Inyección en la vena</option>
+                                <option value="Subcutánea">Subcutánea - Inyección debajo de la piel</option>
+                                <option value="Intranasal">Intranasal - Administración en las fosas nasales</option>
+                                <option value="Tópica">Tópica - Aplicación en la piel o mucosa</option>
+                            </select>
                             <label for="viaAdministracion"><i class="fas fa-route" style="color: #00b4d8;"></i> Vía de Administración</label>
                         </div>
                     </div>
+
 
                     <!-- Observaciones -->
                     <div class="col-md-12">
@@ -149,12 +151,15 @@
                         <th>Equino</th>
                         <th>Medicamento</th>
                         <th>Dosis</th>
-                        <th>Cantidad</th>
                         <th>Frecuencia</th>
                         <th>Vía</th>
-                        <th>Fecha de Fin</th>
                         <th>Observaciones</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha de Fin</th>
+                        <th>Peso Equino</th>
                         <th>Reacciones Adversas</th>
+                        <th>Acciones</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -172,6 +177,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        let selectedEquinoId = null;
         const selectYegua = document.querySelector("#selectYegua");
         const selectPadrillo = document.querySelector("#selectPadrillo");
         const selectPotrillo = document.querySelector("#selectPotrillo");
@@ -182,41 +188,113 @@
         // Restringir la fecha de fin a hoy y futuras
         fechaFinInput.min = new Date().toISOString().split("T")[0];
 
-        // Inicializar DataTable y mostrar mensaje al completar la carga
-        const historialTable = $('#historialTable').DataTable({
-            ajax: {
-                url: '../../controllers/historialme.controller.php',
-                type: 'GET',
-                data: function() {
-                    return { operation: 'consultarHistorialMedico', idEquino: selectedEquinoId }; // `selectedEquinoId` es el ID del equino seleccionado
-                },
-                dataSrc: 'data',
-                complete: function() {
-                    showToast("Historiales médicos cargados exitosamente", "SUCCESS");
-                },
-                error: function() {
-                    showToast("Error al cargar el historial médico", "ERROR");
-                }
-            },
-            columns: [
-                { data: 'nombreEquino' },
-                { data: 'nombreMedicamento' },
-                { data: 'dosis' },
-                { data: 'cantidad' },
-                { data: 'frecuenciaAdministracion' },
-                { data: 'viaAdministracion' },
-                { data: 'fechaFin' },
-                { data: 'observaciones' },
-                { data: 'reaccionesAdversas' }
-            ],
-            language: {
-                url: '/haras/data/es_es.json'
+        // Función para cargar la tabla de historial médico
+        const loadHistorialTable = async () => {
+            // Destruir la tabla si ya existe
+            if ($.fn.dataTable.isDataTable('#historialTable')) {
+                $('#historialTable').DataTable().destroy();
             }
+
+            // Configurar el DataTable
+            $('#historialTable').DataTable({
+                ajax: {
+                    url: '../../controllers/historialme.controller.php',
+                    type: 'GET',
+                    data: { operation: 'consultarHistorialMedico' },  // Sin filtro de idEquino
+                    dataSrc: 'data',
+                    complete: function() {
+                        console.log("Datos cargados exitosamente en DataTable de historial.");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error en DataTable AJAX:", textStatus, errorThrown);
+                    }
+                },
+                columns: [
+                    { data: 'nombreEquino' },
+                    { data: 'nombreMedicamento' },
+                    { data: 'dosis' },
+                    { data: 'frecuenciaAdministracion' },
+                    { data: 'viaAdministracion' },
+                    { data: 'observaciones' },
+                    { data: 'fechaInicio' },
+                    { data: 'fechaFin' },
+                    { data: 'pesoEquino' },
+                    { data: 'reaccionesAdversas' },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-primary" onclick="editarRegistro(${row.idRegistro})">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${row.idRegistro})">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </button>
+                            `;
+                        }
+                    }
+             
+                ],
+                language: {
+                    url: '/haras/data/es_es.json'
+                }
+            });
+        };
+
+        function editarRegistro(idRegistro) {
+            // Lógica para editar el registro, por ejemplo, abrir un modal de edición
+            console.log("Editar registro con ID:", idRegistro);
+            // Aquí puedes agregar la lógica para cargar los datos en el formulario de edición
+        }
+
+        function eliminarRegistro(idRegistro) {
+            if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
+                fetch(`../../controllers/historialme.controller.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        operation: 'deleteHistorialMedico',
+                        idRegistro: idRegistro
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("Registro eliminado exitosamente");
+                        historialTable.ajax.reload(); // Recargar la tabla después de eliminar
+                    } else {
+                        alert("Error al eliminar el registro: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Error al eliminar el registro:", error));
+            }
+        }
+
+
+        // Evento para actualizar selectedEquinoId y recargar DataTable
+        document.querySelectorAll(".equino-select").forEach(select => {
+            select.addEventListener("change", (event) => {
+                selectedEquinoId = event.target.value || null; // Actualiza el ID del equino
+                $('#historialTable').DataTable().ajax.reload(); // Recarga la tabla con el nuevo ID
+            });
         });
 
-        let selectedEquinoId = 1;
+        // Bloquear los selects de equinos al seleccionar uno
+        function handleEquinoSelect(selectedSelect) {
+            const selects = [selectYegua, selectPadrillo, selectPotrillo, selectPotranca];
+            selects.forEach(select => {
+                select.disabled = select !== selectedSelect && selectedSelect.value !== "";
+            });
+        }
 
-        // Cargar equinos con mensaje de éxito o advertencia
+        [selectYegua, selectPadrillo, selectPotrillo, selectPotranca].forEach(select => {
+            select.addEventListener('change', () => handleEquinoSelect(select));
+        });
+
+        // Función para cargar la lista de equinos
         async function loadEquinos() {
             try {
                 const response = await fetch('../../controllers/historialme.controller.php?operation=listarEquinosPorTipo', {
@@ -226,7 +304,7 @@
 
                 const data = await response.json();
 
-                if (data.status === 'success' && Array.isArray(data.data)) {
+                if (data.data && Array.isArray(data.data)) {
                     clearSelect(selectYegua);
                     clearSelect(selectPadrillo);
                     clearSelect(selectPotrillo);
@@ -250,10 +328,11 @@
                 }
             } catch (error) {
                 showToast("Error al cargar los equinos", "ERROR");
+                console.error("Error:", error);
             }
         }
 
-        // Cargar lista de medicamentos con mensaje de éxito o advertencia
+        // Función para cargar la lista de medicamentos
         async function loadMedicamentos() {
             try {
                 const response = await fetch('../../controllers/historialme.controller.php?operation=getAllMedicamentos', {
@@ -262,8 +341,9 @@
                 });
 
                 const data = await response.json();
+                console.log("Respuesta del servidor:", data);
 
-                if (data.status === 'success' && Array.isArray(data.data)) {
+                if (data.data && Array.isArray(data.data)) {
                     medicamentoSelect.innerHTML = '<option value="">Seleccione Medicamento</option>';
                     data.data.forEach(medicamento => {
                         const option = document.createElement('option');
@@ -276,17 +356,55 @@
                     showToast("No se encontraron medicamentos.", "WARNING");
                 }
             } catch (error) {
+                console.error("Error al cargar los medicamentos:", error);
                 showToast("Error al cargar los medicamentos", "ERROR");
             }
         }
 
+        // Función para enviar el formulario de registro de historial médico
+        document.querySelector("#form-historial-medico").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            formData.append("operation", "registrarHistorialMedico");
+
+            console.log("Datos enviados al servidor:", Object.fromEntries(formData.entries())); // Log para verificar los datos enviados
+
+            try {
+                const response = await fetch('../../controllers/historialme.controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log("Respuesta JSON parseada:", result); // Log de la respuesta
+
+                if (result.status === "success") {
+                    showToast(result.message || "Historial médico registrado correctamente", "SUCCESS");
+
+                    event.target.reset();
+                    $('#historialTable').DataTable().ajax.reload();
+
+                    [selectYegua, selectPadrillo, selectPotrillo, selectPotranca].forEach(select => select.disabled = false);
+                } else {
+                    showToast("Error al registrar el historial: " + (result.message || "Desconocido"), "ERROR");
+                }
+            } catch (error) {
+                console.error("Error al registrar el historial médico:", error);
+                showToast("Error al registrar el historial médico: Error de conexión o error inesperado", "ERROR");
+            }
+        });
+
+        // Función para limpiar los selects de equinos
         function clearSelect(selectElement) {
             selectElement.innerHTML = `<option value="">Seleccione ${selectElement.id.replace('select', '')}</option>`;
         }
 
-        // Cargar equinos y medicamentos al inicio
+        // Cargar equinos, medicamentos y la tabla de historial médico al iniciar
         loadEquinos();
         loadMedicamentos();
+        loadHistorialTable();
     });
 </script>
+
 
