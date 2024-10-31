@@ -101,7 +101,8 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(2, 'listar-equino', 'S', 'Listado Equinos', 'fa-solid fa-list'),
 	(2, 'registrar-equino', 'S', 'Registro Equinos', 'fa-solid fa-horse'),
    	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop'),
-	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list');
+	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list'),
+    (2, 'historial-equino', 'S', 'Historial Equinos', 'fas fa-history');
 -- historialMedico
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(3, 'diagnosticar-equino', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform');
@@ -118,18 +119,18 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
     (6, 'registrar-usuario', 'N', NULL, NULL);
-   
+   select * from vistas;
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
-    (1, 13);
+    (1, 14);
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
-    (2, 13);
+    (2, 14);
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
@@ -142,7 +143,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 12),
     (3, 13),
     (3, 14),
-    (3, 15);
+    (3, 15),
+    (3, 16);
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
 	(4, 1),
@@ -154,7 +156,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
 	(5, 1),
-	(5, 8);
+	(5, 9);
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
