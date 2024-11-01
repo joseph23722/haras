@@ -1,4 +1,5 @@
 -- Procedimiento para registrar los alimentos  
+DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,              
@@ -65,12 +66,27 @@ BEGIN
 
 END $$
 DELIMITER ;
-
+ 
 
 -- -------
 DELIMITER $$
+
 CREATE PROCEDURE spu_obtenerAlimentosConLote()
 BEGIN
+    -- Actualizar el estado de los registros en la tabla Alimentos
+    UPDATE Alimentos 
+    SET estado = 'Agotado'
+    WHERE stockActual = 0;
+
+    UPDATE Alimentos 
+    SET estado = 'Por agotarse'
+    WHERE stockActual > 0 AND stockActual <= stockMinimo;
+
+    UPDATE Alimentos 
+    SET estado = 'Disponible'
+    WHERE stockActual > stockMinimo;
+
+    -- Seleccionar los datos de Alimentos junto con la información de Lotes
     SELECT 
         A.idAlimento,
         A.idUsuario,
@@ -96,6 +112,7 @@ BEGIN
     INNER JOIN 
         LotesAlimento L ON A.idLote = L.idLote;
 END $$
+
 DELIMITER ;
 
 
@@ -272,49 +289,39 @@ DELIMITER ;
 
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE alimentoNombre VARCHAR(100);
-    DECLARE loteAlimento VARCHAR(50);
-    DECLARE stockActual DECIMAL(10,2);
-    DECLARE stockMinimo DECIMAL(10,2);
+    -- Notificación de alimentos agotados
+    SELECT 
+        CONCAT('Alimento agotado: ', a.nombreAlimento, ', Lote: ', l.lote, ', Stock: ', a.stockActual) AS Notificacion
+    FROM 
+        Alimentos a
+    JOIN 
+        LotesAlimento l ON a.idLote = l.idLote
+    WHERE 
+        a.stockActual = 0
+    ORDER BY 
+        a.nombreAlimento
+    LIMIT 5;
 
-    -- Cursor para seleccionar los alimentos con stock bajo o agotados, limitando a 5
-    DECLARE cur CURSOR FOR
-        SELECT a.nombreAlimento, l.lote, a.stockActual, a.stockMinimo 
-        FROM Alimentos a
-        JOIN LotesAlimento l ON a.idLote = l.idLote
-        WHERE a.stockActual <= a.stockMinimo
-        ORDER BY a.stockActual ASC
-        LIMIT 5;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    -- Abrir el cursor
-    OPEN cur;
-
-    -- Bucle para recorrer los resultados
-    read_loop: LOOP
-        FETCH cur INTO alimentoNombre, loteAlimento, stockActual, stockMinimo;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Imprimir el mensaje de notificación
-        IF stockActual = 0 THEN
-            -- Notificación de alimentos agotados
-            SELECT CONCAT('Alimento agotado: ', alimentoNombre, ', Lote: ', loteAlimento, ', Stock: ', stockActual) AS Notificacion;
-        ELSE
-            -- Notificación de alimentos con stock bajo
-            SELECT CONCAT('Alimento con stock bajo: ', alimentoNombre, ', Lote: ', loteAlimento, ', Stock: ', stockActual, ' (Stock mínimo: ', stockMinimo, ')') AS Notificacion;
-        END IF;
-    END LOOP;
-
-    -- Cerrar cursor
-    CLOSE cur;
+    -- Notificación de alimentos con stock bajo (mayor que 0 y menor o igual al stock mínimo)
+    SELECT 
+        CONCAT('Alimento con stock bajo: ', a.nombreAlimento, ', Lote: ', l.lote, ', Stock: ', a.stockActual, ' (Stock mínimo: ', a.stockMinimo, ')') AS Notificacion
+    FROM 
+        Alimentos a
+    JOIN 
+        LotesAlimento l ON a.idLote = l.idLote
+    WHERE 
+        a.stockActual > 0 AND a.stockActual <= a.stockMinimo
+    ORDER BY 
+        a.stockActual ASC
+    LIMIT 5;
 END $$
+
 DELIMITER ;
+
+CALL spu_notificar_stock_bajo_alimentos();
 
 
 
@@ -419,6 +426,4 @@ DELIMITER ;
 
 -- -------------------------------------------------------------------------------
 -- --
-
-
 

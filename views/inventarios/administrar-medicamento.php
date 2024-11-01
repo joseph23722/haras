@@ -153,18 +153,23 @@
         </div>
     </div>
 
-    <!-- Botones para Registrar Entrada y Salida -->
+    <!-- Opciones de Movimiento -->
     <div class="card mb-4">
         <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-            <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Opciones de Movimiento</h5>
+            <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
-        <div class="card-body text-center">
-            <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#modalEntrada">
-                <i class="fas fa-arrow-up"></i> Registrar Entrada de Medicamento
+        <div class="card-body text-center" style="background-color: #f9f9f9;">
+            <button class="btn btn-outline-primary btn-lg me-3" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntrada">
+                <i class="fas fa-arrow-up"></i> Registrar Entrada de Alimento
             </button>
-            <button class="btn btn-outline-danger btn-lg" data-bs-toggle="modal" data-bs-target="#modalSalida">
-                <i class="fas fa-arrow-down"></i> Registrar Salida de Medicamento
+            <button class="btn btn-outline-danger btn-lg me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalSalida">
+                <i class="fas fa-arrow-down"></i> Registrar Salida de Alimento
             </button>
+
+
+
+
+
         </div>
     </div>
 
@@ -465,23 +470,50 @@
         const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
 
         // Función para mostrar mensajes dinámicos
-        function mostrarMensaje(mensaje, tipo) {
-            messageArea.style.display = 'block';
-            messageArea.textContent = mensaje;
+        // Función para mostrar mensajes dinámicos para medicamentos
+        function mostrarMensaje(mensaje, tipo = 'INFO') {
+            const messageArea = document.getElementById("message-area"); // Asegúrate de tener un div con el id 'messageAreaMedicamento'
 
-            if (tipo === 'success') {
-                messageArea.style.backgroundColor = '#d4edda'; // Fondo verde para éxito
-                messageArea.style.color = '#155724'; // Texto verde oscuro
-            } else if (tipo === 'error') {
-                messageArea.style.backgroundColor = '#f8d7da'; // Fondo rojo para error
-                messageArea.style.color = '#721c24'; // Texto rojo oscuro
+            if (messageArea) {
+                // Definición de estilos para cada tipo de mensaje
+                const estilos = {
+                    'INFO': { color: '#3178c6', bgColor: '#e7f3ff', icon: 'ℹ️' },
+                    'SUCCESS': { color: '#3c763d', bgColor: '#dff0d8', icon: '✅' },
+                    'ERROR': { color: '#a94442', bgColor: '#f2dede', icon: '❌' },
+                    'WARNING': { color: '#8a6d3b', bgColor: '#fcf8e3', icon: '⚠️' }
+                };
+
+                // Obtener los estilos correspondientes al tipo de mensaje
+                const estilo = estilos[tipo] || estilos['INFO'];
+
+                // Aplicar estilos al contenedor del mensaje
+                messageArea.style.display = 'flex';
+                messageArea.style.alignItems = 'center';
+                messageArea.style.color = estilo.color;
+                messageArea.style.backgroundColor = estilo.bgColor;
+                messageArea.style.fontWeight = 'bold';
+                messageArea.style.padding = '15px';
+                messageArea.style.marginBottom = '15px';
+                messageArea.style.border = `1px solid ${estilo.color}`;
+                messageArea.style.borderRadius = '8px';
+                messageArea.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+
+                // Mostrar el mensaje con un icono
+                messageArea.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
+
+                // Ocultar el mensaje después de 5 segundos
+                setTimeout(() => {
+                    messageArea.style.display = 'none';
+                    messageArea.innerHTML = ''; // Limpiar contenido
+                    messageArea.style.border = 'none';
+                    messageArea.style.boxShadow = 'none';
+                    messageArea.style.backgroundColor = 'transparent';
+                }, 5000);
+            } else {
+                console.warn('El contenedor de mensajes para medicamentos no está presente en el DOM.');
             }
-
-            // Ocultar el mensaje después de 5 segundos
-            setTimeout(() => {
-                messageArea.style.display = 'none';
-            }, 5000);
         }
+
     
 
         // Función para validar el campo lote
@@ -831,36 +863,7 @@
                     }
                 });
 
-                // **Notificaciones sobre stock bajo y agotado**
-                const stockBajo = medicamentos.filter(med => med.cantidad_stock < med.stockMinimo && med.cantidad_stock > 0);
-                const agotados = medicamentos.filter(med => med.cantidad_stock <= 0);
-
-                const mostrarNotificacionesSecuenciales = async () => {
-                    let delay = 5000; // Intervalo entre cada notificación (en milisegundos)
-
-                    // Mostrar notificaciones de stock bajo primero
-                    if (stockBajo.length > 0) {
-                        for (const med of stockBajo) {
-                            showToast(`Stock bajo: ${med.nombreMedicamento} (Lote: ${med.lote}, Stock: ${med.cantidad_stock})`, "WARNING");
-                            await new Promise(resolve => setTimeout(resolve, delay));  // Espera antes de mostrar la siguiente notificación
-                        }
-                    } else {
-                        console.log("No hay medicamentos con stock bajo.");
-                    }
-
-                    // Mostrar notificaciones de medicamentos agotados después de stock bajo
-                    if (agotados.length > 0) {
-                        for (const med of agotados) {
-                            showToast(`Agotado: ${med.nombreMedicamento} (Lote: ${med.lote})`, "ERROR");
-                            await new Promise(resolve => setTimeout(resolve, delay));  // Espera antes de mostrar la siguiente notificación
-                        }
-                    } else {
-                        console.log("No hay medicamentos agotados.");
-                    }
-                };
-
-                // Ejecutar automáticamente las notificaciones al cargar la página
-                mostrarNotificacionesSecuenciales();
+                
 
             } catch (error) {
                 mostrarMensaje("Error al cargar medicamentos: " + error.message, 'error');
@@ -987,6 +990,38 @@
             }
         };
 
+        // **Función para manejar la notificación de stock bajo/agotado para medicamentos**
+        const notificarStockBajo = async () => {
+            try {
+                // Realizar la solicitud GET al controlador de medicamentos
+                const response = await fetch('../../controllers/admedi.controller.php?operation=notificarStockBajo', {
+                method: "GET"
+                });
+
+                // Leer la respuesta y parsear a JSON
+                const textResponse = await response.text();
+                const result = JSON.parse(textResponse);
+
+                // Verificar si hay datos y recorrer los resultados
+                if (result.status === 'success' && result.data) {
+                const { agotados, bajoStock } = result.data;
+
+                // Mostrar notificaciones de medicamentos agotados
+                agotados.forEach(notificacion => {
+                    mostrarMensaje(notificacion.Notificacion, 'ERROR'); // Puedes usar 'ERROR' para más énfasis
+                });
+
+                // Mostrar notificaciones de medicamentos con stock bajo
+                bajoStock.forEach(notificacion => {
+                    mostrarMensaje(notificacion.Notificacion, 'WARNING');
+                });
+                } else if (result.status === 'info') {
+                    mostrarMensaje(result.message, 'INFO');
+                }
+            } catch (error) {
+                mostrarMensaje('Error al notificar stock bajo.', 'ERROR');
+            }
+        };
 
 
         // Función para confirmar la eliminación del medicamento
@@ -1030,15 +1065,12 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    console.log('Combinación válida:', result);
                     return true;  // La combinación es válida
                 } else {
-                    console.error('Combinación inválida:', result.message);
                     mostrarMensaje(result.message, 'error');
                     return false;  // La combinación es inválida
                 }
             } catch (error) {
-                console.error('Error durante la validación de la combinación:', error);
                 mostrarMensaje("Error al validar combinación: " + error.message, 'error');
                 return false;
             }
@@ -1088,7 +1120,6 @@
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            console.log("Inicio del proceso de registro de medicamento");
 
             // Obtener los valores del formulario
             const loteInput = document.querySelector('#lote');
@@ -1107,15 +1138,13 @@
 
             // Validar que el lote no esté vacío o inválido
             const loteValido = await validarLote(loteInput);
-            console.log("Resultado de la validación de lote:", loteValido);
             if (!loteValido) {
-                mostrarMensaje('Lote inválido o ya registrado. Verifica los datos.', 'error');
+                showToast('Lote inválido . Verifica los datos.', 'error');
                 return;
             }
 
             // Confirmación del usuario
             const confirmar = await ask("¿Estás seguro de que deseas registrar este medicamento?", "Registrar Medicamento");
-            console.log("Confirmación del usuario:", confirmar);
             if (!confirmar) {
                 showToast("Operación cancelada.", "INFO");
                 return;
@@ -1123,9 +1152,8 @@
 
             // Validar combinación de tipo, presentación y dosis
             const esValido = await validarCombinacion({ tipo, presentacion, dosis });
-            console.log("Resultado de la validación de combinación:", esValido);
             if (!esValido) {
-                mostrarMensaje('Combinación inválida de tipo, presentación y dosis.', 'error');
+                showToast('Combinación inválida de tipo, presentación y dosis.', 'error');
                 return;
             }
 
@@ -1134,7 +1162,6 @@
             const data = new URLSearchParams(formData);
             data.append('operation', 'registrar');
 
-            console.log("Datos enviados al servidor:", Object.fromEntries(data));
 
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
@@ -1142,14 +1169,12 @@
                     body: data
                 });
 
-                console.log("Respuesta del servidor:", response);
                 if (!response.ok) {
                     mostrarMensaje("Error al conectar con el servidor. Estado: " + response.status, 'error');
                     return;
                 }
 
                 const result = await response.json();
-                console.log("Resultado de registro en el servidor:", result);
 
                 if (result.status === "success") {
                     showToast("Medicamento registrado correctamente", "SUCCESS");
@@ -1159,7 +1184,6 @@
                     mostrarMensaje("Error en el registro: " + result.message, 'error');
                 }
             } catch (error) {
-                console.error("Error al registrar el medicamento:", error);
                 mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
             }
         });
@@ -1191,16 +1215,15 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    mostrarMensaje(result.message, 'success');
                     showToast("Entrada registrada correctamente", "SUCCESS");
                     formEntrada.reset();
                     cargarLotes(); // Recargar la lista de lotes
                     loadMedicamentos(); // Actualizar lista de medicamentos (si aplica)
                 } else {
-                    mostrarMensaje("Error en el registro de entrada: " + result.message, 'error');
+                    showToast("Error en el registro de entrada: " + result.message, 'error');
                 }
             } catch (error) {
-                mostrarMensaje("Error en la solicitud de registro de entrada: " + error.message, 'error');
+                showToast("Error en la solicitud de registro de entrada: " + error.message, 'error');
             }
         });
 
@@ -1249,6 +1272,14 @@
         formSalida.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            const cantidadField = document.getElementById('salidaCantidad');
+            const cantidad = parseFloat(cantidadField.value) || 0;
+            // Validación adicional en JavaScript
+            if (cantidad <= 0) {
+            showToast("La cantidad debe ser mayor a 0.", 'ERROR');
+                return;
+            }// Convertir a número o asignar 0 si está vacío
+
             const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
 
             if (!confirmar) {
@@ -1268,16 +1299,15 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    mostrarMensaje(result.message, 'success');
                     showToast("Salida registrada correctamente", "SUCCESS");
                     formSalida.reset();
-                    loadMedicamentos();
+                    await loadMedicamentos();
+                    await notificarStockBajo(); // Aquí se verifica si el stock está bajo o agotado
+
                 } else {
-                    mostrarMensaje("Error en el registro de salida: " + result.message, 'error');
                     showToast("Error en el registro de salida", "ERROR");
                 }
             } catch (error) {
-                mostrarMensaje("Error en la solicitud de registro de salida: " + error.message, 'error');
                 showToast("Error en la solicitud de registro de salida", "ERROR");
             }
         });

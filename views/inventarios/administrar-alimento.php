@@ -250,11 +250,12 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="number" name="cantidad" id="cantidad-salida" class="form-control" required min="0">
-                  <label for="cantidad-salida">Cantidad</label>
-                </div>
+                  <div class="form-floating">
+                      <input type="number" name="cantidad" id="cantidad-salida" class="form-control" required min="1">
+                      <label for="cantidad-salida">Cantidad</label>
+                  </div>
               </div>
+
               <div class="col-md-6">
                 <div class="form-floating">
                   <select id="tipoEquinoMovimiento" name="idTipoEquino" class="form-select" required>
@@ -431,37 +432,49 @@
 
     
     // **Función para mostrar notificaciones en el div `mensaje`**
+    // **Función para mostrar notificaciones en el div `mensaje`**
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
         const mensajeDiv = document.getElementById('mensaje'); // Asegúrate de tener un div con el id 'mensaje'
         
         if (mensajeDiv) {
-            const colores = {
-                'INFO': 'blue',
-                'SUCCESS': 'green',
-                'ERROR': 'red',
-                'WARNING': 'orange'
+            // Colores y iconos según el tipo de mensaje
+            const estilos = {
+                'INFO': { color: '#3178c6', bgColor: '#e7f3ff', icon: 'ℹ️' },
+                'SUCCESS': { color: '#3c763d', bgColor: '#dff0d8', icon: '✅' },
+                'ERROR': { color: '#a94442', bgColor: '#f2dede', icon: '❌' },
+                'WARNING': { color: '#8a6d3b', bgColor: '#fcf8e3', icon: '⚠️' }
             };
-            
-            // Estilos del mensaje
-            mensajeDiv.style.color = colores[tipo] || 'black';
+
+            // Obtener los estilos correspondientes al tipo de mensaje
+            const estilo = estilos[tipo] || estilos['INFO'];
+
+            // Aplicar estilos al contenedor del mensaje
+            mensajeDiv.style.color = estilo.color;
+            mensajeDiv.style.backgroundColor = estilo.bgColor;
             mensajeDiv.style.fontWeight = 'bold';
-            mensajeDiv.style.padding = '10px';
+            mensajeDiv.style.padding = '15px';
             mensajeDiv.style.marginBottom = '15px';
-            mensajeDiv.style.border = `2px solid ${colores[tipo] || 'black'}`;
-            mensajeDiv.style.backgroundColor = '#f9f9f9';
-            
-            // Mostrar el mensaje
-            mensajeDiv.innerHTML = mensaje;
+            mensajeDiv.style.border = `1px solid ${estilo.color}`;
+            mensajeDiv.style.borderRadius = '8px';
+            mensajeDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            mensajeDiv.style.display = 'flex';
+            mensajeDiv.style.alignItems = 'center';
+
+            // Mostrar el mensaje con un icono
+            mensajeDiv.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
 
             // Eliminar el mensaje después de 5 segundos
             setTimeout(() => {
                 mensajeDiv.innerHTML = '';
                 mensajeDiv.style.border = 'none';
+                mensajeDiv.style.boxShadow = 'none';
+                mensajeDiv.style.backgroundColor = 'transparent';
             }, 5000);
         } else {
             console.warn('El contenedor de mensajes no está presente en el DOM.');
         }
     };
+
 
 
     // **Función para mostrar notificaciones usando showToast**
@@ -561,15 +574,11 @@
 
     if (cantidadEntrada) {
       cantidadEntrada.addEventListener("input", (e) => {
-        if (e.target.value < 1) e.target.value = 1; // Establecer el valor mínimo a 1
+        if (e.target.value < 0) e.target.value = 0; // Establecer el valor mínimo a 1
       });
     }
 
-    if (cantidadSalida) {
-      cantidadSalida.addEventListener("input", (e) => {
-        if (e.target.value < 1) e.target.value = 1; // Establecer el valor mínimo a 1
-      });
-    }
+  
 
 
     // **Fecha de Caducidad**: No permitir fechas pasadas, establecer mínimo como hoy
@@ -1013,23 +1022,36 @@
     // **Función para manejar la notificación de stock bajo/agotado**
     const notificarStockBajo = async () => {
       try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: new URLSearchParams({ operation: 'notificarStockBajo' })
+        // Realizar la solicitud GET en lugar de POST
+        const response = await fetch('../../controllers/alimento.controller.php?operation=notificarStockBajo', {
+          method: "GET"
         });
 
+        // Leer la respuesta y parsear a JSON
         const textResponse = await response.text();
         const result = JSON.parse(textResponse);
 
-        if (Array.isArray(result)) {
-          result.forEach(notificacion => {
+        // Verificar si hay datos y recorrer los resultados
+        if (result.status === 'success' && result.data) {
+          const { agotados, bajoStock } = result.data;
+
+          // Mostrar notificaciones de alimentos agotados
+          agotados.forEach(notificacion => {
+            mostrarMensajeDinamico(notificacion.Notificacion, 'ERROR'); // Puedes usar 'ERROR' para más énfasis
+          });
+
+          // Mostrar notificaciones de alimentos con stock bajo
+          bajoStock.forEach(notificacion => {
             mostrarMensajeDinamico(notificacion.Notificacion, 'WARNING');
           });
+        } else if (result.status === 'info') {
+          mostrarMensajeDinamico(result.message, 'INFO');
         }
       } catch (error) {
         mostrarMensajeDinamico('Error al notificar stock bajo.', 'ERROR');
       }
     };
+
 
     // Función para cargar los lotes en los select de entrada y salida de alimentos
     // Función para cargar los lotes en los select de entrada y salida de alimentos
@@ -1068,12 +1090,6 @@
     };
 
 
-
-
-
-
-
-
     // Función para manejar entradas de alimentos
     // Función para manejar entradas de alimentos
     const registrarEntrada = async () => {
@@ -1086,7 +1102,6 @@
 
         // Validar si los elementos necesarios están en el DOM
         if (!cantidadField || !loteField || !alimentoSelectEntrada || !unidadMedidaEntrada) {
-            console.error("Error: Uno o más elementos del formulario no se encontraron en el DOM.");
             showToast("Error en el formulario: faltan elementos.", 'ERROR');
             return;
         }
@@ -1123,8 +1138,6 @@
                 cantidad: cantidad
             };
 
-            console.log("Parámetros enviados:", params);
-
             const data = JSON.stringify(params);
 
             try {
@@ -1137,7 +1150,6 @@
                 });
 
                 const result = await response.json();
-                console.log("Respuesta procesada (JSON):", result);
 
                 if (result.status === "success") {
                     showToast(result.message || "Entrada registrada exitosamente.", 'SUCCESS');
@@ -1147,12 +1159,10 @@
                     // Recargar los datos actualizados de alimentos y movimientos
                     await loadAlimentos();  
                     await loadHistorialMovimientos();
-                    console.log("Stock actualizado en la interfaz.");
                 } else {
                     showToast(result.message || "Error al registrar la entrada.", 'ERROR');
                 }
             } catch (error) {
-                console.error("Error en la solicitud:", error.message);
                 showToast("Error en la solicitud: " + error.message, 'ERROR');
             }
         } else {
@@ -1162,12 +1172,16 @@
 
 
 
-
-
     // Función para manejar la salida de alimentos
     const registrarSalida = async () => {
         const cantidadField = document.getElementById('cantidad-salida');
-        const cantidad = parseFloat(cantidadField.value) || 0;  // Convertir a número o asignar 0 si está vacío
+        const cantidad = parseFloat(cantidadField.value) || 0;
+        
+        // Validación adicional en JavaScript
+        if (cantidad <= 0) {
+          showToast("La cantidad debe ser mayor a 0.", 'ERROR');
+            return;
+        }// Convertir a número o asignar 0 si está vacío
 
         const mermaField = document.getElementById('merma');  // Cambia a `merma` en lugar de `merma-salida`
         let merma = mermaField && mermaField.value ? parseFloat(mermaField.value) : 0;  // Convertir a número o 0 si no hay valor
@@ -1198,7 +1212,6 @@
 
         // Confirmación del usuario usando SweetAlert (ask)
         if (await ask("¿Confirmar salida de alimento?")) {
-            console.log("Usuario confirmó la salida de alimento.");
 
             const params = {
                 operation: 'salida',
@@ -1210,7 +1223,6 @@
                 merma: merma  // Asegúrate de que `merma` tenga el valor capturado
             };
 
-            console.log("Parámetros enviados:", params);
 
             const data = JSON.stringify(params);
 
@@ -1224,7 +1236,6 @@
                 });
 
                 const result = await response.json();
-                console.log("Respuesta procesada (JSON):", result);
 
                 if (result.status === "success") {
                     showToast(result.message || "Salida registrada exitosamente.", 'SUCCESS');
@@ -1234,22 +1245,19 @@
                     // Recargar los datos actualizados de alimentos y movimientos
                     await loadAlimentos();
                     await loadHistorialMovimientos();
+                    // Llamar a notificarStockBajo después de registrar la salida
+                    await notificarStockBajo(); // Aquí se verifica si el stock está bajo o agotado
 
-                    console.log("Stock actualizado en la interfaz.");
                 } else {
                     showToast(result.message || "Error al registrar la salida.", 'ERROR');
                 }
             } catch (error) {
-                console.error("Error en la solicitud:", error.message);
                 showToast("Error en la solicitud: " + error.message, 'ERROR');
             }
         } else {
             console.log("El usuario canceló la operación.");
         }
     };
-
-
-
 
 
 

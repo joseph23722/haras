@@ -185,39 +185,37 @@ class Alimento extends Conexion {
     
 
     // Método para notificar stock bajo
-    public function notificarStockBajo($minimoStock) {
+    public function notificarStockBajo() {
         try {
-            // Validar que el valor de mínimo stock sea un número positivo
-            if (!is_numeric($minimoStock) || $minimoStock < 0) {
-                throw new Exception('El valor de mínimo stock debe ser un número positivo.');
-            }
+            // Preparar la consulta para llamar al procedimiento almacenado sin parámetros
+            $query = $this->pdo->prepare("CALL spu_notificar_stock_bajo_alimentos()");
 
-            // Preparar la consulta para llamar al procedimiento almacenado
-            $query = $this->pdo->prepare("CALL spu_notificar_stock_bajo(?)");
+            // Ejecutar el procedimiento
+            $query->execute();
 
-            // Ejecutar el procedimiento con el parámetro proporcionado
-            $query->execute([$minimoStock]);
+            // Obtener los resultados de la primera consulta (alimentos agotados)
+            $agotados = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query->nextRowset(); // Mover al siguiente conjunto de resultados
 
-            // Recuperar los resultados
-            $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
+            // Obtener los resultados de la segunda consulta (alimentos con stock bajo)
+            $bajoStock = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Combinar ambos resultados en un solo arreglo para devolver
+            $resultados = [
+                'agotados' => $agotados,
+                'bajoStock' => $bajoStock
+            ];
 
             // Devolver los resultados si se encuentran notificaciones
-            if (!empty($resultados)) {
+            if (!empty($agotados) || !empty($bajoStock)) {
                 return ['status' => 'success', 'data' => $resultados];
             } else {
                 return ['status' => 'info', 'message' => 'No hay productos con stock bajo o agotados.'];
             }
 
         } catch (PDOException $e) {
-            // Capturar errores SQL específicos del procedimiento almacenado (45000)
-            if ($e->getCode() == '45000') {
-                return ['status' => 'error', 'message' => $e->getMessage()];
-            }
-
-            // Registrar el error exacto de PDO en los logs
+            // Capturar errores específicos de la base de datos
             error_log("Error en la base de datos (PDO): " . $e->getMessage());
-
-            // Devolver un mensaje genérico de error de base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
             // Capturar y registrar otros errores generales

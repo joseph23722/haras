@@ -108,16 +108,19 @@ try {
 
             case 'notificarStockBajo':
                 try {
+                    // Llamar al método para obtener las notificaciones de stock bajo/agotado
                     $medicamentosBajoStock = $admi->notificarStockBajo();
-                    if ($medicamentosBajoStock) {
-                        sendResponse('success', 'Medicamentos con stock bajo obtenidos correctamente.', $medicamentosBajoStock);
+                    
+                    if ($medicamentosBajoStock['status'] === 'success') {
+                        sendResponse('success', 'Medicamentos con stock bajo obtenidos correctamente.', $medicamentosBajoStock['data']);
                     } else {
-                        sendResponse('error', 'No se pudieron obtener las notificaciones de stock bajo.');
+                        sendResponse('error', $medicamentosBajoStock['message']);
                     }
                 } catch (PDOException $e) {
                     sendResponse('error', 'Error al obtener las notificaciones de stock bajo: ' . $e->getMessage());
                 }
                 break;
+                
 
             case 'obtenerHistorialMovimientosMedicamentos':
                 $params = [

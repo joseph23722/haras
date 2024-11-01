@@ -1,7 +1,21 @@
 -- -------------------------------------------------------------------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE spu_listar_medicamentosMedi()
 BEGIN
+    -- Actualizar el estado de los registros en la tabla Medicamentos
+    UPDATE Medicamentos 
+    SET estado = 'Agotado'
+    WHERE cantidad_stock = 0;
+
+    UPDATE Medicamentos 
+    SET estado = 'Por agotarse'
+    WHERE cantidad_stock > 0 AND cantidad_stock <= stockMinimo;
+
+    UPDATE Medicamentos 
+    SET estado = 'Disponible'
+    WHERE cantidad_stock > stockMinimo;
+
     -- Mostrar la información detallada de todos los medicamentos registrados
     SELECT 
         m.idMedicamento,
@@ -30,36 +44,9 @@ BEGIN
     ORDER BY 
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 END $$
+
 DELIMITER ;
 
-SELECT 
-        m.idMedicamento,
-        m.nombreMedicamento,
-        m.descripcion,
-        lm.lote,                         -- Lote del medicamento (desde LotesMedicamento)
-        p.presentacion,
-        c.dosis,
-        t.tipo AS nombreTipo,            -- Mostrar el nombre del tipo de medicamento
-        m.cantidad_stock,
-        m.stockMinimo,
-        lm.fechaIngreso,                 -- Fecha de ingreso del lote
-        lm.fechaCaducidad,               -- Fecha de caducidad del lote
-        m.precioUnitario,
-        m.estado
-    FROM 
-        Medicamentos m
-    JOIN 
-        CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
-    JOIN 
-        TiposMedicamentos t ON c.idTipo = t.idTipo
-    JOIN 
-        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
-    JOIN
-        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
-    ORDER BY 
-        m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
-
-select * from lotesmedicamento;
 
 -- Procedimiento para registrar medicamentos---------------------------------------------------------------------------------------------------------
 -- Procedimiento para registrar medicamentos con verificación de lote en LotesMedicamento
@@ -286,45 +273,31 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_medicamentos()
 BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE medicamentoNombre VARCHAR(100);
-    DECLARE lote VARCHAR(50);
-    DECLARE cantidadStock INT;
+    -- Notificaciones para medicamentos agotados
+    SELECT 
+        CONCAT('Medicamento agotado: ', m.nombreMedicamento, ', Lote: ', lm.lote, ', Stock: ', m.cantidad_stock) AS Notificacion
+    FROM 
+        Medicamentos m
+    JOIN 
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+    WHERE 
+        m.cantidad_stock = 0
+    LIMIT 5;
 
-    -- Cursor para seleccionar medicamentos con stock bajo o agotado, limitando a 5 resultados
-    DECLARE cur CURSOR FOR
-        SELECT m.nombreMedicamento, lm.lote, m.cantidad_stock
-        FROM Medicamentos m
-        JOIN LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
-        WHERE m.cantidad_stock < m.stockMinimo OR m.cantidad_stock = 0
-        LIMIT 5;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    -- Abrir el cursor
-    OPEN cur;
-
-    -- Bucle para recorrer los resultados
-    read_loop: LOOP
-        FETCH cur INTO medicamentoNombre, lote, cantidadStock;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Imprimir el mensaje de notificación
-        IF cantidadStock = 0 THEN
-            -- Notificación de medicamentos agotados
-            SELECT CONCAT('Medicamento agotado: ', medicamentoNombre, ', Lote: ', lote, ', Stock: ', cantidadStock) AS Notificacion;
-        ELSE
-            -- Notificación de medicamentos con stock bajo
-            SELECT CONCAT('Medicamento con stock bajo: ', medicamentoNombre, ', Lote: ', lote, ', Stock: ', cantidadStock) AS Notificacion;
-        END IF;
-    END LOOP;
-
-    -- Cerrar el cursor
-    CLOSE cur;
+    -- Notificaciones para medicamentos con stock bajo
+    SELECT 
+        CONCAT('Medicamento con stock bajo: ', m.nombreMedicamento, ', Lote: ', lm.lote, ', Stock: ', m.cantidad_stock, ' (Stock mínimo: ', m.stockMinimo, ')') AS Notificacion
+    FROM 
+        Medicamentos m
+    JOIN 
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+    WHERE 
+        m.cantidad_stock > 0 AND m.cantidad_stock < m.stockMinimo
+    LIMIT 5;
 END $$
 DELIMITER ;
+CALL spu_notificar_stock_bajo_medicamentos();
+
 
 
 

@@ -203,16 +203,38 @@ class Admi extends Conexion {
 
 
     // Notificar medicamentos con stock bajo
+    // Notificar medicamentos con stock bajo
     public function notificarStockBajo() {
         try {
             $query = $this->pdo->prepare("CALL spu_notificar_stock_bajo_medicamentos()");
             $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC); // Devolver los medicamentos con stock bajo
+
+            // Primer conjunto de resultados: Medicamentos agotados
+            $agotados = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Mover al siguiente conjunto de resultados
+            $query->nextRowset();
+
+            // Segundo conjunto de resultados: Medicamentos con stock bajo
+            $bajoStock = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Devolver ambos conjuntos de resultados en un array
+            return [
+                'status' => 'success',
+                'data' => [
+                    'agotados' => $agotados,
+                    'bajoStock' => $bajoStock
+                ]
+            ];
         } catch (Exception $e) {
             error_log("Error en notificación de stock bajo: " . $e->getMessage());
-            return [];
+            return [
+                'status' => 'error',
+                'message' => 'Error al obtener notificaciones de stock bajo.'
+            ];
         }
     }
+
 
     // Método para obtener el historial de movimientos de medicamentos
     public function obtenerHistorialMovimientosMedicamentos($params = []) {

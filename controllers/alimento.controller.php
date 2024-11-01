@@ -11,6 +11,15 @@ try {
         $operation = $_GET['operation'] ?? '';
 
         switch ($operation) {
+
+            case 'notificarStockBajo':
+                // Llamar al método sin parámetros
+                $result = $alimento->notificarStockBajo();
+                header('Content-Type: application/json');
+                echo json_encode($result);
+                exit();
+
+                
             case 'getUnidadesMedida':
                 $nombreAlimento = $_GET['nombreAlimento'] ?? null;
                 if (!$nombreAlimento) {
@@ -183,14 +192,6 @@ try {
                 $result = $alimento->eliminarAlimento($idAlimento);
                 break;
 
-            case 'notificarStockBajo':
-                $minimoStock = $params['minimoStock'] ?? 0;
-                $result = $alimento->notificarStockBajo($minimoStock);
-                header('Content-Type: application/json');
-                echo json_encode($result);
-                exit();
-
-            
 
             default:
                 echo json_encode([

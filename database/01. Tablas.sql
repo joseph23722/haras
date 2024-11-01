@@ -291,19 +291,6 @@ CREATE TABLE Entrenamientos (
     CONSTRAINT fk_entrenamiento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
--- 25. HistorialMedico
-CREATE TABLE HistorialMedico (
-    idHistorial 			INT PRIMARY KEY AUTO_INCREMENT,
-    idEquino 				INT NOT NULL,
-    idUsuario 				INT NOT NULL,
-    fecha 					DATE NOT NULL,
-    diagnostico 			TEXT NOT NULL,
-    tratamiento 			TEXT NOT NULL,
-    observaciones 			TEXT NOT NULL,
-    recomendaciones 		TEXT NOT NULL,
-    CONSTRAINT fk_historial_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    CONSTRAINT fk_historial_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
-) ENGINE = INNODB;
 
 -- 26. HistorialHerrero
 CREATE TABLE HistorialHerrero (

@@ -3092,6 +3092,34 @@ textarea.form-control-lg {
   --bs-gradient: none;
 }
 
+
+
+
+/* Estilos específicos para el botón con ambas clases btn-outline-danger y btn-custom-single */
+.btn-outline-danger.btn-custom-single {
+  color: #dc3545 !important;
+  border: 1px solid #dc3545 !important;
+  font-weight: bold !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-danger.btn-custom-single:hover {
+  color: #fff !important;
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.btn-outline-danger.btn-custom-single:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.btn-outline-danger.btn-custom-single:active {
+  background-color: #c82333 !important;
+  color: #fff !important;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125) !important;
+}
+
+
 .btn-outline-danger {
   --bs-btn-color: #dc3545;
   --bs-btn-border-color: #dc3545;
@@ -3106,8 +3134,10 @@ textarea.form-control-lg {
   --bs-btn-disabled-color: #dc3545;
   --bs-btn-disabled-bg: transparent;
   --bs-btn-disabled-border-color: #dc3545;
-  --bs-gradient: none;
 }
+
+
+
 
 .btn-outline-light {
   --bs-btn-color: #f8f9fa;
