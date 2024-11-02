@@ -5,28 +5,52 @@ require_once '../models/Historialme.php';
 $historialme = new Historialme();
 
 try {
-    // Verificar el método de solicitud
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Obtener los parámetros de la solicitud POST
-        $params = $_POST;
-        $operation = $params['operation'] ?? '';
+    // Verificar si el contenido es JSON
+    $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $contentType === "application/json") {
+        // Leer JSON del cuerpo de la solicitud
+        $inputData = json_decode(file_get_contents('php://input'), true);
+        error_log("Datos JSON recibidos: " . print_r($inputData, true));
+
+        // Asegurarse de que se capturó correctamente el JSON
+        if ($inputData === null) {
+            error_log("Error: JSON inválido recibido.");
+            echo json_encode(['status' => 'error', 'message' => 'JSON inválido']);
+            exit;
+        }
+
+        // Obtener la operación desde el JSON
+        $operation = $inputData['operation'] ?? '';
+        error_log("Operación recibida (JSON): " . $operation);
 
         switch ($operation) {
             case 'registrarHistorialMedico':
-                // Llamada al método para registrar el historial médico
-                $result = $historialme->registrarHistorial([
-                    'idEquino' => $_POST['idEquino'] ?? null,
-                    'idMedicamento' => $_POST['idMedicamento'] ?? null,
-                    'dosis' => $_POST['dosis'] ?? null,
-                    'frecuenciaAdministracion' => $_POST['frecuenciaAdministracion'] ?? null,
-                    'viaAdministracion' => $_POST['viaAdministracion'] ?? null,
-                    'pesoEquino' => $_POST['pesoEquino'] ?? null,
-                    'fechaInicio' => $_POST['fechaInicio'] ?? null,
-                    'fechaFin' => $_POST['fechaFin'] ?? null,
-                    'observaciones' => $_POST['observaciones'] ?? null,
-                    'reaccionesAdversas' => $_POST['reaccionesAdversas'] ?? null
-                ]);
+                error_log("Entrando en el case 'registrarHistorialMedico'");
             
+                // Decodificar los datos JSON desde el cuerpo de la solicitud
+                $inputData = json_decode(file_get_contents('php://input'), true);
+                
+                if ($inputData === null) {
+                    error_log("Error: No se recibieron datos JSON válidos o están mal formateados.");
+                    echo json_encode(['status' => 'error', 'message' => 'Datos JSON inválidos o mal formateados']);
+                    break;
+                }
+            
+                // Llamada al método para registrar el historial médico con los datos JSON decodificados
+                $result = $historialme->registrarHistorial([
+                    'idEquino' => $inputData['idEquino'] ?? null,
+                    'idMedicamento' => $inputData['idMedicamento'] ?? null,
+                    'dosis' => $inputData['dosis'] ?? null,
+                    'frecuenciaAdministracion' => $inputData['frecuenciaAdministracion'] ?? null,
+                    'viaAdministracion' => $inputData['viaAdministracion'] ?? null,
+                    'pesoEquino' => $inputData['pesoEquino'] ?? null,
+                    'fechaInicio' => $inputData['fechaInicio'] ?? null,
+                    'fechaFin' => $inputData['fechaFin'] ?? null,
+                    'observaciones' => $inputData['observaciones'] ?? null,
+                    'reaccionesAdversas' => $inputData['reaccionesAdversas'] ?? null,
+                    'tipoTratamiento' => $inputData['tipoTratamiento'] ?? null
+                ]);
+                
                 // Enviar la respuesta según el resultado del método
                 if ($result['status'] === 'success') {
                     echo json_encode([
@@ -40,34 +64,71 @@ try {
                     ]);
                 }
                 break;
+            
 
-            case 'deleteMedicamento':
-                // Verificar que el ID del medicamento esté en los parámetros POST
-                if (isset($_POST['idMedicamento'])) {
-                    $idMedicamento = $_POST['idMedicamento'];
+
+            case 'gestionarTratamiento':
+                error_log("Entrando en el case 'gestionarTratamiento'");
+                
+                // Decodificar los datos JSON recibidos desde php://input
+                $inputData = json_decode(file_get_contents('php://input'), true);
+                
+                // Registrar los datos recibidos
+                error_log("Datos JSON recibidos en 'gestionarTratamiento': " . print_r($inputData, true));
+                
+                if ($inputData === null) {
+                    error_log("Error: No se recibieron datos JSON válidos o están mal formateados.");
+                    echo json_encode(['status' => 'error', 'message' => 'Datos JSON inválidos']);
+                    break;
+                }
+            
+                // Obtener idRegistro y accion del JSON decodificado
+                $idRegistro = $inputData['idRegistro'] ?? null;
+                $accion = $inputData['accion'] ?? null;
+            
+                error_log("ID de Registro recibido: " . var_export($idRegistro, true));
+                error_log("Acción recibida: " . var_export($accion, true));
+                
+                // Validar los parámetros y continuar con la ejecución
+                if ($idRegistro && in_array($accion, ['pausar', 'continuar', 'eliminar'])) {
+                    error_log("Parámetros válidos. Llamando a 'gestionarTratamiento' en el modelo.");
                     
-                    // Llamar al método para eliminar el medicamento
-                    $result = $medicamentoModel->deleteMedicamentoDirect($idMedicamento);
+                    // Llamar al método en el modelo
+                    $result = $historialme->gestionarTratamiento($idRegistro, $accion);
                     
-                    // Verificar el resultado y enviar una respuesta adecuada
-                    if ($result) {
-                        echo json_encode([
-                            'status' => 'success',
-                            'message' => 'Medicamento eliminado correctamente'
-                        ]);
-                    } else {
-                        echo json_encode([
-                            'status' => 'error',
-                            'message' => 'No se pudo eliminar el medicamento o el ID no existe'
-                        ]);
-                    }
+                    error_log("Resultado de gestionarTratamiento en el modelo: " . ($result ? "Éxito" : "Fallo"));
+                    
+                    echo json_encode([
+                        'status' => $result ? 'success' : 'error',
+                        'message' => $result
+                            ? ($accion === 'pausar' ? 'Tratamiento pausado correctamente' 
+                            : ($accion === 'continuar' ? 'Tratamiento continuado correctamente' : 'Tratamiento eliminado correctamente'))
+                            : 'No se pudo realizar la acción.'
+                    ]);
                 } else {
+                    // Error en los parámetros recibidos
+                    error_log("Error: ID de registro o acción no válidos o no proporcionados.");
                     echo json_encode([
                         'status' => 'error',
-                        'message' => 'ID de medicamento no proporcionado'
+                        'message' => 'ID de registro o acción no proporcionados o acción no válida.'
                     ]);
                 }
                 break;
+                
+
+            
+                
+                
+                
+            
+                
+                
+                
+            
+            
+            
+                
+                
             
             
             

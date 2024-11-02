@@ -239,10 +239,15 @@ CREATE TABLE DetalleMedicamentos (
     observaciones           TEXT NULL,
     reaccionesAdversas      TEXT NULL,
     idUsuario               INT NOT NULL,
+    tipoTratamiento         ENUM('Primario', 'Complementario') DEFAULT 'Primario',  -- Nueva columna para tipo de tratamiento
+    estadoTratamiento       ENUM('Activo', 'Finalizado', 'En pausa') DEFAULT 'Activo',  -- Nueva columna para estado de tratamiento
+
+    -- Definición de llaves foráneas
     CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
+
 
 
 -- 19. HistorialMedicamentosMedi ----°°° admedi..

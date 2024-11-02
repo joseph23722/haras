@@ -60,6 +60,18 @@
                         </div>
                     </div>
 
+                    <!-- Tipo de Tratamiento (Primario o Complementario) -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="tipoTratamiento" id="tipoTratamiento" class="form-select" required>
+                                <option value="">Seleccione Tipo de Tratamiento</option>
+                                <option value="Primario">Primario</option>
+                                <option value="Complementario">Complementario</option>
+                            </select>
+                            <label for="tipoTratamiento"><i class="fas fa-list-alt" style="color: #ff8c00;"></i> Tipo de Tratamiento</label>
+                        </div>
+                    </div>
+
                     <!-- Fecha Fin -->
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -126,6 +138,8 @@
                         </div>
                     </div>
 
+                    <div id="mensaje" style="margin-top: 10px; color: green; font-weight: bold;"></div>
+
                     <!-- Botones -->
                     <div class="col-md-12 text-end mt-3">
                         <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial" style="background-color: #0077b6; border: none;">
@@ -142,25 +156,26 @@
     <!-- Tabla para DataTable -->
     <div class="card mt-4">
         <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-            <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Historiales Médicos Registrados</h5>
+            <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Historiales Médicos</h5>
         </div>
         <div class="card-body">
             <table id="historialTable" class="table table-striped" style="width:100%">
                 <thead>
-                    <tr>
-                        <th>Equino</th>
-                        <th>Medicamento</th>
-                        <th>Dosis</th>
-                        <th>Frecuencia</th>
-                        <th>Vía</th>
-                        <th>Observaciones</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha de Fin</th>
-                        <th>Peso Equino</th>
-                        <th>Reacciones Adversas</th>
-                        <th>Acciones</th>
-
-                    </tr>
+                <tr>
+                    <th>Equino</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Medicamento</th>
+                    <th>Dosis</th>
+                    <th>Frecuencia</th>
+                    <th>Vía</th>
+                    <th>Peso (kg)</th>
+                    <th>Registro</th>
+                    <th>Fin</th>
+                    <th>Observaciones</th>
+                    <th>Reacciones</th>
+                    <th>Acciones</th>
+                </tr>
                 </thead>
                 <tbody>
                     <!-- Se llenará dinámicamente -->
@@ -168,6 +183,7 @@
             </table>
         </div>
     </div>
+
 </div>
 
 <?php require_once '../footer.php'; ?>
@@ -177,6 +193,8 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        let historialTable;
+
         let selectedEquinoId = null;
         const selectYegua = document.querySelector("#selectYegua");
         const selectPadrillo = document.querySelector("#selectPadrillo");
@@ -185,102 +203,167 @@
         const medicamentoSelect = document.querySelector("#selectMedicamento");
         const fechaFinInput = document.querySelector("#fechaFin");
 
+        const mensajeDiv = document.querySelector("#mensaje");  // Div para mostrar los mensajes dinámicos
+
+        // **Función para mostrar notificaciones en el div `mensaje`**
+        // **Función para mostrar notificaciones en el div `mensaje`**
+        const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
+            const mensajeDiv = document.getElementById('mensaje'); // Asegúrate de tener un div con el id 'mensaje'
+            
+            if (mensajeDiv) {
+                // Colores y iconos según el tipo de mensaje
+                const estilos = {
+                    'INFO': { color: '#3178c6', bgColor: '#e7f3ff', icon: 'ℹ️' },
+                    'SUCCESS': { color: '#3c763d', bgColor: '#dff0d8', icon: '✅' },
+                    'ERROR': { color: '#a94442', bgColor: '#f2dede', icon: '❌' },
+                    'WARNING': { color: '#8a6d3b', bgColor: '#fcf8e3', icon: '⚠️' }
+                };
+
+                // Obtener los estilos correspondientes al tipo de mensaje
+                const estilo = estilos[tipo] || estilos['INFO'];
+
+                // Aplicar estilos al contenedor del mensaje
+                mensajeDiv.style.color = estilo.color;
+                mensajeDiv.style.backgroundColor = estilo.bgColor;
+                mensajeDiv.style.fontWeight = 'bold';
+                mensajeDiv.style.padding = '15px';
+                mensajeDiv.style.marginBottom = '15px';
+                mensajeDiv.style.border = `1px solid ${estilo.color}`;
+                mensajeDiv.style.borderRadius = '8px';
+                mensajeDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+                mensajeDiv.style.display = 'flex';
+                mensajeDiv.style.alignItems = 'center';
+
+                // Mostrar el mensaje con un icono
+                mensajeDiv.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
+
+                // Eliminar el mensaje después de 5 segundos
+                setTimeout(() => {
+                    mensajeDiv.innerHTML = '';
+                    mensajeDiv.style.border = 'none';
+                    mensajeDiv.style.boxShadow = 'none';
+                    mensajeDiv.style.backgroundColor = 'transparent';
+                }, 5000);
+            } else {
+                console.warn('El contenedor de mensajes no está presente en el DOM.');
+            }
+        };
+
+        
+
         // Restringir la fecha de fin a hoy y futuras
         fechaFinInput.min = new Date().toISOString().split("T")[0];
 
         // Función para cargar la tabla de historial médico
         const loadHistorialTable = async () => {
-            // Destruir la tabla si ya existe
-            if ($.fn.dataTable.isDataTable('#historialTable')) {
-                $('#historialTable').DataTable().destroy();
-            }
-
-            // Configurar el DataTable
-            $('#historialTable').DataTable({
-                ajax: {
-                    url: '../../controllers/historialme.controller.php',
-                    type: 'GET',
-                    data: { operation: 'consultarHistorialMedico' },  // Sin filtro de idEquino
-                    dataSrc: 'data',
-                    complete: function() {
-                        console.log("Datos cargados exitosamente en DataTable de historial.");
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error("Error en DataTable AJAX:", textStatus, errorThrown);
-                    }
-                },
-                columns: [
-                    { data: 'nombreEquino' },
-                    { data: 'nombreMedicamento' },
-                    { data: 'dosis' },
-                    { data: 'frecuenciaAdministracion' },
-                    { data: 'viaAdministracion' },
-                    { data: 'observaciones' },
-                    { data: 'fechaInicio' },
-                    { data: 'fechaFin' },
-                    { data: 'pesoEquino' },
-                    { data: 'reaccionesAdversas' },
-                    {
-                        data: null,
-                        orderable: false,
-                        render: function(data, type, row) {
-                            return `
-                                <button class="btn btn-sm btn-primary" onclick="editarRegistro(${row.idRegistro})">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${row.idRegistro})">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
-                                </button>
-                            `;
+            if (!$.fn.DataTable.isDataTable('#historialTable')) {
+                historialTable = $('#historialTable').DataTable({
+                    ajax: {
+                        url: '../../controllers/historialme.controller.php',
+                        type: 'GET',
+                        data: { operation: 'consultarHistorialMedico' },
+                        dataSrc: 'data',
+                        complete: function() {
+                            console.log("Datos cargados exitosamente en DataTable de historial.");
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("Error en DataTable AJAX:", textStatus, errorThrown);
                         }
+                    },
+                    columns: [
+                        { data: 'nombreEquino' },
+                        { data: 'tipoTratamiento' },
+                        { data: 'estadoTratamiento' },
+                        { data: 'nombreMedicamento' },
+                        { data: 'dosis' },
+                        { data: 'frecuenciaAdministracion' },
+                        { data: 'viaAdministracion' },
+                        { data: 'pesoEquino' },
+                        { data: 'fechaInicio' },
+                        { data: 'fechaFin' },
+                        { 
+                            data: 'observaciones', 
+                            render: function(data) {
+                                return data ? data : 'Ninguna';
+                            }
+                        },
+                        { 
+                            data: 'reaccionesAdversas', 
+                            render: function(data) {
+                                return data ? data : 'Ninguna';
+                            }
+                        },
+                        {
+                            data: null,
+                            orderable: false,
+                            render: function(data, type, row) {
+                                return `
+                                    <div class="btn-group" role="group" aria-label="Acciones">
+                                        <button class="btn btn-sm btn-warning" onclick="pausarRegistro(${row.idRegistro})" title="Pausar">
+                                            <i class="fas fa-pause-circle"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" onclick="continuarRegistro(${row.idRegistro})" title="Continuar">
+                                            <i class="fas fa-play-circle"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${row.idRegistro})" title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                `;
+                            }
+                        }
+                    ],
+                    language: {
+                        url: '/haras/data/es_es.json'
                     }
-             
-                ],
-                language: {
-                    url: '/haras/data/es_es.json'
-                }
-            });
+                });
+            } else {
+                historialTable.ajax.reload(); // Recargar los datos si la tabla ya está inicializada
+            }
         };
 
-        function editarRegistro(idRegistro) {
-            // Lógica para editar el registro, por ejemplo, abrir un modal de edición
-            console.log("Editar registro con ID:", idRegistro);
-            // Aquí puedes agregar la lógica para cargar los datos en el formulario de edición
-        }
+        // Función genérica para enviar la solicitud al servidor
+        const sendRequest = async (idRegistro, accion) => {
+            const data = {
+                operation: 'gestionarTratamiento',
+                idRegistro: idRegistro,
+                accion: accion
+            };
 
-        function eliminarRegistro(idRegistro) {
-            if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
-                fetch(`../../controllers/historialme.controller.php`, {
+            console.log("Enviando datos al servidor:", JSON.stringify(data));
+
+            try {
+                const response = await fetch('../../controllers/historialme.controller.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        operation: 'deleteHistorialMedico',
-                        idRegistro: idRegistro
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        alert("Registro eliminado exitosamente");
-                        historialTable.ajax.reload(); // Recargar la tabla después de eliminar
-                    } else {
-                        alert("Error al eliminar el registro: " + data.message);
-                    }
-                })
-                .catch(error => console.error("Error al eliminar el registro:", error));
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log(`Respuesta del servidor (${accion}):`, result);
+
+                if (result.status === "success") {
+                    mostrarMensajeDinamico(`Registro ${accion} exitosamente`);
+                    $('#historialTable').DataTable().ajax.reload();
+                } else {
+                    mostrarMensajeDinamico(`Error al ${accion} el registro: ` + (result.message || "Error desconocido"));
+                }
+            } catch (error) {
+                console.error(`Error al ${accion} el registro:`, error);
             }
-        }
+        };
+
+        // Llamadas para cada acción
+        const pausarRegistro = (idRegistro) => sendRequest(idRegistro, 'pausar');
+        const continuarRegistro = (idRegistro) => sendRequest(idRegistro, 'continuar');
+        const eliminarRegistro = (idRegistro) => sendRequest(idRegistro, 'eliminar');
 
 
-        // Evento para actualizar selectedEquinoId y recargar DataTable
-        document.querySelectorAll(".equino-select").forEach(select => {
-            select.addEventListener("change", (event) => {
-                selectedEquinoId = event.target.value || null; // Actualiza el ID del equino
-                $('#historialTable').DataTable().ajax.reload(); // Recarga la tabla con el nuevo ID
-            });
-        });
+        // Adjuntar las funciones a botones
+        window.pausarRegistro = pausarRegistro;
+        window.continuarRegistro = continuarRegistro;
+        window.eliminarRegistro = eliminarRegistro;
+
 
         // Bloquear los selects de equinos al seleccionar uno
         function handleEquinoSelect(selectedSelect) {
@@ -322,7 +405,6 @@
                             case 4: selectPotrillo.appendChild(option); break;
                         }
                     });
-                    showToast("Equinos cargados exitosamente", "SUCCESS");
                 } else {
                     showToast("No se encontraron equinos.", "WARNING");
                 }
@@ -351,7 +433,6 @@
                         option.textContent = medicamento.nombreMedicamento;
                         medicamentoSelect.appendChild(option);
                     });
-                    showToast("Medicamentos cargados exitosamente", "SUCCESS");
                 } else {
                     showToast("No se encontraron medicamentos.", "WARNING");
                 }
@@ -365,35 +446,39 @@
         document.querySelector("#form-historial-medico").addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            // Convertir el formulario a un objeto JavaScript
             const formData = new FormData(event.target);
-            formData.append("operation", "registrarHistorialMedico");
+            const data = Object.fromEntries(formData.entries());
+            data.operation = "registrarHistorialMedico";
 
-            console.log("Datos enviados al servidor:", Object.fromEntries(formData.entries())); // Log para verificar los datos enviados
+            console.log("Datos enviados al servidor:", JSON.stringify(data, null, 2));
 
             try {
                 const response = await fetch('../../controllers/historialme.controller.php', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data) // Enviar los datos como JSON
                 });
 
                 const result = await response.json();
-                console.log("Respuesta JSON parseada:", result); // Log de la respuesta
+                console.log("Respuesta JSON parseada:", result);
 
                 if (result.status === "success") {
                     showToast(result.message || "Historial médico registrado correctamente", "SUCCESS");
-
+                    mostrarMensajeDinamico(result.message || "Historial médico registrado correctamente", "SUCCESS");
                     event.target.reset();
                     $('#historialTable').DataTable().ajax.reload();
 
                     [selectYegua, selectPadrillo, selectPotrillo, selectPotranca].forEach(select => select.disabled = false);
                 } else {
-                    showToast("Error al registrar el historial: " + (result.message || "Desconocido"), "ERROR");
+                    mostrarMensajeDinamico("Error al registrar el historial: " + (result.message || "Desconocido"), "ERROR");
                 }
             } catch (error) {
                 console.error("Error al registrar el historial médico:", error);
-                showToast("Error al registrar el historial médico: Error de conexión o error inesperado", "ERROR");
+                mostrarMensajeDinamico("Error al registrar el historial médico: Error de conexión o error inesperado", "ERROR");
             }
         });
+
 
         // Función para limpiar los selects de equinos
         function clearSelect(selectElement) {

@@ -519,7 +519,6 @@
                     unidadMedidaSelectEntrada.innerHTML = '<option value="">Error al cargar unidades</option>';
                 }
             } catch (error) {
-                console.error("Error en la solicitud:", error.message);
                 unidadMedidaSelectEntrada.innerHTML = '<option value="">Error en la solicitud</option>';
             }
         } else {
@@ -557,11 +556,9 @@
                         unidadMedidaSelect.innerHTML = '<option value="">No hay unidades disponibles</option>';
                     }
                 } else {
-                    console.error("Error al cargar las unidades de medida:", result.message);
                     unidadMedidaSelect.innerHTML = '<option value="">Error al cargar unidades</option>';
                 }
             } catch (error) {
-                console.error("Error en la solicitud:", error.message);
                 unidadMedidaSelect.innerHTML = '<option value="">Error en la solicitud</option>';
             }
         } else {
