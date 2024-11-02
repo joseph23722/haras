@@ -7,7 +7,7 @@
         <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;"></div>
 
         <div class="card-body p-4" style="background-color: #f9f9f9;">
-            <form action="" id="form-registro-bostas" autocomplete="off">
+            <form action="" id="form-historial-equino" autocomplete="off">
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <div class="input-group">
@@ -15,7 +15,8 @@
                                 <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus>
                                 <label for="buscarEquino" class="form-label">Buscar Equino</label>
                             </div>
-                            <button type="button" id="buscar-equino" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="button" id="buscar-equino" class="btn btn-sm btn-outline-success"><i
+                                    class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -82,47 +83,44 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('buscar-equino').addEventListener('click', function() {
-            const nombreEquino = document.getElementById('buscarEquino').value;
+    document.querySelector("#buscar-equino").addEventListener("click", async function() {
+        const nombreEquino = document.getElementById("buscarEquino").value;
 
-            fetch('../../controllers/registrarequino.controller.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        operation: 'buscarEquinoPorNombre',
-                        nombreEquino: nombreEquino
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const equino = data[0];
-                        document.getElementById('fechaNacimiento').value = equino.fechaNacimiento || '';
-                        document.getElementById('nacionalidad').value = equino.nacionalidad || '';
-                        document.getElementById('idPropietario').value = equino.idPropietario || 'Haras Rancho Sur';
-                        document.getElementById('sexo').value = equino.sexo || '';
-                        document.getElementById('tipoEquino').value = equino.tipoEquino || '';
-                        document.getElementById('idEstadoMonta').value = equino.idEstadoMonta || '';
-                        document.getElementById('fotografia').value = equino.fotografia || 'Cargando...';
-                    } else {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'No encontrado',
-                            text: 'No se encontraron equinos con ese nombre.',
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error al buscar el equino.',
-                    });
-                });
+        // Realiza la búsqueda del equino
+        const response = await fetch('../../controllers/registrarequino.controller.php', {
+            method: 'POST',
+            body: JSON.stringify({
+                operation: 'buscarEquinoPorNombre',
+                nombreEquino: nombreEquino
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
+
+        const data = await response.json();
+
+        if (data.length === 0) {
+            showToast("No se encontró ningún equino con ese nombre.", 'WARNING');
+        } else {
+            // Rellena los campos con la información del equino
+            const equino = data[0];
+            document.getElementById("fechaNacimiento").value = equino.fechaNacimiento || '';
+            document.getElementById("nacionalidad").value = equino.nacionalidad || '';
+            document.getElementById("idPropietario").value = equino.idPropietario || 'Haras Rancho Sur';
+            document.getElementById("sexo").value = equino.sexo || '';
+            document.getElementById("tipoEquino").value = equino.tipoEquino || '';
+            document.getElementById("idEstadoMonta").value = equino.idEstadoMonta || '';
+            document.getElementById("fotografia").value = equino.fotografia || '';
+        }
+    });
+
+    document.querySelector("#form-historial-equino").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const confirmar = await ask("¿Está seguro de que desea registrar el historial?");
+        if (confirmar) {
+            showToast("Funcionalidad de registrar historial aún no implementada.", 'INFO');
+        }
     });
 </script>
