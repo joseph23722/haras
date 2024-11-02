@@ -102,11 +102,11 @@
                         const equino = data[0];
                         document.getElementById('fechaNacimiento').value = equino.fechaNacimiento || '';
                         document.getElementById('nacionalidad').value = equino.nacionalidad || '';
-                        document.getElementById('idPropietario').value = equino.idPropietario || '';
+                        document.getElementById('idPropietario').value = equino.idPropietario || 'Haras Rancho Sur';
                         document.getElementById('sexo').value = equino.sexo || '';
                         document.getElementById('tipoEquino').value = equino.tipoEquino || '';
                         document.getElementById('idEstadoMonta').value = equino.idEstadoMonta || '';
-                        document.getElementById('fotografia').value = equino.fotografia || '';
+                        document.getElementById('fotografia').value = equino.fotografia || 'Cargando...';
                     } else {
                         Swal.fire({
                             icon: 'info',
