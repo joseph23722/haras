@@ -160,10 +160,10 @@
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
             <button class="btn btn-outline-primary btn-lg me-3" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntrada">
-                <i class="fas fa-arrow-up"></i> Registrar Entrada de Alimento
+                <i class="fas fa-arrow-up"></i> Registrar Entrada de Medicamento
             </button>
             <button class="btn btn-outline-danger btn-lg me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalSalida">
-                <i class="fas fa-arrow-down"></i> Registrar Salida de Alimento
+                <i class="fas fa-arrow-down"></i> Registrar Salida de Medicamento
             </button>
 
 
@@ -445,7 +445,7 @@
 
 <?php require_once '../footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 
 
@@ -469,7 +469,6 @@
 
         const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
 
-        // Función para mostrar mensajes dinámicos
         // Función para mostrar mensajes dinámicos para medicamentos
         function mostrarMensaje(mensaje, tipo = 'INFO') {
             const messageArea = document.getElementById("message-area"); // Asegúrate de tener un div con el id 'messageAreaMedicamento'
@@ -823,7 +822,6 @@
         });
 
         // Cargar medicamentos en los selectores de entrada y salida
-        // Cargar medicamentos en los selectores de entrada y salida
         const loadSelectMedicamentos = async () => {
             try {
                 // Definir los parámetros en la URL para el método GET
@@ -871,7 +869,6 @@
             }
         };
 
-        // Cargar lista de medicamentos en la tabla
         // Cargar lista de medicamentos en la tabla
         const loadMedicamentos = async () => {
             try {
@@ -1115,8 +1112,6 @@
         };
 
         // Registrar medicamento
-        // Registrar medicamento
-        // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
@@ -1188,9 +1183,6 @@
             }
         });
 
-
-
-
         // Implementar para la entrada de medicamentos
         formEntrada.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -1217,8 +1209,8 @@
                 if (result.status === "success") {
                     showToast("Entrada registrada correctamente", "SUCCESS");
                     formEntrada.reset();
-                    cargarLotes(); // Recargar la lista de lotes
-                    loadMedicamentos(); // Actualizar lista de medicamentos (si aplica)
+                    cargarLotes();
+                    loadMedicamentos();
                 } else {
                     showToast("Error en el registro de entrada: " + result.message, 'error');
                 }
@@ -1227,7 +1219,6 @@
             }
         });
 
-        // Función para cargar los lotes en el select de entrada de medicamentos
         // Función para cargar los lotes en los select de entrada y salida de medicamentos
         const cargarLotes = async () => {
             const entradaLoteSelect = document.querySelector("#entradaLote");  
@@ -1266,19 +1257,16 @@
         // Llamar a la función para cargar lotes cuando el DOM esté listo
         document.addEventListener("DOMContentLoaded", cargarLotes);
 
-
-
         // Implementar para la salida de medicamentos
         formSalida.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             const cantidadField = document.getElementById('salidaCantidad');
             const cantidad = parseFloat(cantidadField.value) || 0;
-            // Validación adicional en JavaScript
             if (cantidad <= 0) {
             showToast("La cantidad debe ser mayor a 0.", 'ERROR');
                 return;
-            }// Convertir a número o asignar 0 si está vacío
+            }
 
             const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
 
@@ -1302,7 +1290,7 @@
                     showToast("Salida registrada correctamente", "SUCCESS");
                     formSalida.reset();
                     await loadMedicamentos();
-                    await notificarStockBajo(); // Aquí se verifica si el stock está bajo o agotado
+                    await notificarStockBajo();
 
                 } else {
                     showToast("Error en el registro de salida", "ERROR");

@@ -26,16 +26,16 @@ try {
         switch ($operation) {
             case 'registrarHistorialMedico':
                 error_log("Entrando en el case 'registrarHistorialMedico'");
-            
+
                 // Decodificar los datos JSON desde el cuerpo de la solicitud
                 $inputData = json_decode(file_get_contents('php://input'), true);
-                
+
                 if ($inputData === null) {
                     error_log("Error: No se recibieron datos JSON válidos o están mal formateados.");
                     echo json_encode(['status' => 'error', 'message' => 'Datos JSON inválidos o mal formateados']);
                     break;
                 }
-            
+
                 // Llamada al método para registrar el historial médico con los datos JSON decodificados
                 $result = $historialme->registrarHistorial([
                     'idEquino' => $inputData['idEquino'] ?? null,
@@ -50,7 +50,7 @@ try {
                     'reaccionesAdversas' => $inputData['reaccionesAdversas'] ?? null,
                     'tipoTratamiento' => $inputData['tipoTratamiento'] ?? null
                 ]);
-                
+
                 // Enviar la respuesta según el resultado del método
                 if ($result['status'] === 'success') {
                     echo json_encode([
@@ -64,45 +64,45 @@ try {
                     ]);
                 }
                 break;
-            
+
 
 
             case 'gestionarTratamiento':
                 error_log("Entrando en el case 'gestionarTratamiento'");
-                
+
                 // Decodificar los datos JSON recibidos desde php://input
                 $inputData = json_decode(file_get_contents('php://input'), true);
-                
+
                 // Registrar los datos recibidos
                 error_log("Datos JSON recibidos en 'gestionarTratamiento': " . print_r($inputData, true));
-                
+
                 if ($inputData === null) {
                     error_log("Error: No se recibieron datos JSON válidos o están mal formateados.");
                     echo json_encode(['status' => 'error', 'message' => 'Datos JSON inválidos']);
                     break;
                 }
-            
+
                 // Obtener idRegistro y accion del JSON decodificado
                 $idRegistro = $inputData['idRegistro'] ?? null;
                 $accion = $inputData['accion'] ?? null;
-            
+
                 error_log("ID de Registro recibido: " . var_export($idRegistro, true));
                 error_log("Acción recibida: " . var_export($accion, true));
-                
+
                 // Validar los parámetros y continuar con la ejecución
                 if ($idRegistro && in_array($accion, ['pausar', 'continuar', 'eliminar'])) {
                     error_log("Parámetros válidos. Llamando a 'gestionarTratamiento' en el modelo.");
-                    
+
                     // Llamar al método en el modelo
                     $result = $historialme->gestionarTratamiento($idRegistro, $accion);
-                    
+
                     error_log("Resultado de gestionarTratamiento en el modelo: " . ($result ? "Éxito" : "Fallo"));
-                    
+
                     echo json_encode([
                         'status' => $result ? 'success' : 'error',
                         'message' => $result
-                            ? ($accion === 'pausar' ? 'Tratamiento pausado correctamente' 
-                            : ($accion === 'continuar' ? 'Tratamiento continuado correctamente' : 'Tratamiento eliminado correctamente'))
+                            ? ($accion === 'pausar' ? 'Tratamiento pausado correctamente'
+                                : ($accion === 'continuar' ? 'Tratamiento continuado correctamente' : 'Tratamiento eliminado correctamente'))
                             : 'No se pudo realizar la acción.'
                     ]);
                 } else {
@@ -114,29 +114,10 @@ try {
                     ]);
                 }
                 break;
-                
-
-            
-                
-                
-                
-            
-                
-                
-                
-            
-            
-            
-                
-                
-            
-            
-            
 
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }
-
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
         // Verificar qué tipo de consulta se está realizando
         $operation = $_GET['operation'] ?? '';
@@ -152,8 +133,8 @@ try {
                 $result = $historialme->consultarHistorialMedico();
                 echo json_encode(['data' => $result]);
                 break;
-                
-                
+
+
 
             case 'getAllMedicamentos':
                 // Llamada al método para obtener todos los medicamentos
@@ -164,7 +145,6 @@ try {
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }
-
     } else {
         echo json_encode(['error' => 'Método de solicitud no permitido']);
     }
@@ -173,4 +153,3 @@ try {
     error_log("Error en el controlador: " . $e->getMessage());
     echo json_encode(['error' => 'Se produjo un error en el servidor']);
 }
-
