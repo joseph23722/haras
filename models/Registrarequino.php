@@ -55,5 +55,21 @@ class Registrarequino extends Conexion {
 
     public function listadoEquinos():array{
         return parent::getData("spu_equinos_listar");
-      }
+    }
+
+    public function buscarEquinoPorNombre($nombreEquino): array {
+        try {
+            $sql = "CALL spu_buscar_equino_por_nombre(:nombreEquino)"; // Usamos un parámetro nombrado
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':nombreEquino', $nombreEquino, PDO::PARAM_STR); // Vincula el parámetro
+    
+            $stmt->execute(); // Ejecuta la consulta
+    
+            // Devuelve todos los resultados en un array asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Manejo de errores
+            return ["status" => "error", "message" => "Error al buscar el equino: " . $e->getMessage()];
+        }
+    }    
 }

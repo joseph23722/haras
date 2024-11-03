@@ -582,7 +582,7 @@
 
 <?php require_once '../footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 
 
@@ -994,7 +994,10 @@
             }
         });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
         // Cargar medicamentos en los selectores de entrada y salida
         const loadSelectMedicamentos = async () => {
             try {
@@ -1046,7 +1049,10 @@
         
 
         // Cargar lista de medicamentos en la tabla
+<<<<<<< HEAD
         // Cargar lista de medicamentos en la tabla con DataTable
+=======
+>>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
         const loadMedicamentos = async () => {
             try {
                 const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
@@ -1270,8 +1276,6 @@
 
         // Registrar medicamento
         // Registrar medicamento
-        // Registrar medicamento
-        // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
@@ -1335,7 +1339,10 @@
             }
         });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
         // Implementar para la entrada de medicamentos
         formEntrada.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -1362,8 +1369,8 @@
                 if (result.status === "success") {
                     showToast("Entrada registrada correctamente", "SUCCESS");
                     formEntrada.reset();
-                    cargarLotes(); // Recargar la lista de lotes
-                    loadMedicamentos(); // Actualizar lista de medicamentos (si aplica)
+                    cargarLotes();
+                    loadMedicamentos();
                 } else {
                     showToast("Error en el registro de entrada: " + result.message, 'error');
                 }
@@ -1408,14 +1415,21 @@
         };
 
 
-
-
         // Implementar para la salida de medicamentos
         // Implementar para la salida de medicamentos
         if (formSalida) {
             formSalida.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
+<<<<<<< HEAD
+=======
+            const cantidadField = document.getElementById('salidaCantidad');
+            const cantidad = parseFloat(cantidadField.value) || 0;
+            if (cantidad <= 0) {
+            showToast("La cantidad debe ser mayor a 0.", 'ERROR');
+                return;
+            }
+>>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
 
                 const cantidadField = document.getElementById('salidaCantidad');
                 const motivoField = document.getElementById('motivoSalida');
@@ -1423,9 +1437,36 @@
                 const medicamentoField = document.getElementById('salidaMedicamento');
                 const tipoEquinoField = document.getElementById('tipoEquinoMovimiento');
 
+<<<<<<< HEAD
                 // Verificar existencia de todos los elementos requeridos
                 if (!cantidadField || !motivoField || !loteField || !medicamentoField || !tipoEquinoField) {
                     return;
+=======
+            if (!confirmar) {
+                showToast("Operación cancelada.", "INFO");
+                return;
+            }
+
+            const formData = new FormData(formSalida);
+            const data = new URLSearchParams(formData);
+            data.append('operation', 'salida');
+
+            try {
+                const response = await fetch('../../controllers/admedi.controller.php', {
+                    method: "POST",
+                    body: data
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    showToast("Salida registrada correctamente", "SUCCESS");
+                    formSalida.reset();
+                    await loadMedicamentos();
+                    await notificarStockBajo();
+
+                } else {
+                    showToast("Error en el registro de salida", "ERROR");
+>>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
                 }
                 
 
