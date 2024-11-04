@@ -1,4 +1,3 @@
-
 DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
 DELIMITER //
 CREATE PROCEDURE `spu_equinos_listar`()
@@ -11,6 +10,7 @@ BEGIN
         TE.tipoEquino,
         E.detalles,
         EM.nombreEstado,
+        E.pesokg,
         E.nacionalidad,
         E.fotografia
     FROM

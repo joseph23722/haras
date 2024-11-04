@@ -59,6 +59,12 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
+                            <input type="text" class="form-control" id="pesokg" disabled>
+                            <label for="pesokg" class="form-label">Peso(kg)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
                             <input type="text" class="form-control" id="fotografia" disabled>
                             <label for="fotografia" class="form-label">Fotografía</label>
                         </div>
@@ -143,6 +149,7 @@
             document.getElementById("sexo").value = equino.sexo || '';
             document.getElementById("tipoEquino").value = equino.tipoEquino || '';
             document.getElementById("idEstadoMonta").value = equino.idEstadoMonta || '';
+            document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
             document.getElementById("fotografia").value = equino.fotografia || '';
         }
     });

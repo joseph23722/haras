@@ -1,18 +1,18 @@
 -- Registrar Equino
 DELIMITER $$
-CREATE PROCEDURE spu_equino_registrar(
+CREATE PROCEDURE `spu_equino_registrar`(
     IN _nombreEquino VARCHAR(100),
     IN _fechaNacimiento DATE,
     IN _sexo ENUM('Macho', 'Hembra'),
     IN _detalles TEXT,
     IN _idTipoEquino INT,
     IN _idPropietario INT,
+    IN _pesokg INT,
     IN _nacionalidad VARCHAR(50)
     -- IN _fotografia LONGBLOB
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
-    DECLARE _tipoEquinoNombre VARCHAR(50);
     DECLARE _edadMeses INT;
     DECLARE _edadAnios INT;
 
@@ -83,6 +83,7 @@ BEGIN
         idTipoEquino, 
         detalles, 
         idPropietario,
+        pesokg,
         nacionalidad
         -- fotografia
     ) 
@@ -92,7 +93,8 @@ BEGIN
         _sexo, 
         _idTipoEquino, 
         _detalles, 
-        _idPropietario, 
+        _idPropietario,
+        _pesokg,
         _nacionalidad
         -- _fotografia
     );

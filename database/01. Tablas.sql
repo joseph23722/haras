@@ -93,15 +93,16 @@ CREATE TABLE Propietarios (
 -- 9. Equinos
 CREATE TABLE Equinos (
     idEquino 			INT PRIMARY KEY AUTO_INCREMENT,
-    nombreEquino 		VARCHAR(100) NOT NULL,
-    fechaNacimiento 	DATE NULL,
-    sexo 				ENUM('Macho', 'Hembra') NOT NULL,
-    idTipoEquino 		INT NOT NULL,
-    detalles			TEXT,
-    idEstadoMonta 		INT NULL,
-	nacionalidad 		VARCHAR(50) NULL,
-    idPropietario 		INT,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
-    fotografia			LONGBLOB NULL,
+    nombreEquino 		VARCHAR(100) 				NOT NULL,
+    fechaNacimiento 	DATE 						NULL,
+    sexo 				ENUM('Macho', 'Hembra') 	NOT NULL,
+    idTipoEquino 		INT 						NOT NULL,
+    detalles			TEXT						NULL,
+    idEstadoMonta 		INT							NULL,
+	nacionalidad 		VARCHAR(50)					NOT NULL,
+    idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
+    pesokg				INT 						NOT NULL,
+    fotografia			LONGBLOB 					NULL,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstado)

@@ -73,7 +73,7 @@
                     <!-- Dosis -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="dosis" id="dosis" class="form-control" required>
+                            <input type="text" name="dosis" id="dosis" placeholder="" class="form-control" required>
                             <label for="dosis"><i class="fas fa-syringe" style="color: #ff6347;"></i> Dosis</label>
                         </div>
                     </div>

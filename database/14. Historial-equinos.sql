@@ -10,6 +10,7 @@ BEGIN
         te.tipoEquino,
         e.idEstadoMonta,
         e.nacionalidad,
+        e.pesokg,
         e.idPropietario,
         e.fotografia
     FROM 
