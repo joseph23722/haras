@@ -741,7 +741,7 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ idCombinacion, tipo, presentacion, unidad: dosis }) // Verifica el mapeo aquí
+                    body: JSON.stringify({ operation: "editarSugerenciaMedicamento", idCombinacion, tipo, presentacion, unidad: dosis }) // Verifica el mapeo aquí
                 });
 
                 console.log("Solicitud enviada. Esperando respuesta...");
@@ -768,11 +768,6 @@
         });
 
 
-
-
-
-
-
         window.editarSugerencia = function(idCombinacion, tipo, presentacion, dosis) {
             console.log("Editar sugerencia con ID:", idCombinacion);
             console.log("Tipo:", tipo);
@@ -788,9 +783,6 @@
         $('#modalSugerencias').modal('hide');
         $('#modalEditarSugerencia').modal('show');
     };
-
-
-
 
 
 
@@ -1033,8 +1025,6 @@
         };
 
 
-
-        // Procesar la adición de una nueva presentación de medicamento
         // Procesar la adición de una nueva presentación de medicamento
         formAgregarPresentacion.addEventListener('submit', async (event) => {
             event.preventDefault();

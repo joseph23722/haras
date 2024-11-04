@@ -23,11 +23,24 @@ function sendResponse($status, $message, $data = []) {
     exit;
 }
 
+// Detectar `operation` según el tipo de contenido
+$operation = '';
+if ($method === 'GET') {
+    $operation = $_GET['operation'] ?? '';
+} elseif ($method === 'POST') {
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+    if (strpos($contentType, 'application/json') !== false) {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $operation = $data['operation'] ?? '';
+    } else {
+        $operation = $_POST['operation'] ?? '';
+    }
+}
+
 try {
     // Si el método es GET, manejarlo aquí
     if ($method === 'GET') {
-        $operation = $_GET['operation'] ?? '';
-
         switch ($operation) {
             case 'getAllMedicamentos':
                 try {
@@ -151,8 +164,6 @@ try {
 
     // Si el método es POST, manejarlo aquí
     if ($method === 'POST') {
-        $operation = $_GET['operation'] ?? '';
-
         switch ($operation) {
             case 'registrar':
                 $dosisCompleta = trim($_POST['dosis'] . ' ' . ($_POST['unidad'] ?? ''));
