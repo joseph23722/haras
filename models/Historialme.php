@@ -1,16 +1,19 @@
 <?php
 require_once 'Conexion.php';
 
-class Historialme extends Conexion {
+class Historialme extends Conexion
+{
     private $pdo;
 
-    public function __CONSTRUCT() {
+    public function __CONSTRUCT()
+    {
         $this->pdo = parent::getConexion();
     }
 
 
     // Método para registrar el historial médico
-    public function registrarHistorial($params = []) {
+    public function registrarHistorial($params = [])
+    {
         try {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
@@ -41,7 +44,7 @@ class Historialme extends Conexion {
             }
 
             // Ejecutar el procedimiento almacenado, incluyendo el nuevo parámetro `tipoTratamiento`
-            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['idEquino'],
                 $idUsuario,
@@ -49,7 +52,6 @@ class Historialme extends Conexion {
                 $params['dosis'],
                 $params['frecuenciaAdministracion'],
                 $params['viaAdministracion'],
-                $params['pesoEquino'] ?? null,
                 $params['fechaFin'],
                 $params['observaciones'] ?? null,
                 $params['reaccionesAdversas'] ?? null,
@@ -62,23 +64,39 @@ class Historialme extends Conexion {
                 return ['status' => 'error', 'message' => 'No se pudo registrar el historial médico'];
             }
         } catch (Exception $e) {
-            
+
             // Remover el prefijo de error SQLSTATE si está presente en el mensaje
             $errorMessage = $e->getMessage();
             if (strpos($errorMessage, 'SQLSTATE[45000]') !== false) {
                 $errorMessage = preg_replace('/SQLSTATE\[45000\]: <<Unknown error>>: \d+ /', '', $errorMessage);
             }
-            
+
             error_log("Error en registrarHistorial: " . $errorMessage);
             return ['status' => 'error', 'message' => $errorMessage];
         }
     }
 
-        
+    // Método para obtener el peso de un equino
+    public function obtenerPeso($idEquino)
+    {
+        try {
+            // Llamar al procedimiento almacenado que obtiene el peso de un equino por su ID
+            $query = $this->pdo->prepare("CALL spu_obtener_peso_equino(:idEquino)");
+            $query->bindParam(':idEquino', $idEquino, PDO::PARAM_INT);
+            $query->execute();
 
+            // Retornar el resultado como un solo valor (asumiendo que solo devuelve un registro)
+            $resultado = $query->fetch(PDO::FETCH_ASSOC);
+            return $resultado ? $resultado['peso'] : null;
+        } catch (Exception $e) {
+            error_log("Error en obtenerPeso: " . $e->getMessage());
+            return null;
+        }
+    }
 
     // Método para listar equinos propios (sin propietario) para medicamentos
-    public function listarEquinosPorTipo() {
+    public function listarEquinosPorTipo()
+    {
         try {
             $query = $this->pdo->prepare("CALL spu_listar_equinos_propiosMedi()");
             $query->execute();
@@ -90,19 +108,21 @@ class Historialme extends Conexion {
     }
 
     // Método para consultar el historial médico de un equino
-    public function consultarHistorialMedico() {
+    public function consultarHistorialMedico()
+    {
         $query = $this->pdo->prepare("CALL spu_consultar_historial_medicoMedi()");
         $query->execute();
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
 
     // Obtener todos los medicamentos
-    public function getAllMedicamentos() {
+    public function getAllMedicamentos()
+    {
         try {
             // Llamada al procedimiento almacenado para listar los medicamentos
             $query = "CALL spu_listar_medicamentosMedi()"; // Llamada directa al procedimiento almacenado
-        
+
             $stmt = $this->pdo->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC); // Devolver todos los registros como un array asociativo
@@ -114,34 +134,27 @@ class Historialme extends Conexion {
 
     // Método para pausar o eliminar un tratamiento por ID en la tabla DetalleMedicamentos
     // Método para gestionar el estado de un tratamiento por ID en la tabla DetalleMedicamentos
-    public function gestionarTratamiento($idDetalleMed, $accion) {
+    public function gestionarTratamiento($idDetalleMed, $accion)
+    {
         try {
             error_log("Iniciando 'gestionarTratamiento' con ID: $idDetalleMed y Acción: $accion");
-    
+
             if (!in_array($accion, ['pausar', 'continuar', 'eliminar'])) {
                 error_log("Acción no válida en el método del modelo: $accion");
                 throw new Exception("Acción no válida. Use 'pausar', 'continuar' o 'eliminar'.");
             }
-    
+
             $query = "CALL spu_gestionar_tratamiento(:idDetalleMed, :accion)";
             $consulta = $this->pdo->prepare($query);
             $consulta->bindParam(':idDetalleMed', $idDetalleMed, PDO::PARAM_INT);
             $consulta->bindParam(':accion', $accion, PDO::PARAM_STR);
             $consulta->execute();
-    
+
             error_log("Procedimiento almacenado ejecutado correctamente para la acción '$accion'.");
             return true;
-    
         } catch (Exception $e) {
             error_log("Error en 'gestionarTratamiento': " . $e->getMessage());
             return false;
         }
     }
-    
-
-    
-    
-    
-
-
 }

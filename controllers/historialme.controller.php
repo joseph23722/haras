@@ -43,7 +43,6 @@ try {
                     'dosis' => $inputData['dosis'] ?? null,
                     'frecuenciaAdministracion' => $inputData['frecuenciaAdministracion'] ?? null,
                     'viaAdministracion' => $inputData['viaAdministracion'] ?? null,
-                    'pesoEquino' => $inputData['pesoEquino'] ?? null,
                     'fechaInicio' => $inputData['fechaInicio'] ?? null,
                     'fechaFin' => $inputData['fechaFin'] ?? null,
                     'observaciones' => $inputData['observaciones'] ?? null,
@@ -64,8 +63,6 @@ try {
                     ]);
                 }
                 break;
-
-
 
             case 'gestionarTratamiento':
                 error_log("Entrando en el case 'gestionarTratamiento'");
@@ -114,7 +111,7 @@ try {
                     ]);
                 }
                 break;
-            
+
 
             default:
                 echo json_encode(['error' => 'Operación no válida']);
@@ -142,7 +139,6 @@ try {
                 $result = $historialme->getAllMedicamentos();
                 echo json_encode(['data' => $result]);
                 break;
-
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }

@@ -245,7 +245,6 @@ CREATE TABLE DetalleMedicamentos (
     dosis                   VARCHAR(50) NOT NULL,
     frecuenciaAdministracion VARCHAR(50) NOT NULL,
     viaAdministracion       VARCHAR(50) NOT NULL,
-    pesoEquino              DECIMAL(10,2) NULL,
     fechaInicio             DATE NOT NULL,
     fechaFin                DATE NOT NULL,
     observaciones           TEXT NULL,
@@ -253,8 +252,6 @@ CREATE TABLE DetalleMedicamentos (
     idUsuario               INT NOT NULL,
     tipoTratamiento         ENUM('Primario', 'Complementario') DEFAULT 'Primario',  -- Nueva columna para tipo de tratamiento
     estadoTratamiento       ENUM('Activo', 'Finalizado', 'En pausa') DEFAULT 'Activo',  -- Nueva columna para estado de tratamiento
-
-    -- Definición de llaves foráneas
     CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
