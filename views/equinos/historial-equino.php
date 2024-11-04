@@ -64,6 +64,38 @@
                         </div>
                     </div>
                 </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="carrerasGanadas">
+                            <label for="carrerasGanadas" class="form-label">Carreras Ganadas</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="nombreCarrerasGanadas">
+                            <label for="nombreCarrerasGanadas" class="form-label">Nombre Carreras Ganadas</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="valorCarrera">
+                            <label for="valorCarrera" class="form-label">Valor de la Carrera</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="valorMercado">
+                            <label for="valorMercado" class="form-label">Valor en el mercado $</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="ranking">
+                            <label for="ranking" class="form-label">Ranking Mundial</label>
+                        </div>
+                    </div>
+                </div>
                 <div class="row g-3">
                     <div class="col-md-12 text-end mt-3">
                         <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial" style="background-color: #0077b6; border: none;">
