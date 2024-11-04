@@ -125,14 +125,22 @@ BEGIN
     DECLARE v_sexoExterno ENUM('Macho', 'Hembra');
     DECLARE v_mensajeError VARCHAR(255);
     DECLARE v_count INT;
+    DECLARE v_idEstadoServida INT;
+    DECLARE v_idEstadoActivo INT;
+    DECLARE v_idEstadoSS INT;
+
+    -- Obtener los ID de estados correspondientes
+    SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida';
+    SELECT idEstadoMonta INTO v_idEstadoActivo FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Activo';
+    SELECT idEstadoMonta INTO v_idEstadoSS FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S';
 
     -- Validación para la fecha de servicio
     IF p_fechaServicio > CURDATE() THEN
         SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
-    
-        -- Validación para evitar servicios duplicados en la misma fecha y hora
+
+    -- Validación para evitar servicios duplicados en la misma fecha y hora
     SELECT COUNT(*) INTO v_count
     FROM Servicios
     WHERE DATE(fechaServicio) = p_fechaServicio
@@ -157,7 +165,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-
     -- Validación para evitar que una yegua tenga más de un servicio en el mismo día
     SELECT COUNT(*) INTO v_count
     FROM Servicios
@@ -169,31 +176,9 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-    -- Validación para la hora de entrada solo si la fecha es hoy
-    IF p_fechaServicio = CURDATE() THEN
-        IF p_horaEntrada >= CURRENT_TIME THEN
-            SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor o igual a la hora actual.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-        END IF;
-    END IF;
-
-    -- Validación para la hora de salida
-    IF p_horaSalida <= p_horaEntrada THEN
-        SET v_mensajeError = 'Error: La hora de salida debe ser mayor que la hora de entrada.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-    END IF;
-
-    -- Validación para la hora de salida solo si la fecha es hoy
-    IF p_fechaServicio = CURDATE() THEN
-        IF p_horaSalida > CURRENT_TIME THEN
-            SET v_mensajeError = 'Error: La hora de salida no puede ser mayor que la hora actual si la fecha es hoy.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-        END IF;
-    END IF;
-
-    -- Validaciones y lógica para los servicios propios y mixtos
+    -- Validación de tipo de servicio
     IF p_tipoServicio = 'propio' THEN
-        -- Validaciones de género para servicio propio
+        -- Validación de géneros opuestos para el servicio propio
         SELECT sexo INTO v_sexoMacho
         FROM Equinos
         WHERE idEquino = p_idEquinoMacho;
@@ -214,35 +199,19 @@ BEGIN
 
         -- Registro del servicio propio
         INSERT INTO Servicios (
-            idEquinoMacho,
-            idEquinoHembra,
-            fechaServicio,
-            tipoServicio,
-            detalles,
-            idMedicamento,
-            horaEntrada,
-            horaSalida,
-            idPropietario
+            idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
         ) VALUES (
-            p_idEquinoMacho,
-            p_idEquinoHembra,
-            p_fechaServicio,
-            p_tipoServicio,
-            p_detalles,
-            p_idMedicamento,
-            NULL,
-            NULL,
-            NULL  -- No hay propietario externo para servicios propios
+            p_idEquinoMacho, p_idEquinoHembra, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, p_idPropietario, p_costoServicio
         );
 
     ELSEIF p_tipoServicio = 'mixto' THEN
-        -- Validaciones para servicio mixto
+        -- Validación de propietario para servicio mixto
         IF p_idPropietario IS NULL THEN
             SET v_mensajeError = 'Debe seleccionar el ID del propietario para servicios mixtos.';
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
         END IF;
 
-        -- Obtener el sexo del equino externo
+        -- Validaciones de género para el equino externo
         SELECT sexo INTO v_sexoExterno
         FROM Equinos
         WHERE idEquino = p_idEquinoExterno;
@@ -252,67 +221,28 @@ BEGIN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
         END IF;
 
-        -- Validaciones para asegurar géneros opuestos
-        IF p_idEquinoMacho IS NOT NULL THEN
-            SELECT sexo INTO v_sexoMacho
-            FROM Equinos
-            WHERE idEquino = p_idEquinoMacho;
-
-            IF v_sexoMacho = v_sexoExterno THEN
-                SET v_mensajeError = 'El equino externo debe tener el género opuesto al equino propio.';
-                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
-            END IF;
-
-            -- Registro del servicio mixto
-            INSERT INTO Servicios (
-                idEquinoMacho,
-                idEquinoHembra,
-                fechaServicio,
-                tipoServicio,
-                detalles,
-                idMedicamento,
-                horaEntrada,
-                horaSalida,
-                idPropietario,
-                costoServicio
-            ) VALUES (
-                p_idEquinoMacho,
-                p_idEquinoExterno,
-                p_fechaServicio,
-                p_tipoServicio,
-                p_detalles,
-                p_idMedicamento,
-                p_horaEntrada,
-                p_horaSalida,
-                p_idPropietario,
-                p_costoServicio
-            );
-        ELSE
-            INSERT INTO Servicios (
-                idEquinoMacho,
-                idEquinoHembra,
-                fechaServicio,
-                tipoServicio,
-                detalles,
-                idMedicamento,
-                horaEntrada,
-                horaSalida,
-                idPropietario,
-                costoServicio
-            ) VALUES (
-                p_idEquinoExterno,
-                p_idEquinoHembra,
-                p_fechaServicio,
-                p_tipoServicio,
-                p_detalles,
-                p_idMedicamento,
-                p_horaEntrada,
-                p_horaSalida,
-                p_idPropietario,
-                p_costoServicio
-            );
-        END IF;
+        -- Registro del servicio mixto
+        INSERT INTO Servicios (
+            idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
+        ) VALUES (
+            p_idEquinoMacho, p_idEquinoExterno, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, p_idPropietario, p_costoServicio
+        );
     END IF;
+
+    -- Actualizar estado de monta
+    UPDATE Equinos SET idEstadoMonta = v_idEstadoServida WHERE idEquino = p_idEquinoHembra;
+    UPDATE Equinos SET idEstadoMonta = v_idEstadoActivo WHERE idEquino = p_idEquinoMacho;
+
+    -- Asignar estado 'S/S' a yeguas sin registro de servicio
+    UPDATE Equinos
+    SET idEstadoMonta = v_idEstadoSS
+    WHERE sexo = 'Hembra' 
+      AND idEquino NOT IN (
+          SELECT idEquinoHembra FROM Servicios WHERE fechaServicio = CURDATE()
+      );
 
 END $$
 DELIMITER ;
+
+select * from estadoMonta;
+select * from equinos;

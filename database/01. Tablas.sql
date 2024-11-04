@@ -77,13 +77,6 @@ CREATE TABLE TipoEquinos (
     tipoEquino 			ENUM('Yegua', 'Padrillo', 'Potranca', 'Potrillo', 'Recién nacido', 'Destete') NOT NULL
 ) ENGINE = INNODB;
 
--- 7. EstadoMonta
-CREATE TABLE EstadoMonta (
-    idEstado 			INT PRIMARY KEY AUTO_INCREMENT,
-    genero 				ENUM('Macho', 'Hembra') NOT NULL,
-    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
-) ENGINE = INNODB;
-
 -- 8. Propietarios
 CREATE TABLE Propietarios (  
     idPropietario 		INT PRIMARY KEY AUTO_INCREMENT,  
@@ -99,13 +92,13 @@ CREATE TABLE Equinos (
     idTipoEquino 		INT 						NOT NULL,
     detalles			TEXT						NULL,
     idEstadoMonta 		INT							NULL,
-	nacionalidad 		VARCHAR(50)					NOT NULL,
+	nacionalidad 		VARCHAR(50)					NULL,
     idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
     pesokg				INT 						NOT NULL,
     fotografia			LONGBLOB 					NULL,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
-    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstado)
+    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta)
 ) ENGINE = INNODB;
 
 -- 10. Implementos
@@ -274,8 +267,6 @@ CREATE TABLE HistorialMovimientosMedicamentos (
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
-
-
 -- 23. Servicios 
 CREATE TABLE Servicios (
     idServicio 				INT PRIMARY KEY AUTO_INCREMENT,
@@ -285,9 +276,10 @@ CREATE TABLE Servicios (
     tipoServicio 			ENUM('Propio', 'Mixto') NOT NULL,
     detalles 				TEXT NOT NULL,
     idMedicamento 			INT NULL,
-    horaEntrada 			TIMESTAMP NULL,
+    horaEntrada 			TIME NULL,
     horaSalida 				TIME NULL,
     idPropietario 			INT NULL,
+    idEstadoMonta			INT NOT NULL,
 	costoServicio			DECIMAL(10,2) NULL,
     CONSTRAINT fk_servicio_equino_macho FOREIGN KEY (idEquinoMacho) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_servicio_equino_hembra FOREIGN KEY (idEquinoHembra) REFERENCES Equinos(idEquino),

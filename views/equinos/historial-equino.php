@@ -148,7 +148,7 @@
             document.getElementById("idPropietario").value = equino.idPropietario || 'Haras Rancho Sur';
             document.getElementById("sexo").value = equino.sexo || '';
             document.getElementById("tipoEquino").value = equino.tipoEquino || '';
-            document.getElementById("idEstadoMonta").value = equino.idEstadoMonta || '';
+            document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
             document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
             document.getElementById("fotografia").value = equino.fotografia || '';
         }

@@ -16,7 +16,7 @@ BEGIN
     FROM
         Equinos E
     LEFT JOIN TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
-    LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstado
+    LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstadoMonta
     WHERE
         E.idPropietario IS NULL
     ORDER BY E.idEquino DESC;
