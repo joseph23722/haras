@@ -119,7 +119,6 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
     (6, 'registrar-usuario', 'N', NULL, NULL);
-   select * from vistas;
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
