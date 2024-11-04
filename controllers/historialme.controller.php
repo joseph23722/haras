@@ -132,8 +132,6 @@ try {
                 echo json_encode(['data' => $result]);
                 break;
 
-
-
             case 'getAllMedicamentos':
                 // Llamada al método para obtener todos los medicamentos
                 $result = $historialme->getAllMedicamentos();

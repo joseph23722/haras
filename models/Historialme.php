@@ -76,24 +76,6 @@ class Historialme extends Conexion
         }
     }
 
-    // Método para obtener el peso de un equino
-    public function obtenerPeso($idEquino)
-    {
-        try {
-            // Llamar al procedimiento almacenado que obtiene el peso de un equino por su ID
-            $query = $this->pdo->prepare("CALL spu_obtener_peso_equino(:idEquino)");
-            $query->bindParam(':idEquino', $idEquino, PDO::PARAM_INT);
-            $query->execute();
-
-            // Retornar el resultado como un solo valor (asumiendo que solo devuelve un registro)
-            $resultado = $query->fetch(PDO::FETCH_ASSOC);
-            return $resultado ? $resultado['peso'] : null;
-        } catch (Exception $e) {
-            error_log("Error en obtenerPeso: " . $e->getMessage());
-            return null;
-        }
-    }
-
     // Método para listar equinos propios (sin propietario) para medicamentos
     public function listarEquinosPorTipo()
     {
