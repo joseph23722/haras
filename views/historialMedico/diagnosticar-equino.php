@@ -39,7 +39,7 @@
                     <!-- Peso Equino (opcional) -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input name="pesokg" id="pesokg" class="form-control" readonly> <!-- Cambiado a readonly -->
+                            <input name="pesokg" id="pesokg" class="form-control" readonly disabled>
                             <label for="pesokg"><i class="fas fa-weight" style="color: #ff6f61;"></i> Peso Equino (kg)</label>
                         </div>
                     </div>
