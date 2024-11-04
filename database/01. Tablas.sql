@@ -357,7 +357,7 @@ CREATE TABLE RotacionCampos (
 -- 30. CampanaPotrillos
 CREATE TABLE CampanaPotrillos (  -- Reemplazo de 'Campaña' por 'Campana'
     idCampana 				INT PRIMARY KEY AUTO_INCREMENT,
-    idPotrillo 				INT NOT NULL,
+    idEquino 				INT NOT NULL,
     registroPrecio 			DECIMAL(10,2) NOT NULL,
     precioSubasta 			DECIMAL(10,2) NOT NULL,
     CONSTRAINT fk_campanapotrillos_equino FOREIGN KEY (idPotrillo) REFERENCES Equinos(idEquino)
