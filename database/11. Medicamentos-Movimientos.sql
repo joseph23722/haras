@@ -70,16 +70,14 @@ CREATE PROCEDURE spu_medicamentos_registrar(
 BEGIN
     DECLARE _idCombinacion INT;
     DECLARE _idLoteMedicamento INT;
-    DECLARE _idTipo INT;
-    DECLARE _idPresentacion INT;
-    DECLARE _idUnidad INT;
     DECLARE _dosis DECIMAL(10,2);
     DECLARE _unidad VARCHAR(50);
 
-    -- Manejador de errores: si ocurre un error, se revierte la transacción
+    -- Manejador de errores: si ocurre un error, se revierte la transacción y propaga el mensaje específico
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+        RESIGNAL; -- Propaga el mensaje específico sin sobrescribirlo
     END;
 
     -- Iniciar la transacción
@@ -89,44 +87,24 @@ BEGIN
     SET _dosis = CAST(SUBSTRING_INDEX(_dosisCompleta, ' ', 1) AS DECIMAL(10,2)); -- Extrae la parte numérica
     SET _unidad = TRIM(SUBSTRING_INDEX(_dosisCompleta, ' ', -1)); -- Extrae la parte de la unidad
 
-    -- Obtener o insertar idTipo
-    SELECT idTipo INTO _idTipo FROM TiposMedicamentos WHERE LOWER(tipo) = LOWER(_tipo);
-    IF _idTipo IS NULL THEN
-        INSERT INTO TiposMedicamentos (tipo) VALUES (_tipo);
-        SET _idTipo = LAST_INSERT_ID();
-    END IF;
+    -- Llamar a `spu_validar_registrar_combinacion` para validar y registrar la combinación si es necesario
+    CALL spu_validar_registrar_combinacion(_tipo, _presentacion, _dosis, _unidad);
 
-    -- Obtener o insertar idPresentacion
-    SELECT idPresentacion INTO _idPresentacion FROM PresentacionesMedicamentos WHERE LOWER(presentacion) = LOWER(_presentacion);
-    IF _idPresentacion IS NULL THEN
-        INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (_presentacion);
-        SET _idPresentacion = LAST_INSERT_ID();
-    END IF;
-
-    -- Obtener o insertar idUnidad
-    SELECT idUnidad INTO _idUnidad FROM UnidadesMedida WHERE LOWER(unidad) = LOWER(_unidad);
-    IF _idUnidad IS NULL THEN
-        INSERT INTO UnidadesMedida (unidad) VALUES (_unidad);
-        SET _idUnidad = LAST_INSERT_ID();
-    END IF;
-
-    -- Obtener o insertar idCombinacion
+    -- Recuperar el idCombinacion validado o recién creado
     SELECT idCombinacion INTO _idCombinacion
     FROM CombinacionesMedicamentos
-    WHERE idTipo = _idTipo AND idPresentacion = _idPresentacion AND dosis = _dosis AND idUnidad = _idUnidad;
+    WHERE idTipo = (SELECT idTipo FROM TiposMedicamentos WHERE tipo = _tipo)
+      AND idPresentacion = (SELECT idPresentacion FROM PresentacionesMedicamentos WHERE presentacion = _presentacion)
+      AND dosis = _dosis
+      AND idUnidad = (SELECT idUnidad FROM UnidadesMedida WHERE unidad = _unidad);
 
-    IF _idCombinacion IS NULL THEN
-        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis, idUnidad)
-        VALUES (_idTipo, _idPresentacion, _dosis, _idUnidad);
-        SET _idCombinacion = LAST_INSERT_ID();
-    END IF;
-
-    -- Obtener o insertar idLoteMedicamento
+    -- Verificar si el lote ya existe
     SELECT idLoteMedicamento INTO _idLoteMedicamento 
     FROM LotesMedicamento
     WHERE lote = _lote;
 
     IF _idLoteMedicamento IS NULL THEN
+        -- Si el lote no existe, crearlo
         INSERT INTO LotesMedicamento (lote, fechaCaducidad) 
         VALUES (_lote, _fechaCaducidad);
         SET _idLoteMedicamento = LAST_INSERT_ID();
@@ -163,6 +141,8 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
 
 
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
@@ -500,7 +480,6 @@ DELIMITER ;
 
 
 -- 1. Procedimiento para validar presentación tipo y dosis:
-
 DELIMITER $$
 
 CREATE PROCEDURE spu_validar_registrar_combinacion(
@@ -520,6 +499,10 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
+        -- Verificar que _errorMensaje no sea NULL antes de enviarlo
+        IF _errorMensaje IS NULL THEN
+            SET _errorMensaje = 'Lo sentimos, ha ocurrido un error inesperado. Por favor, inténtalo de nuevo o contacta al administrador.';
+        END IF;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
     END;
 
@@ -533,7 +516,7 @@ BEGIN
     LIMIT 1;
 
     IF _idTipo IS NULL THEN
-        SET _errorMensaje = CONCAT('Error: El tipo de medicamento "', _tipoMedicamento, '" no es válido o no existe.');
+        SET _errorMensaje = CONCAT('El tipo de medicamento "', _tipoMedicamento, '" no está registrado en el sistema. Por favor, verifica el nombre ingresado o contacta al administrador si necesitas añadir este tipo.');
         ROLLBACK;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
     END IF;
@@ -545,7 +528,7 @@ BEGIN
     LIMIT 1;
 
     IF _idPresentacion IS NULL THEN
-        SET _errorMensaje = CONCAT('Error: La presentación "', _presentacionMedicamento, '" no es válida o no existe.');
+        SET _errorMensaje = CONCAT('La presentación "', _presentacionMedicamento, '" no se encuentra en el sistema. Asegúrate de que esté bien escrita o consulta con el administrador si deseas agregar esta presentación.');
         ROLLBACK;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
     END IF;
@@ -557,12 +540,12 @@ BEGIN
     LIMIT 1;
 
     IF _idUnidad IS NULL THEN
-        SET _errorMensaje = CONCAT('Error: La unidad de medida "', _unidadMedida, '" no es válida o no existe.');
+        SET _errorMensaje = CONCAT('La unidad de medida "', _unidadMedida, '" no está registrada. Verifica que sea correcta. Si necesitas ayuda, contacta al administrador para añadir esta unidad.');
         ROLLBACK;
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
     END IF;
 
-    -- Primera Función: Buscar una combinación exacta
+    -- Buscar una combinación exacta
     SELECT idCombinacion INTO _idCombinacion
     FROM CombinacionesMedicamentos
     WHERE idTipo = _idTipo
@@ -574,32 +557,37 @@ BEGIN
     IF _idCombinacion IS NOT NULL THEN
         -- Mensaje específico para combinación exacta
         COMMIT;
-        SELECT 'Combinación exacta encontrada y confirmada' AS mensaje, _idCombinacion AS idCombinacion;
+        SELECT 'Combinación exacta encontrada y confirmada en el sistema.' AS mensaje, _idCombinacion AS idCombinacion;
     ELSE
-        -- Segunda Función: Si la unidad y presentación coinciden, registrar nueva combinación
+        -- Registrar nueva combinación si no existe
         INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis, idUnidad)
         VALUES (_idTipo, _idPresentacion, _dosisMedicamento, _idUnidad);
 
         SET _idCombinacion = LAST_INSERT_ID();
 
         COMMIT;
-        SELECT 'Nueva combinación registrada y válida.' AS mensaje, _idCombinacion AS idCombinacion;
+        SELECT 'Nueva combinación registrada exitosamente en el sistema.' AS mensaje, _idCombinacion AS idCombinacion;
     END IF;
 END $$
+
 DELIMITER ;
 
 
 
 
+
+
+-- sugerencias
 -- sugerencias
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
 BEGIN
     -- Selecciona los tipos de medicamentos junto con la presentación y la dosis (cantidad y unidad), agrupados
     SELECT 
+        c.idCombinacion,  -- Incluye el ID de combinación para poder identificar cada sugerencia de combinación de manera única
         t.tipo, 
         GROUP_CONCAT(DISTINCT p.presentacion ORDER BY p.presentacion ASC SEPARATOR ', ') AS presentaciones,
-        GROUP_CONCAT(DISTINCT CONCAT( u.unidad) ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
+        GROUP_CONCAT(DISTINCT u.unidad ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
     FROM 
         CombinacionesMedicamentos c
     JOIN 
@@ -609,11 +597,12 @@ BEGIN
     JOIN 
         UnidadesMedida u ON c.idUnidad = u.idUnidad
     GROUP BY 
-        t.tipo
+        c.idCombinacion, t.tipo  -- Asegúrate de agrupar por idCombinacion para evitar resultados ambiguos
     ORDER BY 
         t.tipo ASC;  -- Ordena por tipo de medicamento
 END $$
 DELIMITER ;
+
 
 
 
@@ -694,7 +683,8 @@ INSERT INTO PresentacionesMedicamentos (presentacion) VALUES
 ('aerosoles'),
 ('spray');
 
-SELECT * FROM UnidadesMedida;
+
+
 
 -- Insertar Unidades de Medida
 INSERT INTO UnidadesMedida (unidad) VALUES

@@ -435,6 +435,9 @@
                 </div>
                 <div class="modal-body">
                     <form id="formEditarSugerencia">
+                        <!-- Campo oculto para el ID de la sugerencia (ID de la combinación) -->
+
+                        <input type="hidden" id="editarId"> <!-- Aquí va el ID de la sugerencia -->
                         <div class="mb-3">
                             <label for="editarTipo" class="form-label">Tipo de Medicamento</label>
                             <input type="text" class="form-control" id="editarTipo" required>
@@ -447,7 +450,6 @@
                             <label for="editarDosis" class="form-label">Dosis</label>
                             <input type="text" class="form-control" id="editarDosis" required>
                         </div>
-                        <input type="hidden" id="editarId"> <!-- Campo oculto para el ID de la sugerencia -->
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                     </form>
                 </div>
@@ -664,7 +666,7 @@
 
 
         // Evento para el botón de sugerencias
-        btnSugerencias.addEventListener("click", async () => {
+        async function cargarSugerencias() {
             try {
                 // Hacer la solicitud al servidor para obtener todas las sugerencias usando GET
                 const response = await fetch(`../../controllers/admedi.controller.php?operation=listarSugerenciasMedicamentos`, {
@@ -680,13 +682,15 @@
 
                     // Iterar sobre las sugerencias y agregarlas a la tabla con botón de edición
                     result.data.forEach(sugerencia => {
+                        console.log(sugerencia);
+                        
                         const row = `
                             <tr>
                                 <td>${sugerencia.tipo}</td>
                                 <td>${sugerencia.presentaciones}</td>
                                 <td>${sugerencia.dosis}</td>
                                 <td>
-                                    <button onclick="editarSugerencia(${sugerencia.id}, '${sugerencia.tipo}', '${sugerencia.presentaciones}', '${sugerencia.dosis}')" class="btn btn-warning btn-sm">
+                                    <button onclick="editarSugerencia(${sugerencia.idCombinacion}, '${sugerencia.tipo}', '${sugerencia.presentaciones}', '${sugerencia.dosis}')" class="btn btn-warning btn-sm">
                                         Editar
                                     </button>
                                 </td>
@@ -701,26 +705,90 @@
             } catch (error) {
                 alert("Ocurrió un error al obtener las sugerencias: " + error.message);
             }
+        }
+
+        // Llama a `cargarSugerencias` cuando el botón de sugerencias se haga clic
+        btnSugerencias.addEventListener("click", cargarSugerencias);
+
+
+        document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Obtener los valores de los campos del modal de edición
+            const idCombinacion = document.getElementById('editarId').value;
+            const tipo = document.getElementById('editarTipo').value;
+            const presentacion = document.getElementById('editarPresentacion').value;
+            const dosis = document.getElementById('editarDosis').value;
+
+            console.log("---- Valores obtenidos del formulario ----");
+            console.log("ID de la combinación:", idCombinacion);
+            console.log("Tipo de medicamento:", tipo);
+            console.log("Presentación:", presentacion);
+            console.log("Dosis:", dosis);
+            console.log("----------------------------------------");
+
+            // Verificar que los valores sean válidos antes de hacer la solicitud
+            if (!dosis || !idCombinacion) {
+                alert("El campo de dosis y el ID de la combinación son requeridos.");
+                return;
+            }
+
+            try {
+                console.log("Iniciando la solicitud POST para actualizar la sugerencia...");
+                
+                const response = await fetch(`../../controllers/admedi.controller.php?operation=editarSugerenciaMedicamento`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ idCombinacion, tipo, presentacion, unidad: dosis }) // Verifica el mapeo aquí
+                });
+
+                console.log("Solicitud enviada. Esperando respuesta...");
+
+                const result = await response.json();
+                
+                console.log("Respuesta recibida del servidor:");
+                console.log(result);
+
+                if (result.status === "success") {
+                    console.log("Actualización exitosa de la sugerencia.");
+                    alert("Sugerencia actualizada correctamente.");
+                    $('#modalEditarSugerencia').modal('hide');
+                    await cargarSugerencias();
+                    $('#modalSugerencias').modal('show');
+                } else {
+                    console.log("Error recibido en la respuesta del servidor:", result.message);
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                console.log("Excepción capturada durante la solicitud de actualización:", error.message);
+                alert("Ocurrió un error al actualizar la sugerencia: " + error.message);
+            }
         });
 
-        window.editarSugerencia = function(id, tipo, presentacion, dosis) {
-            // Aquí va tu código para la función editarSugerencia
-            console.log("Editando sugerencia:", { id, tipo, presentacion, dosis });
-
-            // Ejemplo: abrir un modal y llenar campos con los datos
-            document.getElementById('editarTipo').value = tipo;
-            document.getElementById('editarPresentacion').value = presentacion;
-            document.getElementById('editarDosis').value = dosis;
-
-            // Establecer el ID de la sugerencia en el campo oculto, si lo necesitas
-            document.getElementById('editarId').value = id;
-
-            // Cerrar el modal de sugerencias
-             $('#modalSugerencias').modal('hide');
 
 
-            $('#modalEditarSugerencia').modal('show'); // Mostrar el modal de edición
-        };
+
+
+
+
+        window.editarSugerencia = function(idCombinacion, tipo, presentacion, dosis) {
+            console.log("Editar sugerencia con ID:", idCombinacion);
+            console.log("Tipo:", tipo);
+            console.log("Presentación:", presentacion);
+            console.log("Dosis:", dosis);
+        // Asignar los valores de la sugerencia a los campos del formulario de edición
+        document.getElementById('editarId').value = idCombinacion; // Asigna el ID de la combinación al campo oculto
+        document.getElementById('editarTipo').value = tipo;
+        document.getElementById('editarPresentacion').value = presentacion;
+        document.getElementById('editarDosis').value = dosis;
+
+        // Cerrar el modal de sugerencias y abrir el modal de edición
+        $('#modalSugerencias').modal('hide');
+        $('#modalEditarSugerencia').modal('show');
+    };
+
 
 
 
@@ -754,11 +822,11 @@
                     tipoEquinoMovimiento.appendChild(option);
                 });
                 } else {
-                mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+                mostrarMensaje('No se encontraron tipos de equinos.', 'INFO');
                 }
             } catch (error) {
                 console.error("Error al cargar tipos de equinos:", error);
-                mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
+                mostrarMensaje('Error al cargar tipos de equinos.', 'ERROR');
             }
         };
 
@@ -994,10 +1062,6 @@
             }
         });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
         // Cargar medicamentos en los selectores de entrada y salida
         const loadSelectMedicamentos = async () => {
             try {
@@ -1049,10 +1113,6 @@
         
 
         // Cargar lista de medicamentos en la tabla
-<<<<<<< HEAD
-        // Cargar lista de medicamentos en la tabla con DataTable
-=======
->>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
         const loadMedicamentos = async () => {
             try {
                 const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
@@ -1339,10 +1399,6 @@
             }
         });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
         // Implementar para la entrada de medicamentos
         formEntrada.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -1417,70 +1473,27 @@
 
         // Implementar para la salida de medicamentos
         // Implementar para la salida de medicamentos
+        // Implementar para la salida de medicamentos
         if (formSalida) {
             formSalida.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
-<<<<<<< HEAD
-=======
-            const cantidadField = document.getElementById('salidaCantidad');
-            const cantidad = parseFloat(cantidadField.value) || 0;
-            if (cantidad <= 0) {
-            showToast("La cantidad debe ser mayor a 0.", 'ERROR');
-                return;
-            }
->>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
-
                 const cantidadField = document.getElementById('salidaCantidad');
+                const cantidad = parseFloat(cantidadField.value) || 0;
+
+                // Validación de cantidad
+                if (cantidad <= 0) {
+                    showToast("La cantidad debe ser mayor a 0.", 'ERROR');
+                    return;
+                }
+
                 const motivoField = document.getElementById('motivoSalida');
                 const loteField = document.getElementById('salidaLote');
                 const medicamentoField = document.getElementById('salidaMedicamento');
                 const tipoEquinoField = document.getElementById('tipoEquinoMovimiento');
 
-<<<<<<< HEAD
-                // Verificar existencia de todos los elementos requeridos
-                if (!cantidadField || !motivoField || !loteField || !medicamentoField || !tipoEquinoField) {
-                    return;
-=======
-            if (!confirmar) {
-                showToast("Operación cancelada.", "INFO");
-                return;
-            }
-
-            const formData = new FormData(formSalida);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'salida');
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    showToast("Salida registrada correctamente", "SUCCESS");
-                    formSalida.reset();
-                    await loadMedicamentos();
-                    await notificarStockBajo();
-
-                } else {
-                    showToast("Error en el registro de salida", "ERROR");
->>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
-                }
-                
-
-                const cantidad = parseFloat(cantidadField.value) || 0;
+                // Validación de motivo
                 const motivo = motivoField.value.trim();
-                const lote = loteField.value.trim() || null;
-
-
-
-                // Validación adicional en JavaScript
-                if (cantidad <= 0) {
-                    showToast("La cantidad debe ser mayor a 0.", 'ERROR');
-                    return;
-                }
                 if (!motivo) {
                     showToast("Debe especificar un motivo para la salida del medicamento.", 'ERROR');
                     return;
@@ -1493,7 +1506,6 @@
                     return;
                 }
 
-
                 // Preparar datos para enviar
                 const formData = new FormData();
                 formData.append('operation', 'salida');
@@ -1502,11 +1514,12 @@
                 formData.append('idTipoEquino', tipoEquinoField.value);
                 formData.append('motivo', motivo);
 
+                const lote = loteField.value.trim() || null;
                 if (lote !== null) {
                     formData.append('lote', lote);
                 }
 
-
+                // Intento de envío de datos al servidor
                 try {
                     const response = await fetch('../../controllers/admedi.controller.php', {
                         method: "POST",
@@ -1534,6 +1547,7 @@
 
 
 
+
         // Cargar datos al iniciar la página
         cargarLotes();
         loadTipoEquinos();
@@ -1543,5 +1557,6 @@
         loadTiposMedicamentos();
         loadPresentaciones();
     });
+    
 </script>
 

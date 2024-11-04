@@ -66,15 +66,20 @@ class Admi extends Conexion {
     
             return ['status' => 'success', 'message' => 'Medicamento registrado correctamente.'];
         } catch (PDOException $e) {
-            $errorMessage = trim(preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage()));
+            // Extrae solo el mensaje relevante usando una expresión regular
+            $errorMessage = $e->getMessage();
+            if (preg_match("/: ([^:]+)$/", $errorMessage, $matches)) {
+                $errorMessage = trim($matches[1]); // Extrae solo el mensaje de error
+            }
             error_log("Error en la base de datos: " . $errorMessage);
-            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $errorMessage];
+            return ['status' => 'error', 'message' => $errorMessage]; // Muestra solo el mensaje sin el código de error
         } catch (Exception $e) {
-            $errorMessage = trim(preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage()));
+            $errorMessage = trim($e->getMessage());
             error_log("Error inesperado: " . $errorMessage);
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $errorMessage];
         }
     }
+    
     
     
 
@@ -358,18 +363,63 @@ class Admi extends Conexion {
             return false; // Devolver false en caso de error
         }
     }
-
-    public function editarSugerencia($id, $tipo, $presentacion, $dosis) {
+ 
+    // editar segurencia de medicamento
+    public function editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad) {
         try {
-            $query = $this->pdo->prepare("UPDATE SugerenciasMedicamentos SET tipo = ?, presentaciones = ?, dosis = ? WHERE id = ?");
-            $query->execute([$tipo, $presentacion, $dosis, $id]);
+            // Iniciar transacción
+            $this->pdo->beginTransaction();
+            
+            // Actualizar el tipo de medicamento
+            $queryTipo = $this->pdo->prepare("
+                UPDATE TiposMedicamentos 
+                SET tipo = ? 
+                WHERE idTipo = (SELECT idTipo FROM CombinacionesMedicamentos WHERE idCombinacion = ?)
+            ");
+            $queryTipo->execute([$nuevoTipo, $idCombinacion]);
     
-            return $query->rowCount() > 0;
+            // Actualizar la presentación del medicamento
+            $queryPresentacion = $this->pdo->prepare("
+                UPDATE PresentacionesMedicamentos 
+                SET presentacion = ? 
+                WHERE idPresentacion = (SELECT idPresentacion FROM CombinacionesMedicamentos WHERE idCombinacion = ?)
+            ");
+            $queryPresentacion->execute([$nuevaPresentacion, $idCombinacion]);
+    
+            // Intentar actualizar la unidad de medida sin buscarla previamente
+            $queryUnidad = $this->pdo->prepare("
+                UPDATE UnidadesMedida 
+                SET unidad = ? 
+                WHERE idUnidad = (SELECT idUnidad FROM CombinacionesMedicamentos WHERE idCombinacion = ?)
+            ");
+            $queryUnidad->execute([$nuevaUnidad, $idCombinacion]);
+    
+            // Confirmar transacción si todas las actualizaciones son exitosas
+            $this->pdo->commit();
+    
+            return true; // Retorna true si la transacción fue exitosa
         } catch (Exception $e) {
-            error_log("Error al editar sugerencia de medicamento: " . $e->getMessage());
+            // Deshacer cambios si hay un error
+            $this->pdo->rollBack();
+            error_log("Error al editar combinación completa de medicamento: " . $e->getMessage());
             return false;
         }
     }
+    
+
+    // Función para validar si la unidad existe en la tabla UnidadesMedida
+    public function validarUnidad($unidad) {
+        $query = $this->pdo->prepare("SELECT idUnidad FROM UnidadesMedida WHERE unidad = ?");
+        $query->execute([$unidad]);
+        return $query->fetchColumn() !== false;
+    }
+
+    
+    
+    
+    
+    
+    
     
 
 
@@ -385,7 +435,7 @@ class Admi extends Conexion {
                 $params['dosisMedicamento'], // Dosis como DECIMAL
                 $params['unidadMedida'] // Nueva unidad de medida
             ]);
-
+    
             $result = $query->fetch(PDO::FETCH_ASSOC);
             if ($result && isset($result['mensaje']) && strpos($result['mensaje'], 'válida') !== false) {
                 // Si se obtiene un mensaje de combinación válida, devuelve el ID de la combinación reutilizada o nueva
@@ -397,21 +447,25 @@ class Admi extends Conexion {
                     ]
                 ];
             }
-
+    
             return ['status' => 'error', 'message' => 'Combinación inválida de tipo, presentación y dosis.'];
         } catch (PDOException $e) {
-            // Captura el mensaje específico de MySQL y lo muestra en la respuesta
+            // Captura el mensaje de error y extrae solo el mensaje personalizado
             $errorMessage = $e->getMessage();
-            if (strpos($errorMessage, 'Error:') !== false) {
-                // Extrae el mensaje de error personalizado
-                $customError = substr($errorMessage, strpos($errorMessage, 'Error:'));
+            
+            // Extraer solo el mensaje de error personalizado eliminando prefijos no deseados
+            if (preg_match('/: (\d+)?\s?(.*)$/', $errorMessage, $matches)) {
+                // $matches[2] contendrá solo el mensaje personalizado sin el código de error
+                $customError = trim($matches[2]);
                 return ['status' => 'error', 'message' => $customError];
             } else {
-                // Mensaje genérico en caso de error no personalizado
+                // En caso de un error genérico
                 return ['status' => 'error', 'message' => 'Error en la validación de la combinación.'];
             }
         }
     }
+    
+    
 
 
 

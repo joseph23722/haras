@@ -151,7 +151,7 @@ try {
 
     // Si el método es POST, manejarlo aquí
     if ($method === 'POST') {
-        $operation = $_POST['operation'] ?? '';
+        $operation = $_GET['operation'] ?? '';
 
         switch ($operation) {
             case 'registrar':
@@ -204,8 +204,6 @@ try {
                     sendResponse('error', 'Error al registrar el medicamento: ' . $e->getMessage());
                 }
                 break;
-            
-            
             
             
 
@@ -310,22 +308,38 @@ try {
                 break;
 
             case 'editarSugerenciaMedicamento':
-                $id = $_POST['id'] ?? null;
-                $tipo = $_POST['tipo'] ?? '';
-                $presentacion = $_POST['presentacion'] ?? '';
-                $dosis = $_POST['dosis'] ?? '';
+                $data = json_decode(file_get_contents('php://input'), true);
+            
+                $idCombinacion = $data['idCombinacion'] ?? null;
+                $nuevoTipo = $data['tipo'] ?? '';
+                $nuevaPresentacion = $data['presentacion'] ?? '';
+                $nuevaUnidad = $data['unidad'] ?? ''; // Asegúrate de que 'unidad' tiene el valor de dosis
+            
+                // Validar si el idCombinacion está presente
+                if (!$idCombinacion) {
+                    sendResponse('error', 'El ID de la combinación es requerido para actualizar.');
+                    exit;
+                }
             
                 try {
-                    $result = $admi->editarSugerencia($id, $tipo, $presentacion, $dosis);
+                    // Intentar realizar la actualización sin validar la existencia previa de la unidad
+                    $result = $admi->editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad);
                     if ($result) {
-                        sendResponse('success', 'Sugerencia de medicamento actualizada correctamente.');
+                        sendResponse('success', 'Combinación de medicamento actualizada correctamente.');
                     } else {
-                        sendResponse('error', 'No se pudo actualizar la sugerencia de medicamento.');
+                        sendResponse('error', 'No se pudo actualizar la combinación de medicamento. Verifica los datos.');
                     }
                 } catch (Exception $e) {
-                    sendResponse('error', 'Error al actualizar la sugerencia de medicamento: ' . $e->getMessage());
+                    sendResponse('error', 'Error al actualizar la combinación de medicamento: ' . $e->getMessage());
                 }
                 break;
+                
+                
+                
+                
+                
+                
+                
                 
                 
 
