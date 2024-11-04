@@ -13,42 +13,32 @@
         <div class="card-body p-4" style="background-color: #f9f9f9;">
             <form action="" id="form-historial-medico" autocomplete="off">
                 <div class="row g-3">
-                    <!-- Selectores de Equino -->
+                    <!-- Selector para el Tipo de Equino -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select id="selectYegua" class="form-select equino-select" data-tipo="yegua" name="idEquino" required autofocus>
-                                <option value="">Seleccione Yegua</option>
+                            <select id="tipoEquinoSelect" class="form-select" name="tipoEquino" required>
+                                <option value="">Seleccione Tipo de Equino</option>
+                                <option value="1">Yegua</option>
+                                <option value="2">Padrillo</option>
+                                <option value="3">Potranca</option>
+                                <option value="4">Potrillo</option>
                             </select>
-                            <label for="selectYegua"><i class="fas fa-horse" style="color: #00b4d8;"></i> Yegua</label>
+                            <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Tipo de Equino</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Selector para el nombre del Tipo de Equino -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select id="equinoSelect" class="form-select" name="idEquino" required>
+                                <option value="">Seleccione Equino</option>
+                            </select>
+                            <label for="equinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Equino</label>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="selectPadrillo" class="form-select equino-select" data-tipo="padrillo" name="idEquino">
-                                <option value="">Seleccione Padrillo</option>
-                            </select>
-                            <label for="selectPadrillo"><i class="fas fa-horse" style="color: #00b4d8;"></i> Padrillo</label>
-                        </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="selectPotrillo" class="form-select equino-select" data-tipo="potrillo" name="idEquino">
-                                <option value="">Seleccione Potrillo</option>
-                            </select>
-                            <label for="selectPotrillo"><i class="fas fa-horse" style="color: #00b4d8;"></i> Potrillo</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="selectPotranca" class="form-select equino-select" data-tipo="potranca" name="idEquino">
-                                <option value="">Seleccione Potranca</option>
-                            </select>
-                            <label for="selectPotranca"><i class="fas fa-horse" style="color: #00b4d8;"></i> Potranca</label>
-                        </div>
-                    </div>
+                    
 
                     <!-- Select de Medicamentos -->
                     <div class="col-md-6">
@@ -196,10 +186,8 @@
         let historialTable;
 
         let selectedEquinoId = null;
-        const selectYegua = document.querySelector("#selectYegua");
-        const selectPadrillo = document.querySelector("#selectPadrillo");
-        const selectPotrillo = document.querySelector("#selectPotrillo");
-        const selectPotranca = document.querySelector("#selectPotranca");
+        const tipoEquinoSelect = document.getElementById("tipoEquino");
+        const equinoSelect = document.getElementById("equino");
         const medicamentoSelect = document.querySelector("#selectMedicamento");
         const fechaFinInput = document.querySelector("#fechaFin");
 
@@ -365,54 +353,53 @@
         window.eliminarRegistro = eliminarRegistro;
 
 
-        // Bloquear los selects de equinos al seleccionar uno
-        function handleEquinoSelect(selectedSelect) {
-            const selects = [selectYegua, selectPadrillo, selectPotrillo, selectPotranca];
-            selects.forEach(select => {
-                select.disabled = select !== selectedSelect && selectedSelect.value !== "";
-            });
-        }
-
-        [selectYegua, selectPadrillo, selectPotrillo, selectPotranca].forEach(select => {
-            select.addEventListener('change', () => handleEquinoSelect(select));
-        });
-
+       
         // Función para cargar la lista de equinos
-        async function loadEquinos() {
+        // Función para cargar los equinos según el tipo seleccionado
+        async function loadEquinosPorTipo(tipoEquino) {
+            const equinoSelect = document.getElementById("equinoSelect");
+
             try {
-                const response = await fetch('../../controllers/historialme.controller.php?operation=listarEquinosPorTipo', {
+                const response = await fetch(`../../controllers/historialme.controller.php?operation=listarEquinosPorTipo`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
                 });
 
                 const data = await response.json();
 
+                // Limpiar el selector de equinos
+                equinoSelect.innerHTML = '<option value="">Seleccione Equino</option>';
+
+                // Verificar si se obtuvieron datos
                 if (data.data && Array.isArray(data.data)) {
-                    clearSelect(selectYegua);
-                    clearSelect(selectPadrillo);
-                    clearSelect(selectPotrillo);
-                    clearSelect(selectPotranca);
-
                     data.data.forEach(equino => {
-                        const option = document.createElement('option');
-                        option.value = equino.idEquino;
-                        option.textContent = equino.nombreEquino;
-
-                        switch (parseInt(equino.idTipoEquino)) {
-                            case 1: selectYegua.appendChild(option); break;
-                            case 2: selectPadrillo.appendChild(option); break;
-                            case 3: selectPotranca.appendChild(option); break;
-                            case 4: selectPotrillo.appendChild(option); break;
+                        if (equino.idTipoEquino == tipoEquino) {
+                            const option = document.createElement('option');
+                            option.value = equino.idEquino;
+                            option.textContent = equino.nombreEquino;
+                            equinoSelect.appendChild(option);
                         }
                     });
                 } else {
-                    showToast("No se encontraron equinos.", "WARNING");
+                    showToast("No se encontraron equinos para el tipo seleccionado.", "WARNING");
                 }
             } catch (error) {
                 showToast("Error al cargar los equinos", "ERROR");
                 console.error("Error:", error);
             }
         }
+
+        // Evento para actualizar el select de equinos cuando cambia el tipo de equino
+        document.getElementById("tipoEquinoSelect").addEventListener("change", function() {
+            const tipoEquino = this.value;
+            if (tipoEquino) {
+                loadEquinosPorTipo(tipoEquino);
+            } else {
+                // Limpiar si no hay tipo seleccionado
+                document.getElementById("equinoSelect").innerHTML = '<option value="">Seleccione Equino</option>';
+            }
+        });
+
 
         // Función para cargar la lista de medicamentos
         async function loadMedicamentos() {
@@ -486,7 +473,6 @@
         }
 
         // Cargar equinos, medicamentos y la tabla de historial médico al iniciar
-        loadEquinos();
         loadMedicamentos();
         loadHistorialTable();
     });

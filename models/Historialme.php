@@ -62,6 +62,7 @@ class Historialme extends Conexion {
                 return ['status' => 'error', 'message' => 'No se pudo registrar el historial médico'];
             }
         } catch (Exception $e) {
+            
             // Remover el prefijo de error SQLSTATE si está presente en el mensaje
             $errorMessage = $e->getMessage();
             if (strpos($errorMessage, 'SQLSTATE[45000]') !== false) {

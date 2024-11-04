@@ -14,6 +14,7 @@ header('Content-Type: application/json');
 
 // Función para enviar una respuesta JSON al cliente
 function sendResponse($status, $message, $data = []) {
+    header('Content-Type: application/json');
     echo json_encode([
         'status' => $status,
         'message' => $message,
@@ -150,34 +151,61 @@ try {
 
     // Si el método es POST, manejarlo aquí
     if ($method === 'POST') {
-        $operation = $_POST['operation'] ?? '';
+        $operation = $_GET['operation'] ?? '';
 
         switch ($operation) {
             case 'registrar':
+                $dosisCompleta = trim($_POST['dosis'] . ' ' . ($_POST['unidad'] ?? ''));
+                error_log("Dosis completa construida: " . $dosisCompleta);
+            
                 $params = [
                     'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
                     'descripcion' => $_POST['descripcion'] ?? '',
                     'lote' => $_POST['lote'] ?? '',
                     'presentacion' => $_POST['presentacion'] ?? '',
-                    'dosis' => $_POST['dosis'] ?? '',
+                    'dosisCompleta' => $dosisCompleta,
                     'tipo' => $_POST['tipo'] ?? '',
                     'cantidad_stock' => intval($_POST['cantidad_stock'] ?? 0),
                     'stockMinimo' => intval($_POST['stockMinimo'] ?? 0),
                     'fechaCaducidad' => $_POST['fechaCaducidad'] ?? '',
-                    'precioUnitario' => floatval($_POST['precioUnitario'] ?? 0)
+                    'precioUnitario' => floatval($_POST['precioUnitario'] ?? 0),
                 ];
-
+            
+                foreach ($params as $key => $value) {
+                    error_log("$key => $value");
+                }
+            
+                if (empty($params['dosisCompleta'])) {
+                    error_log("Error: La dosis completa está vacía.");
+                    sendResponse('error', 'Error: La dosis completa (cantidad y unidad) es obligatoria.');
+                    break;
+                }
+            
+                if ($params['cantidad_stock'] < $params['stockMinimo']) {
+                    error_log("Error: La cantidad en stock es menor que el stock mínimo.");
+                    sendResponse('error', 'Error: La cantidad en stock no puede ser menor que el stock mínimo.');
+                    break;
+                }
+            
                 try {
                     $result = $admi->registrarMedicamento($params);
-                    if ($result['status'] === 'success') {
-                        sendResponse('success', 'Medicamento registrado correctamente.');
+                    error_log("Respuesta de registrarMedicamento:");
+                    error_log(print_r($result, true));
+            
+                    if (isset($result['status']) && $result['status'] === 'success') {
+                        sendResponse('success', $result['message']);
                     } else {
-                        sendResponse('error', $result['message']);
+                        $message = $result['message'] ?? 'Error desconocido en el registro de medicamentos.';
+                        error_log("Error en el registro del medicamento: " . $message);
+                        sendResponse('error', $message);
                     }
                 } catch (PDOException $e) {
+                    error_log("Excepción PDO al registrar el medicamento: " . $e->getMessage());
                     sendResponse('error', 'Error al registrar el medicamento: ' . $e->getMessage());
                 }
                 break;
+            
+            
 
             case 'entrada':
                 $params = [
@@ -186,6 +214,11 @@ try {
                     'lote' => $_POST['lote'] ?? '',
                     'cantidad' => floatval($_POST['cantidad'] ?? 0)
                 ];
+                // Validación: cantidad debe ser mayor que 0
+                if ($params['cantidad'] <= 0) {
+                    sendResponse('error', 'Error: La cantidad de entrada debe ser mayor a 0.');
+                    break;  // Salir del caso si la cantidad no es válida
+                }
 
                 try {
                     $result = $admi->entradaMedicamento($params);
@@ -205,13 +238,18 @@ try {
                     'unidadMedida' => $_POST['unidadMedida'] ?? '',
                     'cantidad' => floatval($_POST['cantidad'] ?? 0),
                     'idTipoEquino' => intval($_POST['idTipoEquino'] ?? 0),
-                    'lote' => $_POST['lote'] ?? ''
+                    'lote' => $_POST['lote'] ?? null,  // Cambiar a NULL si no se proporciona
+                    'motivo' => $_POST['motivo'] ?? ''  // Nuevo campo motivo
                 ];
-
+            
+                // Validación de cantidad y motivo
                 if ($params['cantidad'] <= 0) {
                     sendResponse('error', 'Error: La cantidad debe ser mayor a 0.');
                 }
-
+                if (empty($params['motivo'])) {
+                    sendResponse('error', 'Error: Debe especificar un motivo para la salida del medicamento.');
+                }
+            
                 try {
                     $result = $admi->salidaMedicamento($params);
                     if ($result['status'] === 'success') {
@@ -223,6 +261,7 @@ try {
                     sendResponse('error', 'Error al registrar la salida del medicamento: ' . $e->getMessage());
                 }
                 break;
+                
 
             case 'agregarTipoMedicamento':
                 $tipo = $_POST['tipo'] ?? '';
@@ -252,13 +291,66 @@ try {
                 }
                 break;
 
+            case 'agregarUnidadMedida':
+                $unidad = $_POST['unidad'] ?? '';  // Obtener el valor de la unidad de medida desde el formulario
+            
+                try {
+                    $result = $admi->agregarUnidadMedida($unidad);  // Llama al método en tu clase de administración
+            
+                    if ($result) {
+                        sendResponse('success', 'Unidad de medida agregada correctamente.');
+                    } else {
+                        sendResponse('error', 'No se pudo agregar la unidad de medida.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al agregar la unidad de medida: ' . $e->getMessage());
+                }
+                break;
+
+            case 'editarSugerenciaMedicamento':
+                $data = json_decode(file_get_contents('php://input'), true);
+            
+                $idCombinacion = $data['idCombinacion'] ?? null;
+                $nuevoTipo = $data['tipo'] ?? '';
+                $nuevaPresentacion = $data['presentacion'] ?? '';
+                $nuevaUnidad = $data['unidad'] ?? ''; // Asegúrate de que 'unidad' tiene el valor de dosis
+            
+                // Validar si el idCombinacion está presente
+                if (!$idCombinacion) {
+                    sendResponse('error', 'El ID de la combinación es requerido para actualizar.');
+                    exit;
+                }
+            
+                try {
+                    // Intentar realizar la actualización sin validar la existencia previa de la unidad
+                    $result = $admi->editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad);
+                    if ($result) {
+                        sendResponse('success', 'Combinación de medicamento actualizada correctamente.');
+                    } else {
+                        sendResponse('error', 'No se pudo actualizar la combinación de medicamento. Verifica los datos.');
+                    }
+                } catch (Exception $e) {
+                    sendResponse('error', 'Error al actualizar la combinación de medicamento: ' . $e->getMessage());
+                }
+                break;
+                
+                
+                
+                
+                
+                
+                
+                
+                
+
             case 'validarRegistrarCombinacion':
                 try {
                     // Extraer los parámetros recibidos desde la solicitud POST
                     $params = [
                         'tipoMedicamento' => $_POST['tipoMedicamento'] ?? '',
                         'presentacionMedicamento' => $_POST['presentacionMedicamento'] ?? '',
-                        'dosisMedicamento' => $_POST['dosisMedicamento'] ?? ''
+                        'dosisMedicamento' => floatval($_POST['dosisMedicamento'] ?? 0), // Cambiado a float para coincidir con DECIMAL
+                         'unidadMedida' => $_POST['unidadMedida'] ?? '' // Nueva entrada para la unidad de medida
                     ];
             
                     // Llamar al método para validar y registrar la combinación

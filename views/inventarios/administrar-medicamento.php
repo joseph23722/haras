@@ -5,6 +5,7 @@
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
         Gestionar Medicamentos
     </h1>
+    
 
     <!-- Sección del formulario para registrar un medicamento -->
     <div class="card mb-4 shadow border-0">
@@ -12,12 +13,21 @@
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Medicamento</h5>
             <!-- Botón de Sugerencias integrado en el header -->
             <button type="button" class="btn btn-info btn-sm" 
-                    style="background-color: #17a2b8; border: none; position: absolute; right: 1px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
+                    style=" border: none; position: absolute; right: 1px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
                     id="btnSugerencias" 
                     data-bs-toggle="modal" 
                     data-bs-target="#modalSugerencias">
                 <i class="fas fa-lightbulb"></i>
             </button>
+            <!-- Botón de Agregar en el header -->
+            <button type="button" class="btn btn-success btn-sm" 
+                    style="background-color: #28a745; border: none; position: absolute; right: 50px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
+                    id="btnAgregar" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalAgregarTipoPresentacion">
+                <i class="fas fa-plus"></i>
+            </button>
+
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
             
@@ -60,30 +70,32 @@
                         <div class="form-floating">
                             <select name="presentacion" id="presentacion" class="form-select" required>
                                 <option value="">Seleccione la Presentación</option>
-                                <option value="nuevo">Agregar nueva presentación...</option>
                             </select>
                             <label for="presentacion">
                                 <i class="fas fa-prescription-bottle-alt" style="color: #8e44ad;"></i> Presentación
                             </label>
                         </div>
                     </div>
-                    <!-- Composición (Dosis) -->
+
+                    <!-- Composición (Dosis y Unidad) -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="dosis" id="dosis" class="form-control" required pattern="^[0-9]+(\s?[a-zA-Z]+)?$" 
-                            title="Formato válido: número seguido de una unidad de medida (ej. mg, g, ml, etc.)">
+                            <input type="text" name="dosis" id="dosis" class="form-control" required 
+                                pattern="^\d+(\.\d+)?\s?[a-zA-Z]+$"
+                                title="Ingrese la cantidad seguida de la unidad (por ejemplo: 500 mg, 10 ml)">
                             <label for="dosis">
                                 <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500 mg)
                             </label>
                         </div>
                     </div>
 
+
+
                     <!-- Tipo de Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select name="tipo" id="tipo" class="form-select" required>
                                 <option value="">Seleccione el Tipo de Medicamento</option>
-                                <option value="nuevo">Agregar nuevo tipo...</option>
                             </select>
                             <label for="tipo">
                                 <i class="fas fa-pills" style="color: #ff6b6b;"></i> Tipo de Medicamento
@@ -165,184 +177,238 @@
             <button class="btn btn-outline-danger btn-lg me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalSalida">
                 <i class="fas fa-arrow-down"></i> Registrar Salida de Medicamento
             </button>
-
-
-
-
-
         </div>
     </div>
 
-    <!-- Tabla de Medicamentos Registrados -->
-    <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-            <h5><i class="fas fa-database"></i> Medicamentos Registrados</h5>
-        </div>
-        <div class="card-body" style="background-color: #f9f9f9; overflow-x: auto;">
-            <table id="medicamentosTable" class="table table-striped table-hover table-bordered" style="width: 100%;">
-                <tbody id="medicamentos-table"></tbody> <!-- Solo se deja el tbody, sin thead ni th -->
-            </table>
-        </div>
-    </div>
-
-
-    <!-- Modal para Agregar Nuevo Tipo de Medicamento -->
-    <div class="modal fade" id="modalAgregarTipo" tabindex="-1" aria-labelledby="modalAgregarTipoLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Modal para Agregar Nuevo Tipo, Presentación y Unidad de Medida -->
+    <div class="modal fade" id="modalAgregarTipoPresentacion" tabindex="-1" aria-labelledby="modalAgregarTipoPresentacionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAgregarTipoLabel">Agregar Nuevo Tipo de Medicamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header" style="background: #004080; color: white; padding: 15px;">
+                    <h5 class="modal-title" id="modalAgregarTipoPresentacionLabel" style="font-weight: bold;">
+                        <i class="fas fa-plus-circle"></i> Agregar Nuevo Tipo, Presentación y Unidad de Medida
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="formAgregarTipo">
-                        <div class="form-group mb-3">
-                            <label for="nuevoTipoMedicamento" class="form-label">Nuevo Tipo de Medicamento</label>
-                            <input type="text" name="nuevoTipoMedicamento" id="nuevoTipoMedicamento" class="form-control" required>
+                <div class="modal-body p-4">
+                    <div class="row text-center">
+                        <!-- Formulario para Agregar Tipo -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card shadow-sm border-0 h-100" style="padding: 20px;">
+                                <div class="card-body">
+                                    <h6 class="text-center mb-3" style="color: #004080;">
+                                        <i class="fas fa-capsules"></i> Nuevo Tipo de Medicamento
+                                    </h6>
+                                    <form id="formAgregarTipo">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" name="nuevoTipoMedicamento" id="nuevoTipoMedicamento" class="form-control" placeholder="Ingrese el tipo de medicamento" required>
+                                            <label for="nuevoTipoMedicamento">Tipo de Medicamento</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Agregar Tipo</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Agregar Tipo</button>
-                    </form>
+
+                        <!-- Formulario para Agregar Presentación -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card shadow-sm border-0 h-100" style="padding: 20px;">
+                                <div class="card-body">
+                                    <h6 class="text-center mb-3" style="color: #004080;">
+                                        <i class="fas fa-pills"></i> Nueva Presentación
+                                    </h6>
+                                    <form id="formAgregarPresentacion">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" name="nuevaPresentacion" id="nuevaPresentacion" class="form-control" placeholder="Ingrese la presentación" required>
+                                            <label for="nuevaPresentacion">Presentación</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Agregar Presentación</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulario para Agregar Unidad de Medida -->
+                        <div class="col-md-4 mb-4">
+                            <div class="card shadow-sm border-0 h-100" style="padding: 20px;">
+                                <div class="card-body">
+                                    <h6 class="text-center mb-3" style="color: #004080;">
+                                        <i class="fas fa-ruler-combined"></i> Nueva Unidad de Medida
+                                    </h6>
+                                    <form id="formAgregarUnidadMedida">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" name="nuevaUnidadMedida" id="nuevaUnidadMedida" class="form-control" placeholder="Ingrese la unidad de medida" required>
+                                            <label for="nuevaUnidadMedida">Unidad de Medida</label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">Agregar Unidad</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #f1f1f1;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Agregar Nueva Presentación -->
-    <div class="modal fade" id="modalAgregarPresentacion" tabindex="-1" aria-labelledby="modalAgregarPresentacionLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAgregarPresentacionLabel">Agregar Nueva Presentación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formAgregarPresentacion">
-                        <div class="form-group mb-3">
-                            <label for="nuevaPresentacion" class="form-label">Nueva Presentación</label>
-                            <input type="text" name="nuevaPresentacion" id="nuevaPresentacion" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Agregar Presentación</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+
+
+    
+
+
+
+
+
+    
 
     <!-- Modal para Registrar Entrada de Medicamento -->
     <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <!-- Encabezado del Modal -->
+                <div class="modal-header" style="background-color: #4CAF50; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
                     <h5 class="modal-title" id="modalEntradaLabel">Registrar Entrada de Medicamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
-                <div class="modal-body">
+
+                <!-- Cuerpo del Modal -->
+                <div class="modal-body px-4 py-3">
                     <form id="formEntrada">
-                        <div class="form-group mb-3">
-                            <label for="entradaMedicamento" class="form-label">Medicamento</label>
-                            <select name="nombreMedicamento" id="entradaMedicamento" class="form-control" required>
-                                <!-- Aquí puedes cargar las opciones de medicamentos disponibles -->
-                            </select>
+                        <!-- Selección de Medicamento -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="entradaMedicamento" class="form-label fw-bold">Medicamento</label>
+                                <select name="nombreMedicamento" id="entradaMedicamento" class="form-select form-select-lg" required>
+                                    <option value="" disabled selected>Seleccione un medicamento</option>
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
                         </div>
                         
                         <!-- Lote -->
-                        <div class="form-group mb-3">
-                            <label for="entradaLote" class="form-label">Lote</label>
-                            <select name="lote" id="entradaLote" class="form-select" required>
-                                <option value="">Seleccione un Lote</option>
-                                <!-- Aquí se cargarán los lotes dinámicamente -->
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="entradaLote" class="form-label fw-bold">Lote</label>
+                                <select name="lote" id="entradaLote" class="form-select form-select-lg" required>
+                                    <option value="" disabled selected>Seleccione un Lote</option>
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
                         </div>
 
-                                                
                         <!-- Cantidad -->
-                        <div class="form-group mb-3">
-                            <label for="entradaCantidad" class="form-label">Cantidad</label>
-                            <input type="number" name="cantidad" id="entradaCantidad" class="form-control" required min="0">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="entradaCantidad" class="form-label fw-bold">Cantidad</label>
+                                <input type="number" name="cantidad" id="entradaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
+                            </div>
                         </div>
 
-                
                         <!-- Botón para registrar la entrada -->
-                        <button type="submit" class="btn btn-primary">Registrar Entrada</button>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success px-4">Registrar Entrada</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+
     <!-- Modal para Registrar Salida de Medicamento -->
     <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
-                <div class="modal-header">
+                <div class="modal-header" style="background-color: #5a67d8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
                     <h5 class="modal-title" id="modalSalidaLabel">Registrar Salida de Medicamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
+                </div>
+
+                <!-- Cuerpo del Modal -->
+                <div class="modal-body px-4 py-3">
+                    <form id="formSalida">
+                        <!-- Selección de Medicamento -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="salidaMedicamento" class="form-label fw-bold">Medicamento</label>
+                                <select name="nombreMedicamento" id="salidaMedicamento" class="form-select form-select-lg" required>
+                                    <option value="" disabled selected>Seleccione un medicamento</option>
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Cantidad y Tipo de Equino -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="salidaCantidad" class="form-label fw-bold">Cantidad</label>
+                                <input type="number" name="cantidad" id="salidaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tipoEquinoMovimiento" class="form-label fw-bold">Tipo de Equino</label>
+                                <select id="tipoEquinoMovimiento" name="idTipoEquino" class="form-select form-select-lg" required>
+                                    <option value="" disabled selected>Seleccione Tipo de Equino</option>
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Lote -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="salidaLote" class="form-label fw-bold">Lote (opcional)</label>
+                                <select name="lote" id="salidaLote" class="form-select form-select-lg">
+                                    <option value="" disabled selected>Seleccione un lote</option>
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Motivo de la salida -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="motivoSalida" class="form-label fw-bold">Motivo</label>
+                                <textarea name="motivo" id="motivoSalida" class="form-control form-control-lg" required placeholder="Ingrese el motivo de la salida"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botón para registrar la salida -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger px-4">Registrar Salida</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal para Sugerencias de Medicamentos -->
+    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Encabezado del Modal -->
+                <div class="modal-header" style="background-color: #3498db; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
+                    <h5 class="modal-title" id="modalSugerenciasLabel">Sugerencias de Medicamentos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
 
                 <!-- Cuerpo del Modal -->
                 <div class="modal-body">
-                    <form id="formSalida">
-                        <!-- Selección de Medicamento -->
-                        <div class="mb-3">
-                            <label for="salidaMedicamento" class="form-label">Medicamento</label>
-                            <select name="nombreMedicamento" id="salidaMedicamento" class="form-control" required>
-                                <option value="" disabled selected>Seleccione un medicamento</option>
-                                <!-- Opciones cargadas dinámicamente -->
-                            </select>
-                        </div>
-
-                        <!-- Cantidad -->
-                        <div class="mb-3">
-                            <label for="salidaCantidad" class="form-label">Cantidad</label>
-                            <input type="number" name="cantidad" id="salidaCantidad" class="form-control" required min="1" placeholder="Ingrese cantidad">
-                        </div>
-
-                        <!-- Tipo de Equino -->
-                        <div class="mb-3">
-                            <label for="tipoEquinoMovimiento" class="form-label">Tipo de Equino</label>
-                            <select id="tipoEquinoMovimiento" name="idTipoEquino" class="form-select" required>
-                                <option value="" disabled selected>Seleccione Tipo de Equino</option>
-                                <!-- Opciones cargadas dinámicamente -->
-                            </select>
-                        </div>
-
-                        <!-- Lote (opcional) -->
-                        <div class="mb-3">
-                            <label for="salidaLote" class="form-label">Lote (opcional)</label>
-                            <select name="lote" id="salidaLote" class="form-control">
-                                <option value="" disabled selected>Seleccione un lote</option>
-                                <!-- Opciones cargadas dinámicamente -->
-                            </select>
-                        </div>
-
-                        <!-- Botón para registrar la salida -->
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-danger">Registrar Salida</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    
-    <!-- Modal de Sugerencias -->
-    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalSugerenciasLabel">Sugerencias de Medicamentos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
+                    <table class="table table-hover table-bordered mt-3">
+                        <thead class="table-light">
+                            <tr class="text-center">
                                 <th>Tipo de Medicamento</th>
                                 <th>Presentación</th>
                                 <th>Dosis</th>
+                                <th>Acciones</th> <!-- Nueva columna para acciones -->
                             </tr>
                         </thead>
                         <tbody id="sugerenciasTableBody">
@@ -350,6 +416,133 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Pie del Modal -->
+                <div class="modal-footer d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Sugerencia de Medicamento -->
+    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #f39c12; color: white;">
+                    <h5 class="modal-title" id="modalEditarSugerenciaLabel">Editar Sugerencia de Medicamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarSugerencia">
+                        <!-- Campo oculto para el ID de la sugerencia (ID de la combinación) -->
+
+                        <input type="hidden" id="editarId"> <!-- Aquí va el ID de la sugerencia -->
+                        <div class="mb-3">
+                            <label for="editarTipo" class="form-label">Tipo de Medicamento</label>
+                            <input type="text" class="form-control" id="editarTipo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarPresentacion" class="form-label">Presentación</label>
+                            <input type="text" class="form-control" id="editarPresentacion" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarDosis" class="form-label">Dosis</label>
+                            <input type="text" class="form-control" id="editarDosis" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal para Historial de Movimientos de Medicamentos -->
+    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <!-- Encabezado del Modal -->
+                <div class="modal-header" style="background-color: #17a2b8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
+                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Medicamentos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
+                </div>
+
+                <!-- Cuerpo del Modal -->
+                <div class="modal-body px-4 py-3">
+                    <!-- Opciones de Filtrado Rápido -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+                            <label for="filtroRango" class="me-2 fw-bold">Ver movimientos de:</label>
+                            <select id="filtroRango" class="form-select form-select-sm">
+                                <option value="hoy">Hoy</option>
+                                <option value="ultimaSemana">Última semana</option>
+                                <option value="ultimoMes">Último mes</option>
+                                <option value="todos">Todos</option>
+                            </select>
+                        </div>
+                        <button type="button" id="buscarHistorial" class="btn btn-primary ms-3"><i class="fas fa-search me-1"></i>Buscar</button>
+                    </div>
+
+                    <!-- Pestañas para Entrada y Salida -->
+                    <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="salidas-tab" data-bs-toggle="tab" data-bs-target="#salidas" type="button" role="tab" aria-controls="salidas" aria-selected="false">Salidas</button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido de las Pestañas -->
+                    <div class="tab-content">
+                        <!-- Tabla de Entradas de Medicamentos -->
+                        <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
+                            <div class="table-responsive">
+                                <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
+                                    <thead class="table-primary">
+                                        <tr class="text-center">
+                                            <th>ID Medicamento</th>
+                                            <th>Nombre Medicamento</th>
+                                            <th>Descripción</th>
+                                            <th>Stock Actual</th>
+                                            <th>Cantidad de Entrada</th>
+                                            <th>Fecha de Movimiento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historial-entradas-table">
+                                        <!-- Los datos se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Salidas de Medicamentos -->
+                        <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
+                            <div class="table-responsive">
+                                <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
+                                    <thead class="table-danger">
+                                        <tr class="text-center">
+                                            <th>ID Medicamento</th>
+                                            <th>Nombre Medicamento</th>
+                                            <th>Descripción</th>
+                                            <th>Tipo de Equino</th>
+                                            <th>Cantidad de Salida</th>
+                                            <th>Motivo</th>
+                                            <th>Fecha de Movimiento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historial-salidas-table">
+                                        <!-- Los datos se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pie del Modal -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
@@ -357,88 +550,34 @@
         </div>
     </div>
 
-    <!-- Modal para Historial de Movimientos de Medicamentos -->
-    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Medicamentos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-            <div class="modal-body">
-
-                <!-- Opciones de Filtrado Rápido -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="d-flex align-items-center">
-                        <label for="filtroRango" class="me-2">Ver movimientos de:</label>
-                        <select id="filtroRango" class="form-select">
-                            <option value="hoy">Hoy</option>
-                            <option value="ultimaSemana">Última semana</option>
-                            <option value="ultimoMes">Último mes</option>
-                            <option value="todos">Todos</option>
-                        </select>
-                    </div>
-                <button type="button" id="buscarHistorial" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
-                </div>
-
-                <!-- Pestañas para Entrada y Salida -->
-                <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="salidas-tab" data-bs-toggle="tab" data-bs-target="#salidas" type="button" role="tab" aria-controls="salidas" aria-selected="false">Salidas</button>
-                </li>
-                </ul>
-
-                <!-- Contenido de las pestañas -->
-                <div class="tab-content">
-                <!-- Tabla de Entradas de Medicamentos -->
-                <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
-                    <div class="table-responsive">
-                        <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>ID Medicamento</th>
-                                    <th>Nombre Medicamento</th>
-                                    <th>Descripción</th>
-                                    <th>Stock Actual</th>
-                                    <th>Cantidad de Entrada</th>
-                                    <th>Fecha de Movimiento</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historial-entradas-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tabla de Salidas de Medicamentos -->
-                <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
-                    <div class="table-responsive">
-                        <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
-                            <thead class="table-danger">
-                                <tr>
-                                    <th>ID Medicamento</th>
-                                    <th>Nombre Medicamento</th>
-                                    <th>Descripción</th>
-                                    <th>Tipo de Equino</th>
-                                    <th>Cantidad de Salida</th>
-                                    <th>Fecha de Movimiento</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historial-salidas-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-            </div>
+    <!-- Tabla de Medicamentos Registrados -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+            <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
+        </div>
+        <div class="card-body" style="background-color: #f9f9f9;">
+            <table id="medicamentosTable" class="table table-striped table-hover table-bordered" style="width:100%">
+                <thead style="background-color: #caf0f8; color: #003366;">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Lote</th>
+                        <th>Presentación</th>
+                        <th>Dosis</th>
+                        <th>Tipo</th>
+                        <th>Fecha Caducidad</th>
+                        <th>Cantidad Stock</th>
+                        <th>Costo</th>
+                        <th>Fecha Registro</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="medicamentos-table-body">
+                    <!-- Datos dinámicos de la tabla se cargarán aquí -->
+                </tbody>
+            </table>
         </div>
     </div>
-
 
 
 </div>
@@ -460,9 +599,10 @@
         const formSalida = document.querySelector("#formSalida");
         const medicamentosTable = document.querySelector("#medicamentos-table");
         const tipoMedicamentoSelect = document.querySelector("#tipo");
-        const formAgregarTipo = document.querySelector("#formAgregarTipo");
         const presentacionSelect = document.querySelector("#presentacion");
         const formAgregarPresentacion = document.querySelector("#formAgregarPresentacion");
+        const formAgregarUnidadMedida = document.querySelector("#formAgregarUnidadMedida");
+        const formAgregarTipo = document.querySelector("#formAgregarTipo");
 
         const messageArea = document.getElementById("message-area");
         const btnSugerencias = document.getElementById("btnSugerencias");
@@ -513,7 +653,6 @@
             }
         }
 
-    
 
         // Función para validar el campo lote
         async function validarLote(loteInput) {
@@ -525,8 +664,9 @@
             return true;
         }
 
+
         // Evento para el botón de sugerencias
-        btnSugerencias.addEventListener("click", async () => {
+        async function cargarSugerencias() {
             try {
                 // Hacer la solicitud al servidor para obtener todas las sugerencias usando GET
                 const response = await fetch(`../../controllers/admedi.controller.php?operation=listarSugerenciasMedicamentos`, {
@@ -540,13 +680,20 @@
                     const tableBody = document.getElementById('sugerenciasTableBody');
                     tableBody.innerHTML = '';
 
-                    // Iterar sobre las sugerencias y agregarlas a la tabla
+                    // Iterar sobre las sugerencias y agregarlas a la tabla con botón de edición
                     result.data.forEach(sugerencia => {
+                        console.log(sugerencia);
+                        
                         const row = `
                             <tr>
                                 <td>${sugerencia.tipo}</td>
                                 <td>${sugerencia.presentaciones}</td>
                                 <td>${sugerencia.dosis}</td>
+                                <td>
+                                    <button onclick="editarSugerencia(${sugerencia.idCombinacion}, '${sugerencia.tipo}', '${sugerencia.presentaciones}', '${sugerencia.dosis}')" class="btn btn-warning btn-sm">
+                                        Editar
+                                    </button>
+                                </td>
                             </tr>
                         `;
                         tableBody.innerHTML += row;
@@ -558,7 +705,93 @@
             } catch (error) {
                 alert("Ocurrió un error al obtener las sugerencias: " + error.message);
             }
+        }
+
+        // Llama a `cargarSugerencias` cuando el botón de sugerencias se haga clic
+        btnSugerencias.addEventListener("click", cargarSugerencias);
+
+
+        document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Obtener los valores de los campos del modal de edición
+            const idCombinacion = document.getElementById('editarId').value;
+            const tipo = document.getElementById('editarTipo').value;
+            const presentacion = document.getElementById('editarPresentacion').value;
+            const dosis = document.getElementById('editarDosis').value;
+
+            console.log("---- Valores obtenidos del formulario ----");
+            console.log("ID de la combinación:", idCombinacion);
+            console.log("Tipo de medicamento:", tipo);
+            console.log("Presentación:", presentacion);
+            console.log("Dosis:", dosis);
+            console.log("----------------------------------------");
+
+            // Verificar que los valores sean válidos antes de hacer la solicitud
+            if (!dosis || !idCombinacion) {
+                alert("El campo de dosis y el ID de la combinación son requeridos.");
+                return;
+            }
+
+            try {
+                console.log("Iniciando la solicitud POST para actualizar la sugerencia...");
+                
+                const response = await fetch(`../../controllers/admedi.controller.php?operation=editarSugerenciaMedicamento`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ idCombinacion, tipo, presentacion, unidad: dosis }) // Verifica el mapeo aquí
+                });
+
+                console.log("Solicitud enviada. Esperando respuesta...");
+
+                const result = await response.json();
+                
+                console.log("Respuesta recibida del servidor:");
+                console.log(result);
+
+                if (result.status === "success") {
+                    console.log("Actualización exitosa de la sugerencia.");
+                    alert("Sugerencia actualizada correctamente.");
+                    $('#modalEditarSugerencia').modal('hide');
+                    await cargarSugerencias();
+                    $('#modalSugerencias').modal('show');
+                } else {
+                    console.log("Error recibido en la respuesta del servidor:", result.message);
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                console.log("Excepción capturada durante la solicitud de actualización:", error.message);
+                alert("Ocurrió un error al actualizar la sugerencia: " + error.message);
+            }
         });
+
+
+
+
+
+
+
+        window.editarSugerencia = function(idCombinacion, tipo, presentacion, dosis) {
+            console.log("Editar sugerencia con ID:", idCombinacion);
+            console.log("Tipo:", tipo);
+            console.log("Presentación:", presentacion);
+            console.log("Dosis:", dosis);
+        // Asignar los valores de la sugerencia a los campos del formulario de edición
+        document.getElementById('editarId').value = idCombinacion; // Asigna el ID de la combinación al campo oculto
+        document.getElementById('editarTipo').value = tipo;
+        document.getElementById('editarPresentacion').value = presentacion;
+        document.getElementById('editarDosis').value = dosis;
+
+        // Cerrar el modal de sugerencias y abrir el modal de edición
+        $('#modalSugerencias').modal('hide');
+        $('#modalEditarSugerencia').modal('show');
+    };
+
+
+
+
 
 
         // Función para cargar los tipos de equinos
@@ -589,11 +822,11 @@
                     tipoEquinoMovimiento.appendChild(option);
                 });
                 } else {
-                mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+                mostrarMensaje('No se encontraron tipos de equinos.', 'INFO');
                 }
             } catch (error) {
                 console.error("Error al cargar tipos de equinos:", error);
-                mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
+                mostrarMensaje('Error al cargar tipos de equinos.', 'ERROR');
             }
         };
 
@@ -673,6 +906,7 @@
                                 { data: 'descripcion' },
                                 { data: 'tipoEquino' },
                                 { data: 'cantidad' },
+                                { data: 'motivo' },
                                 { data: 'fechaMovimiento' }
                             ],
                             responsive: true,
@@ -696,9 +930,7 @@
         document.getElementById('filtroRango').addEventListener('change', loadHistorialMovimientos);
         document.getElementById('buscarHistorial').addEventListener('click', loadHistorialMovimientos);
 
-
-                
-
+        // Cargar los tipos de medicamentos desde el servidor
         // Cargar los tipos de medicamentos desde el servidor
         const loadTiposMedicamentos = async () => {
             try {
@@ -716,21 +948,11 @@
                     option.textContent = tipo.tipo;
                     tipoMedicamentoSelect.appendChild(option);
                 });
-
-                // Añadir la opción para agregar nuevo tipo
-                tipoMedicamentoSelect.innerHTML += '<option value="nuevo">Agregar nuevo tipo...</option>';
             } catch (error) {
                 mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
             }
         };
 
-
-        // Mostrar modal para agregar nuevo tipo
-        tipoMedicamentoSelect.addEventListener('change', function () {
-            if (this.value === 'nuevo') {
-                $('#modalAgregarTipo').modal('show');
-            }
-        });
        
         // Procesar la adición de un nuevo tipo de medicamento
         formAgregarTipo.addEventListener('submit', async (event) => {
@@ -747,7 +969,7 @@
                 if (result.status === "success") {
                     mostrarMensaje(result.message, 'success');
                     showToast(result.message, 'SUCCESS');
-                    $('#modalAgregarTipo').modal('hide');
+                    $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal combinado
                     loadTiposMedicamentos();
                 } else {
                     mostrarMensaje(result.message, 'error');
@@ -759,6 +981,34 @@
             }
         });
 
+        // Procesar la adición de una nueva unidad de medida (dosis)
+        formAgregarUnidadMedida.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const nuevaUnidadMedida = document.querySelector("#nuevaUnidadMedida").value;
+
+            try {
+                const response = await fetch('../../controllers/admedi.controller.php', {
+                    method: "POST",
+                    body: new URLSearchParams({ operation: 'agregarUnidadMedida', unidad: nuevaUnidadMedida })
+                });
+
+                const result = await response.json();
+                if (result.status === "success") {
+                    mostrarMensaje(result.message, 'success');
+                    showToast(result.message, 'SUCCESS');
+                    $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal
+                    loadUnidadesMedida(); // Llama a la función para recargar las unidades de medida si es necesario
+                } else {
+                    mostrarMensaje(result.message, 'error');
+                    showToast(result.message, 'ERROR');
+                }
+            } catch (error) {
+                mostrarMensaje("Error al agregar unidad de medida: " + error.message, 'error');
+                showToast("Error al agregar unidad de medida", 'ERROR');
+            }
+        });
+
+
         // Cargar presentaciones de medicamentos desde el servidor
         const loadPresentaciones = async () => {
             try {
@@ -767,9 +1017,9 @@
                 });
 
                 const result = await response.json();
+
                 const presentaciones = result.data;
 
-                // Limpiar y agregar opciones al select de presentaciones
                 presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
                 presentaciones.forEach(presentacion => {
                     const option = document.createElement("option");
@@ -777,23 +1027,14 @@
                     option.textContent = presentacion.presentacion;
                     presentacionSelect.appendChild(option);
                 });
-
-                // Añadir opción para agregar una nueva presentación
-                presentacionSelect.innerHTML += '<option value="nuevo">Agregar nueva presentación...</option>';
             } catch (error) {
                 mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
-                showToast("Error al cargar presentaciones", 'ERROR');
             }
         };
 
 
-        // Mostrar modal para agregar nueva presentación
-        presentacionSelect.addEventListener('change', function () {
-            if (this.value === 'nuevo') {
-            $('#modalAgregarPresentacion').modal('show');
-            }
-        });
 
+        // Procesar la adición de una nueva presentación de medicamento
         // Procesar la adición de una nueva presentación de medicamento
         formAgregarPresentacion.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -809,7 +1050,7 @@
                 if (result.status === "success") {
                     mostrarMensaje(result.message, 'success');
                     showToast(result.message, 'SUCCESS');
-                    $('#modalAgregarPresentacion').modal('hide');
+                    $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal combinado
                     loadPresentaciones();
                 } else {
                     mostrarMensaje(result.message, 'error');
@@ -868,6 +1109,8 @@
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
+        
+        
 
         // Cargar lista de medicamentos en la tabla
         const loadMedicamentos = async () => {
@@ -894,21 +1137,21 @@
                 $('#medicamentosTable').DataTable({
                     data: medicamentos,
                     columns: [
-                        { data: 'nombreMedicamento', title: 'Nombre' },
-                        { data: 'lote', title: 'Lote' },
-                        { data: 'presentacion', title: 'Presentación', defaultContent: 'N/A' },
-                        { data: 'dosis', title: 'Dosis', defaultContent: 'N/A' },
-                        { data: 'nombreTipo', title: 'Tipo', defaultContent: 'N/A' },
-                        { data: 'fechaCaducidad', title: 'Fecha Caducidad', defaultContent: 'N/A' },
-                        { data: 'cantidad_stock', title: 'Cantidad Stock', defaultContent: 'N/A' },
-                        { data: 'precioUnitario', title: 'Costo', defaultContent: 'N/A' },
-                        { data: 'fechaIngreso', title: 'Fecha Registro', defaultContent: 'N/A' },
-                        { data: 'estado', title: 'Estado', defaultContent: 'N/A' },
+                        { data: 'nombreMedicamento' },
+                        { data: 'lote' },
+                        { data: 'presentacion', defaultContent: 'N/A' },
+                        { data: 'dosis', defaultContent: 'N/A' },
+                        { data: 'nombreTipo', defaultContent: 'N/A' },
+                        { data: 'fechaCaducidad', defaultContent: 'N/A' },
+                        { data: 'cantidad_stock', defaultContent: 'N/A' },
+                        { data: 'precioUnitario', defaultContent: 'N/A' },
+                        { data: 'fechaIngreso', defaultContent: 'N/A' },
+                        { data: 'estado', defaultContent: 'N/A' },
                         {
                             data: null,
                             title: 'Acciones',
                             render: function(data, type, row) {
-                                return `<button class="btn btn-danger btn-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
+                                return `<button class="btn btn-danger btn-sm shadow-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
                                             <i class="fas fa-trash"></i> Borrar
                                         </button>`;
                             },
@@ -916,76 +1159,55 @@
                         }
                     ],
                     pageLength: 5,
-                    destroy: true,
                     autoWidth: false,
                     responsive: true,
-                    scrollX: true,  // Para asegurar que la tabla ocupe el 100% del ancho
+                    scrollX: true,
                     language: {
                         url: '/haras/data/es_es.json'
                     },
                     createdRow: function(row, data, dataIndex) {
-                        // Estilos personalizados para filas
                         $(row).css({
                             'font-weight': 'bold',
                             'color': '#333',
-                            'background-color': (dataIndex % 2 === 0) ? '#f0f0f5' : '#ffffff',
+                            'background-color': (dataIndex % 2 === 0) ? '#f7f9fc' : '#ffffff',
                             'border-bottom': '2px solid #0077b6'
                         });
                     },
                     initComplete: function() {
-                        // Ajustar tabla para que se adapte al contenedor sin encogerse
                         $('#medicamentosTable').css({
                             'border-collapse': 'collapse',
-                            'width': '100%',  // Ocupa todo el ancho
+                            'width': '100%',
                             'font-size': '16px',
-                            'table-layout': 'fixed'  // Evita que las columnas se encojan
+                            'table-layout': 'fixed'
                         });
 
                         $('th').css({
-                            'width': 'auto',  // Ajusta la anchura del encabezado
-                            'white-space': 'nowrap',  // Evita que el texto se ajuste en múltiples líneas
+                            'background-color': '#3498db',
+                            'color': '#ffffff',
+                            'font-size': '14px',
                             'text-align': 'center'
                         });
 
                         $('td').css({
-                            'padding': '8px',
+                            'padding': '10px',
                             'text-align': 'center'
                         });
 
-                        // Estilos adicionales para el botón "Borrar"
-                        $('.btn-outline-danger').css({
-                            'border': '1px solid #dc3545',
+                        $('.btn-danger').css({
+                            'border-radius': '5px',
                             'font-weight': 'bold',
-                            'color': '#dc3545'
+                            'color': '#ffffff'
                         });
                     }
                 });
 
-                // Mostrar notificaciones de stock bajo y agotado solo al cargar la página
-                if (!notificacionesMostradas) {
-                    const stockBajo = medicamentos.filter(med => med.cantidad_stock < med.stockMinimo && med.cantidad_stock > 0);
-                    const agotados = medicamentos.filter(med => med.cantidad_stock <= 0);
-
-                    if (stockBajo.length > 0) {
-                        stockBajo.forEach(med => {
-                            showToast(`Stock bajo: ${med.nombreMedicamento} (Lote: ${med.lote})`, "WARNING");
-                        });
-                    }
-
-                    if (agotados.length > 0) {
-                        agotados.forEach(med => {
-                            showToast(`Agotado: ${med.nombreMedicamento} (Lote: ${med.lote})`, "ERROR");
-                        });
-                    }
-
-                    notificacionesMostradas = true;  // Asegurar que las notificaciones solo se muestren una vez
-                }
 
             } catch (error) {
                 mostrarMensaje("Error al cargar medicamentos: " + error.message, 'error');
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
+
 
         // **Función para manejar la notificación de stock bajo/agotado para medicamentos**
         const notificarStockBajo = async () => {
@@ -1036,7 +1258,9 @@
                     const result = await response.json();
                     if (result.status === 'success') {
                         showToast("Medicamento eliminado correctamente.", "SUCCESS");
-                        loadMedicamentos();  // Recargar los medicamentos después de eliminar
+                        await loadSelectMedicamentos();
+                        await cargarLotes();
+                        await loadMedicamentos();  // Recargar los medicamentos después de eliminar
                     } else {
                         showToast(result.message, "ERROR");
                     }
@@ -1074,8 +1298,6 @@
         };
 
     
- 
-
         // **Validar campos y mostrar mensajes específicos**
         const validarCampos = (formData) => {
             const errors = [];
@@ -1111,70 +1333,64 @@
             return errors;
         };
 
+
+        // Registrar medicamento
         // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
 
-            // Obtener los valores del formulario
-            const loteInput = document.querySelector('#lote');
-            const tipo = document.querySelector('#tipo').value;
-            const presentacion = document.querySelector('#presentacion').value;
-            const dosis = document.querySelector("#dosis").value;
-            const fechaCaducidad = document.querySelector("#fechaCaducidad").value;
+            // Obtener el valor combinado de dosis y unidad
+            const dosisCompleta = document.querySelector("#dosis").value;
 
-            console.log("Datos obtenidos del formulario:");
-            console.log("Lote:", loteInput.value);
-            console.log("Tipo:", tipo);
-            console.log("Presentación:", presentacion);
-            console.log("Dosis:", dosis);
-            console.log("Fecha de Caducidad:", fechaCaducidad);
-            
-
-            // Validar que el lote no esté vacío o inválido
-            const loteValido = await validarLote(loteInput);
-            if (!loteValido) {
-                showToast('Lote inválido . Verifica los datos.', 'error');
+            // Usar una expresión regular para separar la cantidad de la unidad
+            const match = dosisCompleta.match(/^(\d+(\.\d+)?)(\s?[a-zA-Z]+)$/);
+            if (!match) {
+                mostrarMensaje("Formato de dosis inválido. Use un número seguido de una unidad (ej. 500 mg)", "error");
                 return;
             }
 
-            // Confirmación del usuario
-            const confirmar = await ask("¿Estás seguro de que deseas registrar este medicamento?", "Registrar Medicamento");
-            if (!confirmar) {
-                showToast("Operación cancelada.", "INFO");
+            const dosis = parseFloat(match[1]);
+            const unidad = match[3].trim();
+
+            // Validar que ambos elementos estén presentes
+            if (!dosis || !unidad) {
+                mostrarMensaje("Debe ingresar una dosis válida con su unidad", "error");
                 return;
             }
 
-            // Validar combinación de tipo, presentación y dosis
-            const esValido = await validarCombinacion({ tipo, presentacion, dosis });
-            if (!esValido) {
-                showToast('Combinación inválida de tipo, presentación y dosis.', 'error');
-                return;
-            }
-
-            // Proceder con el registro si la combinación y lote son válidos
+            // Crear los datos para enviar al backend
             const formData = new FormData(formRegistrarMedicamento);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'registrar');
+            formData.append('dosis', dosis);
+            formData.append('unidad', unidad);
+            formData.append('operation', 'registrar');
 
+            formData.forEach((value, key) => {
+            });
 
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
-                    body: data
+                    body: formData
                 });
 
-                if (!response.ok) {
-                    mostrarMensaje("Error al conectar con el servidor. Estado: " + response.status, 'error');
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (jsonError) {
+                    mostrarMensaje("Error al interpretar la respuesta del servidor. Respuesta no válida.", 'error');
                     return;
                 }
-
-                const result = await response.json();
 
                 if (result.status === "success") {
                     showToast("Medicamento registrado correctamente", "SUCCESS");
                     formRegistrarMedicamento.reset();
-                    loadMedicamentos();  // Recargar la lista de medicamentos
+                    // Llamar a las funciones para recargar los selectores de medicamentos y lotes
+                    // Llamar a las funciones para recargar los selectores de medicamentos y lotes
+                    await loadSelectMedicamentos();
+                    await cargarLotes();
+                    await loadMedicamentos();
                 } else {
                     mostrarMensaje("Error en el registro: " + result.message, 'error');
                 }
@@ -1254,51 +1470,83 @@
             }
         };
 
-        // Llamar a la función para cargar lotes cuando el DOM esté listo
-        document.addEventListener("DOMContentLoaded", cargarLotes);
 
         // Implementar para la salida de medicamentos
-        formSalida.addEventListener("submit", async (event) => {
-            event.preventDefault();
+        // Implementar para la salida de medicamentos
+        // Implementar para la salida de medicamentos
+        if (formSalida) {
+            formSalida.addEventListener("submit", async (event) => {
+                event.preventDefault();
 
-            const cantidadField = document.getElementById('salidaCantidad');
-            const cantidad = parseFloat(cantidadField.value) || 0;
-            if (cantidad <= 0) {
-            showToast("La cantidad debe ser mayor a 0.", 'ERROR');
-                return;
-            }
+                const cantidadField = document.getElementById('salidaCantidad');
+                const cantidad = parseFloat(cantidadField.value) || 0;
 
-            const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
-
-            if (!confirmar) {
-                showToast("Operación cancelada.", "INFO");
-                return;
-            }
-
-            const formData = new FormData(formSalida);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'salida');
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    showToast("Salida registrada correctamente", "SUCCESS");
-                    formSalida.reset();
-                    await loadMedicamentos();
-                    await notificarStockBajo();
-
-                } else {
-                    showToast("Error en el registro de salida", "ERROR");
+                // Validación de cantidad
+                if (cantidad <= 0) {
+                    showToast("La cantidad debe ser mayor a 0.", 'ERROR');
+                    return;
                 }
-            } catch (error) {
-                showToast("Error en la solicitud de registro de salida", "ERROR");
-            }
-        });
+
+                const motivoField = document.getElementById('motivoSalida');
+                const loteField = document.getElementById('salidaLote');
+                const medicamentoField = document.getElementById('salidaMedicamento');
+                const tipoEquinoField = document.getElementById('tipoEquinoMovimiento');
+
+                // Validación de motivo
+                const motivo = motivoField.value.trim();
+                if (!motivo) {
+                    showToast("Debe especificar un motivo para la salida del medicamento.", 'ERROR');
+                    return;
+                }
+
+                // Confirmación de la operación
+                const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
+                if (!confirmar) {
+                    showToast("Operación cancelada.", "INFO");
+                    return;
+                }
+
+                // Preparar datos para enviar
+                const formData = new FormData();
+                formData.append('operation', 'salida');
+                formData.append('nombreMedicamento', medicamentoField.value);
+                formData.append('cantidad', cantidad);
+                formData.append('idTipoEquino', tipoEquinoField.value);
+                formData.append('motivo', motivo);
+
+                const lote = loteField.value.trim() || null;
+                if (lote !== null) {
+                    formData.append('lote', lote);
+                }
+
+                // Intento de envío de datos al servidor
+                try {
+                    const response = await fetch('../../controllers/admedi.controller.php', {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.status === "success") {
+                        showToast("Salida registrada correctamente", "SUCCESS");
+                        formSalida.reset();
+                        await loadMedicamentos();
+                        await notificarStockBajo();
+                        await loadSelectMedicamentos();
+                        await cargarLotes();
+                    } else {
+                        showToast(result.message || "Error en el registro de salida", "ERROR");
+                    }
+                } catch (error) {
+                    showToast("Error en la solicitud de registro de salida", "ERROR");
+                }
+            });
+        }
+
+
+
+
 
         // Cargar datos al iniciar la página
         cargarLotes();
@@ -1309,5 +1557,6 @@
         loadTiposMedicamentos();
         loadPresentaciones();
     });
+    
 </script>
 

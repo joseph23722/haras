@@ -1,0 +1,166 @@
+/* Estilos globales */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+    background-color: #f4f6f9;
+    margin: 0;
+}
+
+/* Barra superior que ocupa todo el ancho */
+.sb-topnav {
+    background-color: #1e272e;
+    color: #ffffff;
+    position: fixed;
+    width: 100%; /* Ocupa todo el ancho */
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    top: 0; /* Fija en la parte superior */
+}
+
+/* Logo y texto en la barra superior */
+.sb-topnav .navbar-brand {
+    font-size: 1.2rem;
+    color: #1abc9c;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    padding-left: 20px;
+}
+
+.sb-topnav .navbar-brand i {
+    margin-right: 10px;
+    font-size: 1.6rem;
+}
+
+.sb-topnav .navbar-brand:hover {
+    color: #ffffff;
+}
+
+/* Botón de hamburguesa */
+#sidebarToggle {
+    color: rgba(255, 255, 255, 0.5);
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+#sidebarToggle:hover {
+    color: #1abc9c;
+}
+
+/* Menú lateral alineado debajo de la barra superior */
+#layoutSidenav {
+    display: flex;
+    padding-top: 56px; /* Altura de la barra superior */
+}
+
+#layoutSidenav_nav {
+    width: 250px;
+    background-color: #2f3640;
+    color: #dcdde1;
+    position: fixed;
+    top: 56px; /* Debajo de la barra superior */
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 1000;
+    padding-top: 20px;
+}
+
+/* Contenedor del contenido principal */
+#layoutSidenav_content {
+    margin-left: 250px; /* Deja espacio para el menú lateral */
+    padding: 20px;
+    background-color: #f4f6f9;
+    width: calc(100% - 250px);
+    padding-top: 76px; /* Ajusta para evitar que el contenido quede detrás de la barra */
+}
+
+/* Enlaces del menú lateral */
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #dcdde1;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #1abc9c;
+    transform: translateX(10px);
+}
+
+/* Iconos del enlace del menú lateral */
+.sb-nav-link-icon {
+    font-size: 1.2rem;
+    color: #a4b0be;
+    margin-right: 10px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover .sb-nav-link-icon {
+    color: #1abc9c;
+    transform: rotate(15deg) scale(1.2);
+}
+
+/* Pie de página del menú lateral */
+.sb-sidenav-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #353b48;
+    padding: 20px;
+    color: #dcdde1;
+    font-size: 0.9rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sb-sidenav-footer .small {
+    font-weight: bold;
+    color: #1abc9c;
+}
+
+/* Animaciones de entrada para los elementos del menú */
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.nav-link {
+    animation: fadeInRight 0.6s ease forwards;
+    animation-delay: calc(0.05s * var(--i));
+}
+
+/* Ajustes para la versión móvil */
+@media (max-width: 768px) {
+    #layoutSidenav_nav {
+        width: 100%;
+        height: auto;
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    #layoutSidenav_content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .sb-topnav {
+        width: 100%;
+        margin-left: 0;
+    }
+}
