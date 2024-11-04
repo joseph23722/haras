@@ -19,175 +19,18 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> <!-- Nueva fuente -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <style>
-        body {
-            background: url(imagen/caballo2.png);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .login-container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            display: flex;
-            width: 900px;
-            max-width: 100%;
-            position: relative;
-        }
-
-        .login-image {
-            background: url('imagen/caballo.png') no-repeat center center;
-            /* Usamos la imagen de fondo */
-            background-size: cover;
-            /* Cubrimos todo el contenedor con la imagen */
-            padding: 60px;
-            color: white;
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-image h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 30px;
-            font-weight: bold;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.5);
-            /* Fondo semitransparente para mejorar la visibilidad */
-            border-radius: 5px;
-            color: white;
-        }
-
-        .login-image p {
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-            margin-left: 10px;
-            color: white;
-        }
-
-        /* Nubes apiladas verticalmente */
-        .clouds {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: -67px;
-            width: 110px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .cloud {
-            background: white;
-            border-radius: 90%;
-            width: 120px;
-            height: 120px;
-            margin: 15px 0;
-            position: relative;
-        }
-
-        .cloud::before,
-        .cloud::after {
-            content: '';
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-        }
-
-        .cloud::before {
-            width: 90px;
-            height: 90px;
-            top: -45px;
-            left: 20px;
-        }
-
-        .cloud::after {
-            width: 100px;
-            height: 100px;
-            top: 25px;
-            right: -40px;
-        }
-
-        .login-form {
-            padding: 40px;
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background-color: #f9f9f9;
-            border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-form h3 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-floating label {
-            color: #555;
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-        }
-
-        .form-floating input {
-            border-radius: 25px;
-            padding: 20px;
-        }
-
-        .form-floating input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 0;
-            font-size: 18px;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .login-footer {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .login-footer a {
-            color: #007bff;
-            font-family: 'Poppins', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body>
     <div class="login-container">
         <div class="login-image">
             <h2>Bienvenido a Haras Rancho Sur</h2>
-            <div class="clouds">
-                <div class="cloud"></div>
-                <div class="cloud"></div>
-                <div class="cloud"></div>
-                <div class="cloud"></div>
+            <div class="bubbles">
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
+                <div class="bubble"></div>
             </div>
         </div>
         <div class="login-form">
@@ -201,10 +44,10 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
                     <input class="form-control" id="inputPassword" type="password" placeholder="Contraseña" required />
                     <label for="inputPassword"><i class="fas fa-lock"></i> Contraseña</label>
                 </div>
-                
+
                 <!-- Mensaje de error -->
                 <div id="loginError" class="text-danger d-none mb-3"></div>
-                
+
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="form-check">
                         <input class="form-check-input" id="inputRememberPassword" type="checkbox" />
@@ -213,14 +56,15 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
                     <a class="small" href="password.html">¿Olvidaste tu contraseña?</a>
                 </div>
                 <div class="d-grid">
-                    <button class="btn btn-primary btn-block" type="submit">Iniciar Sesión</button>
+                    <button class="btn-primary" type="submit">Iniciar Sesión</button>
                 </div>
-                <div class="login-footer small">
-                    <a href="register.html">¿No tienes una cuenta? ¡Regístrate aquí!</a>
-                </div>
+
             </form>
         </div>
     </div>
+
+    <!-- Mensaje de error -->
+    <div id="loginError" class="text-danger d-none mb-3"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="plugins/js/scripts.js"></script>
@@ -231,6 +75,16 @@ if (isset($_SESSION['login']) && $_SESSION['login']['estado']) {
             function $(object = null) {
                 return document.querySelector(object);
             }
+
+            // Función de ajuste de escala para que el contenedor no se vea afectado por el zoom
+            function ajustarEscala() {
+                const zoom = window.outerWidth / window.innerWidth;
+                const contenedor = $('.login-container');
+                contenedor.style.transform = `translate(-50%, -50%) scale(${1 / zoom})`;
+            }
+            // Llamar a ajustarEscala al cargar la página y al cambiar el tamaño de la ventana
+            window.addEventListener('resize', ajustarEscala);
+            ajustarEscala();
 
             async function login() {
                 const parametros = new FormData();

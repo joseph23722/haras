@@ -114,12 +114,8 @@ try {
                     ]);
                 }
                 break;
-<<<<<<< HEAD
             
-        
-=======
 
->>>>>>> 3b0773652d20759ff70ba715b0f9d572c72e47fd
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }

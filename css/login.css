@@ -1,0 +1,245 @@
+/* Reinicio de estilos básicos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Asegura que el padding y border se incluyan en el ancho/alto total */
+}
+
+/* Estilos del cuerpo (fondo y alineación) */
+body {
+    background: url('../imagen/Login.jpg') no-repeat center center fixed; /* Imagen de fondo */
+    background-size: cover; /* La imagen cubre toda el área */
+    overflow: hidden; /* Evita el desplazamiento */
+    height: 100vh; /* Vista completa en altura */
+    width: 100vw; /* Vista completa en ancho */
+    font-family: 'Poppins', sans-serif; /* Fuente principal */
+    display: flex;
+    align-items: center; /* Centra verticalmente el contenido */
+    justify-content: center; /* Centra horizontalmente el contenido */
+    position: relative;
+}
+
+/* Contenedor principal del login */
+.login-container {
+    background-color: rgba(255, 255, 255, 0.3); /* Fondo blanco translúcido */
+    backdrop-filter: blur(10px); /* Efecto de desenfoque en el fondo */
+    border-radius: 15px; /* Esquinas redondeadas */
+    box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
+    width: 700px; /* Ancho fijo del contenedor */
+    height: 400px; /* Alto fijo del contenedor */
+    position: fixed; /* Se mantiene en la misma posición en pantalla */
+    top: 50%; /* Centra verticalmente */
+    left: 50%; /* Centra horizontalmente */
+    transform: translate(-50%, -50%); /* Ajusta el punto de anclaje al centro */
+    display: flex;
+    overflow: hidden; /* Evita el desbordamiento de contenido */
+    z-index: 10; /* Asegura que esté en una capa superior */
+}
+
+/* Estilo para el área de imagen (izquierda) */
+.login-image {
+    background: url('../imagen/caballo.png') no-repeat center center; /* Imagen de fondo */
+    background-size: cover; /* La imagen cubre toda el área */
+    color: white;
+    width: 350px; /* Ancho ajustado */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra el contenido verticalmente */
+    align-items: center; /* Centra el contenido horizontalmente */
+    text-align: center;
+    position: relative;
+}
+
+/* Texto principal dentro de la imagen (bienvenida) */
+.login-image h2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centra el texto */
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.6); /* Fondo oscuro translúcido */
+    border-radius: 8px;
+    color: white;
+    width: 80%;
+    text-align: center;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3); /* Sombra suave */
+}
+
+/* Contenedor de las "nubes" animadas */
+.clouds {
+    position: absolute;
+    top: 0;
+    right: -30px; /* Ajuste de posición a la derecha */
+    width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Espaciado uniforme entre las nubes */
+    align-items: center;
+    overflow: hidden; /* Evita el desbordamiento */
+}
+
+/* Estilos de cada "nube" */
+.cloud {
+    background: rgba(255, 255, 255, 0.5); /* Fondo blanco translúcido */
+    border-radius: 50%; /* Forma circular */
+    width: 70px; /* Tamaño de la nube */
+    height: 70px;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.4); /* Sombra para profundidad */
+    position: relative;
+    animation: float 5s ease-in-out infinite; /* Animación de flotación */
+}
+
+/* Pequeños círculos dentro de cada "nube" */
+.cloud::before,
+.cloud::after {
+    content: '';
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%; /* Forma circular */
+    position: absolute;
+    box-shadow: 0px 3px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Primer círculo dentro de cada "nube" */
+.cloud::before {
+    width: 40px;
+    height: 40px;
+    top: -20px;
+    left: 15px;
+    animation: drift 6s infinite linear; /* Animación de desplazamiento */
+}
+
+/* Segundo círculo dentro de cada "nube" */
+.cloud::after {
+    width: 30px;
+    height: 30px;
+    bottom: -10px;
+    right: -10px;
+    animation: drift 8s infinite linear reverse; /* Animación de desplazamiento inversa */
+}
+
+/* Animación de flotación vertical */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Animación de desplazamiento horizontal */
+@keyframes drift {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(20px); }
+}
+
+/* Estilos del formulario de login */
+.login-form {
+    width: 350px;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.3); /* Fondo translúcido */
+    border-radius: 15px;
+    text-align: center;
+}
+
+/* Título del formulario */
+.login-form h3 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); /* Sombra para visibilidad */
+}
+
+
+
+
+
+
+
+/* Contenedor flotante para campos del formulario */
+.form-floating {
+    position: relative; /* Permite posicionar los elementos hijos de manera absoluta */
+    margin-bottom: 15px; /* Espacio inferior entre campos */
+}
+
+/* Estilo de etiquetas (posicionadas centradas verticalmente dentro del campo de entrada) */
+.form-floating label {
+    position: absolute; /* Posiciona la etiqueta en relación al contenedor */
+    top: 50%; /* Centra verticalmente la etiqueta dentro del contenedor */
+    left: 15px; /* Espacio a la izquierda de la etiqueta */
+    transform: translateY(-50%); /* Ajuste para centrar completamente en el campo */
+    color: rgba(0, 0, 0, 0.6); /* Color gris oscuro para la etiqueta cuando no está enfocada */
+    font-size: 16px; /* Tamaño de fuente inicial de la etiqueta */
+    transition: 0.3s; /* Suaviza la transición de posición y color cuando se enfoca el campo */
+}
+
+/* Estilos para los campos de entrada del formulario */
+.form-floating input {
+    width: 100%; /* Campo de entrada ocupa todo el ancho del contenedor */
+    padding: 15px; /* Espaciado dentro del campo de entquiero  
+    rada */
+    padding-left: 40px; /* Espacio adicional a la izquierda para íconos o diseño */
+    border-radius: 10px; /* Bordes redondeados para un estilo más moderno */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil para el campo */
+    background: rgba(255, 255, 255, 0.6); /* Fondo blanco translúcido */
+    color: #333; /* Color del texto dentro del campo */
+    font-size: 16px; /* Tamaño de fuente del texto de entrada */
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3); /* Sombra interior para darle profundidad al campo */
+}
+
+/* Cambios en los campos de entrada al hacer foco */
+.form-floating input:focus {
+    background: rgba(255, 255, 255, 0.7); /* Aumenta la opacidad del fondo para mejor visibilidad */
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3); /* Sombra externa en color azul para indicar foco */
+    outline: none; /* Elimina el borde predeterminado del foco */
+}
+
+/* Estilos para la etiqueta cuando el campo tiene texto o está en foco */
+.form-floating input:focus + label, /* Aplica estos estilos a la etiqueta cuando el campo está en foco */
+.form-floating input:not(:placeholder-shown) + label { /* También aplica cuando hay texto en el campo */
+    font-size: 12px; /* Reduce el tamaño de la etiqueta */
+    color: #007bff; /* Cambia el color de la etiqueta a azul */
+    top: -10px; /* Mueve la etiqueta hacia arriba */
+    transform: translateY(0); /* Elimina el desplazamiento adicional */
+    padding: 1px; /* Añade un poco de espacio a los lados */
+}
+
+
+
+/* Botón de envío */
+.btn-primary {
+    background: linear-gradient(to right, #007bff, #00b4d8); /* Degradado azul */
+    border: none;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+    margin-top: 20px;
+    box-shadow: 0px 4px 20px rgba(0, 123, 255, 0.5); /* Sombra intensa */
+}
+
+/* Efecto hover para el botón */
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 25px rgba(0, 123, 255, 0.7); /* Efecto de sombra al hacer hover */
+}
+
+/* Pie de página del formulario de inicio de sesión */
+.login-footer {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Estilo de los enlaces en el pie del formulario */
+.login-footer a {
+    color: #007bff;
+    text-decoration: none;
+}
