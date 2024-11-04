@@ -46,7 +46,7 @@
 
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <textarea name="detalleRotacion" id="detalleRotacion" class="form-control" style="height: 50px;"></textarea>
+                            <textarea name="detalleRotacion" id="detalleRotacion"  placeholder="" class="form-control" style="height: 50px;"></textarea>
                             <label for="detalleRotacion"><i class="fas fa-info-circle" style="color: #003300;"></i> Detalles</label>
                         </div>
                     </div>

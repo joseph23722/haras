@@ -38,7 +38,7 @@
                     <!-- Nombre del Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="nombreMedicamento" id="nombreMedicamento" class="form-control" required autofocus>
+                            <input type="text" name="nombreMedicamento" id="nombreMedicamento" placeholder="" class="form-control" required autofocus>
                             <label for="nombreMedicamento">
                                 <i class="fas fa-capsules" style="color: #00b4d8;"></i> Nombre del Medicamento
                             </label>
@@ -48,7 +48,7 @@
                     <!-- Descripción del Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="descripcion" id="descripcion" class="form-control">
+                            <input type="text" name="descripcion" id="descripcion" placeholder="" class="form-control">
                             <label for="descripcion">
                                 <i class="fas fa-info-circle" style="color: #6d6875;"></i> Descripción
                             </label>
@@ -58,7 +58,7 @@
                     <!-- Lote del Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="lote" id="lote" class="form-control" value="LOTE-" required>
+                            <input type="text" name="lote" id="lote" class="form-control" placeholder="" required>
                             <label for="lote">
                                 <i class="fas fa-box" style="color: #6d6875;"></i> Lote del Medicamento (LOTE-)
                             </label>
@@ -80,7 +80,7 @@
                     <!-- Composición (Dosis y Unidad) -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="dosis" id="dosis" class="form-control" required 
+                            <input type="text" name="dosis" id="dosis" class="form-control" placeholder="" required 
                                 pattern="^\d+(\.\d+)?\s?[a-zA-Z]+$"
                                 title="Ingrese la cantidad seguida de la unidad (por ejemplo: 500 mg, 10 ml)">
                             <label for="dosis">
@@ -106,7 +106,7 @@
                     <!-- Cantidad en Stock -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="cantidad_stock" id="cantidad_stock" class="form-control" required min="0">
+                            <input type="number" name="cantidad_stock" id="cantidad_stock" class="form-control" required min="0" placeholder="">
                             <label for="cantidad_stock">
                                 <i class="fas fa-balance-scale" style="color: #0096c7;"></i> Cantidad en Stock
                             </label>
@@ -116,7 +116,7 @@
                     <!-- Stock Mínimo -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" value="10" required min="0">
+                            <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" value="10" required min="0" placeholder="">
                             <label for="stockMinimo">
                                 <i class="fas fa-battery-quarter" style="color: #ff0000;"></i> Stock Mínimo
                             </label>
@@ -136,7 +136,7 @@
                    <!-- Precio Unitario -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" step="0.01" name="precioUnitario" id="precioUnitario" class="form-control" required min="0">
+                            <input type="number" step="0.01" name="precioUnitario"  placeholder="" id="precioUnitario" class="form-control" required min="0">
                             <label for="precioUnitario">
                                 <i class="fas fa-dollar-sign" style="color: #0077b6;"></i> Precio Unitario
                             </label>
@@ -566,7 +566,7 @@
                         <th>Tipo</th>
                         <th>Fecha Caducidad</th>
                         <th>Cantidad Stock</th>
-                        <th>Costo</th>
+                        <th>Costo Unitario</th>
                         <th>Fecha Registro</th>
                         <th>Estado</th>
                         <th>Acciones</th>

@@ -13,7 +13,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="nombreEquino" id="nombreEquino" class="form-control" required autofocus>
+                            <input type="text" name="nombreEquino" id="nombreEquino"  placeholder="" class="form-control" required autofocus>
                             <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #00b4d8;"></i> Nombre del Equino</label>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="detalles" id="detalles" class="form-control" style="height: 90px;"></textarea>
+                            <textarea name="detalles" id="detalles"  placeholder="" class="form-control" style="height: 60px;"></textarea>
                             <label for="detalles"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
                         </div>
                     </div>
