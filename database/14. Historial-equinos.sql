@@ -20,6 +20,6 @@ BEGIN
     JOIN 
         EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
     WHERE 
-        e.nombreEquino LIKE CONCAT('%', p_nombreEquino, '%');
+        e.nombreEquino = p_nombreEquino;
 END //
 DELIMITER ;

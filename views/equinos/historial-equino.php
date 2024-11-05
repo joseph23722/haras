@@ -140,6 +140,17 @@
 
         if (data.length === 0) {
             showToast("No se encontró ningún equino con ese nombre.", 'WARNING');
+
+            // Limpiar los campos del formulario
+            document.getElementById("fechaNacimiento").value = '';
+            document.getElementById("nacionalidad").value = '';
+            document.getElementById("idPropietario").value = '';
+            document.getElementById("sexo").value = '';
+            document.getElementById("tipoEquino").value = '';
+            document.getElementById("idEstadoMonta").value = '';
+            document.getElementById("pesokg").value = '';
+            document.getElementById("fotografia").value = '';
+
         } else {
             // Rellena los campos con la información del equino
             const equino = data[0];
