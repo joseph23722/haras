@@ -78,8 +78,9 @@ INSERT INTO EstadoMonta (genero, nombreEstado)
 		('Hembra','Servida'),
         ('Hembra','S/S'),
         ('Hembra','Por Servir'),
-        ('Hembra','Vacía');
-        
+        ('Hembra','Vacía'),
+        ('Hembra','Con Cria');
+
 -- 28/10/2024
 INSERT INTO modulos (modulo) VALUES
 	('campos'), -- 1

@@ -74,7 +74,14 @@ BEGIN
         END IF;
     END IF;
 
-    -- Registro del equino
+    -- Asignar estado de monta inicial según el tipo de equino y el género
+    SET _idEstadoMonta = CASE 
+        WHEN _sexo = 'Macho' AND _idTipoEquino = 2 THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Inactivo' LIMIT 1)
+        WHEN _sexo = 'Hembra' AND _idTipoEquino = 1 THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1)
+        ELSE NULL  -- Otros tipos no tienen estado de monta inicial, ajustar según tus necesidades
+    END;
+
+    -- Registro del equino con el estado de monta asignado
     INSERT INTO Equinos (
         nombreEquino, 
         fechaNacimiento, 
@@ -84,7 +91,7 @@ BEGIN
         idPropietario,
         pesokg,
         nacionalidad,
-        idEstadoMonta  -- Añadir idEstadoMonta
+        idEstadoMonta
     ) 
     VALUES (
         _nombreEquino, 
@@ -95,10 +102,7 @@ BEGIN
         _idPropietario,
         _pesokg,
         _nacionalidad,
-        CASE 
-            WHEN _sexo = 'Macho' THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Inactivo' LIMIT 1)
-            WHEN _sexo = 'Hembra' THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1)
-        END
+        _idEstadoMonta
     );
     
     -- Obtener el ID del equino recién insertado
@@ -108,6 +112,8 @@ BEGIN
     SELECT _idEquino AS idEquino;
 END $$
 DELIMITER ;
+
+
 
 -- Registrar Servicio
 DROP PROCEDURE IF EXISTS `registrarServicio`;
@@ -123,21 +129,18 @@ CREATE PROCEDURE registrarServicio(
     IN p_idMedicamento INT,
     IN p_horaEntrada TIME,
     IN p_horaSalida TIME,
-    IN p_costoServicio INT
+    IN p_costoServicio DECIMAL(10, 2)
 )
 BEGIN
-    DECLARE v_sexoMacho ENUM('Macho', 'Hembra');
-    DECLARE v_sexoHembra ENUM('Macho', 'Hembra');
     DECLARE v_mensajeError VARCHAR(255);
-    DECLARE v_count INT;
     DECLARE v_idEstadoServida INT;
     DECLARE v_idEstadoActivo INT;
     DECLARE v_idEstadoSS INT;
 
     -- Obtener los ID de estados correspondientes
-    SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida';
-    SELECT idEstadoMonta INTO v_idEstadoActivo FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Activo';
-    SELECT idEstadoMonta INTO v_idEstadoSS FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S';
+    SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida' LIMIT 1;
+    SELECT idEstadoMonta INTO v_idEstadoActivo FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Activo' LIMIT 1;
+    SELECT idEstadoMonta INTO v_idEstadoSS FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1;
 
     -- Validación para la fecha de servicio
     IF p_fechaServicio > CURDATE() THEN
@@ -145,18 +148,22 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
+    -- Registrar el servicio y actualizar estados según el tipo de servicio
     IF p_tipoServicio = 'propio' THEN
+        -- Servicio propio entre equinos del haras
         INSERT INTO Servicios (
             idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
         ) VALUES (
             p_idEquinoMacho, p_idEquinoHembra, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, NULL, p_costoServicio
         );
         
+        -- Cambiar estado del padrillo a "Activo"
         UPDATE Equinos
         SET idEstadoMonta = v_idEstadoActivo
         WHERE idEquino = p_idEquinoMacho;
 
     ELSEIF p_tipoServicio = 'mixto' THEN
+        -- Servicio mixto (con propietario externo)
         INSERT INTO Servicios (
             idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
         ) VALUES (
@@ -164,19 +171,60 @@ BEGIN
         );
     END IF;
 
+    -- Cambiar estado de la yegua a "Servida" después del servicio
     UPDATE Equinos
     SET idEstadoMonta = v_idEstadoServida
-    WHERE idEquino = p_idEquinoHembra
-      AND p_fechaServicio BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 DAY) AND CURDATE();
+    WHERE idEquino = p_idEquinoHembra;
 
+    -- Actualizar el estado de monta de las yeguas no servidas recientemente a "S/S"
     UPDATE Equinos
     SET idEstadoMonta = v_idEstadoSS
     WHERE sexo = 'Hembra'
       AND idEquino NOT IN (
           SELECT idEquinoHembra
           FROM Servicios
-          WHERE fechaServicio BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 DAY) AND CURDATE()
+          WHERE fechaServicio >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)
       );
 
 END $$
 DELIMITER ;
+
+
+-- --------- listar equinos en estado monta 
+DELIMITER $$
+
+CREATE PROCEDURE spu_contar_equinos_por_categoria()
+BEGIN
+    SELECT 
+        CASE 
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'  -- Nueva condición para Yegua con Cria
+            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+            WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+            WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+        END AS Categoria,
+        COUNT(e.idEquino) AS Cantidad
+    FROM 
+        Equinos e
+    JOIN 
+        TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
+    LEFT JOIN 
+        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
+    WHERE 
+        (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))  -- Incluimos 'Con Cria' en el filtro
+        OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
+        OR te.tipoEquino IN ('Potranca', 'Potrillo')
+    GROUP BY 
+        Categoria
+    ORDER BY 
+        Categoria;
+END $$
+
+DELIMITER ;
+
+
+-- Llamada al procedimiento para ver los resultados
+CALL spu_contar_equinos_por_categoria();
+
