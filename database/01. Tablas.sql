@@ -357,6 +357,27 @@ CREATE TABLE RotacionCampos (
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
 ) ENGINE = INNODB;
 
+/* CREATE TABLE Carreras (
+    idCarrera 				INT PRIMARY KEY AUTO_INCREMENT,
+    nombreCarrera 			VARCHAR(100) NOT NULL,
+    fechaCarrera 			DATE NOT NULL,
+    distancia 				INT NOT NULL,
+    lugar 					VARCHAR(100) NOT NULL,
+    tipoCarrera 			ENUM('Local', 'Nacional', 'Internacional') NULL,
+    premio 					DECIMAL(10,2) NULL,
+    tipoSuperficie 			ENUM('Tierra', 'Pasto', 'Sintética', 'Arena') NULL
+) ENGINE = INNODB; 
+
+CREATE TABLE ResultadosCarreras (
+    idResultado 			INT PRIMARY KEY AUTO_INCREMENT,
+    idEquino 				INT NOT NULL,
+    idCarrera 				INT NOT NULL,
+    posicion 				INT NOT NULL,
+    valorPremio 			DECIMAL(10,2) NULL,
+    CONSTRAINT fk_resultados_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_resultados_carrera FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera)
+) ENGINE = INNODB; */
+
 -- 30. CampanaPotrillos
 CREATE TABLE CampaniaPotrillos (  -- Reemplazo de 'Campaña' por 'Campana'
     idCampania 				INT PRIMARY KEY AUTO_INCREMENT,

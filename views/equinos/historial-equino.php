@@ -73,20 +73,8 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="number" class="form-control" id="carrerasCorridas" placeholder="">
-                            <label for="carrerasCorridas" class="form-label">Carreras Corridas</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="text" class="form-control" id="nombreCarrerasCorridas" placeholder="">
-                            <label for="nombreCarrerasCorridas" class="form-label">Nombre Carreras Corridas</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="number" class="form-control" id="valorCarrera" placeholder="">
-                            <label for="valorCarrera" class="form-label">Valor de la Carrera</label>
+                            <input type="text" class="form-control" id="ranking" placeholder="">
+                            <label for="ranking" class="form-label">Ranking Mundial</label>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -97,8 +85,20 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="ranking" placeholder="">
-                            <label for="ranking" class="form-label">Ranking Mundial</label>
+                            <input type="number" class="form-control" id="carrerasCorridas" placeholder="">
+                            <label for="carrerasCorridas" class="form-label">Carreras Corridas</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="nombreCarrerasCorridas" placeholder="" rows="3"></textarea>
+                            <label for="nombreCarrerasCorridas" class="form-label">Nombre Carreras Corridas</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="valorCarrera" placeholder="">
+                            <label for="valorCarrera" class="form-label">Valor de la Carrera</label>
                         </div>
                     </div>
                 </div>
