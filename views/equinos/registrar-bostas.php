@@ -4,7 +4,7 @@
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Bostas</h1>
 
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;"></div>
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;"></div>
 
         <div class="card-body p-4" style="background-color: #f9f9f9;">
             <form action="" id="form-registro-bostas" autocomplete="off">

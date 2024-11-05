@@ -9,7 +9,7 @@
     </ol>
 
     <div class="card mb-4 shadow-sm border-0">
-        <div class="card-header" style="background-color: #d9edf7; border-bottom: 2px solid #005b99;">
+        <div class="card-header" style="background-color: #a0ffb8; border-bottom: 2px solid #005b99;">
             <h5 class="mb-0 text-uppercase" style="color: #005b99;">Datos del Servicio Mixto</h5>
         </div>
         <div class="card-body p-4 bg-white rounded">

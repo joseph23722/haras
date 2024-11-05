@@ -9,7 +9,7 @@
 
     <!-- Sección del formulario para registrar un medicamento -->
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Medicamento</h5>
             <!-- Botón de Sugerencias integrado en el header -->
             <button type="button" class="btn btn-info btn-sm" 
@@ -169,7 +169,7 @@
 
     <!-- Opciones de Movimiento -->
     <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
@@ -521,7 +521,7 @@
 
     <!-- Tabla de Medicamentos Registrados -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">

@@ -8,7 +8,7 @@
 
   <!-- Formulario para Registrar Nuevo Alimento -->
   <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+    <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
       <h5 class="text-center"><i class="fas fa-apple-alt" style="color: #3498db;"></i> Registrar Nuevo Alimento</h5>
     </div>
     <div class="card-body" style="background-color: #f9f9f9;">
@@ -126,7 +126,7 @@
 
   <!-- Opciones de Movimiento -->
   <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+    <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
       <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
     </div>
     <div class="card-body text-center" style="background-color: #f9f9f9;">
@@ -144,7 +144,7 @@
 
   <!-- Tabla de Alimentos Registrados -->
   <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+    <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
       <h5 class="text-center"><i class="fas fa-database"></i> Alimentos Registrados</h5>
     </div>
     <div class="card-body" style="background-color: #f9f9f9;">
