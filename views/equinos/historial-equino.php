@@ -73,31 +73,31 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="number" class="form-control" id="carrerasGanadas">
-                            <label for="carrerasGanadas" class="form-label">Carreras Ganadas</label>
+                            <input type="number" class="form-control" id="carrerasCorridas" placeholder="">
+                            <label for="carrerasCorridas" class="form-label">Carreras Corridas</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="nombreCarrerasGanadas">
-                            <label for="nombreCarrerasGanadas" class="form-label">Nombre Carreras Ganadas</label>
+                            <input type="text" class="form-control" id="nombreCarrerasCorridas" placeholder="">
+                            <label for="nombreCarrerasCorridas" class="form-label">Nombre Carreras Corridas</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="number" class="form-control" id="valorCarrera">
+                            <input type="number" class="form-control" id="valorCarrera" placeholder="">
                             <label for="valorCarrera" class="form-label">Valor de la Carrera</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="number" class="form-control" id="valorMercado">
+                            <input type="number" class="form-control" id="valorMercado" placeholder="">
                             <label for="valorMercado" class="form-label">Valor en el mercado $</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="ranking">
+                            <input type="text" class="form-control" id="ranking" placeholder="">
                             <label for="ranking" class="form-label">Ranking Mundial</label>
                         </div>
                     </div>
