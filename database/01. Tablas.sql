@@ -358,11 +358,16 @@ CREATE TABLE RotacionCampos (
 ) ENGINE = INNODB;
 
 -- 30. CampanaPotrillos
-CREATE TABLE CampanaPotrillos (  -- Reemplazo de 'Campaña' por 'Campana'
-    idCampana 				INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE CampaniaPotrillos (  -- Reemplazo de 'Campaña' por 'Campana'
+    idCampania 				INT PRIMARY KEY AUTO_INCREMENT,
     idEquino 				INT NOT NULL,
-    registroPrecio 			DECIMAL(10,2) NOT NULL,
-    precioSubasta 			DECIMAL(10,2) NOT NULL,
+    carrerascorridas		INT NOT NULL,
+    nombrecarreras			VARCHAR(100) NULL,
+    resultadoCarrera 		ENUM('1º', '2º', '3º', '4º', 'No clasificado') NULL,
+	fechaCarrera         	DATE NULL,
+    valorpromedio			DECIMAL(10,2) NULL,
+    valormercado			DECIMAL(10,2) NOT NULL,
+    rankingmundial			INT NULL,
     CONSTRAINT fk_campanapotrillos_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
