@@ -16,29 +16,24 @@ BEGIN
     DECLARE _edadMeses INT;
     DECLARE _edadAnios INT;
 
-    -- Calcular la edad en meses y años
     SET _edadMeses = TIMESTAMPDIFF(MONTH, _fechaNacimiento, CURDATE());
     SET _edadAnios = TIMESTAMPDIFF(YEAR, _fechaNacimiento, CURDATE());
 
-    -- Validar si la fecha de nacimiento no es futura
     IF _fechaNacimiento > CURDATE() THEN
         SET _errorMsg = 'Error: La fecha de nacimiento no puede ser posterior a la fecha actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
 
-    -- Validar si el propietario proporcionado existe (si se proporcionó uno)
     IF _idPropietario IS NOT NULL AND NOT EXISTS (SELECT * FROM Propietarios WHERE idPropietario = _idPropietario) THEN
         SET _errorMsg = 'Error: El propietario no existe.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
 
-    -- Validar si ya existe un equino con el mismo nombre
     IF EXISTS (SELECT * FROM Equinos WHERE nombreEquino = _nombreEquino) THEN
         SET _errorMsg = 'Error: Ya existe un equino con ese nombre.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
 
-    -- Reglas de validación de tipo de equino según la edad y sexo
     IF _idPropietario IS NULL THEN
         -- Recién nacido (<= 6 meses)
         IF _edadMeses <= 6 THEN
@@ -75,7 +70,6 @@ BEGIN
         END IF;
     END IF;
 
-    -- Insertar un nuevo registro en la tabla 'Equinos'
     INSERT INTO Equinos (
         nombreEquino, 
         fechaNacimiento, 
@@ -99,7 +93,6 @@ BEGIN
         -- _fotografia
     );
     
-    -- Devolver el ID del equino recién insertado
     SELECT LAST_INSERT_ID() AS idEquino;
 END $$
 DELIMITER ;
@@ -139,9 +132,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-    -- (Aquí van las demás validaciones de conflicto de horarios y género)
-
-    -- Registro de servicio en función del tipo (propio o mixto)
     IF p_tipoServicio = 'propio' THEN
         INSERT INTO Servicios (
             idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
@@ -149,7 +139,6 @@ BEGIN
             p_idEquinoMacho, p_idEquinoHembra, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, NULL, p_costoServicio
         );
         
-        -- Actualizar estado de monta para el macho como 'Activo' solo en servicios propios
         UPDATE Equinos
         SET idEstadoMonta = v_idEstadoActivo
         WHERE idEquino = p_idEquinoMacho;
@@ -162,13 +151,11 @@ BEGIN
         );
     END IF;
 
-    -- Actualizar estado de monta para la yegua como 'Servida' si el servicio fue en los últimos tres días
     UPDATE Equinos
     SET idEstadoMonta = v_idEstadoServida
     WHERE idEquino = p_idEquinoHembra
       AND p_fechaServicio BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 DAY) AND CURDATE();
 
-    -- Asignar estado 'S/S' a yeguas sin servicio en los últimos tres días
     UPDATE Equinos
     SET idEstadoMonta = v_idEstadoSS
     WHERE sexo = 'Hembra'

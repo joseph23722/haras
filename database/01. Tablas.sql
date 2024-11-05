@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS HarasDB;
-CREATE DATABASE HarasDB;
-USE HarasDB;
+DROP DATABASE IF EXISTS haras;
+CREATE DATABASE haras;
+USE haras;
 
 DROP TABLE IF EXISTS Roles;
 DROP TABLE IF EXISTS TipoInventarios;
@@ -75,6 +75,13 @@ CREATE TABLE TipoMovimientos (
 CREATE TABLE TipoEquinos (
     idTipoEquino 		INT PRIMARY KEY AUTO_INCREMENT,
     tipoEquino 			ENUM('Yegua', 'Padrillo', 'Potranca', 'Potrillo', 'Recién nacido', 'Destete') NOT NULL
+) ENGINE = INNODB;
+
+-- 7. Estado Monta
+CREATE TABLE EstadoMonta (
+    idEstadoMonta		INT PRIMARY KEY AUTO_INCREMENT,
+    genero 				ENUM('Macho', 'Hembra') NOT NULL,
+    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
 ) ENGINE = INNODB;
 
 -- 8. Propietarios
@@ -194,8 +201,6 @@ CREATE TABLE CombinacionesMedicamentos (
     UNIQUE (idTipo, idPresentacion, dosis, idUnidad) -- combinación única
 ) ENGINE = INNODB;
 
-
-
 -- Tabla de Lotes de Medicamentos - admedi
 CREATE TABLE LotesMedicamento (
     idLoteMedicamento INT PRIMARY KEY AUTO_INCREMENT,      -- ID único del lote de medicamento
@@ -204,8 +209,6 @@ CREATE TABLE LotesMedicamento (
     fechaIngreso DATE DEFAULT (CURDATE()),           -- Fecha en la que se ingresó el lote
     CONSTRAINT UQ_lote_medicamento UNIQUE (lote)  -- Unicidad por lote y unidad de medida
 ) ENGINE = INNODB;
-
-
 
 -- 16  Tabla de Medicamentos
 CREATE TABLE Medicamentos (
@@ -229,7 +232,6 @@ CREATE TABLE Medicamentos (
     CONSTRAINT fk_medicamento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
 ) ENGINE = INNODB;
 
-
 -- 17. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
     idDetalleMed            INT PRIMARY KEY AUTO_INCREMENT,
@@ -249,8 +251,6 @@ CREATE TABLE DetalleMedicamentos (
     CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
-
-
 
 -- 19. HistorialMedicamentosMedi ----°°° admedi..
 CREATE TABLE HistorialMovimientosMedicamentos (
