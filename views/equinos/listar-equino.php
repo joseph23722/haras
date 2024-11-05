@@ -18,6 +18,7 @@
                                 <th>Tipo Equino</th>
                                 <th>Detalles</th>
                                 <th>Estado Monta</th>
+                                <th>Peso (kg) </th>
                                 <th>Nacionalidad</th>
                                 <th>Fotografía</th>
                             </tr>
@@ -92,6 +93,7 @@
                 <td>${element.tipoEquino}</td>
                 <td>${element.detalles || 'Sin detalles'}</td>
                 <td>${element.nombreEstado || 'Sin estado'}</td>
+                <td>${element.pesokg}</td>
                 <td>${element.nacionalidad}</td>
                 <td>
                 <a href='#' data-idusuario='${element.idusuario}' class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>

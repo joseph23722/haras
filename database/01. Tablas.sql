@@ -77,13 +77,6 @@ CREATE TABLE TipoEquinos (
     tipoEquino 			ENUM('Yegua', 'Padrillo', 'Potranca', 'Potrillo', 'Recién nacido', 'Destete') NOT NULL
 ) ENGINE = INNODB;
 
--- 7. EstadoMonta
-CREATE TABLE EstadoMonta (
-    idEstado 			INT PRIMARY KEY AUTO_INCREMENT,
-    genero 				ENUM('Macho', 'Hembra') NOT NULL,
-    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
-) ENGINE = INNODB;
-
 -- 8. Propietarios
 CREATE TABLE Propietarios (  
     idPropietario 		INT PRIMARY KEY AUTO_INCREMENT,  
@@ -93,18 +86,19 @@ CREATE TABLE Propietarios (
 -- 9. Equinos
 CREATE TABLE Equinos (
     idEquino 			INT PRIMARY KEY AUTO_INCREMENT,
-    nombreEquino 		VARCHAR(100) NOT NULL,
-    fechaNacimiento 	DATE NULL,
-    sexo 				ENUM('Macho', 'Hembra') NOT NULL,
-    idTipoEquino 		INT NOT NULL,
-    detalles			TEXT,
-    idEstadoMonta 		INT NULL,
-	nacionalidad 		VARCHAR(50) NULL,
-    idPropietario 		INT,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
-    fotografia			LONGBLOB NULL,
+    nombreEquino 		VARCHAR(100) 				NOT NULL,
+    fechaNacimiento 	DATE 						NULL,
+    sexo 				ENUM('Macho', 'Hembra') 	NOT NULL,
+    idTipoEquino 		INT 						NOT NULL,
+    detalles			TEXT						NULL,
+    idEstadoMonta 		INT							NULL,
+	nacionalidad 		VARCHAR(50)					NULL,
+    idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
+    pesokg				INT 						NOT NULL,
+    fotografia			LONGBLOB 					NULL,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
-    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstado)
+    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta)
 ) ENGINE = INNODB;
 
 -- 10. Implementos
@@ -244,7 +238,6 @@ CREATE TABLE DetalleMedicamentos (
     dosis                   VARCHAR(50) NOT NULL,
     frecuenciaAdministracion VARCHAR(50) NOT NULL,
     viaAdministracion       VARCHAR(50) NOT NULL,
-    pesoEquino              DECIMAL(10,2) NULL,
     fechaInicio             DATE NOT NULL,
     fechaFin                DATE NOT NULL,
     observaciones           TEXT NULL,
@@ -252,8 +245,6 @@ CREATE TABLE DetalleMedicamentos (
     idUsuario               INT NOT NULL,
     tipoTratamiento         ENUM('Primario', 'Complementario') DEFAULT 'Primario',  -- Nueva columna para tipo de tratamiento
     estadoTratamiento       ENUM('Activo', 'Finalizado', 'En pausa') DEFAULT 'Activo',  -- Nueva columna para estado de tratamiento
-
-    -- Definición de llaves foráneas
     CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
@@ -276,8 +267,6 @@ CREATE TABLE HistorialMovimientosMedicamentos (
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
-
-
 -- 23. Servicios 
 CREATE TABLE Servicios (
     idServicio 				INT PRIMARY KEY AUTO_INCREMENT,
@@ -287,9 +276,10 @@ CREATE TABLE Servicios (
     tipoServicio 			ENUM('Propio', 'Mixto') NOT NULL,
     detalles 				TEXT NOT NULL,
     idMedicamento 			INT NULL,
-    horaEntrada 			TIMESTAMP NULL,
+    horaEntrada 			TIME NULL,
     horaSalida 				TIME NULL,
     idPropietario 			INT NULL,
+    idEstadoMonta			INT NOT NULL,
 	costoServicio			DECIMAL(10,2) NULL,
     CONSTRAINT fk_servicio_equino_macho FOREIGN KEY (idEquinoMacho) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_servicio_equino_hembra FOREIGN KEY (idEquinoHembra) REFERENCES Equinos(idEquino),

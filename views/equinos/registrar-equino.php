@@ -13,7 +13,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="nombreEquino" id="nombreEquino" class="form-control" required autofocus>
+                            <input type="text" name="nombreEquino" id="nombreEquino" placeholder="" class="form-control" required autofocus>
                             <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #00b4d8;"></i> Nombre del Equino</label>
                         </div>
                     </div>
@@ -73,8 +73,15 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="detalles" id="detalles" class="form-control" style="height: 90px;"></textarea>
+                            <textarea type="number" name="detalles" id="detalles" placeholder="" class="form-control" style="height: 60px;"></textarea>
                             <label for="detalles"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" name="pesokg" id="pesokg" placeholder="" class="form-control" min="0" step="0.1" required>
+                            <label for="pesokg"><i class="fas fa-weight" style="color: #2d6a4f;"></i> Peso (kg)</label>
                         </div>
                     </div>
 
@@ -114,6 +121,7 @@
         const tipoEquinoSelect = document.querySelector("#TipoEquino");
         const formEquino = document.querySelector("#form-registro-equino");
         const sexoSelect = document.querySelector("#sexo");
+        const pesoKgInput = document.querySelector("#pesokg");
 
         // Función para cargar propietarios
         async function loadPropietarios() {
@@ -258,6 +266,11 @@
 
         fechaNacimientoInput.addEventListener("change", applyTipoEquinoLogic);
         sexoSelect.addEventListener("change", applyTipoEquinoLogic);
+
+        // Función para validar si un número es positivo y mayor que 0
+        function isValidPositiveNumber(value) {
+            return !isNaN(value) && parseFloat(value) > 0;
+        }
 
         formEquino.addEventListener("submit", async (event) => {
             event.preventDefault();

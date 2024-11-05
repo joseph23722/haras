@@ -51,7 +51,7 @@
 
                     <div class="col-md-12">
                         <div class="form-floating">
-                            <textarea name="detalles" id="detalles" class="form-control" style="height: 90px;"></textarea>
+                            <textarea name="detalles" id="detalles" placeholder="" class="form-control" style="height: 40px;"></textarea>
                             <label for="detalles"><i class="fas fa-info-circle" style="color: #007bff;"></i> Detalles</label>
                         </div>
                     </div>

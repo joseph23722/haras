@@ -1,6 +1,5 @@
 -- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _idEquino INT,
     IN _idUsuario INT,
@@ -8,7 +7,6 @@ CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _dosis VARCHAR(50),
     IN _frecuenciaAdministracion VARCHAR(50),
     IN _viaAdministracion VARCHAR(50),
-    IN _pesoEquino DECIMAL(10,2), -- Permitir NULL
     IN _fechaFin DATE,
     IN _observaciones TEXT,
     IN _reaccionesAdversas TEXT, -- Permitir NULL
@@ -75,7 +73,6 @@ BEGIN
         dosis,
         frecuenciaAdministracion,
         viaAdministracion,
-        pesoEquino,
         fechaInicio,
         fechaFin,
         observaciones,
@@ -89,7 +86,6 @@ BEGIN
         _dosis,
         _frecuenciaAdministracion,
         _viaAdministracion,
-        IFNULL(_pesoEquino, NULL),
         NOW(),                   -- Fecha de inicio se asigna a la fecha y hora actual
         _fechaFin,
         _observaciones,
@@ -105,9 +101,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
 -- listar equinos propios para medicamentos;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_propiosMedi()
@@ -116,6 +109,7 @@ BEGIN
 		idEquino,
 		nombreEquino,
 		sexo,
+        pesokg,
 		idTipoEquino
 	FROM 
 		Equinos
@@ -124,8 +118,6 @@ BEGIN
 		AND idTipoEquino IN (1, 2, 3, 4);
 END $$
 DELIMITER ;
-
-
 
 -- 
 DELIMITER $$
@@ -147,7 +139,7 @@ BEGIN
         DM.dosis,
         DM.frecuenciaAdministracion,
         DM.viaAdministracion,
-        DM.pesoEquino,
+        E.pesokg,
         DM.fechaInicio,
         DM.fechaFin,
         DM.observaciones,
@@ -223,6 +215,3 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-
-
-

@@ -1,4 +1,3 @@
-
 DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
 DELIMITER //
 CREATE PROCEDURE `spu_equinos_listar`()
@@ -11,12 +10,13 @@ BEGIN
         TE.tipoEquino,
         E.detalles,
         EM.nombreEstado,
+        E.pesokg,
         E.nacionalidad,
         E.fotografia
     FROM
         Equinos E
     LEFT JOIN TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
-    LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstado
+    LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstadoMonta
     WHERE
         E.idPropietario IS NULL
     ORDER BY E.idEquino DESC;

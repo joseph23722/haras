@@ -59,6 +59,12 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
+                            <input type="text" class="form-control" id="pesokg" disabled>
+                            <label for="pesokg" class="form-label">Peso(kg)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
                             <input type="text" class="form-control" id="fotografia" disabled>
                             <label for="fotografia" class="form-label">Fotografía</label>
                         </div>
@@ -134,6 +140,17 @@
 
         if (data.length === 0) {
             showToast("No se encontró ningún equino con ese nombre.", 'WARNING');
+
+            // Limpiar los campos del formulario
+            document.getElementById("fechaNacimiento").value = '';
+            document.getElementById("nacionalidad").value = '';
+            document.getElementById("idPropietario").value = '';
+            document.getElementById("sexo").value = '';
+            document.getElementById("tipoEquino").value = '';
+            document.getElementById("idEstadoMonta").value = '';
+            document.getElementById("pesokg").value = '';
+            document.getElementById("fotografia").value = '';
+
         } else {
             // Rellena los campos con la información del equino
             const equino = data[0];
@@ -142,7 +159,8 @@
             document.getElementById("idPropietario").value = equino.idPropietario || 'Haras Rancho Sur';
             document.getElementById("sexo").value = equino.sexo || '';
             document.getElementById("tipoEquino").value = equino.tipoEquino || '';
-            document.getElementById("idEstadoMonta").value = equino.idEstadoMonta || '';
+            document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
+            document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
             document.getElementById("fotografia").value = equino.fotografia || '';
         }
     });

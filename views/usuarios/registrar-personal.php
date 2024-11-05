@@ -19,6 +19,7 @@
                     <div class="form-floating">
                       <input
                         type="text"
+                        placeholder=""
                         class="form-control"
                         id="dni"
                         pattern="[0-9]+"
@@ -32,14 +33,14 @@
                 </div>
                 <div class="col-md-5">
                   <div class="form-floating">
-                    <input type="text" class="form-control" id="apellidos" maxlength="100" required>
-                    <label for="apellidos" class="form-label">Apellidos</label>
+                    <input type="text" placeholder="" class="form-control" id="apellidos" maxlength="100" required>
+                    <label for="apellidos" class="form-label">Apellidos Completos</label>
                   </div>
                 </div>
                 <div class="col-md-5">
                   <div class="form-floating">
-                    <input type="text" class="form-control" id="nombres" maxlength="100" required>
-                    <label for="nombres" class="form-label">Nombres</label>
+                    <input type="text" placeholder="" class="form-control" id="nombres" maxlength="100" required>
+                    <label for="nombres" class="form-label">Nombres Completos</label>
                   </div>
                 </div>
               </div>
@@ -61,21 +62,21 @@
 
                 <div class="col-md-2">
                   <div class="form-floating">
-                    <input class="form-control" id="numeroHijos" type="text"
-                        id="dni"
-                        pattern="[0-9]+"
-                        title="Solo se permiten números"
-                        maxlength="2">
+                    <input placeholder="" class="form-control" id="numeroHijos" type="text"
+                      id="dni"
+                      pattern="[0-9]+"
+                      title="Solo se permiten números"
+                      maxlength="2">
                     <label for="numeroHijos" class="form-label">Número de Hijos</label>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                   <div class="form-floating">
-                    <input type="text" class="form-control" id="direccion" maxlength="255">
+                    <input type="text" placeholder="" class="form-control" id="direccion" maxlength="255">
                     <label for="direccion" class="form-label">Dirección</label>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <div class="form-floating">
                     <input type="date" class="form-control" id="fechaIngreso">
                     <label for="fechaIngreso" class="form-label">Fecha de Ingreso</label>

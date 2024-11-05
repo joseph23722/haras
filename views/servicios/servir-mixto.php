@@ -76,13 +76,13 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="costoServicio" id="costoServicio" class="form-control">
+                            <input type="number" name="costoServicio" id="costoServicio" placeholder="" class="form-control">
                             <label for="costoServicio"><i class="fas fa-info-circle" style="color: #007bff;"></i> Costo Servicio</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <textarea name="detalles" id="detalles" class="form-control"></textarea>
+                            <textarea name="detalles" id="detalles" placeholder="" class="form-control"></textarea>
                             <label for="detalles"><i class="fas fa-info-circle" style="color: #007bff;"></i> Detalles</label>
                         </div>
                     </div>

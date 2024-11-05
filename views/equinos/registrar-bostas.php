@@ -11,28 +11,28 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="pesoaprox" id="pesoaprox" class="form-control" required autofocus>
+                            <input type="number" name="pesoaprox" id="pesoaprox"  placeholder="" class="form-control" required autofocus>
                             <label for="pesoaprox"><i class="fas fa-poop" style="color: #00b4d8;"></i> Cantidad de Bostas (kg)</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="cantidadsacos" id="cantidadsacos" class="form-control" required>
+                            <input type="number" name="cantidadsacos" id="cantidadsacos"  placeholder="" class="form-control" required>
                             <label for="cantidadsacos"><i class="fas fa-bag-shopping" style="color: #ffa500;"></i> Cantidad de Sacos</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="date" name="fecha" id="fecha" class="form-control" required>
+                            <input type="date" name="fecha" id="fecha"  placeholder="" class="form-control" required>
                             <label for="fecha"><i class="fas fa-calendar-alt" style="color: #32cd32;"></i> Fecha de Registro</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="peso_diario" id="peso_diario" class="form-control" disabled readonly>
+                            <input type="number" name="peso_diario" id="peso_diario"  placeholder=""class="form-control" disabled readonly>
                             <label for="peso_diario"><i class="fas fa-weight-hanging" style="color: #dc3545;"></i> Peso Diario (kg)</label>
                         </div>
                     </div>
