@@ -67,47 +67,20 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-4">
                         <div class="form-floating">
-<<<<<<< HEAD
-                            <input type="text" class="form-control" id="ranking" placeholder="">
-                            <label for="ranking" class="form-label">Ranking Mundial</label>
-=======
                             <input type="text" class="form-control bg-light" id="idEstadoMonta" disabled>
                             <label for="idEstadoMonta"><i class="fas fa-chart-line" style="color: #3498db;"></i> Estado Monta</label>
->>>>>>> 53306d9424c4faaba82e51699c42f57f07a7805a
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-<<<<<<< HEAD
-                            <input type="number" class="form-control" id="valorMercado" placeholder="">
-                            <label for="valorMercado" class="form-label">Valor en el mercado $</label>
-=======
                             <input type="text" class="form-control bg-light" id="pesokg" disabled>
                             <label for="pesokg"><i class="fas fa-weight" style="color: #3498db;"></i> Peso(kg)</label>
->>>>>>> 53306d9424c4faaba82e51699c42f57f07a7805a
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-<<<<<<< HEAD
-                            <input type="number" class="form-control" id="carrerasCorridas" placeholder="">
-                            <label for="carrerasCorridas" class="form-label">Carreras Corridas</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <textarea class="form-control" id="nombreCarrerasCorridas" placeholder="" rows="3"></textarea>
-                            <label for="nombreCarrerasCorridas" class="form-label">Nombre Carreras Corridas</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="number" class="form-control" id="valorCarrera" placeholder="">
-                            <label for="valorCarrera" class="form-label">Valor de la Carrera</label>
-=======
                             <input type="text" class="form-control bg-light" id="fotografia" disabled>
                             <label for="fotografia"><i class="fas fa-camera" style="color: #3498db;"></i> Fotografía</label>
->>>>>>> 53306d9424c4faaba82e51699c42f57f07a7805a
                         </div>
                     </div>
                 </div>

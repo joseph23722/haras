@@ -227,7 +227,3 @@ DELIMITER ;
 
 -- Llamada al procedimiento para ver los resultados
 CALL spu_contar_equinos_por_categoria();
-<<<<<<< HEAD
-=======
-
->>>>>>> 53306d9424c4faaba82e51699c42f57f07a7805a

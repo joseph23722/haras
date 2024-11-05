@@ -81,7 +81,7 @@ CREATE TABLE TipoEquinos (
 CREATE TABLE EstadoMonta (
     idEstadoMonta		INT PRIMARY KEY AUTO_INCREMENT,
     genero 				ENUM('Macho', 'Hembra') NOT NULL,
-    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo', 'Con Cria') NOT NULL
+    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
 ) ENGINE = INNODB;
 
 -- 8. Propietarios
@@ -107,8 +107,6 @@ CREATE TABLE Equinos (
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta)
 ) ENGINE = INNODB;
-
-select * from equinos;
 
 -- 10. Implementos
 CREATE TABLE Implementos (

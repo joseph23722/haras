@@ -80,7 +80,7 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="pesokg" id="pesokg" placeholder="" class="form-control" min="0" step="0.1" required>
+                            <input type="number" name="pesokg" id="pesokg" placeholder="" class="form-control" min="10" max="1000" step="0.1" required>
                             <label for="pesokg"><i class="fas fa-weight" style="color: #2d6a4f;"></i> Peso (kg)</label>
                         </div>
                     </div>
