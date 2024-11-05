@@ -1,4 +1,5 @@
 -- Registrar Equino
+DROP PROCEDURE IF EXISTS `spu_equino_registrar`;
 DELIMITER $$
 CREATE PROCEDURE `spu_equino_registrar`(
     IN _nombreEquino VARCHAR(100),
@@ -9,16 +10,18 @@ CREATE PROCEDURE `spu_equino_registrar`(
     IN _idPropietario INT,
     IN _pesokg INT,
     IN _nacionalidad VARCHAR(50)
-    -- IN _fotografia LONGBLOB
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
     DECLARE _edadMeses INT;
     DECLARE _edadAnios INT;
+    DECLARE _idEquino INT;
+    DECLARE _idEstadoMonta INT;
 
     SET _edadMeses = TIMESTAMPDIFF(MONTH, _fechaNacimiento, CURDATE());
     SET _edadAnios = TIMESTAMPDIFF(YEAR, _fechaNacimiento, CURDATE());
 
+    -- Validaciones de fecha y propietario
     IF _fechaNacimiento > CURDATE() THEN
         SET _errorMsg = 'Error: La fecha de nacimiento no puede ser posterior a la fecha actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
@@ -34,6 +37,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
 
+    -- Validaciones de edad y tipo de equino
     IF _idPropietario IS NULL THEN
         -- Recién nacido (<= 6 meses)
         IF _edadMeses <= 6 THEN
@@ -70,6 +74,7 @@ BEGIN
         END IF;
     END IF;
 
+    -- Registro del equino
     INSERT INTO Equinos (
         nombreEquino, 
         fechaNacimiento, 
@@ -78,8 +83,8 @@ BEGIN
         detalles, 
         idPropietario,
         pesokg,
-        nacionalidad
-        -- fotografia
+        nacionalidad,
+        idEstadoMonta  -- Añadir idEstadoMonta
     ) 
     VALUES (
         _nombreEquino, 
@@ -89,15 +94,23 @@ BEGIN
         _detalles, 
         _idPropietario,
         _pesokg,
-        _nacionalidad
-        -- _fotografia
+        _nacionalidad,
+        CASE 
+            WHEN _sexo = 'Macho' THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Inactivo' LIMIT 1)
+            WHEN _sexo = 'Hembra' THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1)
+        END
     );
     
-    SELECT LAST_INSERT_ID() AS idEquino;
+    -- Obtener el ID del equino recién insertado
+    SET _idEquino = LAST_INSERT_ID();
+
+    -- Retornar el ID del equino registrado
+    SELECT _idEquino AS idEquino;
 END $$
 DELIMITER ;
 
 -- Registrar Servicio
+DROP PROCEDURE IF EXISTS `registrarServicio`;
 DELIMITER $$
 CREATE PROCEDURE registrarServicio(
     IN p_idEquinoMacho INT,

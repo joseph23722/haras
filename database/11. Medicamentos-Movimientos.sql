@@ -140,23 +140,6 @@ END $$
 
 DELIMITER ;
 
-CALL spu_medicamentos_registrar(
-    'Paracetamol',                    -- _nombreMedicamento
-    'Antipirético y analgésico',      -- _descripcion
-    'LOTE-123',                       -- _lote
-    1,                                -- _idPresentacion (ID de la presentación, como '1' para "tabletas")
-    '500 mg',                         -- _dosisCompleta (formato "500 mg")
-    2,                                -- _idTipo (ID del tipo, como '2' para "Analgésico")
-    100,                              -- _cantidad_stock
-    10,                               -- _stockMinimo
-    '2025-05-01',                     -- _fechaCaducidad
-    0.50,                             -- _precioUnitario
-    3                                 -- _idUsuario (ID del usuario)
-);
-
-
-
-
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
 -- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
 DELIMITER $$

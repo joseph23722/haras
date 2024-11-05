@@ -20,6 +20,7 @@ BEGIN
     JOIN 
         EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
     WHERE 
-        e.nombreEquino = p_nombreEquino;
+        e.nombreEquino = p_nombreEquino
+		AND e.idPropietario IS NULL; 
 END //
 DELIMITER ;
