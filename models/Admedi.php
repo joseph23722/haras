@@ -313,56 +313,32 @@ class Admi extends Conexion {
     }
 
 
-    // Agregar un nuevo tipo de medicamento
-    public function agregarTipoMedicamento($tipo) {
+    // Método para agregar una nueva combinación de medicamento
+    // Método para agregar una nueva combinación de medicamento
+    public function agregarCombinacionMedicamento($tipo, $presentacion, $unidad, $dosis)
+    {
         try {
-            // Ejecutar el procedimiento almacenado para agregar un tipo de medicamento
-            $query = $this->pdo->prepare("CALL spu_agregar_tipo_medicamento(?)");
-            $query->execute([$tipo]);
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_agregar_nueva_combinacion_medicamento(?, ?, ?, ?, @mensaje)");
 
-            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
+            // Ejecutar el procedimiento con los valores de entrada
+            $query->execute([$tipo, $presentacion, $unidad, $dosis]);
+
+            // Obtener el mensaje de salida directamente
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            return $result['mensaje'] ?? 'Combinación agregada exitosamente.';
+
         } catch (Exception $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
-            error_log("Error al agregar tipo de medicamento: " . $e->getMessage());
-            return false; // Devolver false en caso de error
+            // Registrar el error en los logs y devolver un mensaje de error amigable
+            error_log("Error al agregar combinación de medicamento: " . $e->getMessage());
+            return "Error al agregar la combinación de medicamento: " . $e->getMessage();
         }
     }
 
-    // Agregar una nueva presentación de medicamento
-    public function agregarPresentacionMedicamento($presentacion) {
-        try {
-            // Ejecutar el procedimiento almacenado para agregar una presentación de medicamento
-            $query = $this->pdo->prepare("CALL spu_agregar_presentacion_medicamento(?)");
-            $query->execute([$presentacion]);
 
-            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
-        } catch (Exception $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
-            error_log("Error al agregar presentación de medicamento: " . $e->getMessage());
-            return false; // Devolver false en caso de error
-        }
-    }
 
-    // Agregar una nueva unidad de medida
-    public function agregarUnidadMedida($unidad) {
-        try {
-            // Ejecutar el procedimiento almacenado para agregar una unidad de medida
-            $query = $this->pdo->prepare("CALL spu_agregar_unidad_medida(?)");
-            $query->execute([$unidad]);
 
-            return $query->rowCount() > 0; // Devolver true si la inserción fue exitosa
-        } catch (Exception $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
-            error_log("Error al agregar unidad de medida: " . $e->getMessage());
-            return false; // Devolver false en caso de error
-        }
-    }
+    
  
     // editar segurencia de medicamento
     public function editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad) {
@@ -370,31 +346,60 @@ class Admi extends Conexion {
             // Iniciar transacción
             $this->pdo->beginTransaction();
             
-            // Actualizar el tipo de medicamento
+            // Paso 1: Verificar o insertar el nuevo tipo
             $queryTipo = $this->pdo->prepare("
-                UPDATE TiposMedicamentos 
-                SET tipo = ? 
-                WHERE idTipo = (SELECT idTipo FROM CombinacionesMedicamentos WHERE idCombinacion = ?)
+                SELECT idTipo FROM TiposMedicamentos WHERE tipo = ?
             ");
-            $queryTipo->execute([$nuevoTipo, $idCombinacion]);
+            $queryTipo->execute([$nuevoTipo]);
+            $idTipo = $queryTipo->fetchColumn();
     
-            // Actualizar la presentación del medicamento
+            if (!$idTipo) {
+                $insertTipo = $this->pdo->prepare("
+                    INSERT INTO TiposMedicamentos (tipo) VALUES (?)
+                ");
+                $insertTipo->execute([$nuevoTipo]);
+                $idTipo = $this->pdo->lastInsertId();
+            }
+    
+            // Paso 2: Verificar o insertar la nueva presentación
             $queryPresentacion = $this->pdo->prepare("
-                UPDATE PresentacionesMedicamentos 
-                SET presentacion = ? 
-                WHERE idPresentacion = (SELECT idPresentacion FROM CombinacionesMedicamentos WHERE idCombinacion = ?)
+                SELECT idPresentacion FROM PresentacionesMedicamentos WHERE presentacion = ?
             ");
-            $queryPresentacion->execute([$nuevaPresentacion, $idCombinacion]);
+            $queryPresentacion->execute([$nuevaPresentacion]);
+            $idPresentacion = $queryPresentacion->fetchColumn();
     
-            // Intentar actualizar la unidad de medida sin buscarla previamente
+            if (!$idPresentacion) {
+                $insertPresentacion = $this->pdo->prepare("
+                    INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (?)
+                ");
+                $insertPresentacion->execute([$nuevaPresentacion]);
+                $idPresentacion = $this->pdo->lastInsertId();
+            }
+    
+            // Paso 3: Verificar o insertar la nueva unidad
             $queryUnidad = $this->pdo->prepare("
-                UPDATE UnidadesMedida 
-                SET unidad = ? 
-                WHERE idUnidad = (SELECT idUnidad FROM CombinacionesMedicamentos WHERE idCombinacion = ?)
+                SELECT idUnidad FROM UnidadesMedida WHERE unidad = ?
             ");
-            $queryUnidad->execute([$nuevaUnidad, $idCombinacion]);
+            $queryUnidad->execute([$nuevaUnidad]);
+            $idUnidad = $queryUnidad->fetchColumn();
     
-            // Confirmar transacción si todas las actualizaciones son exitosas
+            if (!$idUnidad) {
+                $insertUnidad = $this->pdo->prepare("
+                    INSERT INTO UnidadesMedida (unidad) VALUES (?)
+                ");
+                $insertUnidad->execute([$nuevaUnidad]);
+                $idUnidad = $this->pdo->lastInsertId();
+            }
+    
+            // Paso 4: Actualizar la combinación específica con los nuevos IDs
+            $queryUpdateCombinacion = $this->pdo->prepare("
+                UPDATE CombinacionesMedicamentos 
+                SET idTipo = ?, idPresentacion = ?, idUnidad = ? 
+                WHERE idCombinacion = ?
+            ");
+            $queryUpdateCombinacion->execute([$idTipo, $idPresentacion, $idUnidad, $idCombinacion]);
+    
+            // Confirmar transacción si todo es exitoso
             $this->pdo->commit();
     
             return true; // Retorna true si la transacción fue exitosa
@@ -405,6 +410,7 @@ class Admi extends Conexion {
             return false;
         }
     }
+    
     
 
     // Función para validar si la unidad existe en la tabla UnidadesMedida
@@ -425,6 +431,7 @@ class Admi extends Conexion {
 
 
     // Validar presentación y dosis del medicamento
+    // Validar presentación y dosis del medicamento
     public function validarRegistrarCombinacion($params = []) {
         try {
             // Llamada al procedimiento almacenado para validar la combinación
@@ -435,24 +442,29 @@ class Admi extends Conexion {
                 $params['dosisMedicamento'], // Dosis como DECIMAL
                 $params['unidadMedida'] // Nueva unidad de medida
             ]);
-    
+
             $result = $query->fetch(PDO::FETCH_ASSOC);
-            if ($result && isset($result['mensaje']) && strpos($result['mensaje'], 'válida') !== false) {
-                // Si se obtiene un mensaje de combinación válida, devuelve el ID de la combinación reutilizada o nueva
-                return [
-                    'status' => 'success', 
-                    'message' => 'Validación y registro de combinación exitoso.', 
-                    'data' => [
-                        'idCombinacion' => $result['idCombinacion']
-                    ]
-                ];
+
+            // Verificar si la combinación fue registrada o validada correctamente
+            if ($result && isset($result['mensaje'])) {
+                if (strpos($result['mensaje'], 'combinación exacta') !== false || strpos($result['mensaje'], 'nueva combinación') !== false) {
+                    // Devuelve éxito y el id de la combinación
+                    return [
+                        'status' => 'success', 
+                        'message' => $result['mensaje'], 
+                        'data' => [
+                            'idCombinacion' => $result['idCombinacion']
+                        ]
+                    ];
+                }
             }
-    
+
+            // Si no se obtiene el resultado esperado
             return ['status' => 'error', 'message' => 'Combinación inválida de tipo, presentación y dosis.'];
         } catch (PDOException $e) {
             // Captura el mensaje de error y extrae solo el mensaje personalizado
             $errorMessage = $e->getMessage();
-            
+
             // Extraer solo el mensaje de error personalizado eliminando prefijos no deseados
             if (preg_match('/: (\d+)?\s?(.*)$/', $errorMessage, $matches)) {
                 // $matches[2] contendrá solo el mensaje personalizado sin el código de error
@@ -464,17 +476,18 @@ class Admi extends Conexion {
             }
         }
     }
+
     
     
 
 
 
 
-     // Listar los tipos de movimeinto
+     // Listar los tipos de medicamentos
     public function listarTiposMedicamentos() {
         try {
             // Ejecutar el procedimiento almacenado para listar los tipos de medicamentos
-            $query = $this->pdo->prepare("CALL spu_listar_tipos_presentaciones_dosis()");
+            $query = $this->pdo->prepare("CALL spu_listar_tipos_unicos()");
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC); // Devolver todos los tipos de medicamentos
         } catch (Exception $e) {
@@ -486,13 +499,13 @@ class Admi extends Conexion {
         }
     }
 
-    // Listar las presentaciones de medicamentos
-    public function listarPresentacionesMedicamentos() {
+    // Listar las presentaciones de medicamentos según el tipo
+    public function listarPresentacionesPorTipo($idTipo) {
         try {
-            // Ejecutar el procedimiento almacenado para listar las presentaciones de medicamentos
-            $query = $this->pdo->prepare("CALL spu_listar_presentaciones_medicamentos()");
-            $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC); // Devolver todas las presentaciones de medicamentos
+            // Ejecutar el procedimiento almacenado para listar las presentaciones según el tipo de medicamento
+            $query = $this->pdo->prepare("CALL spu_listar_presentaciones_por_tipo(?)");
+            $query->execute([$idTipo]);
+            return $query->fetchAll(PDO::FETCH_ASSOC); // Devolver las presentaciones filtradas por tipo
         } catch (Exception $e) {
             // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
             $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
@@ -501,6 +514,7 @@ class Admi extends Conexion {
             return false;
         }
     }
+
 
     // Función para listar las sugerencias de medicamentos
     public function listarSugerenciasMedicamentos() {

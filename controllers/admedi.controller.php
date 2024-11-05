@@ -81,19 +81,7 @@ try {
                 }
                 break;
 
-            case 'listarPresentacionesMedicamentos':
-                try {
-                    $presentaciones = $admi->listarPresentacionesMedicamentos();
-                    if ($presentaciones) {
-                        sendResponse('success', 'Presentaciones de medicamentos obtenidas correctamente.', $presentaciones);
-                    } else {
-                        sendResponse('error', 'No se pudieron obtener las presentaciones de medicamentos.');
-                    }
-                } catch (PDOException $e) {
-                    sendResponse('error', 'Error al obtener las presentaciones de medicamentos: ' . $e->getMessage());
-                }
-                break;
-
+            
             case 'listarSugerenciasMedicamentos':
                 try {
                     $sugerencias = $admi->listarSugerenciasMedicamentos();
@@ -274,49 +262,25 @@ try {
                 break;
                 
 
-            case 'agregarTipoMedicamento':
+            case 'agregarCombinacionMedicamento':
+                // Obtener los datos de tipo, presentación, unidad y dosis desde la solicitud
                 $tipo = $_POST['tipo'] ?? '';
-                try {
-                    $result = $admi->agregarTipoMedicamento($tipo);
-                    if ($result) {
-                        sendResponse('success', 'Tipo de medicamento agregado correctamente.');
-                    } else {
-                        sendResponse('error', 'No se pudo agregar el tipo de medicamento.');
-                    }
-                } catch (PDOException $e) {
-                    sendResponse('error', 'Error al agregar el tipo de medicamento: ' . $e->getMessage());
-                }
-                break;
-
-            case 'agregarPresentacion':
                 $presentacion = $_POST['presentacion'] ?? '';
-                try {
-                    $result = $admi->agregarPresentacionMedicamento($presentacion);
-                    if ($result) {
-                        sendResponse('success', 'Presentación de medicamento agregada correctamente.');
-                    } else {
-                        sendResponse('error', 'No se pudo agregar la presentación de medicamento.');
-                    }
-                } catch (PDOException $e) {
-                    sendResponse('error', 'Error al agregar la presentación del medicamento: ' . $e->getMessage());
-                }
-                break;
-
-            case 'agregarUnidadMedida':
-                $unidad = $_POST['unidad'] ?? '';  // Obtener el valor de la unidad de medida desde el formulario
+                $unidad = $_POST['unidad'] ?? '';
+                $dosis = $_POST['dosis'] ?? 0;
             
                 try {
-                    $result = $admi->agregarUnidadMedida($unidad);  // Llama al método en tu clase de administración
-            
-                    if ($result) {
-                        sendResponse('success', 'Unidad de medida agregada correctamente.');
-                    } else {
-                        sendResponse('error', 'No se pudo agregar la unidad de medida.');
-                    }
-                } catch (PDOException $e) {
-                    sendResponse('error', 'Error al agregar la unidad de medida: ' . $e->getMessage());
+                    // Llamar al método en tu clase de administración para agregar la combinación
+                    $mensaje = $admi->agregarCombinacionMedicamento($tipo, $presentacion, $unidad, $dosis);
+                    
+                    // Enviar la respuesta con el mensaje recibido del procedimiento almacenado
+                    sendResponse('success', $mensaje);
+                } catch (Exception $e) {
+                    // Enviar respuesta de error en caso de excepción
+                    sendResponse('error', 'Error al agregar la combinación de medicamento: ' . $e->getMessage());
                 }
                 break;
+                
 
             case 'editarSugerenciaMedicamento':
                 $data = json_decode(file_get_contents('php://input'), true);
@@ -333,8 +297,9 @@ try {
                 }
             
                 try {
-                    // Intentar realizar la actualización sin validar la existencia previa de la unidad
+                    // Intentar realizar la actualización con los nuevos valores
                     $result = $admi->editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad);
+                    
                     if ($result) {
                         sendResponse('success', 'Combinación de medicamento actualizada correctamente.');
                     } else {
@@ -344,40 +309,55 @@ try {
                     sendResponse('error', 'Error al actualizar la combinación de medicamento: ' . $e->getMessage());
                 }
                 break;
-                
-                
-                
-                
-                
-                
-                
-                
-                
 
+            case 'listarPresentacionesMedicamentos':
+                // Asegurarse de que el parámetro idTipo esté presente
+                $idTipo = $_POST['idTipo'] ?? null; // Cambia a $_GET si estás usando GET en vez de POST
+
+                if ($idTipo === null) {
+                    sendResponse('error', 'El tipo de medicamento (idTipo) es necesario para obtener las presentaciones.');
+                    break;
+                }
+
+                try {
+                    $presentaciones = $admi->listarPresentacionesPorTipo($idTipo);
+                    if ($presentaciones) {
+                        sendResponse('success', 'Presentaciones de medicamentos obtenidas correctamente.', $presentaciones);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener las presentaciones de medicamentos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener las presentaciones de medicamentos: ' . $e->getMessage());
+                }
+                break;
+
+                
+      
             case 'validarRegistrarCombinacion':
                 try {
                     // Extraer los parámetros recibidos desde la solicitud POST
                     $params = [
                         'tipoMedicamento' => $_POST['tipoMedicamento'] ?? '',
                         'presentacionMedicamento' => $_POST['presentacionMedicamento'] ?? '',
-                        'dosisMedicamento' => floatval($_POST['dosisMedicamento'] ?? 0), // Cambiado a float para coincidir con DECIMAL
-                         'unidadMedida' => $_POST['unidadMedida'] ?? '' // Nueva entrada para la unidad de medida
+                        'dosisMedicamento' => floatval($_POST['dosisMedicamento'] ?? 0), // Convertir a float para coincidir con el tipo DECIMAL en la base de datos
+                        'unidadMedida' => $_POST['unidadMedida'] ?? '' // Capturar la unidad de medida
                     ];
             
-                    // Llamar al método para validar y registrar la combinación
+                    // Llamar al método en el objeto $admi para validar y registrar la combinación
                     $resultado = $admi->validarRegistrarCombinacion($params);
             
-                    // Enviar la respuesta basada en el resultado
+                    // Verificar si la respuesta fue exitosa y enviar la respuesta adecuada
                     if ($resultado['status'] === 'success') {
                         sendResponse('success', $resultado['message'], $resultado['data']);
                     } else {
                         sendResponse('error', $resultado['message']);
                     }
                 } catch (PDOException $e) {
-                    // Manejo de errores en caso de falla en la base de datos
+                    // Capturar y enviar un mensaje de error específico si ocurre una excepción de base de datos
                     sendResponse('error', 'Error en la validación de la combinación: ' . $e->getMessage());
                 }
                 break;
+                
 
             case 'deleteMedicamento':
                 // Obtener el ID del medicamento desde el POST

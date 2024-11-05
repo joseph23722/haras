@@ -30,9 +30,7 @@
 
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
-            
-            
-                
+             
             <form action="" id="form-registrar-medicamento" autocomplete="off">
                 <div class="row g-3">
                     <!-- Nombre del Medicamento -->
@@ -65,14 +63,16 @@
                         </div>
                     </div>
 
-                    <!-- Presentación -->
+                    
+
+                    <!-- Tipo de Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="presentacion" id="presentacion" class="form-select" required>
-                                <option value="">Seleccione la Presentación</option>
+                            <select name="tipo" id="tipo" class="form-select" required>
+                                <option value="">Seleccione el Tipo de Medicamento</option>
                             </select>
-                            <label for="presentacion">
-                                <i class="fas fa-prescription-bottle-alt" style="color: #8e44ad;"></i> Presentación
+                            <label for="tipo">
+                                <i class="fas fa-pills" style="color: #ff6b6b;"></i> Tipo de Medicamento
                             </label>
                         </div>
                     </div>
@@ -89,19 +89,21 @@
                         </div>
                     </div>
 
-
-
-                    <!-- Tipo de Medicamento -->
+                    <!-- Presentación -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="tipo" id="tipo" class="form-select" required>
-                                <option value="">Seleccione el Tipo de Medicamento</option>
+                            <select name="presentacion" id="presentacion" class="form-select" required>
+                                <option value="">Seleccione la Presentación</option>
                             </select>
-                            <label for="tipo">
-                                <i class="fas fa-pills" style="color: #ff6b6b;"></i> Tipo de Medicamento
+                            <label for="presentacion">
+                                <i class="fas fa-prescription-bottle-alt" style="color: #8e44ad;"></i> Presentación
                             </label>
                         </div>
                     </div>
+
+
+
+                    
 
                     <!-- Cantidad en Stock -->
                     <div class="col-md-6">
@@ -180,89 +182,54 @@
         </div>
     </div>
 
-    <!-- Modal para Agregar Nuevo Tipo, Presentación y Unidad de Medida -->
+    <!-- Modal para Agregar Nueva Combinación -->
     <div class="modal fade" id="modalAgregarTipoPresentacion" tabindex="-1" aria-labelledby="modalAgregarTipoPresentacionLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header" style="background: #004080; color: white; padding: 15px;">
                     <h5 class="modal-title" id="modalAgregarTipoPresentacionLabel" style="font-weight: bold;">
-                        <i class="fas fa-plus-circle"></i> Agregar Nuevo Tipo, Presentación y Unidad de Medida
+                        <i class="fas fa-plus-circle"></i> Agregar Nueva Combinación de Medicamento
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="row text-center">
-                        <!-- Formulario para Agregar Tipo -->
-                        <div class="col-md-4 mb-4">
-                            <div class="card shadow-sm border-0 h-100" style="padding: 20px;">
-                                <div class="card-body">
-                                    <h6 class="text-center mb-3" style="color: #004080;">
-                                        <i class="fas fa-capsules"></i> Nuevo Tipo de Medicamento
-                                    </h6>
-                                    <form id="formAgregarTipo">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" name="nuevoTipoMedicamento" id="nuevoTipoMedicamento" class="form-control" placeholder="Ingrese el tipo de medicamento" required>
-                                            <label for="nuevoTipoMedicamento">Tipo de Medicamento</label>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary w-100">Agregar Tipo</button>
-                                    </form>
-                                </div>
+                <form id="formAgregarTipoPresentacion">
+                    <div class="modal-body p-4">
+                        <div class="row">
+                            <!-- Formulario para Agregar Tipo -->
+                            <div class="col-md-3 mb-4">
+                                <label for="nuevoTipoMedicamento">Tipo de Medicamento</label>
+                                <input type="text" name="nuevoTipoMedicamento" id="nuevoTipoMedicamento" class="form-control" required>
                             </div>
-                        </div>
 
-                        <!-- Formulario para Agregar Presentación -->
-                        <div class="col-md-4 mb-4">
-                            <div class="card shadow-sm border-0 h-100" style="padding: 20px;">
-                                <div class="card-body">
-                                    <h6 class="text-center mb-3" style="color: #004080;">
-                                        <i class="fas fa-pills"></i> Nueva Presentación
-                                    </h6>
-                                    <form id="formAgregarPresentacion">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" name="nuevaPresentacion" id="nuevaPresentacion" class="form-control" placeholder="Ingrese la presentación" required>
-                                            <label for="nuevaPresentacion">Presentación</label>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary w-100">Agregar Presentación</button>
-                                    </form>
-                                </div>
+                            <!-- Formulario para Agregar Presentación -->
+                            <div class="col-md-3 mb-4">
+                                <label for="nuevaPresentacion">Presentación</label>
+                                <input type="text" name="nuevaPresentacion" id="nuevaPresentacion" class="form-control" required>
                             </div>
-                        </div>
 
-                        <!-- Formulario para Agregar Unidad de Medida -->
-                        <div class="col-md-4 mb-4">
-                            <div class="card shadow-sm border-0 h-100" style="padding: 20px;">
-                                <div class="card-body">
-                                    <h6 class="text-center mb-3" style="color: #004080;">
-                                        <i class="fas fa-ruler-combined"></i> Nueva Unidad de Medida
-                                    </h6>
-                                    <form id="formAgregarUnidadMedida">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" name="nuevaUnidadMedida" id="nuevaUnidadMedida" class="form-control" placeholder="Ingrese la unidad de medida" required>
-                                            <label for="nuevaUnidadMedida">Unidad de Medida</label>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary w-100">Agregar Unidad</button>
-                                    </form>
-                                </div>
+                            <!-- Formulario para Agregar Unidad de Medida -->
+                            <div class="col-md-3 mb-4">
+                                <label for="nuevaUnidadMedida">Unidad de Medida</label>
+                                <input type="text" name="nuevaUnidadMedida" id="nuevaUnidadMedida" class="form-control" required>
+                            </div>
+
+                            <!-- Campo de Dosis -->
+                            <div class="col-md-3 mb-4">
+                                <label for="dosisMedicamento">Dosis</label>
+                                <input type="number" step="0.01" name="dosisMedicamento" id="dosisMedicamento" class="form-control" required>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer" style="background: #f1f1f1;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Agregar Combinación</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
 
-
-    
-
-
-
-
-
-    
 
     <!-- Modal para Registrar Entrada de Medicamento -->
     <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" aria-hidden="true">
@@ -407,7 +374,7 @@
                             <tr class="text-center">
                                 <th>Tipo de Medicamento</th>
                                 <th>Presentación</th>
-                                <th>Dosis</th>
+                                <th>Composición</th>
                                 <th>Acciones</th> <!-- Nueva columna para acciones -->
                             </tr>
                         </thead>
@@ -507,6 +474,7 @@
                                             <th>Nombre Medicamento</th>
                                             <th>Descripción</th>
                                             <th>Stock Actual</th>
+                                            <th>Lote</th>
                                             <th>Cantidad de Entrada</th>
                                             <th>Fecha de Movimiento</th>
                                         </tr>
@@ -527,6 +495,7 @@
                                             <th>ID Medicamento</th>
                                             <th>Nombre Medicamento</th>
                                             <th>Descripción</th>
+                                            <th>Lote</th>
                                             <th>Tipo de Equino</th>
                                             <th>Cantidad de Salida</th>
                                             <th>Motivo</th>
@@ -600,9 +569,7 @@
         const medicamentosTable = document.querySelector("#medicamentos-table");
         const tipoMedicamentoSelect = document.querySelector("#tipo");
         const presentacionSelect = document.querySelector("#presentacion");
-        const formAgregarPresentacion = document.querySelector("#formAgregarPresentacion");
-        const formAgregarUnidadMedida = document.querySelector("#formAgregarUnidadMedida");
-        const formAgregarTipo = document.querySelector("#formAgregarTipo");
+
 
         const messageArea = document.getElementById("message-area");
         const btnSugerencias = document.getElementById("btnSugerencias");
@@ -865,6 +832,7 @@
                                 { data: 'idMedicamento' },
                                 { data: 'nombreMedicamento' },
                                 { data: 'descripcion' },
+                                { data: 'lote' },
                                 { data: 'stockActual' },
                                 { data: 'cantidad' },
                                 { data: 'fechaMovimiento' }
@@ -896,6 +864,7 @@
                                 { data: 'idMedicamento' },
                                 { data: 'nombreMedicamento' },
                                 { data: 'descripcion' },
+                                { data: 'lote' },
                                 { data: 'tipoEquino' },
                                 { data: 'cantidad' },
                                 { data: 'motivo' },
@@ -924,64 +893,73 @@
 
         // Cargar los tipos de medicamentos desde el servidor
         // Cargar los tipos de medicamentos desde el servidor
+        // Cargar los tipos de medicamentos desde el servidor
+        // Cargar los tipos de medicamentos desde el servidor
         const loadTiposMedicamentos = async () => {
             try {
+                console.log("Iniciando carga de tipos de medicamentos...");
                 const response = await fetch(`../../controllers/admedi.controller.php?operation=listarTiposMedicamentos`, {
                     method: "GET",
                 });
+                console.log("Respuesta recibida de tipos de medicamentos:", response);
+
                 const result = await response.json();
+                console.log("Resultado parseado de tipos de medicamentos:", result);
 
                 // Limpiar el select y agregar opciones
                 tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
-                
+
                 result.data.forEach(tipo => {
+                    console.log("Procesando tipo:", tipo);
                     const option = document.createElement("option");
-                    option.value = tipo.tipo;
+                    option.value = tipo.idTipo; // Usar idTipo para identificar cada tipo
                     option.textContent = tipo.tipo;
                     tipoMedicamentoSelect.appendChild(option);
                 });
+
+                // Agregar un evento para cargar presentaciones al cambiar el tipo
+                tipoMedicamentoSelect.addEventListener('change', (event) => {
+                    const idTipo = event.target.value;
+                    console.log("Tipo seleccionado:", idTipo);
+                    if (idTipo) {
+                        loadPresentaciones(idTipo); // Llamar a loadPresentaciones con el idTipo seleccionado
+                    } else {
+                        presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
+                    }
+                });
+
             } catch (error) {
+                console.error("Error al cargar tipos de medicamentos:", error);
                 mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
             }
         };
 
-       
-        // Procesar la adición de un nuevo tipo de medicamento
-        formAgregarTipo.addEventListener('submit', async (event) => {
+
+       // Registrar combinaciones 
+        document.querySelector("#formAgregarTipoPresentacion").addEventListener('submit', async (event) => {
             event.preventDefault();
-            const nuevoTipoMedicamento = document.querySelector("#nuevoTipoMedicamento").value;
 
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({ operation: 'agregarTipoMedicamento', tipo: nuevoTipoMedicamento })
-                });
+            const nuevoTipo = document.querySelector("#nuevoTipoMedicamento").value;
+            const nuevaPresentacion = document.querySelector("#nuevaPresentacion").value;
+            const nuevaUnidad = document.querySelector("#nuevaUnidadMedida").value;
+            const dosis = parseFloat(document.querySelector("#dosisMedicamento").value); // Suponiendo que agregues un campo de dosis
 
-                const result = await response.json();
-                if (result.status === "success") {
-                    mostrarMensaje(result.message, 'success');
-                    showToast(result.message, 'SUCCESS');
-                    $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal combinado
-                    loadTiposMedicamentos();
-                } else {
-                    mostrarMensaje(result.message, 'error');
-                    showToast(result.message, 'ERROR');
-                }
-            } catch (error) {
-                mostrarMensaje("Error al agregar tipo de medicamento: " + error.message, 'error');
-                showToast("Error al agregar tipo de medicamento", 'ERROR');
+            // Verificar que todos los campos tengan un valor
+            if (!nuevoTipo || !nuevaPresentacion || !nuevaUnidad || isNaN(dosis)) {
+                alert("Todos los campos son obligatorios.");
+                return;
             }
-        });
-
-        // Procesar la adición de una nueva unidad de medida (dosis)
-        formAgregarUnidadMedida.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const nuevaUnidadMedida = document.querySelector("#nuevaUnidadMedida").value;
 
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
                     method: "POST",
-                    body: new URLSearchParams({ operation: 'agregarUnidadMedida', unidad: nuevaUnidadMedida })
+                    body: new URLSearchParams({
+                        operation: 'agregarCombinacionMedicamento',
+                        tipo: nuevoTipo,
+                        presentacion: nuevaPresentacion,
+                        unidad: nuevaUnidad,
+                        dosis: dosis
+                    })
                 });
 
                 const result = await response.json();
@@ -989,68 +967,64 @@
                     mostrarMensaje(result.message, 'success');
                     showToast(result.message, 'SUCCESS');
                     $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal
-                    loadUnidadesMedida(); // Llama a la función para recargar las unidades de medida si es necesario
                 } else {
                     mostrarMensaje(result.message, 'error');
                     showToast(result.message, 'ERROR');
                 }
             } catch (error) {
-                mostrarMensaje("Error al agregar unidad de medida: " + error.message, 'error');
-                showToast("Error al agregar unidad de medida", 'ERROR');
+                mostrarMensaje("Error al agregar la combinación: " + error.message, 'error');
+                showToast("Error al agregar la combinación", 'ERROR');
             }
         });
 
 
+        
+
+
         // Cargar presentaciones de medicamentos desde el servidor
-        const loadPresentaciones = async () => {
+        // Cargar presentaciones de medicamentos desde el servidor según el tipo seleccionado
+        const loadPresentaciones = async (idTipo) => {
             try {
-                const response = await fetch(`../../controllers/admedi.controller.php?operation=listarPresentacionesMedicamentos`, {
-                    method: "GET",
+                // Verificar si idTipo está definido
+                if (!idTipo) {
+                    mostrarMensaje("Debe seleccionar un tipo de medicamento antes de cargar las presentaciones.", 'warning');
+                    return;
+                }
+
+                const response = await fetch(`../../controllers/admedi.controller.php`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({ operation: 'listarPresentacionesMedicamentos', idTipo: idTipo })
                 });
 
                 const result = await response.json();
 
-                const presentaciones = result.data;
+                if (result.status === "success") {
+                    const presentaciones = result.data;
 
-                presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
-                presentaciones.forEach(presentacion => {
-                    const option = document.createElement("option");
-                    option.value = presentacion.presentacion;
-                    option.textContent = presentacion.presentacion;
-                    presentacionSelect.appendChild(option);
-                });
+                    // Limpiar las opciones previas y agregar el mensaje inicial
+                    presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
+                    presentaciones.forEach(presentacion => {
+                        const option = document.createElement("option");
+                        option.value = presentacion.idPresentacion; // Usar idPresentacion como valor
+                        option.textContent = presentacion.presentacion;
+                        presentacionSelect.appendChild(option);
+                    });
+                } else {
+                    mostrarMensaje("No se pudieron obtener las presentaciones.", 'error');
+                }
             } catch (error) {
                 mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
             }
         };
 
+        
 
-        // Procesar la adición de una nueva presentación de medicamento
-        formAgregarPresentacion.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const nuevaPresentacion = document.querySelector("#nuevaPresentacion").value;
 
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({ operation: 'agregarPresentacion', presentacion: nuevaPresentacion })
-                });
 
-                const result = await response.json();
-                if (result.status === "success") {
-                    mostrarMensaje(result.message, 'success');
-                    showToast(result.message, 'SUCCESS');
-                    $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal combinado
-                    loadPresentaciones();
-                } else {
-                    mostrarMensaje(result.message, 'error');
-                    showToast(result.message, 'ERROR');
-                }
-            } catch (error) {
-                mostrarMensaje("Error al agregar presentación: " + error.message, 'error');
-                showToast("Error al agregar presentación", 'ERROR');
-            }
-        });
+        
 
         // Cargar medicamentos en los selectores de entrada y salida
         const loadSelectMedicamentos = async () => {
@@ -1142,14 +1116,14 @@
                             title: 'Acciones',
                             render: function(data, type, row) {
                                 return `<button class="btn btn-danger btn-sm shadow-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
-                                            <i class="fas fa-trash"></i> Borrar
+                                            <i class="fas fa-trash"></i>
                                         </button>`;
                             },
                             orderable: false
                         }
                     ],
                     pageLength: 5,
-                    autoWidth: false,
+                    autoWidth: true,
                     responsive: true,
                     scrollX: true,
                     language: {
@@ -1168,7 +1142,7 @@
                             'border-collapse': 'collapse',
                             'width': '100%',
                             'font-size': '16px',
-                            'table-layout': 'fixed'
+                            'table-layout': 'auto'
                         });
 
                         $('th').css({
@@ -1190,6 +1164,13 @@
                         });
                     }
                 });
+                // Escuchar el evento de redimensionamiento de la ventana
+                $(window).resize(function() {
+                    if ($.fn.dataTable.isDataTable('#medicamentosTable')) {
+                        $('#medicamentosTable').DataTable().columns.adjust().draw();
+                    }
+                });
+
 
 
             } catch (error) {
@@ -1197,6 +1178,8 @@
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
+
+        
 
 
         // **Función para manejar la notificación de stock bajo/agotado para medicamentos**
@@ -1326,26 +1309,32 @@
 
         // Registrar medicamento
         // Registrar medicamento
+        // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            console.log("Iniciando registro de medicamento...");
 
             // Obtener el valor combinado de dosis y unidad
             const dosisCompleta = document.querySelector("#dosis").value;
+            console.log("Dosis completa ingresada:", dosisCompleta);
 
             // Usar una expresión regular para separar la cantidad de la unidad
             const match = dosisCompleta.match(/^(\d+(\.\d+)?)(\s?[a-zA-Z]+)$/);
             if (!match) {
                 mostrarMensaje("Formato de dosis inválido. Use un número seguido de una unidad (ej. 500 mg)", "error");
+                console.warn("Formato de dosis inválido:", dosisCompleta);
                 return;
             }
 
             const dosis = parseFloat(match[1]);
             const unidad = match[3].trim();
+            console.log("Dosis separada:", dosis, "Unidad:", unidad);
 
             // Validar que ambos elementos estén presentes
             if (!dosis || !unidad) {
                 mostrarMensaje("Debe ingresar una dosis válida con su unidad", "error");
+                console.warn("Datos de dosis incompletos:", { dosis, unidad });
                 return;
             }
 
@@ -1355,7 +1344,9 @@
             formData.append('unidad', unidad);
             formData.append('operation', 'registrar');
 
+            console.log("Datos del formulario enviados:");
             formData.forEach((value, key) => {
+                console.log(`${key}: ${value}`);
             });
 
             try {
@@ -1363,28 +1354,35 @@
                     method: "POST",
                     body: formData
                 });
+                console.log("Respuesta del servidor:", response);
 
                 const text = await response.text();
+                console.log("Texto de respuesta del servidor:", text);
+
                 let result;
                 try {
                     result = JSON.parse(text);
+                    console.log("Resultado parseado del servidor:", result);
                 } catch (jsonError) {
+                    console.error("Error al interpretar la respuesta del servidor:", jsonError);
                     mostrarMensaje("Error al interpretar la respuesta del servidor. Respuesta no válida.", 'error');
                     return;
                 }
 
                 if (result.status === "success") {
+                    console.log("Medicamento registrado correctamente:", result);
                     showToast("Medicamento registrado correctamente", "SUCCESS");
                     formRegistrarMedicamento.reset();
-                    // Llamar a las funciones para recargar los selectores de medicamentos y lotes
                     // Llamar a las funciones para recargar los selectores de medicamentos y lotes
                     await loadSelectMedicamentos();
                     await cargarLotes();
                     await loadMedicamentos();
                 } else {
+                    console.warn("Error en el registro:", result.message);
                     mostrarMensaje("Error en el registro: " + result.message, 'error');
                 }
             } catch (error) {
+                console.error("Error al registrar el medicamento:", error);
                 mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
             }
         });
