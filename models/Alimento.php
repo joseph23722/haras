@@ -64,7 +64,6 @@ class Alimento extends Conexion {
     }
 
 
-  
 
     // Método para registrar una entrada de alimento
     public function registrarEntradaAlimento($params = []) {
@@ -310,7 +309,7 @@ class Alimento extends Conexion {
     // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {
-            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+            $query = $this->pdo->prepare("CALL spu_contar_equinos_por_categoria()");
              $query->execute();
             
             return $query->fetchAll(PDO::FETCH_ASSOC);

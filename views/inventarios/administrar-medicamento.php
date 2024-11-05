@@ -9,7 +9,7 @@
 
     <!-- Sección del formulario para registrar un medicamento -->
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Medicamento</h5>
             <!-- Botón de Sugerencias integrado en el header -->
             <button type="button" class="btn btn-info btn-sm" 
@@ -169,7 +169,7 @@
 
     <!-- Opciones de Movimiento -->
     <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
@@ -521,7 +521,7 @@
 
     <!-- Tabla de Medicamentos Registrados -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">
@@ -753,40 +753,40 @@
 
 
 
-        // Función para cargar los tipos de equinos
+        // Función para cargar las categorías de equinos
         const loadTipoEquinos = async () => {
-            try {
-                // Hacemos la solicitud GET con los parámetros en la URL
-                const response = await fetch('../../controllers/admedi.controller.php?operation=getTipoEquinos', {
-                method: "GET"
-                });
+        try {
+            // Hacemos la solicitud GET con los parámetros en la URL
+            const response = await fetch('../../controllers/alimento.controller.php?operation=getTipoEquinos', {
+            method: "GET"
+            });
 
-                const textResponse = await response.text();
+            const textResponse = await response.text();
 
-                // Intentar convertir el texto en JSON
-                const parsedResponse = JSON.parse(textResponse);
+            // Intentar convertir el texto en JSON
+            const parsedResponse = JSON.parse(textResponse);
 
-                // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
-                if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-                const tipos = parsedResponse.data;
+            // Verificar si la respuesta es exitosa y contiene los datos de categorías de equinos
+            if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
+            const categorias = parsedResponse.data;
 
-                // Limpiar el select antes de añadir contenido nuevo
-                tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
+            // Limpiar el select antes de añadir contenido nuevo
+            tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Categoría de Equino</option>';
 
-                // Añadir cada tipo de equino al select
-                tipos.forEach(tipo => {
-                    const option = document.createElement('option');
-                    option.value = tipo.idTipoEquino;
-                    option.textContent = tipo.tipoEquino;
-                    tipoEquinoMovimiento.appendChild(option);
-                });
-                } else {
-                mostrarMensaje('No se encontraron tipos de equinos.', 'INFO');
-                }
-            } catch (error) {
-                console.error("Error al cargar tipos de equinos:", error);
-                mostrarMensaje('Error al cargar tipos de equinos.', 'ERROR');
+            // Añadir cada categoría de equino al select
+            categorias.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria.Categoria; // Usamos el nombre de la categoría como el valor
+                option.textContent = `${categoria.Categoria} (${categoria.Cantidad})`; // Mostramos la categoría y cantidad
+                tipoEquinoMovimiento.appendChild(option);
+            });
+            } else {
+            mostrarMensajeDinamico('No se encontraron categorías de equinos.', 'INFO');
             }
+        } catch (error) {
+            console.error("Error al cargar categorías de equinos:", error);
+            mostrarMensajeDinamico('Error al cargar categorías de equinos.', 'ERROR');
+        }
         };
 
         // Historial de movimientos de medicamentos

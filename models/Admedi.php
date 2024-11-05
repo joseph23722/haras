@@ -609,15 +609,12 @@ class Admi extends Conexion {
     // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {
-            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+            $query = $this->pdo->prepare("CALL spu_contar_equinos_por_categoria()");
              $query->execute();
             
             return $query->fetchAll(PDO::FETCH_ASSOC);
             
         } catch (PDOException $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
             error_log($e->getMessage());
             return [];
         }
