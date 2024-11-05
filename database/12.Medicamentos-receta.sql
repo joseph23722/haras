@@ -118,7 +118,7 @@ BEGIN
 		AND idTipoEquino IN (1, 2, 3, 4);
 END $$
 DELIMITER ;
-select * from DetalleMedicamentos;
+
 -- 
 DELIMITER $$
 CREATE PROCEDURE spu_consultar_historial_medicoMedi()
