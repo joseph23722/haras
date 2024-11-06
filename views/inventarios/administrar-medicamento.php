@@ -754,6 +754,7 @@
 
 
         // Función para cargar las categorías de equinos
+        // Función para cargar los tipos de equinos
         const loadTipoEquinos = async () => {
         try {
             // Hacemos la solicitud GET con los parámetros en la URL
@@ -766,28 +767,33 @@
             // Intentar convertir el texto en JSON
             const parsedResponse = JSON.parse(textResponse);
 
-            // Verificar si la respuesta es exitosa y contiene los datos de categorías de equinos
+            // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
             if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-            const categorias = parsedResponse.data;
+            const tiposEquinos = parsedResponse.data;
 
             // Limpiar el select antes de añadir contenido nuevo
-            tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Categoría de Equino</option>';
+            tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
 
-            // Añadir cada categoría de equino al select
-            categorias.forEach(categoria => {
+            // Añadir cada tipo de equino al select
+            tiposEquinos.forEach(tipo => {
                 const option = document.createElement('option');
-                option.value = categoria.Categoria; // Usamos el nombre de la categoría como el valor
-                option.textContent = `${categoria.Categoria} (${categoria.Cantidad})`; // Mostramos la categoría y cantidad
+                option.value = tipo.idTipoEquino; // Usamos el idTipoEquino como valor
+                option.textContent = tipo.tipoEquino; // Mostramos el tipo de equino
                 tipoEquinoMovimiento.appendChild(option);
             });
             } else {
-            mostrarMensajeDinamico('No se encontraron categorías de equinos.', 'INFO');
+            mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
             }
         } catch (error) {
-            console.error("Error al cargar categorías de equinos:", error);
-            mostrarMensajeDinamico('Error al cargar categorías de equinos.', 'ERROR');
+            console.error("Error al cargar tipos de equinos:", error);
+            mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
         }
         };
+
+        // Código adicional en el frontend para mostrar el valor seleccionado
+        tipoEquinoMovimiento.addEventListener("change", (e) => {
+            console.log("Tipo de equino seleccionado (id):", e.target.value); // Mostrar el valor seleccionado
+        });
 
         // Historial de movimientos de medicamentos
         const loadHistorialMovimientos = async () => {

@@ -676,6 +676,7 @@
 
 
     // Función para cargar las categorías de equinos
+    // Función para cargar los tipos de equinos
     const loadTipoEquinos = async () => {
       try {
         // Hacemos la solicitud GET con los parámetros en la URL
@@ -688,28 +689,35 @@
         // Intentar convertir el texto en JSON
         const parsedResponse = JSON.parse(textResponse);
 
-        // Verificar si la respuesta es exitosa y contiene los datos de categorías de equinos
+        // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
         if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-          const categorias = parsedResponse.data;
+          const tiposEquinos = parsedResponse.data;
 
           // Limpiar el select antes de añadir contenido nuevo
-          tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Categoría de Equino</option>';
+          tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
 
-          // Añadir cada categoría de equino al select
-          categorias.forEach(categoria => {
+          // Añadir cada tipo de equino al select
+          tiposEquinos.forEach(tipo => {
             const option = document.createElement('option');
-            option.value = categoria.Categoria; // Usamos el nombre de la categoría como el valor
-            option.textContent = `${categoria.Categoria} (${categoria.Cantidad})`; // Mostramos la categoría y cantidad
+            option.value = tipo.idTipoEquino; // Usamos el idTipoEquino como valor
+            option.textContent = tipo.tipoEquino; // Mostramos el tipo de equino
             tipoEquinoMovimiento.appendChild(option);
           });
         } else {
-          mostrarMensajeDinamico('No se encontraron categorías de equinos.', 'INFO');
+          mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
         }
       } catch (error) {
-        console.error("Error al cargar categorías de equinos:", error);
-        mostrarMensajeDinamico('Error al cargar categorías de equinos.', 'ERROR');
+        console.error("Error al cargar tipos de equinos:", error);
+        mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
       }
     };
+
+    // Código adicional en el frontend para mostrar el valor seleccionado
+    tipoEquinoMovimiento.addEventListener("change", (e) => {
+        console.log("Tipo de equino seleccionado (id):", e.target.value); // Mostrar el valor seleccionado
+    });
+
+
 
 
     // Función para validar si el lote ya existe para el mismo alimento y unidad de medida
@@ -1173,38 +1181,43 @@
 
 
     // Función para manejar la salida de alimentos
+    // Función para manejar la salida de alimentos
     const registrarSalida = async () => {
         const cantidadField = document.getElementById('cantidad-salida');
         const cantidad = parseFloat(cantidadField.value) || 0;
         
         // Validación adicional en JavaScript
         if (cantidad <= 0) {
-          showToast("La cantidad debe ser mayor a 0.", 'ERROR');
+            showToast("La cantidad debe ser mayor a 0.", 'ERROR');
             return;
-        }// Convertir a número o asignar 0 si está vacío
+        }
 
-        const mermaField = document.getElementById('merma');  // Cambia a `merma` en lugar de `merma-salida`
-        let merma = mermaField && mermaField.value ? parseFloat(mermaField.value) : 0;  // Convertir a número o 0 si no hay valor
+        const mermaField = document.getElementById('merma'); // Cambia a `merma` en lugar de `merma-salida`
+        let merma = mermaField && mermaField.value ? parseFloat(mermaField.value) : 0; // Convertir a número o 0 si no hay valor
 
         const loteField = document.getElementById('salidaLote');
         const lote = loteField && loteField.value ? loteField.value : null;
 
-        // Validaciones básicas
+        // Validaciones básicas con console.log para verificar cada paso
+        console.log("Alimento seleccionado:", alimentoSelectSalida.value);
         if (!alimentoSelectSalida.value) {
             showToast("Por favor, seleccione un alimento.", 'ERROR');
             return;
         }
 
+        console.log("Tipo de equino seleccionado:", tipoEquinoMovimiento.value);
         if (!tipoEquinoMovimiento.value) {
             showToast("Seleccione un tipo de equino para la salida.", 'ERROR');
             return;
         }
 
+        console.log("Unidad de medida seleccionada:", unidadMedidaSalida.value);
         if (!unidadMedidaSalida.value) {
             showToast("Seleccione una unidad de medida.", 'ERROR');
             return;
         }
 
+        console.log("Cantidad ingresada:", cantidad);
         if (!cantidad || isNaN(cantidad) || cantidad <= 0) {
             showToast("Por favor, ingrese una cantidad válida.", 'ERROR');
             return;
@@ -1212,7 +1225,6 @@
 
         // Confirmación del usuario usando SweetAlert (ask)
         if (await ask("¿Confirmar salida de alimento?")) {
-
             const params = {
                 operation: 'salida',
                 nombreAlimento: alimentoSelectSalida.value,
@@ -1220,13 +1232,18 @@
                 unidadMedida: unidadMedidaSalida.value,
                 lote: lote,
                 cantidad: cantidad,
-                merma: merma  // Asegúrate de que `merma` tenga el valor capturado
+                merma: merma // Asegúrate de que `merma` tenga el valor capturado
             };
 
+            // Log de los parámetros que se enviarán al servidor
+            console.log("Parámetros a enviar:", params);
 
             const data = JSON.stringify(params);
 
             try {
+                // Log para verificar la solicitud antes de enviarla
+                console.log("Datos JSON a enviar:", data);
+
                 const response = await fetch('../../controllers/alimento.controller.php', {
                     method: "POST",
                     headers: {
@@ -1235,7 +1252,13 @@
                     body: data
                 });
 
+                // Log para verificar la respuesta cruda antes de procesarla
+                console.log("Respuesta sin procesar:", response);
+
                 const result = await response.json();
+
+                // Log para verificar el resultado después de convertir a JSON
+                console.log("Resultado de la solicitud:", result);
 
                 if (result.status === "success") {
                     showToast(result.message || "Salida registrada exitosamente.", 'SUCCESS');
@@ -1252,12 +1275,14 @@
                     showToast(result.message || "Error al registrar la salida.", 'ERROR');
                 }
             } catch (error) {
+                console.error("Error en la solicitud fetch:", error);
                 showToast("Error en la solicitud: " + error.message, 'ERROR');
             }
         } else {
             console.log("El usuario canceló la operación.");
         }
     };
+
 
 
 

@@ -307,18 +307,23 @@ class Alimento extends Conexion {
     }
 
     // Método para obtener los tipos de equinos
+    // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {
-            $query = $this->pdo->prepare("CALL spu_contar_equinos_por_categoria()");
-             $query->execute();
+            // Cambiamos la llamada al nuevo procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+            $query->execute();
             
+            // Devolvemos los resultados como un arreglo asociativo
             return $query->fetchAll(PDO::FETCH_ASSOC);
             
         } catch (PDOException $e) {
-            error_log($e->getMessage());
+            // Registramos el error en el log
+            error_log("Error en getTipoEquinos: " . $e->getMessage());
             return [];
         }
     }
+
 
     public function getUnidadesMedida($nombreAlimento) {
         $query = $this->pdo->prepare("SELECT unidadMedida FROM Alimentos WHERE nombreAlimento = :nombreAlimento");
