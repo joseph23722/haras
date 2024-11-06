@@ -198,7 +198,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- --------- listar equinos en estado monta 
 DELIMITER $$
 

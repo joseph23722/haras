@@ -277,8 +277,8 @@ CREATE TABLE HistorialMovimientosMedicamentos (
 -- 23. Servicios 
 CREATE TABLE Servicios (
     idServicio 				INT PRIMARY KEY AUTO_INCREMENT,
-    idEquinoMacho 			INT NOT NULL,
-    idEquinoHembra 			INT NOT NULL,
+    idEquinoMacho 			INT NULL,
+    idEquinoHembra 			INT NULL,
     fechaServicio 			DATE NOT NULL,
     tipoServicio 			ENUM('Propio', 'Mixto') NOT NULL,
     detalles 				TEXT NOT NULL,
