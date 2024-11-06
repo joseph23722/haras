@@ -9,7 +9,7 @@ BEGIN
         e.sexo,
         te.tipoEquino,
         em.nombreEstado AS estadoMonta,  -- Obtener el nombre del estado
-        e.nacionalidad,
+        n.nacionalidad,  -- Mostrar el nombre de la nacionalidad
         e.pesokg,
         e.idPropietario,
         e.fotografia
@@ -17,10 +17,12 @@ BEGIN
         Equinos e
     JOIN 
         TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
-    JOIN 
-        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
+    LEFT JOIN 
+        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta 
+    LEFT JOIN 
+        Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
     WHERE 
         e.nombreEquino = p_nombreEquino
-		AND e.idPropietario IS NULL; 
+        AND e.idPropietario IS NULL; 
 END //
 DELIMITER ;

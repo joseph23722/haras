@@ -161,3 +161,25 @@ INSERT INTO permisos (idRol, idvista) VALUES
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
 	(6, 4);
+
+INSERT INTO Nacionalidades (nacionalidad) VALUES 
+('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),
+('Armenia'), ('Arubeña'), ('Australiana'), ('Austriaca'), ('Azerbaiyana'), ('Bahameña'), ('Bahreiní'), ('Bangladesí'), 
+('Barbadense'), ('Belga'), ('Beliceña'), ('Beninesa'), ('Bermudeña'), ('Bielorrusa'), ('Boliviana'), ('Bosnia'),
+('Botsuana'), ('Brasileña'), ('Bruneana'), ('Búlgara'), ('Burkinesa'), ('Burundesa'), ('Butanesa'), ('Caboverdiana'),
+('Camboyana'), ('Camerunesa'), ('Canadiense'), ('Centroafricana'), ('Chadiana'), ('Checa'), ('Chilena'), ('China'),
+('Chipriota'), ('Colombiana'), ('Comorense'), ('Congoleña'), ('Costarricense'), ('Croata'), ('Cubana'), ('Danesa'),
+('Dominicana'), ('Ecuatoriana'), ('Egipcia'), ('Emiratí'), ('Eritrea'), ('Eslovaca'), ('Eslovena'), ('Española'), ('Estadounidense'),
+('Estonia'), ('Etíope'), ('Filipina'), ('Finlandesa'), ('Fiyiana'), ('Francesa'), ('Gabonesa'), ('Galesa'), ('Gambiana'),
+('Georgiana'), ('Ghanesa'), ('Granadina'), ('Griega'), ('Guatemalteca'), ('Guineana'), ('Guyanesa'), ('Haitiana'), ('Hondureña'),
+('Húngara'), ('India'), ('Indonesia'), ('Iraquí'), ('Iraní'), ('Irlandesa'), ('Islandesa'), ('Israelí'), ('Italiana'), ('Jamaiquina'), ('Japonesa'),
+('Jordana'), ('Kazaja'), ('Keniana'), ('Kirguisa'), ('Kiribatiana'), ('Kosovar'), ('Kuwaití'), ('Laosiana'), ('Lesotense'), ('Letona'), ('Libanesa'),
+('Liberiana'), ('Libia'), ('Liechtensteiniana'), ('Lituana'), ('Luxemburguesa'), ('Macedonia'), ('Malaya'), ('Malauí'), ('Maldiva'),
+('Malgache'), ('Maliense'), ('Maltesa'), ('Marfileña'), ('Marroquí'), ('Marshallina'), ('Mauritana'), ('Mauriciana'), ('Mexicana'), ('Micronesia'),
+('Moldava'), ('Monegasca'), ('Mongola'), ('Montenegrina'), ('Mozambiqueña'), ('Namibia'), ('Neerlandesa'), ('Nepalí'), ('Nicaragüense'), ('Nigeriana'),
+('Nigerina'), ('Norcoreana'), ('Noruega'), ('Nueva Zelandesa'), ('Omaní'), ('Pakistaní'),  ('Palauana'),('Panameña'), ('Papú'),
+('Paraguaya'), ('Peruana'), ('Polaca'), ('Portuguesa'), ('Puertorriqueña'), ('Qatarí'), ('Reino Unido'), ('Rumana'), ('Rusa'), ('Ruandesa'),
+('Salvadoreña'), ('Samoana'), ('Sanmarinense'), ('Santa Lucía'), ('Saudí'), ('Senegalesa'), ('Serbia'), ('Seychellense'), ('Sierraleonesa'), ('Singapurense'),
+('Somalí'), ('Sri Lanka'), ('Sudafricana'), ('Sudanesa'), ('Sueca'), ('Suiza'), ('Surcoreana'), ('Surinamesa'), ('Tailandesa'),
+('Tanzana'), ('Togolesa'), ('Tongana'), ('Trinitaria'), ('Tunecina'), ('Turca'), ('Tuvaluana'), ('Ucraniana'), ('Ugandesa'),
+('Uruguaya'), ('Uzbeca'), ('Vanuatuense'), ('Venezolana'), ('Vietnamita'), ('Yemení'), ('Yibutiana'), ('Zambiana'), ('Zimbabuense');

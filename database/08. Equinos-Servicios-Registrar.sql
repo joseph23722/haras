@@ -8,8 +8,8 @@ CREATE PROCEDURE `spu_equino_registrar`(
     IN _detalles TEXT,
     IN _idTipoEquino INT,
     IN _idPropietario INT,
-    IN _pesokg INT,
-    IN _nacionalidad VARCHAR(50)
+    IN _pesokg DECIMAL(5,1),
+    IN _idNacionalidad INT
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
@@ -74,14 +74,17 @@ BEGIN
         END IF;
     END IF;
 
-    -- Asignar estado de monta inicial según el tipo de equino y el género
+    IF NOT EXISTS (SELECT 1 FROM nacionalidades WHERE idNacionalidad = _idNacionalidad) THEN
+        SET _errorMsg = 'Error: La nacionalidad seleccionada no existe.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
     SET _idEstadoMonta = CASE 
         WHEN _sexo = 'Macho' AND _idTipoEquino = 2 THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Inactivo' LIMIT 1)
         WHEN _sexo = 'Hembra' AND _idTipoEquino = 1 THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1)
-        ELSE NULL  -- Otros tipos no tienen estado de monta inicial, ajustar según tus necesidades
+        ELSE NULL
     END;
 
-    -- Registro del equino con el estado de monta asignado
     INSERT INTO Equinos (
         nombreEquino, 
         fechaNacimiento, 
@@ -90,7 +93,7 @@ BEGIN
         detalles, 
         idPropietario,
         pesokg,
-        nacionalidad,
+        idNacionalidad,
         idEstadoMonta
     ) 
     VALUES (
@@ -101,19 +104,25 @@ BEGIN
         _detalles, 
         _idPropietario,
         _pesokg,
-        _nacionalidad,
+        _idNacionalidad,
         _idEstadoMonta
     );
-    
     -- Obtener el ID del equino recién insertado
     SET _idEquino = LAST_INSERT_ID();
-
     -- Retornar el ID del equino registrado
     SELECT _idEquino AS idEquino;
 END $$
 DELIMITER ;
 
-
+DROP PROCEDURE IF EXISTS `spu_buscar_nacionalidad`;
+DELIMITER $$
+CREATE PROCEDURE `spu_buscar_nacionalidad`(IN _nacionalidad VARCHAR(255))
+BEGIN
+    SELECT idNacionalidad, nacionalidad
+    FROM nacionalidades
+    WHERE nacionalidad LIKE CONCAT('%', _nacionalidad, '%');
+END $$
+DELIMITER ;
 
 -- Registrar Servicio
 DROP PROCEDURE IF EXISTS `registrarServicio`;
@@ -189,7 +198,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- --------- listar equinos en estado monta 
 DELIMITER $$
 
@@ -223,8 +231,3 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
--- Llamada al procedimiento para ver los resultados
-CALL spu_contar_equinos_por_categoria();
-

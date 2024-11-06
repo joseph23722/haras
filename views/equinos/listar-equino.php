@@ -19,16 +19,17 @@
                     <table id="tabla-equinos" class="table table-striped table-hover table-bordered">
                         <thead style="background-color: #caf0f8; color: #003366;">
                             <tr>
-                                <th><i class="fas fa-hashtag"></i> #</th>
-                                <th><i class="fas fa-horse"></i> Nombre Equino</th>
-                                <th><i class="fas fa-calendar-alt"></i> Fecha Nacimiento</th>
-                                <th><i class="fas fa-venus-mars"></i> Sexo</th>
-                                <th><i class="fas fa-tag"></i> Tipo Equino</th>
-                                <th><i class="fas fa-info-circle"></i> Detalles</th>
-                                <th><i class="fas fa-heartbeat"></i> Estado Monta</th>
-                                <th><i class="fas fa-weight-hanging"></i> Peso (kg)</th>
-                                <th><i class="fas fa-flag"></i> Nacionalidad</th>
-                                <th><i class="fas fa-image"></i> Fotografía</th>
+                                <th>#</th>
+                                <th>Nombre Equino</th>
+                                <th>Fecha Nacimiento</th>
+                                <th>Sexo</th>
+                                <th>Tipo Equino</th>
+                                <th>Detalles</th>
+                                <th>Estado Monta</th>
+                                <th>Peso (kg)</th>
+                                <th>Nacionalidad</th>
+                                <th>Fotografía</th>
+                                <th><i class="fas fa-ellipsis-v"></i> Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,14 +67,13 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
-        // Función para abrir el modal y cargar la imagen
         const fotoModal = document.getElementById('fotoModal');
         const modalFoto = document.getElementById('modalFoto');
 
         fotoModal.addEventListener('show.bs.modal', (event) => {
-            const button = event.relatedTarget; // Botón que activó el modal
-            const fotoSrc = button.getAttribute('data-foto'); // Obtiene la URL de la foto
-            modalFoto.src = fotoSrc; // Cambia la fuente de la imagen en el modal
+            const button = event.relatedTarget;
+            const fotoSrc = button.getAttribute('data-foto');
+            modalFoto.src = fotoSrc;
         });
 
 
@@ -89,7 +89,7 @@
                 if (data.length > 0) {
                     let numeroFila = 1;
                     let tabla = $('#tabla-equinos tbody');
-                    tabla.empty(); // Limpiar tabla antes de agregar nuevos datos
+                    tabla.empty();
 
                     data.forEach(element => {
                         const fotografia = element.fotografia ? `<img src="${element.fotografia}" alt="Foto del equino" width="50" />` : 'No disponible';
@@ -105,24 +105,21 @@
                 <td>${element.pesokg}</td>
                 <td>${element.nacionalidad}</td>
                 <td>
-                <a href='#' data-idusuario='${element.idusuario}' class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
-                    <div class="dropdown d-inline">
-                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton${numeroFila}" data-bs-toggle="dropdown" aria-expanded="false">
-                            &#x22EE;
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${numeroFila}">
-                            <li><a href='#' data-idusuario='${element.idusuario}' class='dropdown-item edit'>Editar</a></li>
-                            <li><a href='#' data-idusuario='${element.idusuario}' class='dropdown-item delete'>Eliminar</a></li>
-                            <li><a href='#' data-idusuario='${element.idusuario}' class='dropdown-item info'>Info</a></li>
-                        </ul>
-                    </div>
+                <a href='#' data-idusuario='${element.idusuario}' title="Fotografía" class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
+                </td>
+               <td>
+                    <button class="btn btn-sm btn-primary edit" data-idusuario="${element.idusuario}" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger delete" data-idusuario="${element.idusuario}" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </td>
               </tr>`;
                         numeroFila++;
                         tabla.append(nuevaFila);
                     });
 
-                    // Inicializa DataTables después de que la tabla esté llena
                     $('#tabla-equinos').DataTable();
                 }
             } catch (error) {

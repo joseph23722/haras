@@ -56,18 +56,10 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="nacionalidad" id="nacionalidad" class="form-select" required>
-                                <option value="">Seleccione Nacionalidad</option>
-                                <option value="Peruana">Peruana</option>
-                                <option value="Argentina">Argentina</option>
-                                <option value="Estadounidense">Estadounidense</option>
-                                <option value="Mexicana">Mexicana</option>
-                                <option value="Chilena">Chilena</option>
-                                <option value="Colombiana">Colombiana</option>
-                                <option value="Brasileña">Brasileña</option>
-                                <option value="Venezolana">Venezolana</option>
-                            </select>
-                            <label for="nacionalidad"><i class="fas fa-flag" style="color: #6a5acd;"></i> Nacionalidad</label>
+                            <input type="hidden" id="idNacionalidad" name="idNacionalidad" value="">
+                            <input type="text" placeholder="" id="nacionalidad" name="nacionalidad" class="form-control" required placeholder="" list="sugerenciasNacionalidad">
+                            <datalist id="sugerenciasNacionalidad"></datalist>
+                            <label for="nacionalidad"><i class="fas fa-flag" style="color: #1e90ff;"></i> Busque Nacionalidad</label>
                         </div>
                     </div>
 
@@ -80,7 +72,7 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" name="pesokg" id="pesokg" placeholder="" class="form-control" min="0" step="0.1" required>
+                            <input type="number" name="pesokg" id="pesokg" placeholder="" class="form-control" min="10" max="1000" step="0.1" required>
                             <label for="pesokg"><i class="fas fa-weight" style="color: #2d6a4f;"></i> Peso (kg)</label>
                         </div>
                     </div>
@@ -116,14 +108,73 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const idPropietarioSelect = document.querySelector("#idPropietario");
-        const nacionalidadInput = document.querySelector("#nacionalidad");
         const fechaNacimientoInput = document.querySelector("#fechaNacimiento");
         const tipoEquinoSelect = document.querySelector("#TipoEquino");
         const formEquino = document.querySelector("#form-registro-equino");
         const sexoSelect = document.querySelector("#sexo");
         const pesoKgInput = document.querySelector("#pesokg");
+        const nacionalidadInput = document.querySelector("#nacionalidad");
+        const sugerenciasNacionalidad = document.querySelector("#sugerenciasNacionalidad");
+        const idNacionalidadInput = document.querySelector("#idNacionalidad");
 
-        // Función para cargar propietarios
+        // Buscar nacionalidades cuando el usuario escribe en el campo
+        nacionalidadInput.addEventListener("input", async () => {
+            const query = nacionalidadInput.value;
+
+            if (query.length > 3) {
+                try {
+                    const response = await fetch('../../controllers/registrarequino.controller.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            operation: 'buscarNacionalidad',
+                            nacionalidad: query
+                        })
+                    });
+
+                    if (!response.ok) throw new Error('Error en la solicitud: ' + response.status);
+
+                    const data = await response.json();
+                    sugerenciasNacionalidad.innerHTML = ''; // Limpiar opciones anteriores
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        sugerenciasNacionalidad.style.display = 'block';
+                        data.forEach(({
+                            idNacionalidad,
+                            nacionalidad
+                        }) => {
+                            const option = document.createElement('option');
+                            option.value = nacionalidad;
+                            option.dataset.id = idNacionalidad;
+                            sugerenciasNacionalidad.appendChild(option);
+                        });
+                    } else {
+                        sugerenciasNacionalidad.style.display = 'none';
+                        console.log('No se encontraron nacionalidades.');
+                    }
+                } catch (error) {
+                    console.error('Error al buscar la nacionalidad:', error);
+                }
+            } else {
+                sugerenciasNacionalidad.innerHTML = '';
+                sugerenciasNacionalidad.style.display = 'none';
+            }
+        });
+
+        // Captura el idNacionalidad al seleccionar una nacionalidad de las sugerencias (lista)
+        nacionalidadInput.addEventListener("change", () => {
+            const selectedOption = Array.from(sugerenciasNacionalidad.options)
+                .find(option => option.value === nacionalidadInput.value);
+
+            if (selectedOption) {
+                idNacionalidadInput.value = selectedOption.dataset.id;
+            } else {
+                idNacionalidadInput.value = "";
+            }
+        });
+
         async function loadPropietarios() {
             try {
                 const response = await fetch('../../controllers/registrarequino.controller.php', {
@@ -247,7 +298,7 @@
 
                 nacionalidadInput.value = '';
                 fechaNacimientoInput.value = '';
-                nacionalidadInput.disabled = true;
+                pesoKgInput.disabled = true;
                 fechaNacimientoInput.disabled = true;
 
                 tipoEquinoSelect.innerHTML = '';
@@ -259,7 +310,7 @@
                 sexoSelect.addEventListener("change", applyTipoEquinoLogic);
                 applyTipoEquinoLogic();
 
-                nacionalidadInput.disabled = false;
+                pesoKgInput.disabled = false;
                 fechaNacimientoInput.disabled = false;
             }
         });
@@ -278,9 +329,9 @@
             const nombreEquino = document.querySelector("#nombreEquino").value;
             const sexo = sexoSelect.value;
             const idTipoEquino = tipoEquinoSelect.value;
+            const idNacionalidad = nacionalidadInput.value;
 
-            // Validación de campos obligatorios
-            if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!nacionalidadInput.value || !fechaNacimientoInput.value))) {
+            if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!idNacionalidad || !fechaNacimientoInput.value))) {
                 showToast('Los campos nombre, sexo, tipo de equino, y nacionalidad y fecha de nacimiento (si no hay propietario) son obligatorios.', 'ERROR');
                 console.log('Registro fallido: faltan campos obligatorios.');
                 return;
@@ -291,7 +342,8 @@
 
             const formData = new FormData(formEquino);
             const data = {
-                operation: 'registrarEquino'
+                operation: 'registrarEquino',
+                idNacionalidad: idNacionalidad
             };
 
             formData.forEach((value, key) => {
@@ -310,7 +362,6 @@
 
                 const result = await response.json();
 
-                // Verifica el estado de la respuesta
                 if (result.status === "success") {
                     showToast('Equino registrado exitosamente.', 'SUCCESS');
                     formEquino.reset();
@@ -323,8 +374,6 @@
                 showToast('Error en el registro del equino. Inténtalo de nuevo más tarde.', 'ERROR');
             }
         });
-
-        // Cargar propietarios y tipos de equinos al iniciar
         loadPropietarios();
         loadTipoEquinos();
     });

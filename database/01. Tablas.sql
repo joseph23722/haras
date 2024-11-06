@@ -81,13 +81,19 @@ CREATE TABLE TipoEquinos (
 CREATE TABLE EstadoMonta (
     idEstadoMonta		INT PRIMARY KEY AUTO_INCREMENT,
     genero 				ENUM('Macho', 'Hembra') NOT NULL,
-    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo', 'Con Cria') NOT NULL
+    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
 ) ENGINE = INNODB;
 
 -- 8. Propietarios
 CREATE TABLE Propietarios (  
     idPropietario 		INT PRIMARY KEY AUTO_INCREMENT,  
     nombreHaras 		VARCHAR(100) NOT NULL
+) ENGINE = INNODB;
+
+CREATE TABLE Nacionalidades
+(
+	idNacionalidad		INT PRIMARY KEY AUTO_INCREMENT,
+    nacionalidad		VARCHAR(30) NOT NULL
 ) ENGINE = INNODB;
 
 -- 9. Equinos
@@ -99,16 +105,15 @@ CREATE TABLE Equinos (
     idTipoEquino 		INT 						NOT NULL,
     detalles			TEXT						NULL,
     idEstadoMonta 		INT							NULL,
-	nacionalidad 		VARCHAR(50)					NULL,
+    idNacionalidad      INT                         NULL,
     idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
-    pesokg				INT 						NOT NULL,
+    pesokg				DECIMAL (5,1)				NULL,
     fotografia			LONGBLOB 					NULL,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
-    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta)
+    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta),
+	CONSTRAINT fk_equino_nacionalidad FOREIGN KEY (idNacionalidad) REFERENCES nacionalidades(idNacionalidad)
 ) ENGINE = INNODB;
-
-select * from equinos;
 
 -- 10. Implementos
 CREATE TABLE Implementos (
@@ -272,8 +277,8 @@ CREATE TABLE HistorialMovimientosMedicamentos (
 -- 23. Servicios 
 CREATE TABLE Servicios (
     idServicio 				INT PRIMARY KEY AUTO_INCREMENT,
-    idEquinoMacho 			INT NOT NULL,
-    idEquinoHembra 			INT NOT NULL,
+    idEquinoMacho 			INT NULL,
+    idEquinoHembra 			INT NULL,
     fechaServicio 			DATE NOT NULL,
     tipoServicio 			ENUM('Propio', 'Mixto') NOT NULL,
     detalles 				TEXT NOT NULL,
@@ -358,6 +363,27 @@ CREATE TABLE RotacionCampos (
     CONSTRAINT fk_rotacioncampo_campo FOREIGN KEY (idCampo) REFERENCES Campos(idCampo),
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
 ) ENGINE = INNODB;
+
+/* CREATE TABLE Carreras (
+    idCarrera 				INT PRIMARY KEY AUTO_INCREMENT,
+    nombreCarrera 			VARCHAR(100) NOT NULL,
+    fechaCarrera 			DATE NOT NULL,
+    distancia 				INT NOT NULL,
+    lugar 					VARCHAR(100) NOT NULL,
+    tipoCarrera 			ENUM('Local', 'Nacional', 'Internacional') NULL,
+    premio 					DECIMAL(10,2) NULL,
+    tipoSuperficie 			ENUM('Tierra', 'Pasto', 'Sintética', 'Arena') NULL
+) ENGINE = INNODB; 
+
+CREATE TABLE ResultadosCarreras (
+    idResultado 			INT PRIMARY KEY AUTO_INCREMENT,
+    idEquino 				INT NOT NULL,
+    idCarrera 				INT NOT NULL,
+    posicion 				INT NOT NULL,
+    valorPremio 			DECIMAL(10,2) NULL,
+    CONSTRAINT fk_resultados_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_resultados_carrera FOREIGN KEY (idCarrera) REFERENCES Carreras(idCarrera)
+) ENGINE = INNODB; */
 
 -- 30. CampanaPotrillos
 CREATE TABLE CampaniaPotrillos (  -- Reemplazo de 'Campaña' por 'Campana'
