@@ -14,7 +14,7 @@ class Registrarequino extends Conexion
     public function registrarEquino($data)
     {
         try {
-            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?,?)"; 
+            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?,?)";
             $stmt = $this->pdo->prepare($sql);
 
             $nombreEquino = ($data['nombreEquino']);
@@ -22,17 +22,15 @@ class Registrarequino extends Conexion
             $fechaNacimiento = !empty($data['fechaNacimiento']) ? $data['fechaNacimiento'] : null;
             $sexo = ($data['sexo']);
             $idTipoEquino = ($data['idTipoEquino']);
-            $nacionalidad = !empty($data['nacionalidad']) ? $data['nacionalidad'] : null;
+            $idNacionalidad = !empty($data['idNacionalidad']) ? $data['idNacionalidad'] : null;
             $detalles = !empty($data['detalles']) ? $data['detalles'] : null;
             $pesokg = !empty($data['pesokg']) ? $data['pesokg'] : null;
 
-            // Si hay un propietario externo, establece fecha de nacimiento y nacionalidad como null
             if (!empty($idPropietario)) {
                 $fechaNacimiento = null;
-                $nacionalidad = null;
+                $pesokg = null;
             }
 
-            // Asigna los valores a los parámetros
             $stmt->bindParam(1, $nombreEquino);
             $stmt->bindParam(2, $fechaNacimiento);
             $stmt->bindParam(3, $sexo);
@@ -40,7 +38,7 @@ class Registrarequino extends Conexion
             $stmt->bindParam(5, $idTipoEquino);
             $stmt->bindParam(6, $idPropietario);
             $stmt->bindParam(7, $pesokg);
-            $stmt->bindParam(8, $nacionalidad);
+            $stmt->bindParam(8, $idNacionalidad);
 
             $stmt->execute();
 
@@ -68,17 +66,28 @@ class Registrarequino extends Conexion
     public function buscarEquinoPorNombre($nombreEquino): array
     {
         try {
-            $sql = "CALL spu_buscar_equino_por_nombre(:nombreEquino)"; // Usamos un parámetro nombrado
+            $sql = "CALL spu_buscar_equino_por_nombre(:nombreEquino)";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam(':nombreEquino', $nombreEquino, PDO::PARAM_STR); // Vincula el parámetro
+            $stmt->bindParam(':nombreEquino', $nombreEquino, PDO::PARAM_STR);
 
-            $stmt->execute(); // Ejecuta la consulta
+            $stmt->execute();
 
-            // Devuelve todos los resultados en un array asociativo
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            // Manejo de errores
             return ["status" => "error", "message" => "Error al buscar el equino: " . $e->getMessage()];
+        }
+    }
+
+    public function buscarNacionalidad($nacionalidad)
+    {
+        try {
+            $sql = "CALL spu_buscar_nacionalidad(:nacionalidad)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':nacionalidad', $nacionalidad, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ["status" => "error", "message" => "Error al buscar la nacionalidad: " . $e->getMessage()];
         }
     }
 }

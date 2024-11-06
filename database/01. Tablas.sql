@@ -90,6 +90,12 @@ CREATE TABLE Propietarios (
     nombreHaras 		VARCHAR(100) NOT NULL
 ) ENGINE = INNODB;
 
+CREATE TABLE Nacionalidades
+(
+	idNacionalidad		INT PRIMARY KEY AUTO_INCREMENT,
+    nacionalidad		VARCHAR(30) NOT NULL
+) ENGINE = INNODB;
+
 -- 9. Equinos
 CREATE TABLE Equinos (
     idEquino 			INT PRIMARY KEY AUTO_INCREMENT,
@@ -99,13 +105,14 @@ CREATE TABLE Equinos (
     idTipoEquino 		INT 						NOT NULL,
     detalles			TEXT						NULL,
     idEstadoMonta 		INT							NULL,
-	nacionalidad 		VARCHAR(50)					NULL,
+    idNacionalidad      INT                         NULL,
     idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
-    pesokg				INT 						NOT NULL,
+    pesokg				DECIMAL (5,1)				NULL,
     fotografia			LONGBLOB 					NULL,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
-    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta)
+    CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta),
+	CONSTRAINT fk_equino_nacionalidad FOREIGN KEY (idNacionalidad) REFERENCES nacionalidades(idNacionalidad)
 ) ENGINE = INNODB;
 
 -- 10. Implementos

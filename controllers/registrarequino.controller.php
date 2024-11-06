@@ -65,6 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode(["status" => "error", "message" => "Nombre del equino no especificado."]);
             }
             break;
+
+        case 'buscarNacionalidad':
+            if (isset($requestBody['nacionalidad'])) {
+                echo json_encode($controller->buscarNacionalidad($requestBody['nacionalidad']));
+            } else {
+                echo json_encode(["status" => "error", "message" => "Nacionalidad no especificada."]);
+            }
+            break;
     }
 } else {
     echo json_encode(["status" => "error", "message" => "Método no permitido."]);
