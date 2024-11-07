@@ -277,22 +277,23 @@ CREATE TABLE HistorialMovimientosMedicamentos (
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
--- 23. Servicios 
 CREATE TABLE Servicios (
-    idServicio 				INT PRIMARY KEY AUTO_INCREMENT,
-    idEquinoMacho 			INT NULL,
-    idEquinoHembra 			INT NULL,
-    fechaServicio 			DATE NOT NULL,
-    tipoServicio 			ENUM('Propio', 'Mixto') NOT NULL,
-    detalles 				TEXT NOT NULL,
-    idMedicamento 			INT NULL,
-    horaEntrada 			TIME NULL,
-    horaSalida 				TIME NULL,
-    idPropietario 			INT NULL,
-    idEstadoMonta			INT NOT NULL,
-	costoServicio			DECIMAL(10,2) NULL,
+    idServicio               INT PRIMARY KEY AUTO_INCREMENT,
+    idEquinoMacho            INT NULL,
+    idEquinoHembra           INT NULL,
+    idEquinoExterno          INT NULL,  -- Aquí tenemos el campo idEquinoExterno
+    fechaServicio            DATE NOT NULL,
+    tipoServicio             ENUM('Propio', 'Mixto') NOT NULL,
+    detalles                 TEXT NOT NULL,
+    idMedicamento            INT NULL,
+    horaEntrada              TIME NULL,
+    horaSalida              TIME NULL,
+    idPropietario            INT NULL,
+    idEstadoMonta            INT NOT NULL,
+    costoServicio            DECIMAL(10,2) NULL,
     CONSTRAINT fk_servicio_equino_macho FOREIGN KEY (idEquinoMacho) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_servicio_equino_hembra FOREIGN KEY (idEquinoHembra) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_servicio_equino_externo FOREIGN KEY (idEquinoExterno) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_servicio_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_servicio_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario)
 ) ENGINE = INNODB;

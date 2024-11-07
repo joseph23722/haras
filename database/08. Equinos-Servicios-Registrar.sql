@@ -149,6 +149,9 @@ BEGIN
     DECLARE v_idEstadoServida INT;
     DECLARE v_idEstadoActivo INT;
     DECLARE v_idEstadoSS INT;
+    DECLARE v_idPropietarioEquinoExterno INT;
+    DECLARE v_idPropietarioEquinoMacho INT;
+    DECLARE v_idPropietarioEquinoHembra INT;
 
     -- Obtener los ID de estados correspondientes
     SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida' LIMIT 1;
@@ -159,6 +162,31 @@ BEGIN
     IF p_fechaServicio > CURDATE() THEN
         SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Si el servicio es mixto, verificar que el propietario del equino macho/hembra coincida con el propietario del equino externo
+    IF p_tipoServicio = 'mixto' THEN
+        -- Obtener el propietario del equino externo
+        SELECT idPropietario INTO v_idPropietarioEquinoExterno 
+        FROM Equinos WHERE idEquino = p_idEquinoExterno LIMIT 1;
+
+        -- Verificar que el propietario del equino macho coincida con el propietario del equino externo
+        SELECT idPropietario INTO v_idPropietarioEquinoMacho 
+        FROM Equinos WHERE idEquino = p_idEquinoMacho LIMIT 1;
+
+        IF v_idPropietarioEquinoExterno != v_idPropietarioEquinoMacho THEN
+            SET v_mensajeError = 'Error: El propietario del equino macho debe ser el mismo que el del equino externo.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        -- Verificar que el propietario del equino hembra coincida con el propietario del equino externo
+        SELECT idPropietario INTO v_idPropietarioEquinoHembra 
+        FROM Equinos WHERE idEquino = p_idEquinoHembra LIMIT 1;
+
+        IF v_idPropietarioEquinoExterno != v_idPropietarioEquinoHembra THEN
+            SET v_mensajeError = 'Error: El propietario del equino hembra debe ser el mismo que el del equino externo.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
     END IF;
 
     -- Registrar el servicio y actualizar estados según el tipo de servicio
@@ -178,9 +206,9 @@ BEGIN
     ELSEIF p_tipoServicio = 'mixto' THEN
         -- Servicio mixto (con propietario externo)
         INSERT INTO Servicios (
-            idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
+            idEquinoMacho, idEquinoHembra, idEquinoExterno, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
         ) VALUES (
-            NULL, p_idEquinoHembra, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, p_idPropietario, p_costoServicio
+            p_idEquinoMacho, p_idEquinoHembra, p_idEquinoExterno, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, p_idPropietario, p_costoServicio
         );
     END IF;
 

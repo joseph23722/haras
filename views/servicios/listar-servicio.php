@@ -43,6 +43,7 @@
           <th><i class="fas fa-hashtag"></i> ID Servicio</th>
           <th><i class="fas fa-horse-head"></i> Padrillo</th>
           <th><i class="fas fa-female"></i> Yegua</th>
+          <th><i class="fas fa-users"></i> Equino Externo</th>
           <th><i class="fas fa-calendar-alt"></i> Fecha del Servicio</th>
           <th><i class="fas fa-info-circle"></i> Detalles</th>
           <th><i class="fas fa-clock"></i> Hora Entrada</th>
@@ -106,6 +107,7 @@
     const costoServicioColumn = table.column(8);
     const horaEntradaColumn = table.column(5);
     const horaSalidaColumn = table.column(6);
+    const equinoExternoColumn = table.column(9);
 
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
       const mensajeDiv = document.getElementById('mensaje');
@@ -154,6 +156,9 @@
     };
 
     costoServicioColumn.visible(false);
+    horaEntradaColumn.visible(false);
+    horaSalidaColumn.visible(false);
+    equinoExternoColumn.visible(false);
 
     $('#btnFiltrar').click(function() {
       const tipoServicio = $('#filtroTipoServicio').val();
@@ -169,46 +174,55 @@
             table.clear();
             if (data.length > 0) {
               data.forEach(function(item) {
+                // Determinar el nombre de Haras solo si el tipo de servicio es "Propio"
+                const nombreHaras = tipoServicio === 'Propio' ? 'Haras Rancho Sur' : item.nombreHaras;
+
+                // Agregar las filas de la tabla
                 table.row.add([
                   item.idServicio,
                   item.nombrePadrillo,
                   item.nombreYegua,
+                  item.nombreEquinoExterno || '--',
                   item.fechaServicio,
                   item.detalles || '',
                   item.horaEntrada || '--',
                   item.horaSalida || '--',
-                  item.nombreHaras || 'Haras Rancho Sur',
+                  nombreHaras || 'Haras Rancho Sur',
                   item.costoServicio || 'Por verificar',
                 ]);
               });
               table.draw();
-              if (tipoServicio === 'Mixto') {
-                costoServicioColumn.visible(true);
-                horaEntradaColumn.visible(true);
-                horaSalidaColumn.visible(true);
+
+              if (tipoServicio === 'Mixto' || tipoServicio === 'General') {
+                table.column(3).visible(true);
+                table.column(5).visible(true);
+                table.column(6).visible(true);
+                table.column(7).visible(true);
+                table.column(8).visible(true);
+                table.column(9).visible(true);
               } else if (tipoServicio === 'Propio') {
-                costoServicioColumn.visible(false);
-                horaEntradaColumn.visible(false);
-                horaSalidaColumn.visible(false);
-              } else {
-                costoServicioColumn.visible(true);
-                horaEntradaColumn.visible(true);
-                horaSalidaColumn.visible(true);
+                table.column(3).visible(false);
+                table.column(5).visible(true);
+                table.column(6).visible(false);
+                table.column(7).visible(false);
+                table.column(8).visible(false);
+                table.column(9).visible(false);
               }
             } else {
-              mostrarMensajeDinamico('No se encontraron servicios de monta para el tipo seleccionado.', 'WARNING');
-              table.draw();
+              mostrarMensajeDinamico('No se encontraron servicios de monta', 'WARNING');
             }
           },
-          error: function(err) {
-            console.error('Error al cargar datos:', err);
-            mostrarMensajeDinamico('Error al cargar servicios de monta. Intente nuevamente.', 'ERROR');
+          error: function(xhr, status, error) {
+            console.error('Error al obtener los datos: ' + error);
+            mostrarMensajeDinamico('Error al obtener los datos', 'ERROR');
           }
         });
       } else {
-        mostrarMensajeDinamico('Por favor, seleccione un tipo de servicio.', 'INFO');
+        table.clear().draw();
+        mostrarMensajeDinamico('Seleccione un tipo de servicio para filtrar', 'INFO');
       }
     });
+
   });
 </script>
 
