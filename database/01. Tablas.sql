@@ -109,6 +109,9 @@ CREATE TABLE Equinos (
     idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
     pesokg				DECIMAL (5,1)				NULL,
     fotografia			LONGBLOB 					NULL,
+    estado				BIT							NOT NULL, -- Vivo o muerto
+    created_at 			TIMESTAMP DEFAULT NOW()		NOT NULL,  -- Fecha y hora de creación
+    updated_at 			TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	NULL,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta),

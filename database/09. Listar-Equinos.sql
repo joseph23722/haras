@@ -12,14 +12,22 @@ BEGIN
         EM.nombreEstado,
         E.pesokg,
         N.nacionalidad AS nacionalidad,
-        E.fotografia
+        E.fotografia,
+        E.estado,
+        CASE 
+            WHEN E.estado = 1 THEN 'Vivo'
+            WHEN E.estado = 0 THEN 'Muerto'
+            ELSE 'Desconocido'
+        END AS estadoDescriptivo
     FROM
         Equinos E
     LEFT JOIN TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
     LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstadoMonta
     LEFT JOIN nacionalidades N ON E.idNacionalidad = N.idNacionalidad
-    WHERE
+	WHERE
         E.idPropietario IS NULL
-    ORDER BY E.idEquino DESC;
+    ORDER BY 
+        E.estado DESC,
+        E.idEquino DESC;
 END //
 DELIMITER ;

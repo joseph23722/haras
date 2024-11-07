@@ -29,6 +29,7 @@
                                 <th>Peso (kg)</th>
                                 <th>Nacionalidad</th>
                                 <th>Fotografía</th>
+                                <th>Estado</th>
                                 <th><i class="fas fa-ellipsis-v"></i> Acciones</th>
                             </tr>
                         </thead>
@@ -64,6 +65,7 @@
     </div>
 
 </div> <!-- .container-fluid -->
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
@@ -75,8 +77,6 @@
             const fotoSrc = button.getAttribute('data-foto');
             modalFoto.src = fotoSrc;
         });
-
-
 
         async function obtenerDatos() {
             try {
@@ -94,28 +94,30 @@
                     data.forEach(element => {
                         const fotografia = element.fotografia ? `<img src="${element.fotografia}" alt="Foto del equino" width="50" />` : 'No disponible';
                         const nuevaFila = `
-              <tr>
-                <td>${numeroFila}</td>
-                <td>${element.nombreEquino}</td>
-                <td>${element.fechaNacimiento}</td>
-                <td>${element.sexo}</td>
-                <td>${element.tipoEquino}</td>
-                <td>${element.detalles || 'Sin detalles'}</td>
-                <td>${element.nombreEstado || 'Sin estado'}</td>
-                <td>${element.pesokg}</td>
-                <td>${element.nacionalidad}</td>
-                <td>
-                <a href='#' data-idusuario='${element.idusuario}' title="Fotografía" class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
-                </td>
-               <td>
-                    <button class="btn btn-sm btn-primary edit" data-idusuario="${element.idusuario}" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger delete" data-idusuario="${element.idusuario}" title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-              </tr>`;
+                    <tr>
+                        <td>${numeroFila}</td>
+                        <td>${element.nombreEquino}</td>
+                        <td>${element.fechaNacimiento}</td>
+                        <td>${element.sexo}</td>
+                        <td>${element.tipoEquino}</td>
+                        <td>${element.detalles || 'Sin detalles'}</td>
+                        <td>${element.nombreEstado || 'Sin estado'}</td>
+                        <td>${element.pesokg}</td>
+                        <td>${element.nacionalidad}</td>
+                        <td>
+                            <a href='#' data-idusuario='${element.idusuario}' title="Fotografía" class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
+                        </td>
+                        <!-- Nueva columna para estado descriptivo -->
+                        <td>${element.estadoDescriptivo}</td> <!-- Esta es la nueva columna que agregaste -->
+                        <td>
+                            <button class="btn btn-sm btn-primary edit" data-idusuario="${element.idusuario}" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete" data-idusuario="${element.idusuario}" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
                         numeroFila++;
                         tabla.append(nuevaFila);
                     });
