@@ -11,7 +11,8 @@ BEGIN
         Equinos
     WHERE 
         idPropietario IS NULL
-        AND idTipoEquino IN (1, 2);
+        AND idTipoEquino IN (1, 2)
+        AND estado = 1;
 END $$
 DELIMITER ;
 

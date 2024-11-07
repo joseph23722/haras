@@ -93,31 +93,41 @@
 
                     data.forEach(element => {
                         const fotografia = element.fotografia ? `<img src="${element.fotografia}" alt="Foto del equino" width="50" />` : 'No disponible';
+
+                        let colorTexto = '';
+                        let estado = element.estadoDescriptivo || '';
+                        if (estado === 'Vivo') {
+                            colorTexto = 'color: #28a745;';
+                        } else if (estado === 'Muerto') {
+                            colorTexto = 'color: #dc3545;';
+                        } else {
+                            colorTexto = 'color: #6c757d;';
+                        }
+
                         const nuevaFila = `
-                    <tr>
-                        <td>${numeroFila}</td>
-                        <td>${element.nombreEquino}</td>
-                        <td>${element.fechaNacimiento}</td>
-                        <td>${element.sexo}</td>
-                        <td>${element.tipoEquino}</td>
-                        <td>${element.detalles || 'Sin detalles'}</td>
-                        <td>${element.nombreEstado || 'Sin estado'}</td>
-                        <td>${element.pesokg}</td>
-                        <td>${element.nacionalidad}</td>
-                        <td>
-                            <a href='#' data-idusuario='${element.idusuario}' title="Fotografía" class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
-                        </td>
-                        <!-- Nueva columna para estado descriptivo -->
-                        <td>${element.estadoDescriptivo}</td> <!-- Esta es la nueva columna que agregaste -->
-                        <td>
-                            <button class="btn btn-sm btn-primary edit" data-idusuario="${element.idusuario}" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger delete" data-idusuario="${element.idusuario}" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
+                            <tr>
+                                <td>${numeroFila}</td>
+                                <td>${element.nombreEquino}</td>
+                                <td>${element.fechaNacimiento}</td>
+                                <td>${element.sexo}</td>
+                                <td>${element.tipoEquino}</td>
+                                <td>${element.detalles || 'Sin detalles'}</td>
+                                <td>${element.nombreEstado || 'Sin estado'}</td>
+                                <td>${element.pesokg}</td>
+                                <td>${element.nacionalidad}</td>
+                                <td>
+                                    <a href='#' data-idusuario='${element.idusuario}' title="Fotografía" class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
+                                </td>
+                                <td style="${colorTexto}">${estado}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary edit" data-idusuario="${element.idusuario}" title="Editar">
+                                        <i class="fas fa-edit" style="font-size: 16px;"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success edit" data-idusuario="${element.idusuario}" title="Historial">
+                                        <i class="fas fa-file-alt" style="font-size: 16px;"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
                         numeroFila++;
                         tabla.append(nuevaFila);
                     });
@@ -128,7 +138,6 @@
                 console.error("Error al obtener los datos:", error);
             }
         }
-
         obtenerDatos();
     });
 </script>
