@@ -111,7 +111,7 @@ CREATE TABLE Equinos (
     fotografia			LONGBLOB 					NULL,
     estado				BIT							NOT NULL, -- Vivo o muerto
     created_at 			TIMESTAMP DEFAULT NOW()		NOT NULL,  -- Fecha y hora de creación
-    updated_at 			TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	NULL,
+	updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_equino_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino),
     CONSTRAINT fk_equino_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario),
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta),

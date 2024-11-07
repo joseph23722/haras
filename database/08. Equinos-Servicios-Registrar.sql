@@ -85,6 +85,7 @@ BEGIN
         ELSE NULL
     END;
 
+    -- INSERT con estado "Vivo"
     INSERT INTO Equinos (
         nombreEquino, 
         fechaNacimiento, 
@@ -94,7 +95,8 @@ BEGIN
         idPropietario,
         pesokg,
         idNacionalidad,
-        idEstadoMonta
+        idEstadoMonta,
+        estado
     ) 
     VALUES (
         _nombreEquino, 
@@ -105,8 +107,10 @@ BEGIN
         _idPropietario,
         _pesokg,
         _idNacionalidad,
-        _idEstadoMonta
+        _idEstadoMonta,
+        1  -- Estado "Vivo" (1)
     );
+
     -- Obtener el ID del equino recién insertado
     SET _idEquino = LAST_INSERT_ID();
     -- Retornar el ID del equino registrado
