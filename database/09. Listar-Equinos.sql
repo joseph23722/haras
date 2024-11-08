@@ -12,7 +12,6 @@ BEGIN
         EM.nombreEstado,
         E.pesokg,
         N.nacionalidad AS nacionalidad,
-        E.fotografia,
         E.estado,
         CASE 
             WHEN E.estado = 1 THEN 'Vivo'

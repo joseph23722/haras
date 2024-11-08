@@ -26,3 +26,31 @@ BEGIN
         AND e.idPropietario IS NULL; 
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_registrar_historial_equinos`;
+DELIMITER $$
+CREATE PROCEDURE spu_registrar_historial_equinos(
+    IN p_idEquino INT,
+    IN p_descripcion TEXT
+)
+BEGIN
+    INSERT INTO HistorialEquinos (idEquino, descripcion)
+    VALUES (p_idEquino, p_descripcion);
+END $$
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_obtener_historial_equino`;
+DELIMITER //
+CREATE PROCEDURE `spu_obtener_historial_equino`(IN p_idEquino INT)
+BEGIN
+    SELECT
+        HE.descripcion,
+        E.fotografia
+    FROM
+        HistorialEquinos HE
+    JOIN
+        Equinos E ON HE.idEquino = E.idEquino
+    WHERE
+        HE.idEquino = p_idEquino;
+END //
+DELIMITER ;

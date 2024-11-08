@@ -14,6 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode($controller->listadoEquinos());
                 break;
 
+            case 'getHistorial':
+                if (isset($_GET['idEquino'])) {
+                    echo json_encode($controller->obtenerHistorialEquino($_GET['idEquino']));
+                } else {
+                    echo json_encode(["status" => "error", "message" => "ID del equino no especificado."]);
+                }
+                break;
+
             default:
                 echo json_encode(["status" => "error", "message" => "Operación no válida."]);
                 break;
@@ -71,6 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode($controller->buscarNacionalidad($requestBody['nacionalidad']));
             } else {
                 echo json_encode(["status" => "error", "message" => "Nacionalidad no especificada."]);
+            }
+            break;
+
+        case 'registrarHistorialEquino':
+            if (isset($requestBody['idEquino']) && isset($requestBody['descripcion'])) {
+                echo json_encode($controller->registrarHistorialEquino($requestBody));
+            } else {
+                echo json_encode(["status" => "error", "message" => "Faltan parámetros para registrar la campaña."]);
             }
             break;
     }

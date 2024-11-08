@@ -28,7 +28,6 @@
                                 <th>Estado Monta</th>
                                 <th>Peso (kg)</th>
                                 <th>Nacionalidad</th>
-                                <th>Fotografía</th>
                                 <th>Estado</th>
                                 <th><i class="fas fa-ellipsis-v"></i> Acciones</th>
                             </tr>
@@ -42,104 +41,21 @@
         </div> <!-- .col-md-12 -->
     </div> <!-- .row -->
 
-    <!-- Modal para ver la fotografía del equino -->
-    <div class="modal fade" id="fotoModal" tabindex="-1" aria-labelledby="fotoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-light shadow-sm">
-                <div class="modal-header" style="background: linear-gradient(to right, #005b99, #0077b6); color: white;">
-                    <h5 class="modal-title" id="fotoModalLabel">
-                        <i class="fas fa-image"></i> Foto del Equino
-                    </h5>
+    <!-- Modal Historial -->
+    <div class="modal fade" id="historialModal" tabindex="-1" aria-labelledby="historialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historialModalLabel">Historial del Equino</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center" style="background-color: #f9f9f9;">
-                    <img id="modalFoto" src="" alt="Foto del Equino" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: auto;" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
+                <div class="modal-body" id="historialModalBody">
+                    <!-- Historial se cargará aquí -->
                 </div>
             </div>
         </div>
     </div>
 
 </div> <!-- .container-fluid -->
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-        const fotoModal = document.getElementById('fotoModal');
-        const modalFoto = document.getElementById('modalFoto');
-
-        fotoModal.addEventListener('show.bs.modal', (event) => {
-            const button = event.relatedTarget;
-            const fotoSrc = button.getAttribute('data-foto');
-            modalFoto.src = fotoSrc;
-        });
-
-        async function obtenerDatos() {
-            try {
-                const response = await fetch(`../../controllers/registrarequino.controller.php?operation=getAll`, {
-                    method: 'GET'
-                });
-                const data = await response.json();
-                console.log(data);
-
-                if (data.length > 0) {
-                    let numeroFila = 1;
-                    let tabla = $('#tabla-equinos tbody');
-                    tabla.empty();
-
-                    data.forEach(element => {
-                        const fotografia = element.fotografia ? `<img src="${element.fotografia}" alt="Foto del equino" width="50" />` : 'No disponible';
-
-                        let colorTexto = '';
-                        let estado = element.estadoDescriptivo || '';
-                        if (estado === 'Vivo') {
-                            colorTexto = 'color: #28a745;';
-                        } else if (estado === 'Muerto') {
-                            colorTexto = 'color: #dc3545;';
-                        } else {
-                            colorTexto = 'color: #6c757d;';
-                        }
-
-                        const nuevaFila = `
-                            <tr>
-                                <td>${numeroFila}</td>
-                                <td>${element.nombreEquino}</td>
-                                <td>${element.fechaNacimiento}</td>
-                                <td>${element.sexo}</td>
-                                <td>${element.tipoEquino}</td>
-                                <td>${element.detalles || 'Sin detalles'}</td>
-                                <td>${element.nombreEstado || 'Sin estado'}</td>
-                                <td>${element.pesokg}</td>
-                                <td>${element.nacionalidad}</td>
-                                <td>
-                                    <a href='#' data-idusuario='${element.idusuario}' title="Fotografía" class='btn btn-sm btn-success photo' data-bs-toggle="modal" data-bs-target="#fotoModal" data-foto="${element.fotografia}">Foto</a>
-                                </td>
-                                <td style="${colorTexto}">${estado}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary edit" data-idusuario="${element.idusuario}" title="Editar">
-                                        <i class="fas fa-edit" style="font-size: 16px;"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-success edit" data-idusuario="${element.idusuario}" title="Historial">
-                                        <i class="fas fa-file-alt" style="font-size: 16px;"></i>
-                                    </button>
-                                </td>
-                            </tr>`;
-                        numeroFila++;
-                        tabla.append(nuevaFila);
-                    });
-
-                    $('#tabla-equinos').DataTable();
-                }
-            } catch (error) {
-                console.error("Error al obtener los datos:", error);
-            }
-        }
-        obtenerDatos();
-    });
-</script>
-
 <?php require_once '../footer.php'; ?>
+<script src="../../JS/obtenerHistorialEquino.js"></script>

@@ -21,6 +21,8 @@
                             <div class="form-floating flex-grow-1">
                                 <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus>
                                 <label for="buscarEquino"><i class="fas fa-search" style="color: #3498db;"></i> Buscar Equino</label>
+                                <!-- Campo oculto para el idEquino -->
+                                <input type="hidden" id="idEquino" name="idEquino">
                             </div>
                             <button type="button" id="buscar-equino" class="btn btn-outline-success" title="Buscar">
                                 <i class="fas fa-search"></i>
@@ -85,39 +87,13 @@
                     </div>
                 </div>
 
-                <!-- Cuarta fila: Datos de Competencias y Valoración -->
+                <!-- Cuarta fila: Información adicional -->
                 <div class="row g-4 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="form-floating">
-                            <input type="number" class="form-control" id="carrerasCorridas" placeholder="0">
-                            <label for="carrerasCorridas"><i class="fas fa-trophy" style="color: #3498db;"></i> Carreras Corridas</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="text" class="form-control" id="nombreCarrerasCorridas" placeholder="Nombre de Carrera">
-                            <label for="nombreCarrerasCorridas"><i class="fas fa-award" style="color: #3498db;"></i> Nombre Carreras Corridas</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="number" class="form-control" id="valorCarrera" placeholder="0">
-                            <label for="valorCarrera"><i class="fas fa-money-bill-wave" style="color: #3498db;"></i> Valor de la Carrera</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="number" class="form-control" id="valorMercado" placeholder="0">
-                            <label for="valorMercado"><i class="fas fa-dollar-sign" style="color: #3498db;"></i> Valor en el mercado $</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="text" class="form-control" id="ranking" placeholder="Ranking">
-                            <label for="ranking"><i class="fas fa-medal" style="color: #3498db;"></i> Ranking Mundial</label>
+                            <!-- Aquí añadimos el editor Quill -->
+                            <div id="descripcion" style="height: 200px;"></div>
+                            <input type="hidden" name="descripcion" id="descripcion">
                         </div>
                     </div>
                 </div>
@@ -140,63 +116,9 @@
 
 <?php require_once '../footer.php'; ?>
 
-
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
-<script>
-    document.querySelector("#buscar-equino").addEventListener("click", async function() {
-        const nombreEquino = document.getElementById("buscarEquino").value;
-
-        // Realiza la búsqueda del equino
-        const response = await fetch('../../controllers/registrarequino.controller.php', {
-            method: 'POST',
-            body: JSON.stringify({
-                operation: 'buscarEquinoPorNombre',
-                nombreEquino: nombreEquino
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const data = await response.json();
-
-        if (data.length === 0) {
-            showToast("No se encontró ningún equino con ese nombre.", 'WARNING');
-
-            // Limpiar los campos del formulario
-            document.getElementById("fechaNacimiento").value = '';
-            document.getElementById("nacionalidad").value = '';
-            document.getElementById("idPropietario").value = '';
-            document.getElementById("sexo").value = '';
-            document.getElementById("tipoEquino").value = '';
-            document.getElementById("idEstadoMonta").value = '';
-            document.getElementById("pesokg").value = '';
-            document.getElementById("fotografia").value = '';
-
-        } else {
-            // Rellena los campos con la información del equino
-            const equino = data[0];
-            document.getElementById("fechaNacimiento").value = equino.fechaNacimiento || '';
-            document.getElementById("nacionalidad").value = equino.nacionalidad || '';
-            document.getElementById("idPropietario").value = equino.idPropietario || 'Haras Rancho Sur';
-            document.getElementById("sexo").value = equino.sexo || '';
-            document.getElementById("tipoEquino").value = equino.tipoEquino || '';
-            document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
-            document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
-            document.getElementById("fotografia").value = equino.fotografia || '';
-        }
-    });
-
-    document.querySelector("#form-historial-equino").addEventListener("submit", async function(event) {
-        event.preventDefault();
-
-        const confirmar = await ask("¿Está seguro de que desea registrar el historial?");
-        if (confirmar) {
-            showToast("Funcionalidad de registrar historial aún no implementada.", 'INFO');
-        }
-    });
-</script>
+<!-- Incluir las dependencias de Quill -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="../../JS/historialequino.js"></script>
