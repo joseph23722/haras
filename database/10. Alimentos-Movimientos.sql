@@ -1,7 +1,6 @@
 -- Procedimiento para registrar los alimentos  
 DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -66,13 +65,11 @@ BEGIN
     END IF;
 
 END $$
-
 DELIMITER ;
 
-
 -- -------
+DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_obtenerAlimentosConLote()
 BEGIN
     -- Actualizar el estado de los registros en la tabla Alimentos
@@ -100,7 +97,6 @@ BEGIN
         A.unidadMedida,
         A.costo,
         A.idLote,
-        A.idTipoEquino,
         A.merma,
         A.compra,
         A.fechaMovimiento,
@@ -114,24 +110,24 @@ BEGIN
     INNER JOIN 
         LotesAlimento L ON A.idLote = L.idLote;
 END $$
-
 DELIMITER ;
 
 
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
-    IN _idUsuario INT,
-    IN _nombreAlimento VARCHAR(100),
-    IN _unidadMedida VARCHAR(10),
-    IN _lote VARCHAR(50),
-    IN _cantidad DECIMAL(10,2)
+    IN _idUsuario INT,                          -- ID del usuario que realiza la acción
+    IN _nombreAlimento VARCHAR(100),            -- Nombre del alimento
+    IN _unidadMedida VARCHAR(10),               -- Unidad de medida del alimento
+    IN _lote VARCHAR(50),                       -- Lote asociado al alimento
+    IN _cantidad DECIMAL(10,2)                  -- Cantidad a ingresar
 )
 BEGIN
-    DECLARE _idAlimento INT;
-    DECLARE _idLote INT;
-    DECLARE _currentStock DECIMAL(10,2);
-    DECLARE _debugInfo VARCHAR(255) DEFAULT '';
+    DECLARE _idAlimento INT;                    -- ID del alimento
+    DECLARE _idLote INT;                        -- ID del lote
+    DECLARE _currentStock DECIMAL(10,2);        -- Stock actual del alimento
+    DECLARE _debugInfo VARCHAR(255) DEFAULT ''; -- Mensaje de depuración para manejo de errores
 
     -- Validar que la cantidad a ingresar sea mayor que cero
     IF _cantidad <= 0 THEN
@@ -174,8 +170,8 @@ BEGIN
     WHERE idAlimento = _idAlimento;
 
     -- Registrar la entrada en el historial de movimientos
-    INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
-    VALUES (_idAlimento, 'Entrada', _cantidad, _idUsuario, NOW(), _unidadMedida);
+    INSERT INTO HistorialMovimientos (idAlimento, idTipomovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
+    VALUES (_idAlimento, 1, _cantidad, _idUsuario, NOW(), _unidadMedida);
 
     -- Confirmar la transacción
     COMMIT;
@@ -187,20 +183,17 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
 -- Procedimiento Salida de Alimentos 
+DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_salida(
     IN _idUsuario INT,                    -- Usuario que realiza la operación
     IN _nombreAlimento VARCHAR(100),       -- Nombre del alimento
     IN _unidadMedida VARCHAR(10),          -- Unidad de medida del alimento (Kilos, Litros, etc.)
     IN _cantidad DECIMAL(10,2),            -- Cantidad de alimento a retirar
-    IN _idTipoEquino INT,                  -- Tipo de equino relacionado con la salida
     IN _lote VARCHAR(50),                  -- Número de lote del alimento (puede ser NULL)
-    IN _merma DECIMAL(10,2)                -- Cantidad de merma
+    IN _merma DECIMAL(10,2),               -- Cantidad de merma
+    IN _idCantidadEquinos INT              -- ID del tipo de equino que elegiste
 )
 BEGIN
     DECLARE _idAlimento INT;
@@ -208,6 +201,7 @@ BEGIN
     DECLARE _currentStock DECIMAL(10,2);
     DECLARE _cantidadNecesaria DECIMAL(10,2);
     DECLARE _unidadMedidaLote VARCHAR(10);
+    DECLARE _cantidadEquinosTipos INT;   -- Variable para almacenar la cantidad de equinos
     DECLARE _debugInfo VARCHAR(255) DEFAULT '';  -- Variable para mensajes de depuración
 
     -- Iniciar transacción
@@ -226,6 +220,17 @@ BEGIN
 
     -- Calcular la cantidad total necesaria (cantidad + merma)
     SET _cantidadNecesaria = _cantidad + _merma;
+
+    -- Calcular la cantidad de equinos por tipo
+    SELECT COUNT(*) INTO _cantidadEquinosTipos
+    FROM Equinos
+    WHERE idTipoEquino = _idCantidadEquinos;  -- Filtra según el ID del tipo de equino
+
+    -- Verificar si la cantidad de equinos fue obtenida correctamente
+    IF _cantidadEquinosTipos IS NULL THEN
+        SET _debugInfo = 'No se pudo obtener la cantidad de equinos para el tipo seleccionado.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
+    END IF;
 
     -- Verificar si el lote fue proporcionado
     IF _lote IS NOT NULL AND _lote != '' THEN
@@ -272,13 +277,12 @@ BEGIN
         -- Realizar la salida del stock en el lote seleccionado
         UPDATE Alimentos
         SET stockActual = stockActual - _cantidadNecesaria,
-            idTipoEquino = _idTipoEquino,
             fechaMovimiento = NOW()
         WHERE idAlimento = _idAlimento;
 
         -- Registrar la salida y la merma en el historial de movimientos
-        INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, idTipoEquino, unidadMedida)
-        VALUES (_idAlimento, 'Salida', _cantidad, _merma, _idUsuario, NOW(), _idTipoEquino, _unidadMedida);
+        INSERT INTO HistorialMovimientos (idAlimento, idTipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, unidadMedida, cantidadEquinosTipos)
+        VALUES (_idAlimento, 2, _cantidad, _merma, _idUsuario, NOW(), _unidadMedida, _cantidadEquinosTipos);
 
         -- Confirmar la transacción
         COMMIT;
@@ -288,13 +292,10 @@ BEGIN
         SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
     END IF;
 END $$
-
 DELIMITER ;
 
-
-
-
 -- -----------
+DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
 BEGIN
@@ -320,12 +321,9 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
+DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
     -- Notificación de alimentos agotados
@@ -354,7 +352,6 @@ BEGIN
         a.stockActual ASC
     LIMIT 5;
 END $$
-
 DELIMITER ;
 
 
@@ -362,9 +359,10 @@ DELIMITER ;
 
 
 -- Procedimiento para historial Alimentos -----------------------------------------
+DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
 CREATE PROCEDURE spu_historial_completo(
-    IN tipoMovimiento VARCHAR(50),
+    IN idTipoMovimiento INT,
     IN fechaInicio DATE,
     IN fechaFin DATE,
     IN idUsuario INT,
@@ -450,6 +448,7 @@ DELIMITER ;
 
 
 -- tipo de equino - alimento ------ 
+DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
@@ -458,7 +457,3 @@ BEGIN
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
 END $$
 DELIMITER ;
-
--- -------------------------------------------------------------------------------
-
-

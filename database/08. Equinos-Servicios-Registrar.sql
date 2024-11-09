@@ -230,22 +230,31 @@ BEGIN
 END $$
 DELIMITER ;
 
--- --------- listar equinos en estado monta 
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
-CREATE PROCEDURE spu_contar_equinos_por_categoria()
+CREATE PROCEDURE spu_contar_equinos_por_categoria(IN _idTipoEquino INT)
 BEGIN
+    -- Crear tabla temporal para almacenar los resultados
+    CREATE TEMPORARY TABLE IF NOT EXISTS TempEquinosPorCategoria (
+        categoria VARCHAR(255),
+        cantidadEquinos INT
+    );
+
+    -- Insertar los resultados en la tabla temporal
+    INSERT INTO TempEquinosPorCategoria (categoria, cantidadEquinos)
     SELECT 
-        CASE 
-            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
-            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
-            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'  -- Nueva condición para Yegua con Cria
-            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
-            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
-            WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
-            WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
-        END AS Categoria,
-        COUNT(e.idEquino) AS Cantidad
+        CONCAT(
+            CASE 
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+                WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+                WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+            END
+        ) AS categoria,
+        COUNT(e.idEquino) AS cantidadEquinos
     FROM 
         Equinos e
     JOIN 
@@ -253,13 +262,30 @@ BEGIN
     LEFT JOIN 
         EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
     WHERE 
-        (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))  -- Incluimos 'Con Cria' en el filtro
-        OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
-        OR te.tipoEquino IN ('Potranca', 'Potrillo')
+        e.estado = 1  -- Verificación de que el equino esté vivo
+        AND (
+            (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))  
+            OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
+            OR te.tipoEquino IN ('Potranca', 'Potrillo')
+        )
+        AND te.idTipoEquino = _idTipoEquino   -- Filtro por tipo de equino si se pasa el parámetro
     GROUP BY 
-        Categoria
-    ORDER BY 
-        Categoria;
+        CASE 
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+            WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+            WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+        END;
+
+    -- Mostrar los resultados almacenados en la tabla temporal
+    SELECT * FROM TempEquinosPorCategoria;
+
+    -- Eliminar la tabla temporal después de usarla
+    DROP TEMPORARY TABLE IF EXISTS TempEquinosPorCategoria;
+
 END $$
 DELIMITER ;
 

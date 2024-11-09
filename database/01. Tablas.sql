@@ -154,32 +154,28 @@ CREATE TABLE Alimentos (
     unidadMedida         VARCHAR(10) NOT NULL,     -- Unidad de medida del alimento (Kilos, Litros, etc.)
     costo                DECIMAL(10,2) NOT NULL,   -- Precio unitario del alimento
     idLote               INT NOT NULL,             -- Referencia al lote
-    idTipoEquino         INT NULL,                 -- Solo para salidas (referencia a tipo de equino)
     merma                DECIMAL(10,2) NULL,       -- Registro de la merma en salidas
     compra               DECIMAL(10,2) NOT NULL,   -- Costo total de compra (costo * cantidad)
     fechaMovimiento      DATETIME DEFAULT NOW(),   -- Fecha del último movimiento
     CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),  -- Relación con la tabla Usuarios
-    CONSTRAINT fk_alimento_lote FOREIGN KEY (idLote) REFERENCES LotesAlimento(idLote),  -- Relación con la tabla Lotes
-    CONSTRAINT fk_alimento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)  -- Relación con la tabla TipoEquinos
+    CONSTRAINT fk_alimento_lote FOREIGN KEY (idLote) REFERENCES LotesAlimento(idLote)  -- Relación con la tabla Lotes
 ) ENGINE = INNODB;
-
 
 -- 12. HistorialMovimientos alimentos
 CREATE TABLE HistorialMovimientos (
-    idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
-    idAlimento INT NOT NULL,            -- ID del alimento (relación con Alimentos)
-    tipoMovimiento VARCHAR(50) NOT NULL,-- Tipo de movimiento (Entrada/Salida)
-    cantidad DECIMAL(10,2) NOT NULL,    -- Cantidad de alimento
-    idTipoEquino INT NULL,              -- ID del tipo de equino (solo para Salida)
-    idUsuario INT NOT NULL,             -- ID del usuario que realiza el movimiento
-    unidadMedida VARCHAR(50) NOT NULL,  -- Unidad de medida (Kilos, Litros, etc.)
-    fechaMovimiento DATE DEFAULT NOW(), -- Fecha del movimiento
-    merma DECIMAL(10,2) NULL,           -- Merma (solo si aplica)
-    FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
-    FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino), -- Relación con TipoEquinos
-    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+    idMovimiento 			INT AUTO_INCREMENT PRIMARY KEY,
+    idAlimento 				INT NOT NULL,           
+    idTipomovimiento 		INT NOT NULL,
+    idUsuario 				INT NOT NULL,
+    unidadMedida			VARCHAR(10) NOT NULL,
+	cantidad 				DECIMAL(10,2) NOT NULL,
+    cantidadEquinosTipos	VARCHAR(40) NOT NULL,
+    fechaMovimiento 		DATE DEFAULT NOW(), 
+    merma 					DECIMAL(10,2) NULL,
+    CONSTRAINT fk_idAlimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
+    CONSTRAINT fk_idTipoMovimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
+    CONSTRAINT fk_idusuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE=InnoDB;
-
 
 -- 13. TiposMedicamentos ----°°° admedi
 CREATE TABLE TiposMedicamentos (

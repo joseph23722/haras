@@ -19,7 +19,7 @@ try {
                 echo json_encode($result);
                 exit();
 
-                
+
             case 'getUnidadesMedida':
                 $nombreAlimento = $_GET['nombreAlimento'] ?? null;
                 if (!$nombreAlimento) {
@@ -44,12 +44,12 @@ try {
                 echo json_encode(['status' => 'success', 'data' => $result]);
                 exit();
 
-            // Listar todos los lotes registrados
+                // Listar todos los lotes registrados
             case 'listarLotes':
                 try {
                     // Obtener los lotes
                     $lotes = $alimento->listarLotes();
-                    
+
                     // Verificar si es éxito
                     if ($lotes['status'] === 'success') {
                         // Envía la respuesta como JSON
@@ -72,7 +72,7 @@ try {
                         'message' => 'Error al listar los lotes: ' . $e->getMessage()
                     ]);
                 }
-            
+
                 // Finalizar el script para asegurar que no haya más salida
                 exit();
 
@@ -86,20 +86,20 @@ try {
                         'limit' => $_GET['limit'] ?? 10,
                         'offset' => $_GET['offset'] ?? 0
                     ]);
-            
+
                     // Asegurar que data sea un array
                     $data = $result['data'] ?? [];
                     if (!is_array($data)) {
                         $data = [$data]; // Si no es un array, conviértelo en uno
                     }
-            
+
                     echo json_encode(['status' => 'success', 'data' => $data]);
                 } catch (Exception $e) {
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
                 exit();
-                
-                
+
+
 
             default:
                 echo json_encode(['status' => 'error', 'message' => 'Operación no válida para GET.']);
@@ -133,7 +133,7 @@ try {
         switch ($operation) {
             case 'registrar':
                 $result = $alimento->registrarNuevoAlimento($params);
-                 // Limpiar cualquier salida previa antes de enviar el JSON
+                // Limpiar cualquier salida previa antes de enviar el JSON
                 ob_clean();
                 // Devolver la respuesta en formato JSON para que el frontend pueda interpretarla
                 echo json_encode($result);
@@ -141,7 +141,7 @@ try {
 
             case 'entrada':
                 $result = $alimento->registrarEntradaAlimento($params);
-    
+
                 // Aquí se envía la respuesta una sola vez
                 echo json_encode([
                     'status' => $result['status'],
@@ -162,16 +162,16 @@ try {
                         'message' => $result['message']
                     ]);
                 }
-                exit(); 
+                exit();
 
-            
 
-            
-            // Verificar si un lote existe    
+
+
+                // Verificar si un lote existe    
             case 'verificarLote':
                 $lote = $_POST['lote'] ?? null;
                 $unidadMedida = $_POST['unidadMedida'] ?? null;
-            
+
                 if (!$lote || !$unidadMedida) {
                     echo json_encode([
                         'status' => 'error',
@@ -179,14 +179,14 @@ try {
                     ]);
                     exit();
                 }
-            
+
                 // Llamar al modelo para verificar si la combinación existe
                 $resultado = $alimento->verificarLote($lote, $unidadMedida);
-            
+
                 echo json_encode($resultado);
                 exit();
-            
-                
+
+
             case 'eliminar':
                 $idAlimento = $params['idAlimento'] ?? null;
                 $result = $alimento->eliminarAlimento($idAlimento);
