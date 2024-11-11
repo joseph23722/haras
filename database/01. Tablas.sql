@@ -124,12 +124,28 @@ CREATE TABLE Implementos (
     idTipoinventario 	INT NOT NULL,
     nombreProducto 		VARCHAR(100) NOT NULL,
     descripcion 		TEXT NOT NULL,
-    precioUnitario 		DECIMAL(10,2) NOT NULL,
+    precioUnitario 		DECIMAL(10,2) NULL,
+    precioTotal			DECIMAL(10,2) NULL,
     idTipomovimiento 	INT NOT NULL,
     cantidad 			INT NOT NULL,
     stockFinal 			INT NOT NULL,
+    estado				BIT NOT NULL,
+    CONSTRAINT fk_implemento_nombreProducto UNIQUE(nombreProducto),
     CONSTRAINT fk_implemento_inventario FOREIGN KEY (idTipoinventario) REFERENCES TipoInventarios(idTipoinventario),
     CONSTRAINT fk_implemento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento)
+) ENGINE = INNODB;
+
+CREATE TABLE HistorialImplemento (
+    idHistorial        INT PRIMARY KEY AUTO_INCREMENT,
+    idInventario       INT NOT NULL,
+    idTipoinventario   INT NOT NULL,
+    idTipomovimiento   ENUM('Entrada', 'Salida') NOT NULL,
+    cantidad           INT NOT NULL,
+    precioUnitario     DECIMAL(10,2) NULL,
+    descripcion		   VARCHAR(100)	NULL,
+    fechaMovimiento    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_historial_inventario FOREIGN KEY (idInventario) REFERENCES Implementos(idInventario),
+    CONSTRAINT fk_historial_tipoinventario FOREIGN KEY (idTipoinventario) REFERENCES TipoInventarios(idTipoinventario)
 ) ENGINE = INNODB;
 
 -- 

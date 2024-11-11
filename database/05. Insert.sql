@@ -110,7 +110,10 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 -- Inventarios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
-	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills');
+	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills'),
+    (4, 'registrar-implementos-caballos', 'S', 'Implementos Caballos', 'fa-solid fa-scissors'),
+    (4, 'registrar-implementos-campos', 'S', 'Implementos Campos', 'fa-solid fa-wrench');
+
 -- Servicios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     (5, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools'),
@@ -144,14 +147,16 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 13),
     (3, 14),
     (3, 15),
-    (3, 16);
+    (3, 16),
+    (3, 17);
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
 	(4, 1),
 	(4, 2),
     (4, 3),
     (4, 6),
-    (4, 7);
+    (4, 7),
+    (4, 18);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
