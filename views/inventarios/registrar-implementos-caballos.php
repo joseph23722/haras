@@ -3,7 +3,7 @@
 <div class="container-fluid px-4">
     <!-- Título de la página -->
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
-        Gestionar Medicamentos
+        Gestionar Implementos de Equino
     </h1>
 
     <!-- Sección del formulario para registrar un Implemento -->
