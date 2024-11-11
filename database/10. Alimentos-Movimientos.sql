@@ -1,11 +1,10 @@
 -- Procedimiento para registrar los alimentos  
-DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
-    IN _tipoAlimento VARCHAR(50),
-    IN _unidadMedida VARCHAR(10),
+    IN _idTipoAlimento INT,
+    IN _idUnidadMedida INT,
     IN _lote VARCHAR(50),
     IN _costo DECIMAL(10,2),
     IN _fechaCaducidad DATE,
@@ -13,11 +12,11 @@ CREATE PROCEDURE spu_alimentos_nuevo(
     IN _stockMinimo DECIMAL(10,2)
 )
 BEGIN
+    DECLARE _exists INT DEFAULT 0;
     DECLARE _idLote INT;
     DECLARE _estado ENUM('Disponible', 'Por agotarse', 'Agotado');
-    DECLARE _exists INT DEFAULT 0;
 
-    -- Determinar el estado inicial del alimento según el stock actual y mínimo
+    -- Determinar el estado inicial del alimento
     IF _stockActual = 0 THEN
         SET _estado = 'Agotado';
     ELSEIF _stockActual <= _stockMinimo THEN
@@ -29,135 +28,154 @@ BEGIN
     -- Iniciar transacción
     START TRANSACTION;
 
-    -- Verificar si el lote ya está registrado en la tabla LotesAlimento con el mismo valor de lote y unidad de medida
-    SELECT idLote INTO _idLote
+    -- Verificar si el tipo de alimento existe y obtener `idTipoAlimento`
+    IF NOT EXISTS (SELECT 1 FROM TipoAlimentos WHERE idTipoAlimento = _idTipoAlimento) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Tipo de alimento no encontrado. Verifique el ID proporcionado.';
+    END IF;
+
+    -- Verificar si la unidad de medida existe y obtener `idUnidadMedida`
+    IF NOT EXISTS (SELECT 1 FROM UnidadesMedidaAlimento WHERE idUnidadMedida = _idUnidadMedida) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Unidad de medida no encontrada. Verifique el ID proporcionado.';
+    END IF;
+
+    -- Verificar si el lote ya está registrado en la tabla LotesAlimento
+    SELECT idLote INTO _idLote 
     FROM LotesAlimento
-    WHERE lote = _lote AND unidadMedida = _unidadMedida;
+    WHERE lote = _lote
+    LIMIT 1;
 
-    -- Si el lote no existe, registrarlo en la tabla LotesAlimento usando el valor enviado desde el formulario
+    -- Si el lote no existe, registrarlo en la tabla LotesAlimento
     IF _idLote IS NULL THEN
-        INSERT INTO LotesAlimento (lote, unidadMedida, fechaCaducidad, fechaIngreso) 
-        VALUES (_lote, _unidadMedida, _fechaCaducidad, NOW());
-
-        -- Obtener el idLote recién insertado
+        INSERT INTO LotesAlimento (lote, fechaCaducidad, fechaIngreso) 
+        VALUES (_lote, IFNULL(_fechaCaducidad, NULL), NOW());
         SET _idLote = LAST_INSERT_ID();
     END IF;
 
-    -- Verificar si el alimento ya está registrado con ese lote y unidad de medida
+    -- Verificar si el alimento ya está registrado con ese nombre, lote, tipo y unidad de medida
     SELECT COUNT(*) INTO _exists 
     FROM Alimentos
-    WHERE nombreAlimento = _nombreAlimento AND idLote = _idLote;
+    WHERE nombreAlimento = _nombreAlimento 
+      AND idLote = _idLote 
+      AND idTipoAlimento = _idTipoAlimento 
+      AND idUnidadMedida = _idUnidadMedida;
 
-    -- Si el alimento no existe con ese lote y unidad de medida, registrar el nuevo alimento
+    -- Si el alimento no existe, registrarlo en la tabla Alimentos
     IF _exists = 0 THEN
         INSERT INTO Alimentos (
-            idUsuario, nombreAlimento, tipoAlimento, unidadMedida, idLote, costo, 
+            idUsuario, nombreAlimento, idTipoAlimento, idUnidadMedida, idLote, costo, 
             stockActual, stockMinimo, estado, fechaMovimiento, compra
         ) 
         VALUES (
-            _idUsuario, _nombreAlimento, _tipoAlimento, _unidadMedida, _idLote, _costo, 
+            _idUsuario, _nombreAlimento, _idTipoAlimento, _idUnidadMedida, _idLote, _costo, 
             _stockActual, _stockMinimo, _estado, NOW(), _costo * _stockActual
         );
-        COMMIT; -- Confirmar la transacción
+        COMMIT;
     ELSE
-        -- Si el alimento ya existe con ese lote, deshacer la transacción
         ROLLBACK;
     END IF;
-
 END $$
 DELIMITER ;
 
+
+
+
+
+
+
 -- -------
-DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
-CREATE PROCEDURE spu_obtenerAlimentosConLote()
+CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
-    -- Actualizar el estado de los registros en la tabla Alimentos
-    UPDATE Alimentos 
-    SET estado = 'Agotado'
-    WHERE stockActual = 0;
+	-- Actualizar el estado de los registros en la tabla Alimentos
+		UPDATE Alimentos 
+		SET estado = 'Agotado'
+		WHERE stockActual = 0;
 
-    UPDATE Alimentos 
-    SET estado = 'Por agotarse'
-    WHERE stockActual > 0 AND stockActual <= stockMinimo;
+		UPDATE Alimentos 
+		SET estado = 'Por agotarse'
+		WHERE stockActual > 0 AND stockActual <= stockMinimo;
 
-    UPDATE Alimentos 
-    SET estado = 'Disponible'
-    WHERE stockActual > stockMinimo;
-
-    -- Seleccionar los datos de Alimentos junto con la información de Lotes
-    SELECT 
+		UPDATE Alimentos 
+		SET estado = 'Disponible'
+		WHERE stockActual > stockMinimo;
+        
+		SELECT 
         A.idAlimento,
         A.idUsuario,
         A.nombreAlimento,
-        A.tipoAlimento,
+        TA.tipoAlimento AS nombreTipoAlimento,       -- Obtener el nombre del tipo de alimento
         A.stockActual,
         A.stockMinimo,
         A.estado,
-        A.unidadMedida,
+        U.nombreUnidad AS unidadMedidaNombre,        -- Obtener el nombre de la unidad de medida
         A.costo,
         A.idLote,
-        A.merma,
+        A.idEquino,                                  -- Uso de idEquino en lugar de idTipoEquino
         A.compra,
         A.fechaMovimiento,
         L.idLote AS loteId,
         L.lote,
-        L.unidadMedida AS loteUnidadMedida,
         L.fechaCaducidad,
         L.fechaIngreso
     FROM 
         Alimentos A
     INNER JOIN 
-        LotesAlimento L ON A.idLote = L.idLote;
+        LotesAlimento L ON A.idLote = L.idLote
+    INNER JOIN 
+        TipoAlimentos TA ON A.idTipoAlimento = TA.idTipoAlimento       -- Relación con TipoAlimentos
+    INNER JOIN 
+        UnidadesMedidaAlimento U ON A.idUnidadMedida = U.idUnidadMedida -- Relación con UnidadesMedidaAlimento
+    WHERE 
+        (_idAlimento IS NULL OR A.idAlimento = _idAlimento);           -- Filtro por idAlimento si se proporciona
 END $$
 DELIMITER ;
 
 
+
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
-DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
-    IN _idUsuario INT,                          -- ID del usuario que realiza la acción
-    IN _nombreAlimento VARCHAR(100),            -- Nombre del alimento
-    IN _unidadMedida VARCHAR(10),               -- Unidad de medida del alimento
-    IN _lote VARCHAR(50),                       -- Lote asociado al alimento
-    IN _cantidad DECIMAL(10,2)                  -- Cantidad a ingresar
+    IN _idUsuario INT,
+    IN _nombreAlimento VARCHAR(100),
+    IN _idUnidadMedida INT, -- Cambiado a INT
+    IN _lote VARCHAR(50),
+    IN _cantidad DECIMAL(10,2)
 )
 BEGIN
-    DECLARE _idAlimento INT;                    -- ID del alimento
-    DECLARE _idLote INT;                        -- ID del lote
-    DECLARE _currentStock DECIMAL(10,2);        -- Stock actual del alimento
-    DECLARE _debugInfo VARCHAR(255) DEFAULT ''; -- Mensaje de depuración para manejo de errores
-
-    -- Validar que la cantidad a ingresar sea mayor que cero
-    IF _cantidad <= 0 THEN
-        SET _debugInfo = 'La cantidad a ingresar debe ser mayor que cero.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
-    END IF;
+    DECLARE _idAlimento INT;
+    DECLARE _idLote INT;
+    DECLARE _currentStock DECIMAL(10,2);
 
     -- Iniciar transacción
     START TRANSACTION;
 
+    -- Verificar si el ID de la unidad de medida existe
+    IF _idUnidadMedida IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La unidad de medida especificada no existe.';
+    END IF;
+
     -- Verificar si el lote existe y obtener su ID
     SELECT idLote INTO _idLote
     FROM LotesAlimento
-    WHERE lote = _lote;
+    WHERE LOWER(lote) = LOWER(_lote)
+    LIMIT 1; -- Asegúrate de obtener solo un registro
 
-    -- Si el lote no existe, generar un error
     IF _idLote IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El lote especificado no existe.';
     END IF;
 
     -- Buscar el `idAlimento` correspondiente al nombre, lote y unidad de medida
+    -- Se agrega LIMIT 1 para asegurar que solo se obtenga un registro
     SELECT idAlimento, stockActual INTO _idAlimento, _currentStock
     FROM Alimentos
     WHERE LOWER(nombreAlimento) = LOWER(_nombreAlimento)
       AND idLote = _idLote
-      AND LOWER(unidadMedida) = LOWER(_unidadMedida)
+      AND idUnidadMedida = _idUnidadMedida
+    ORDER BY idAlimento ASC -- Opcional: especifica el orden para seleccionar el primer registro consistente
     LIMIT 1 FOR UPDATE;
 
-    -- Si el alimento no existe para el lote y la unidad de medida, generar un error
     IF _idAlimento IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'El alimento con este lote y unidad de medida no está registrado.';
@@ -170,39 +188,33 @@ BEGIN
     WHERE idAlimento = _idAlimento;
 
     -- Registrar la entrada en el historial de movimientos
-    INSERT INTO HistorialMovimientos (idAlimento, idTipomovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
-    VALUES (_idAlimento, 1, _cantidad, _idUsuario, NOW(), _unidadMedida);
+    INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
+    VALUES (_idAlimento, 'Entrada', _cantidad, _idUsuario, NOW(), _idUnidadMedida);
 
-    -- Confirmar la transacción
     COMMIT;
-
-    -- Confirmación de éxito
-    SET _debugInfo = 'Transacción completada exitosamente.';
-    SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
-
 END $$
 DELIMITER ;
 
+
+
+
 -- Procedimiento Salida de Alimentos 
-DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_salida(
-    IN _idUsuario INT,                    -- Usuario que realiza la operación
-    IN _nombreAlimento VARCHAR(100),       -- Nombre del alimento
-    IN _unidadMedida VARCHAR(10),          -- Unidad de medida del alimento (Kilos, Litros, etc.)
-    IN _cantidad DECIMAL(10,2),            -- Cantidad de alimento a retirar
-    IN _lote VARCHAR(50),                  -- Número de lote del alimento (puede ser NULL)
-    IN _merma DECIMAL(10,2),               -- Cantidad de merma
-    IN _idCantidadEquinos INT              -- ID del tipo de equino que elegiste
+    IN _idUsuario INT,
+    IN _nombreAlimento VARCHAR(100),
+    IN _idUnidadMedida INT,               -- Cambiado a INT para recibir el id de la unidad de medida
+    IN _cantidad DECIMAL(10,2),
+    IN _idEquino INT,                     -- Uso de idEquino en lugar de idTipoEquino
+    IN _lote VARCHAR(50),
+    IN _merma DECIMAL(10,2)
 )
 BEGIN
     DECLARE _idAlimento INT;
     DECLARE _idLote INT;
     DECLARE _currentStock DECIMAL(10,2);
     DECLARE _cantidadNecesaria DECIMAL(10,2);
-    DECLARE _unidadMedidaLote VARCHAR(10);
-    DECLARE _cantidadEquinosTipos INT;   -- Variable para almacenar la cantidad de equinos
-    DECLARE _debugInfo VARCHAR(255) DEFAULT '';  -- Variable para mensajes de depuración
+    DECLARE _debugInfo VARCHAR(255) DEFAULT '';
 
     -- Iniciar transacción
     START TRANSACTION;
@@ -210,159 +222,164 @@ BEGIN
     -- Validar que la cantidad a retirar sea mayor que cero
     IF _cantidad <= 0 THEN
         SET _debugInfo = 'La cantidad a retirar debe ser mayor que cero.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
-    END IF;
-
-    -- Asignar valor por defecto a la merma si es NULL
-    IF _merma IS NULL THEN
-        SET _merma = 0;
-    END IF;
-
-    -- Calcular la cantidad total necesaria (cantidad + merma)
-    SET _cantidadNecesaria = _cantidad + _merma;
-
-    -- Calcular la cantidad de equinos por tipo
-    SELECT COUNT(*) INTO _cantidadEquinosTipos
-    FROM Equinos
-    WHERE idTipoEquino = _idCantidadEquinos;  -- Filtra según el ID del tipo de equino
-
-    -- Verificar si la cantidad de equinos fue obtenida correctamente
-    IF _cantidadEquinosTipos IS NULL THEN
-        SET _debugInfo = 'No se pudo obtener la cantidad de equinos para el tipo seleccionado.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
-    END IF;
-
-    -- Verificar si el lote fue proporcionado
-    IF _lote IS NOT NULL AND _lote != '' THEN
-        -- Si se proporciona el lote, buscar el lote específico y verificar su unidad de medida
-        SELECT a.idAlimento, a.stockActual, a.unidadMedida
-        INTO _idAlimento, _currentStock, _unidadMedidaLote
-        FROM Alimentos a
-        JOIN LotesAlimento l ON a.idLote = l.idLote
-        WHERE LOWER(a.nombreAlimento) = LOWER(_nombreAlimento)
-          AND l.lote = _lote
-          AND LOWER(a.unidadMedida) = LOWER(_unidadMedida)
-        LIMIT 1 FOR UPDATE;
-
-        -- Verificar si el lote existe y la unidad de medida coincide
-        IF _idAlimento IS NULL THEN
-            SET _debugInfo = 'El lote proporcionado no existe o la unidad de medida no coincide.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
-        END IF;
+        ROLLBACK;
     ELSE
-        -- Si no se proporciona el lote, buscar el lote con la fecha de caducidad más próxima o el lote más antiguo
-        SELECT a.idAlimento, a.stockActual, a.unidadMedida, l.idLote
-        INTO _idAlimento, _currentStock, _unidadMedidaLote, _idLote
-        FROM Alimentos a
-        JOIN LotesAlimento l ON a.idLote = l.idLote
-        WHERE LOWER(a.nombreAlimento) = LOWER(_nombreAlimento)
-          AND LOWER(a.unidadMedida) = LOWER(_unidadMedida)
-          AND a.stockActual > 0
-        ORDER BY l.fechaCaducidad ASC, l.fechaIngreso ASC
-        LIMIT 1 FOR UPDATE;
+        -- Asignar valor por defecto a la merma si es NULL
+        IF _merma IS NULL THEN
+            SET _merma = 0;
+        END IF;
 
-        -- Verificar si se encontró un lote adecuado
-        IF _idAlimento IS NULL THEN
-            SET _debugInfo = 'No hay lotes disponibles para este alimento con stock suficiente.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
+        -- Calcular la cantidad total necesaria (cantidad + merma)
+        SET _cantidadNecesaria = _cantidad + _merma;
+
+        -- Verificar si el lote existe y obtener su ID
+        SELECT idLote INTO _idLote
+        FROM LotesAlimento
+        WHERE LOWER(lote) = LOWER(_lote)
+        LIMIT 1;
+
+        -- Si el lote no existe, generar un error
+        IF _idLote IS NULL THEN
+            SET _debugInfo = 'El lote especificado no existe.';
+            ROLLBACK;
+        ELSE
+            -- Buscar el alimento usando el lote, nombre de alimento, y idUnidadMedida
+            SELECT a.idAlimento, a.stockActual
+            INTO _idAlimento, _currentStock
+            FROM Alimentos a
+            WHERE LOWER(a.nombreAlimento) = LOWER(_nombreAlimento)
+              AND a.idLote = _idLote
+              AND a.idUnidadMedida = _idUnidadMedida
+            LIMIT 1 FOR UPDATE;
+
+            -- Verificar si el alimento existe para el lote y unidad de medida, y que el stock sea suficiente
+            IF _idAlimento IS NULL THEN
+                SET _debugInfo = 'El alimento con este lote y unidad de medida no está registrado.';
+                ROLLBACK;
+            ELSEIF _currentStock < _cantidadNecesaria THEN
+                SET _debugInfo = 'No hay suficiente stock disponible en el lote seleccionado.';
+                ROLLBACK;
+            ELSE
+                -- Realizar la salida del stock en el lote seleccionado
+                UPDATE Alimentos
+                SET stockActual = stockActual - _cantidadNecesaria,
+                    idEquino = _idEquino,
+                    fechaMovimiento = NOW()
+                WHERE idAlimento = _idAlimento;
+
+                -- Registrar la salida y la merma en el historial de movimientos
+                INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, idEquino, unidadMedida)
+                VALUES (_idAlimento, 'Salida', _cantidad, _merma, _idUsuario, NOW(), _idEquino, _idUnidadMedida);
+
+                -- Confirmar la transacción
+                COMMIT;
+
+                -- Confirmación de éxito
+                SET _debugInfo = 'Transacción completada exitosamente.';
+                SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
+            END IF;
         END IF;
     END IF;
 
-    -- Verificar si hay suficiente stock en el lote encontrado
-    IF _currentStock < _cantidadNecesaria THEN
-        SET _debugInfo = CONCAT('Stock insuficiente. Solo hay ', _currentStock, 
-                                ' disponible en este lote. Retire esa cantidad o elija otro lote.');
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _debugInfo;
-    ELSE
-        -- Realizar la salida del stock en el lote seleccionado
-        UPDATE Alimentos
-        SET stockActual = stockActual - _cantidadNecesaria,
-            fechaMovimiento = NOW()
-        WHERE idAlimento = _idAlimento;
-
-        -- Registrar la salida y la merma en el historial de movimientos
-        INSERT INTO HistorialMovimientos (idAlimento, idTipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, unidadMedida, cantidadEquinosTipos)
-        VALUES (_idAlimento, 2, _cantidad, _merma, _idUsuario, NOW(), _unidadMedida, _cantidadEquinosTipos);
-
-        -- Confirmar la transacción
-        COMMIT;
-
-        -- Confirmación de éxito
-        SET _debugInfo = 'Transacción completada exitosamente.';
-        SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
-    END IF;
 END $$
 DELIMITER ;
 
+
+
+
+
 -- -----------
-DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
 BEGIN
     -- Seleccionar todos los lotes registrados junto con la información de los alimentos asociados
     SELECT 
-        l.idLote,               -- Incluir idLote para referencia única
-        l.lote,                 -- Lote desde la tabla LotesAlimento
-        l.fechaCaducidad,       -- Fecha de caducidad del lote
-        l.fechaIngreso,         -- Fecha de ingreso del lote
-        a.nombreAlimento,       -- Nombre del alimento
-        a.tipoAlimento,         -- Tipo de alimento
-        a.stockActual,          -- Stock actual del alimento
-        a.stockMinimo,          -- Stock mínimo para alerta
-        a.estado,               -- Estado del alimento
-        a.unidadMedida,         -- Unidad de medida del alimento
-        a.costo                 -- Costo unitario del alimento
+        l.idLote,                               -- ID único del lote
+        l.lote,                                 -- Número del lote
+        l.fechaCaducidad,                       -- Fecha de caducidad del lote
+        l.fechaIngreso,                         -- Fecha de ingreso del lote
+        a.nombreAlimento,                       -- Nombre del alimento
+        ta.tipoAlimento AS nombreTipoAlimento,  -- Nombre del tipo de alimento
+        a.stockActual,                          -- Stock actual del alimento
+        a.stockMinimo,                          -- Stock mínimo para alerta
+        a.estado,                               -- Estado del alimento
+        um.nombreUnidad AS nombreUnidadMedida,  -- Nombre de la unidad de medida
+        a.costo                                 -- Costo unitario del alimento
     FROM 
         Alimentos a
     JOIN 
-        LotesAlimento l ON a.idLote = l.idLote  -- Relacionar los lotes con los alimentos
+        LotesAlimento l ON a.idLote = l.idLote                -- Relación entre alimentos y lotes
+    JOIN 
+        TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento -- Relación para obtener el tipo de alimento
+    JOIN 
+        UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida -- Relación para obtener la unidad de medida
     ORDER BY 
         l.idLote ASC;  -- Ordenar los resultados por idLote para mantener consistencia
 END $$
 DELIMITER ;
 
+
+
+
+
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
-DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
-    -- Notificación de alimentos agotados
-    SELECT 
-        CONCAT('Alimento agotado: ', a.nombreAlimento, ', Lote: ', l.lote, ', Stock: ', a.stockActual) AS Notificacion
-    FROM 
-        Alimentos a
-    JOIN 
-        LotesAlimento l ON a.idLote = l.idLote
-    WHERE 
-        a.stockActual = 0
-    ORDER BY 
-        a.nombreAlimento
-    LIMIT 5;
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE alimentoNombre VARCHAR(100);
+    DECLARE loteAlimento VARCHAR(50);
+    DECLARE stockActual DECIMAL(10,2);
+    DECLARE stockMinimo DECIMAL(10,2);
+    DECLARE tipoAlimento VARCHAR(50);
+    DECLARE unidadMedida VARCHAR(10);
 
-    -- Notificación de alimentos con stock bajo (mayor que 0 y menor o igual al stock mínimo)
-    SELECT 
-        CONCAT('Alimento con stock bajo: ', a.nombreAlimento, ', Lote: ', l.lote, ', Stock: ', a.stockActual, ' (Stock mínimo: ', a.stockMinimo, ')') AS Notificacion
-    FROM 
-        Alimentos a
-    JOIN 
-        LotesAlimento l ON a.idLote = l.idLote
-    WHERE 
-        a.stockActual > 0 AND a.stockActual <= a.stockMinimo
-    ORDER BY 
-        a.stockActual ASC
-    LIMIT 5;
+    -- Cursor para seleccionar los alimentos con stock bajo o agotados, limitando a 5
+    DECLARE cur CURSOR FOR
+        SELECT a.nombreAlimento, l.lote, a.stockActual, a.stockMinimo, ta.tipoAlimento, um.nombreUnidad 
+        FROM Alimentos a
+        JOIN LotesAlimento l ON a.idLote = l.idLote
+        JOIN TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento
+        JOIN UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+        WHERE a.stockActual <= a.stockMinimo
+        ORDER BY a.stockActual ASC
+        LIMIT 5;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Abrir el cursor
+    OPEN cur;
+
+    -- Bucle para recorrer los resultados
+    read_loop: LOOP
+        FETCH cur INTO alimentoNombre, loteAlimento, stockActual, stockMinimo, tipoAlimento, unidadMedida;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Imprimir el mensaje de notificación
+        IF stockActual = 0 THEN
+            -- Notificación de alimentos agotados
+            SELECT CONCAT('Alimento agotado: ', alimentoNombre, ' (Tipo: ', tipoAlimento, '), Lote: ', loteAlimento, ', Unidad: ', unidadMedida, ', Stock: ', stockActual) AS Notificacion;
+        ELSE
+            -- Notificación de alimentos con stock bajo
+            SELECT CONCAT('Alimento con stock bajo: ', alimentoNombre, ' (Tipo: ', tipoAlimento, '), Lote: ', loteAlimento, ', Unidad: ', unidadMedida, ', Stock: ', stockActual, ' (Stock mínimo: ', stockMinimo, ')') AS Notificacion;
+        END IF;
+    END LOOP;
+
+    -- Cerrar cursor
+    CLOSE cur;
 END $$
 DELIMITER ;
 
 
 
 
-
 -- Procedimiento para historial Alimentos -----------------------------------------
-DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
+
 CREATE PROCEDURE spu_historial_completo(
-    IN idTipoMovimiento INT,
+    IN tipoMovimiento VARCHAR(50),
     IN fechaInicio DATE,
     IN fechaFin DATE,
     IN idUsuario INT,
@@ -385,55 +402,77 @@ BEGIN
     IF tipoMovimiento = 'Entrada' THEN
         SELECT 
             h.idAlimento,
-            a.nombreAlimento,               -- Nombre del alimento
-            a.tipoAlimento,                 -- Tipo de alimento (Grano, Heno, etc.)
-            a.unidadMedida,                 -- Unidad de medida del alimento
-            l.lote,                         -- Lote del alimento (desde LotesAlimento)
-            l.fechaCaducidad,               -- Fecha de caducidad del lote
-            a.stockActual,                  -- Stock actual para entradas
-            h.cantidad,                     -- Cantidad de entrada
-            h.unidadMedida,                 -- Unidad de medida para la cantidad
-            h.fechaMovimiento               -- Fecha del movimiento
+            a.nombreAlimento,
+            ta.tipoAlimento AS nombreTipoAlimento,
+            um.nombreUnidad AS nombreUnidadMedida,
+            l.lote,
+            l.fechaCaducidad,
+            a.stockActual,
+            h.cantidad,
+            h.unidadMedida,
+            h.fechaMovimiento
         FROM 
             HistorialMovimientos h
         JOIN 
-            Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
+            Alimentos a ON h.idAlimento = a.idAlimento
         JOIN
-            LotesAlimento l ON a.idLote = l.idLote      -- Unimos con la tabla LotesAlimento por idLote
+            LotesAlimento l ON a.idLote = l.idLote
+        JOIN
+            TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento
+        JOIN
+            UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
         WHERE 
             h.tipoMovimiento = 'Entrada'  
-            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
-            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
-            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
+            AND h.fechaMovimiento >= fechaInicio
+            AND h.fechaMovimiento <= fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
         ORDER BY 
             h.fechaMovimiento DESC
         LIMIT 
             limite OFFSET desplazamiento;
-        
-    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos para salidas, incluyendo la cantidad y la merma
+
+    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos incluyendo el tipo de equino, cantidad de equinos por categoría, y otros detalles
     ELSEIF tipoMovimiento = 'Salida' THEN
         SELECT 
-            h.idAlimento,
-            a.nombreAlimento,               -- Nombre del alimento
-            te.tipoEquino,                  -- Tipo de equino (Yegua, Padrillo, Potranca, Potrillo)
-            h.cantidad,                     -- Cantidad de salida
-            h.unidadMedida,                 -- Unidad de medida
-            h.merma,                        -- Merma (si aplica)
-            l.lote,                         -- Lote del alimento (desde LotesAlimento)
-            h.fechaMovimiento               -- Fecha del movimiento
+            h.idMovimiento AS ID,  -- ID del movimiento
+            a.nombreAlimento AS Alimento,  -- Nombre del alimento
+            CASE 
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+                WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+                WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+                ELSE 'Desconocido'
+            END AS TipoEquino,  -- Tipo de equino según el estado
+            COUNT(h.idEquino) AS CantidadEquino,  -- Cantidad de equinos por categoría
+            h.cantidad AS Cantidad,  -- Cantidad de salida
+            um.nombreUnidad AS Unidad,  -- Unidad de medida
+            h.merma AS Merma,  -- Merma (si aplica)
+            l.lote AS Lote,  -- Lote del alimento
+            h.fechaMovimiento AS FechaSalida  -- Fecha del movimiento
         FROM 
             HistorialMovimientos h
         JOIN 
-            Alimentos a ON h.idAlimento = a.idAlimento  -- Unimos ambas tablas por idAlimento
+            Alimentos a ON h.idAlimento = a.idAlimento
         LEFT JOIN
-            TipoEquinos te ON h.idTipoEquino = te.idTipoEquino  -- Unimos con la tabla TipoEquinos (para la salida)
+            Equinos eq ON h.idEquino = eq.idEquino
+        LEFT JOIN
+            TipoEquinos te ON eq.idTipoEquino = te.idTipoEquino
+        LEFT JOIN
+            EstadoMonta em ON eq.idEstadoMonta = em.idEstadoMonta
         JOIN
-            LotesAlimento l ON a.idLote = l.idLote      -- Unimos con la tabla LotesAlimento por idLote
+            UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+        JOIN 
+            LotesAlimento l ON a.idLote = l.idLote
         WHERE 
             h.tipoMovimiento = 'Salida'
-            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
-            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
-            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
+            AND h.fechaMovimiento >= fechaInicio
+            AND h.fechaMovimiento <= fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
+        GROUP BY 
+            h.idMovimiento, Alimento, TipoEquino, Unidad, Lote, FechaSalida  -- Agrupar para evitar duplicados y calcular cantidad de equinos por categoría
         ORDER BY 
             h.fechaMovimiento DESC
         LIMIT 
@@ -443,12 +482,74 @@ BEGIN
         SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
 END $$
+
+DELIMITER ;
+
+
+--
+DELIMITER $$
+CREATE PROCEDURE spu_eliminarAlimento(IN _idAlimento INT)
+BEGIN
+    -- Verificar si el alimento existe antes de intentar eliminarlo
+    IF EXISTS (SELECT 1 FROM Alimentos WHERE idAlimento = _idAlimento) THEN
+        -- Eliminar el alimento
+        DELETE FROM Alimentos WHERE idAlimento = _idAlimento;
+    ELSE
+        -- Si no existe, generar un error de control
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El alimento no existe.';
+    END IF;
+END $$
 DELIMITER ;
 
 
 
+
+
+
+
+
+
+-- separado  
+
+-- Procedimiento para obtener la lista de tipos de alimentos
+DELIMITER $$
+CREATE PROCEDURE spu_obtenerTiposAlimento()
+BEGIN
+    SELECT idTipoAlimento, tipoAlimento 
+    FROM TipoAlimentos 
+    ORDER BY tipoAlimento;
+END $$
+DELIMITER ;
+
+-- Procedimiento para obtener las unidades de medida asociadas a un tipo de alimento
+DELIMITER $$
+CREATE PROCEDURE spu_obtenerUnidadesPorTipoAlimento(IN _idTipoAlimento INT)
+BEGIN
+    -- Verificar si el tipo de alimento existe
+    IF EXISTS (SELECT 1 FROM TipoAlimentos WHERE idTipoAlimento = _idTipoAlimento) THEN
+        -- Seleccionar las unidades de medida asociadas al tipo de alimento
+        SELECT um.idUnidadMedida, um.nombreUnidad 
+        FROM TipoAlimento_UnidadMedida tum
+        JOIN UnidadesMedidaAlimento um ON tum.idUnidadMedida = um.idUnidadMedida
+        WHERE tum.idTipoAlimento = _idTipoAlimento;
+    ELSE
+        -- Enviar mensaje de error si el tipo de alimento no existe
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El tipo de alimento especificado no existe.';
+    END IF;
+END $$
+DELIMITER ;
+
+
+
+
+
+
+
+
+-- esto no va es prueba 
+
 -- tipo de equino - alimento ------ 
-DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
+/*
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
@@ -457,3 +558,6 @@ BEGIN
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
 END $$
 DELIMITER ;
+*/
+-- -------------------------------------------------------------------------------
+

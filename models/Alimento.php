@@ -1,18 +1,41 @@
 <?php
 require_once 'Conexion.php';
 
-class Alimento extends Conexion
-{
+class Alimento extends Conexion {
     private $pdo;
 
-    public function __CONSTRUCT()
-    {
+    public function __CONSTRUCT() {
         $this->pdo = parent::getConexion();
     }
 
+    // Método para obtener todos los tipos de alimento
+    public function obtenerTiposAlimento() {
+        try {
+            $query = $this->pdo->prepare("CALL spu_obtenerTiposAlimento()");
+            $query->execute();
+            $tipos = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $tipos ?: []; // Retornar un array vacío si no hay resultados
+        } catch (PDOException $e) {
+            error_log("Error en obtenerTiposAlimento: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
+    }
+
+    // Método para obtener las unidades de medida asociadas a un tipo de alimento específico
+    public function obtenerUnidadesPorTipoAlimento($idTipoAlimento) {
+        try {
+            $query = $this->pdo->prepare("CALL spu_obtenerUnidadesPorTipoAlimento(?)");
+            $query->execute([$idTipoAlimento]);
+            $unidades = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $unidades ?: []; // Retornar un array vacío si no hay resultados
+        } catch (PDOException $e) {
+            error_log("Error en obtenerUnidadesPorTipoAlimento: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
+    }
+
     // Método para registrar un nuevo alimento
-    public function registrarNuevoAlimento($params = [])
-    {
+    public function registrarNuevoAlimento($params = []) {
         try {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
@@ -23,32 +46,46 @@ class Alimento extends Conexion
                 throw new Exception('Usuario no autenticado.');
             }
 
+            // Validar campos de entrada
             if (empty($params['nombreAlimento']) || $params['stockActual'] <= 0 || $params['costo'] <= 0 || $params['stockMinimo'] < 0) {
                 throw new Exception('Datos inválidos. Verifique el nombre del alimento, stock actual, stock mínimo y costo.');
             }
 
-            // Verificar si el lote ya existe con la unidad de medida
-            $verificacionLote = $this->verificarLote($params['lote'], $params['unidadMedida']);
+            // Validar el tipo de alimento
+            $idTipoAlimento = $params['tipoAlimento'];
+            $tiposAlimento = $this->obtenerTiposAlimento();
+            if (isset($tiposAlimento['status']) || !$this->validarIdTipo($tiposAlimento, $idTipoAlimento)) {
+                throw new Exception('Tipo de alimento no válido.');
+            }
+
+            // Validar la unidad de medida
+            $unidadesMedida = $this->obtenerUnidadesPorTipoAlimento($idTipoAlimento);
+            $idUnidadMedida = $params['unidadMedida'];
+            if (isset($unidadesMedida['status']) || !$this->validarIdUnidad($unidadesMedida, $idUnidadMedida)) {
+                throw new Exception('Unidad de medida no válida.');
+            }
+
+            // Verificar si el lote ya existe
+            $verificacionLote = $this->verificarLote($params['lote'], $idUnidadMedida);
             if ($verificacionLote['status'] === 'error') {
                 throw new Exception($verificacionLote['message']);
             }
-
             $idLote = $verificacionLote['idLote'];
             if ($idLote === null) {
-                // Si el lote no existe, crearlo
-                $query = $this->pdo->prepare("INSERT INTO LotesAlimento (lote, unidadMedida, fechaCaducidad, fechaIngreso) VALUES (?, ?, ?, NOW())");
-                $query->execute([$params['lote'], $params['unidadMedida'], $params['fechaCaducidad']]);
-                $idLote = $this->pdo->lastInsertId(); // Obtener el id del nuevo lote
+                // Insertar lote si no existe
+                $query = $this->pdo->prepare("INSERT INTO LotesAlimento (lote, fechaCaducidad, fechaIngreso) VALUES (?, ?, NOW())");
+                $query->execute([$params['lote'], $params['fechaCaducidad']]);
+                $idLote = $this->pdo->lastInsertId();
             }
 
-            // Registrar el alimento utilizando el idLote correcto
+            // Registrar el alimento
             $query = $this->pdo->prepare("CALL spu_alimentos_nuevo(?,?,?,?,?,?,?,?,?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
-                $params['tipoAlimento'],
-                $params['unidadMedida'],
-                $params['lote'],           // Este es el número de lote que se envió en el formulario
+                $idTipoAlimento,
+                $idUnidadMedida,
+                $params['lote'],
                 $params['costo'],
                 $params['fechaCaducidad'],
                 $params['stockActual'],
@@ -56,6 +93,7 @@ class Alimento extends Conexion
             ]);
 
             return ['status' => 'success', 'message' => 'Alimento registrado exitosamente.'];
+
         } catch (PDOException $e) {
             error_log("Error en la base de datos: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
@@ -65,37 +103,80 @@ class Alimento extends Conexion
         }
     }
 
+    // Función para validar si un ID de tipo de alimento es válido
+    private function validarIdTipo($tiposAlimento, $idTipoAlimento) {
+        foreach ($tiposAlimento as $tipo) {
+            if ($tipo['idTipoAlimento'] == $idTipoAlimento) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Función para validar si un ID de unidad de medida es válido para un tipo de alimento
+    private function validarIdUnidad($unidadesMedida, $idUnidadMedida) {
+        foreach ($unidadesMedida as $unidad) {
+            if ($unidad['idUnidadMedida'] == $idUnidadMedida) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    
+    
+    
+
     // Método para registrar una entrada de alimento
-    public function registrarEntradaAlimento($params = [])
-    {
+    // Método para registrar una entrada de alimento
+    public function registrarEntradaAlimento($params = []) {
         try {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
-
+    
             $idUsuario = $_SESSION['idUsuario'] ?? null;
-
             if ($idUsuario === null) {
                 throw new Exception('Usuario no autenticado.');
             }
-
+    
+            // Validaciones para nombre del alimento, cantidad, lote y unidad de medida
             if (empty($params['nombreAlimento']) || $params['cantidad'] <= 0 || empty($params['lote']) || empty($params['unidadMedida'])) {
                 throw new Exception('Datos inválidos. Verifique el nombre del alimento, el lote, la unidad de medida y la cantidad.');
             }
-
-            // Registrar en el log los datos enviados para depuración
-            error_log("Llamada al procedimiento spu_alimentos_entrada con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, lote={$params['lote']}, unidadMedida={$params['unidadMedida']}, cantidad={$params['cantidad']}");
-
+    
+            // Obtener el idUnidadMedida correspondiente a la unidad de medida asociada al alimento
+            $unidadesMedida = $this->obtenerUnidadesPorAlimento($params['nombreAlimento']);
+            
+            // Validar que el ID de unidad de medida es correcto
+            $idUnidadMedida = null;
+            foreach ($unidadesMedida as $unidad) {
+                if ($unidad['idUnidadMedida'] == $params['unidadMedida']) {  // Aquí se compara el ID
+                    $idUnidadMedida = $unidad['idUnidadMedida'];
+                    break;
+                }
+            }
+    
+            if (!$idUnidadMedida) {
+                throw new Exception('La unidad de medida especificada no existe.');
+            }
+    
+            // Log para depuración
+            error_log("Llamada al procedimiento spu_alimentos_entrada con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, lote={$params['lote']}, idUnidadMedida=$idUnidadMedida, cantidad={$params['cantidad']}");
+    
+            // Llamada al procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_alimentos_entrada(?, ?, ?, ?, ?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
-                $params['unidadMedida'],
-                $params['lote'],      // Enviar el valor exacto de `lote`
+                $idUnidadMedida,
+                $params['lote'],
                 $params['cantidad']
             ]);
-
+    
             return ['status' => 'success', 'message' => 'Entrada registrada exitosamente.'];
+    
         } catch (PDOException $e) {
             if ($e->getCode() == '45000') {
                 return ['status' => 'error', 'message' => $e->getMessage()];
@@ -107,10 +188,15 @@ class Alimento extends Conexion
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+    
 
+
+    
+
+    
     // Método para registrar una salida de alimento
-    public function registrarSalidaAlimento($params = [])
-    {
+    // Método para registrar una salida de alimento
+    public function registrarSalidaAlimento($params = []) {
         try {
             // Iniciar sesión si no está iniciada
             if (session_status() == PHP_SESSION_NONE) {
@@ -126,10 +212,8 @@ class Alimento extends Conexion
             }
 
             // Validar los datos necesarios
-            if (
-                empty($params['nombreAlimento']) || !is_numeric($params['cantidad']) || $params['cantidad'] <= 0 ||
-                empty($params['idTipoEquino']) || empty($params['unidadMedida'])
-            ) {
+            if (empty($params['nombreAlimento']) || !is_numeric($params['cantidad']) || $params['cantidad'] <= 0 || 
+                empty($params['idEquino']) || empty($params['unidadMedida'])) {
                 throw new Exception('Datos inválidos. Verifique el nombre del alimento, la cantidad, la unidad de medida y el tipo de equino.');
             }
 
@@ -142,18 +226,21 @@ class Alimento extends Conexion
                 throw new Exception('La merma debe ser un valor numérico mayor o igual a 0.');
             }
 
+            // `unidadMedida` ya debería ser el ID, por lo que no necesitamos hacer una búsqueda
+            $idUnidadMedida = $params['unidadMedida'];
+            
             // Registrar en el log los datos enviados para depuración
-            error_log("Llamada al procedimiento almacenado: spu_alimentos_salida con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, unidadMedida={$params['unidadMedida']}, cantidad={$params['cantidad']}, idTipoEquino={$params['idTipoEquino']}, lote={$params['lote']}, merma={$merma}");
+            error_log("Llamada al procedimiento almacenado: spu_alimentos_salida con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, unidadMedida={$idUnidadMedida}, cantidad={$params['cantidad']}, idEquino={$params['idEquino']}, lote={$lote}, merma={$merma}");
 
             // Llamar al procedimiento almacenado para registrar la salida de alimento
             $query = $this->pdo->prepare("CALL spu_alimentos_salida(?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
-                $params['unidadMedida'],
+                $idUnidadMedida,  // Directamente usa el ID de la unidad de medida
                 $params['cantidad'],
-                $params['idTipoEquino'],
-                $params['lote'],   // Usar el valor exacto de lote
+                $params['idEquino'],
+                $lote,   // Usar el valor exacto de lote
                 $merma
             ]);
 
@@ -169,6 +256,7 @@ class Alimento extends Conexion
             }
 
             return ['status' => 'success', 'message' => 'Salida registrada exitosamente.'];
+
         } catch (PDOException $e) {
             if ($e->getCode() == '45000') {
                 return ['status' => 'error', 'message' => $e->getMessage()];
@@ -181,38 +269,37 @@ class Alimento extends Conexion
         }
     }
 
+
+
     // Método para notificar stock bajo
-    public function notificarStockBajo()
-    {
+    public function notificarStockBajo() {
         try {
-            // Preparar la consulta para llamar al procedimiento almacenado sin parámetros
+            // Preparar la consulta para llamar al procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_notificar_stock_bajo_alimentos()");
 
-            // Ejecutar el procedimiento
+            // Ejecutar el procedimiento sin parámetros
             $query->execute();
 
-            // Obtener los resultados de la primera consulta (alimentos agotados)
-            $agotados = $query->fetchAll(PDO::FETCH_ASSOC);
-            $query->nextRowset(); // Mover al siguiente conjunto de resultados
-
-            // Obtener los resultados de la segunda consulta (alimentos con stock bajo)
-            $bajoStock = $query->fetchAll(PDO::FETCH_ASSOC);
-
-            // Combinar ambos resultados en un solo arreglo para devolver
-            $resultados = [
-                'agotados' => $agotados,
-                'bajoStock' => $bajoStock
-            ];
+            // Recuperar los resultados
+            $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
 
             // Devolver los resultados si se encuentran notificaciones
-            if (!empty($agotados) || !empty($bajoStock)) {
+            if (!empty($resultados)) {
                 return ['status' => 'success', 'data' => $resultados];
             } else {
                 return ['status' => 'info', 'message' => 'No hay productos con stock bajo o agotados.'];
             }
+
         } catch (PDOException $e) {
-            // Capturar errores específicos de la base de datos
+            // Capturar errores SQL específicos del procedimiento almacenado (45000)
+            if ($e->getCode() == '45000') {
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
+
+            // Registrar el error exacto de PDO en los logs
             error_log("Error en la base de datos (PDO): " . $e->getMessage());
+
+            // Devolver un mensaje genérico de error de base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
             // Capturar y registrar otros errores generales
@@ -221,152 +308,234 @@ class Alimento extends Conexion
         }
     }
 
+
     // Método para obtener el historial de movimientos de alimentos
-    public function obtenerHistorialMovimientos($params = [])
-    {
+    public function obtenerHistorialMovimientos($params = []) {
         try {
             // Validar que se haya proporcionado un tipo de movimiento válido
             $tipoMovimiento = $params['tipoMovimiento'] ?? 'Entrada';
             if (!in_array($tipoMovimiento, ['Entrada', 'Salida'])) {
                 throw new Exception('Tipo de movimiento no válido. Debe ser "Entrada" o "Salida".');
             }
-
+    
             // Validar que las fechas sean correctas
             $fechaInicio = $params['fechaInicio'] ?? '1900-01-01';
             $fechaFin = $params['fechaFin'] ?? date('Y-m-d');
             if (strtotime($fechaInicio) > strtotime($fechaFin)) {
                 throw new Exception('La fecha de inicio no puede ser posterior a la fecha de fin.');
             }
-
-            // Preparar la llamada al procedimiento almacenado con los 6 parámetros
+    
+            // Validar límite y desplazamiento (paginación)
+            $limite = isset($params['limit']) && is_numeric($params['limit']) ? (int)$params['limit'] : 10;
+            $desplazamiento = isset($params['offset']) && is_numeric($params['offset']) ? (int)$params['offset'] : 0;
+            
+            // ID del usuario: 0 para todos o un ID específico
+            $idUsuario = isset($params['idUsuario']) && is_numeric($params['idUsuario']) ? (int)$params['idUsuario'] : 0;
+    
+            // Preparar la llamada al procedimiento almacenado con los parámetros necesarios
             $query = $this->pdo->prepare("CALL spu_historial_completo(?, ?, ?, ?, ?, ?)");
-
-            // Ejecutar el procedimiento almacenado pasando los parámetros necesarios
+    
+            // Ejecutar el procedimiento almacenado pasando los parámetros
             $query->execute([
-                $tipoMovimiento,                         // Tipo de movimiento (Entrada/Salida)
-                $fechaInicio,                            // Fecha de inicio
-                $fechaFin,                               // Fecha de fin
-                $params['idUsuario'] ?? 0,               // ID del usuario (0 para todos los usuarios)
-                $params['limit'] ?? 10,                  // Límite de resultados
-                $params['offset'] ?? 0                   // Desplazamiento para paginación
+                $tipoMovimiento,  // Tipo de movimiento (Entrada/Salida)
+                $fechaInicio,     // Fecha de inicio
+                $fechaFin,        // Fecha de fin
+                $idUsuario,       // ID del usuario (0 para todos los usuarios)
+                $limite,          // Límite de resultados
+                $desplazamiento   // Desplazamiento para paginación
             ]);
-
+    
             // Obtener los resultados y devolverlos
             $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
-
+    
             // Verificar si hay resultados
             if (!empty($resultados)) {
                 return ['status' => 'success', 'data' => $resultados];
             } else {
                 return ['status' => 'info', 'message' => 'No se encontraron movimientos en el rango de fechas seleccionado.'];
             }
+    
         } catch (PDOException $e) {
             // Capturar y registrar cualquier error SQL
             error_log("Error en la base de datos: " . $e->getMessage());
-
+    
             // Devolver un mensaje de error en caso de problemas en la base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
             // Capturar y registrar cualquier otro tipo de error
             error_log("Error: " . $e->getMessage());
-
+    
             // Devolver un mensaje de error general
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+    
 
-    // Método para obtener todos los alimentos
-    public function getAllAlimentos()
-    {
+    // Método para obtener las unidades de medida asociadas a un alimento específico por nombre
+    public function obtenerUnidadesPorAlimento($nombreAlimento) {
         try {
-            $query = $this->pdo->prepare("Call spu_obtenerAlimentosConLote()");
+            // Preparar la consulta para obtener las unidades de medida asociadas a un alimento específico
+            $query = $this->pdo->prepare("
+                SELECT um.idUnidadMedida, um.nombreUnidad
+                FROM Alimentos a
+                JOIN UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+                WHERE LOWER(a.nombreAlimento) = LOWER(:nombreAlimento)
+                GROUP BY um.idUnidadMedida, um.nombreUnidad
+            ");
+
+            // Asignar el parámetro a la consulta
+            $query->bindParam(':nombreAlimento', $nombreAlimento, PDO::PARAM_STR);
+
+            // Ejecutar la consulta
             $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Obtener los resultados
+            $unidades = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Retornar las unidades en un array
+            return $unidades ?: [];
+
         } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return [];
+            // Registrar el error y devolver un mensaje de error
+            error_log("Error en obtenerUnidadesPorAlimento: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
+    }
+
+
+
+    // Método para obtener alimentos y lotes, con opción de filtrar por un alimento específico
+    public function getAllAlimentos($idAlimento = null) {
+        try {
+            // Preparar la llamada al procedimiento almacenado con el parámetro opcional
+            $query = $this->pdo->prepare("CALL spu_obtenerAlimentosConLote(?)");
+            $query->execute([$idAlimento]);
+
+            // Obtener los resultados y devolverlos en formato asociativo
+            $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Verificar si se encontraron resultados
+            if (!empty($resultados)) {
+                return ['status' => 'success', 'data' => $resultados];
+            } else {
+                return ['status' => 'info', 'message' => 'No se encontraron alimentos registrados.'];
+            }
+
+        } catch (PDOException $e) {
+            // Registrar el error en los logs
+            error_log("Error en la base de datos: " . $e->getMessage());
+
+            // Devolver un mensaje de error al usuario
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
 
     // Método para eliminar un alimento
-    public function eliminarAlimento($idAlimento)
-    {
+    public function eliminarAlimento($idAlimento) {
         try {
-            $query = $this->pdo->prepare("DELETE FROM Alimentos WHERE idAlimento = ?");
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_eliminarAlimento(?)");
+            
+            // Ejecutar el procedimiento pasando el idAlimento
             $query->execute([$idAlimento]);
+
             return ['status' => 'success', 'message' => 'Alimento eliminado exitosamente.'];
+
         } catch (PDOException $e) {
-            error_log($e->getMessage());
+            // Capturar y registrar errores específicos de SQL (como el error 45000 del procedimiento)
+            if ($e->getCode() == '45000') {
+                return ['status' => 'error', 'message' => $e->getMessage()];
+            }
+
+            // Registrar cualquier otro error en los logs
+            error_log("Error en la base de datos al eliminar alimento: " . $e->getMessage());
+
+            // Devolver un mensaje de error al usuario
             return ['status' => 'error', 'message' => 'Error al eliminar el alimento.'];
         }
     }
 
-    // Método para obtener los tipos de equinos
-    public function getTipoEquinos()
-    {
+    // Método para obtener la cantidad de equinos por categoría
+    public function getEquinosPorCategoria() {
         try {
-            // Cambiamos la llamada al nuevo procedimiento almacenado
-            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_contar_equinos_por_categoria()");
             $query->execute();
 
-            // Devolvemos los resultados como un arreglo asociativo
-            return $query->fetchAll(PDO::FETCH_ASSOC);
+            // Obtener los resultados y devolverlos en formato asociativo
+            $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Verificar si se encontraron resultados
+            if (!empty($resultados)) {
+                return ['status' => 'success', 'data' => $resultados];
+            } else {
+                return ['status' => 'info', 'message' => 'No se encontraron equinos en las categorías especificadas.'];
+            }
+
         } catch (PDOException $e) {
-            // Registramos el error en el log
-            error_log("Error en getTipoEquinos: " . $e->getMessage());
-            return [];
+            // Registrar el error en los logs
+            error_log("Error en la base de datos: " . $e->getMessage());
+
+            // Devolver un mensaje de error al usuario
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
 
-    public function getUnidadesMedida($nombreAlimento)
-    {
-        $query = $this->pdo->prepare("SELECT unidadMedida FROM Alimentos WHERE nombreAlimento = :nombreAlimento");
-        $query->execute(['nombreAlimento' => $nombreAlimento]);
 
-        // Asumimos que se puede devolver más de una unidad de medida
-        return $query->fetchAll(PDO::FETCH_COLUMN);
-    }
-
-    // Listar todos los lotes registrados
-    public function listarLotes()
-    {
+    // Método para listar todos los lotes registrados
+    public function listarLotes() {
         try {
+            // Preparar la llamada al procedimiento almacenado para listar los lotes
             $query = $this->pdo->prepare("CALL spu_listar_lotes_alimentos()");
             $query->execute();
-
+            
+            // Obtener los resultados en formato asociativo
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
-
-            // Verificar lo que se obtiene del procedimiento
+            
+            // Log para verificar el contenido de los resultados (útil para depuración)
             error_log(print_r($result, true));
 
-            if ($result) {
+            // Verificar si se obtuvieron resultados y retornar la respuesta
+            if (!empty($result)) {
                 return ['status' => 'success', 'data' => $result];
             } else {
-                return ['status' => 'error', 'message' => 'No se encontraron lotes registrados.'];
+                return ['status' => 'info', 'message' => 'No se encontraron lotes registrados.'];
             }
+
         } catch (PDOException $e) {
+            // Registrar el error en los logs para diagnóstico
             error_log("Error al listar los lotes: " . $e->getMessage());
+            // Devolver mensaje de error de base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
+            // Registrar cualquier otro error en los logs
             error_log("Error inesperado al listar los lotes: " . $e->getMessage());
+            // Devolver mensaje de error inesperado
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
 
-    // Verificar si un lote ya está registrado con una unidad de medida específica
-    public function verificarLote($lote, $unidadMedida)
-    {
+
+    // Método para verificar si un lote ya está registrado con una unidad de medida específica
+    // Método para verificar si un lote ya está registrado con una unidad de medida específica
+    public function verificarLote($lote, $idUnidadMedida) {
         try {
-            // Prepara la consulta para verificar si el lote y la unidad de medida ya existen en la tabla de lotes
+            // Verificar si el lote ya existe en combinación con la unidad de medida en la tabla Alimentos
             $query = $this->pdo->prepare("
-                SELECT idLote, unidadMedida 
-                FROM LotesAlimento 
-                WHERE lote = :lote AND unidadMedida = :unidadMedida
+                SELECT a.idLote 
+                FROM Alimentos a
+                JOIN LotesAlimento l ON a.idLote = l.idLote
+                WHERE l.lote = :lote AND a.idUnidadMedida = :idUnidadMedida
             ");
+
+            // Asignar valores a los parámetros de la consulta
             $query->bindParam(':lote', $lote, PDO::PARAM_STR);
-            $query->bindParam(':unidadMedida', $unidadMedida, PDO::PARAM_STR);
+            $query->bindParam(':idUnidadMedida', $idUnidadMedida, PDO::PARAM_INT);
+
+            // Ejecutar la consulta
             $query->execute();
 
+            // Obtener el resultado en formato asociativo
             $loteResult = $query->fetch(PDO::FETCH_ASSOC);
 
             // Si el lote ya existe, devolver el idLote
@@ -374,14 +543,21 @@ class Alimento extends Conexion
                 return ['status' => 'success', 'idLote' => $loteResult['idLote']];
             }
 
-            // Si el lote no existe, devolver éxito para que se cree un nuevo lote
+            // Si el lote no existe, devolver éxito con idLote como null
             return ['status' => 'success', 'idLote' => null];
+
         } catch (PDOException $e) {
+            // Registrar error en el log y devolver mensaje de error
             error_log("Error al verificar el lote: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
+            // Manejar cualquier otro error inesperado
             error_log("Error inesperado al verificar el lote: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
+
+    //original
+
+
 }

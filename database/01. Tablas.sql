@@ -135,6 +135,7 @@ CREATE TABLE Implementos (
     CONSTRAINT fk_implemento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento)
 ) ENGINE = INNODB;
 
+<<<<<<< HEAD
 CREATE TABLE HistorialImplemento (
     idHistorial        INT PRIMARY KEY AUTO_INCREMENT,
     idInventario       INT NOT NULL,
@@ -157,41 +158,102 @@ CREATE TABLE LotesAlimento (
     fechaIngreso DATETIME DEFAULT NOW(),        -- Fecha de ingreso del lote
     CONSTRAINT UQ_lote_unidad UNIQUE (lote, unidadMedida)  -- Unicidad de lote por unidad de medida
 );
+=======
+>>>>>>> dcde77624c131031a62795dab1d1c5d4671c14d8
 
--- 11. Alimentos
+
+
+
+-- 
+
+-- --------------------------------------------------------------------------------------------nuevo 
+-- 3. Tabla Unidades de Medida
+CREATE TABLE UnidadesMedidaAlimento (
+    idUnidadMedida INT PRIMARY KEY AUTO_INCREMENT,
+    nombreUnidad VARCHAR(10) NOT NULL UNIQUE      -- Ejemplo: 'Kg', 'L'
+) ENGINE = INNODB;
+
+-- 4. Tabla de Tipos de Alimentos
+CREATE TABLE TipoAlimentos (
+    idTipoAlimento INT PRIMARY KEY AUTO_INCREMENT,
+    tipoAlimento VARCHAR(50) NOT NULL UNIQUE      -- Ejemplo: 'Granos', 'Suplemento'
+) ENGINE = INNODB;
+
+-- 5. Tabla Lotes de Alimentos
+CREATE TABLE LotesAlimento (
+    idLote INT PRIMARY KEY AUTO_INCREMENT,
+    lote VARCHAR(50) NOT NULL,
+    fechaCaducidad DATE DEFAULT NULL,      -- Opcional
+    fechaIngreso DATETIME DEFAULT NOW()    -- Fecha en que el lote fue ingresado
+) ENGINE = INNODB;
+
+-- 6. Tabla Intermedia para la Relación entre Tipos de Alimento y Unidades de Medida
+CREATE TABLE TipoAlimento_UnidadMedida (
+    idTipoAlimento INT NOT NULL,
+    idUnidadMedida INT NOT NULL,
+    PRIMARY KEY (idTipoAlimento, idUnidadMedida),
+    CONSTRAINT fk_tipoalimento FOREIGN KEY (idTipoAlimento) REFERENCES TipoAlimentos(idTipoAlimento) ON DELETE CASCADE,
+    CONSTRAINT fk_unidadmedida FOREIGN KEY (idUnidadMedida) REFERENCES UnidadesMedidaAlimento(idUnidadMedida) ON DELETE CASCADE
+) ENGINE = INNODB;
+
+-- 7. Tabla Alimentos
 CREATE TABLE Alimentos (
     idAlimento           INT PRIMARY KEY AUTO_INCREMENT,
     idUsuario            INT NOT NULL,
     nombreAlimento       VARCHAR(100) NOT NULL,
-    tipoAlimento         VARCHAR(50),
-    stockActual          DECIMAL(10,2) NOT NULL,   -- Stock actual del alimento
-    stockMinimo          DECIMAL(10,2) DEFAULT 0,  -- Stock mínimo para alerta
+    idTipoAlimento       INT NOT NULL,                     -- Referencia a TipoAlimentos
+    stockActual          DECIMAL(10,2) NOT NULL,           -- Stock actual del alimento
+    stockMinimo          DECIMAL(10,2) DEFAULT 0,          -- Stock mínimo para alerta
     estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',  -- Estado del alimento
-    unidadMedida         VARCHAR(10) NOT NULL,     -- Unidad de medida del alimento (Kilos, Litros, etc.)
-    costo                DECIMAL(10,2) NOT NULL,   -- Precio unitario del alimento
-    idLote               INT NOT NULL,             -- Referencia al lote
-    merma                DECIMAL(10,2) NULL,       -- Registro de la merma en salidas
-    compra               DECIMAL(10,2) NOT NULL,   -- Costo total de compra (costo * cantidad)
-    fechaMovimiento      DATETIME DEFAULT NOW(),   -- Fecha del último movimiento
-    CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),  -- Relación con la tabla Usuarios
-    CONSTRAINT fk_alimento_lote FOREIGN KEY (idLote) REFERENCES LotesAlimento(idLote)  -- Relación con la tabla Lotes
+    idUnidadMedida       INT NOT NULL,                     -- Referencia a UnidadesMedidaAlimento
+    costo                DECIMAL(10,2) NOT NULL,           -- Precio unitario del alimento
+    idLote               INT NOT NULL,                     -- Referencia al lote
+    idEquino             INT NULL,                         -- Solo para salidas (referencia a equino)
+    compra               DECIMAL(10,2) NOT NULL,           -- Costo total de compra (costo * cantidad)
+    fechaMovimiento      DATETIME DEFAULT NOW(),           -- Fecha del último movimiento
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_alimento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
+    CONSTRAINT fk_alimento_tipoalimento FOREIGN KEY (idTipoAlimento) REFERENCES TipoAlimentos(idTipoAlimento),  -- Relación con TipoAlimentos
+    CONSTRAINT fk_alimento_unidadmedida FOREIGN KEY (idUnidadMedida) REFERENCES UnidadesMedidaAlimento(idUnidadMedida),  -- Relación con UnidadesMedidaAlimento
+    CONSTRAINT fk_alimento_lote FOREIGN KEY (idLote) REFERENCES LotesAlimento(idLote),  -- Relación con LotesAlimento
+    CONSTRAINT fk_alimento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)  -- Relación con Equinos
 ) ENGINE = INNODB;
 
--- 12. HistorialMovimientos alimentos
+-- 8. Tabla MermasAlimento
+CREATE TABLE MermasAlimento (
+    idMerma        INT PRIMARY KEY AUTO_INCREMENT,
+    idAlimento     INT NOT NULL,                   -- Relación con la tabla Alimentos
+    cantidadMerma  DECIMAL(10,2) NOT NULL,         -- Cantidad de merma
+    fechaMerma     DATETIME DEFAULT NOW(),         -- Fecha en que se registró la merma
+    motivo         VARCHAR(255) NULL,              -- Opcional, para registrar motivo de la merma
+
+    -- Clave foránea para relacionar con la tabla Alimentos
+    CONSTRAINT fk_merma_alimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento) ON DELETE CASCADE
+) ENGINE = INNODB;
+
+-- 9. Tabla HistorialMovimientos
 CREATE TABLE HistorialMovimientos (
-    idMovimiento 			INT AUTO_INCREMENT PRIMARY KEY,
-    idAlimento 				INT NOT NULL,           
-    idTipomovimiento 		INT NOT NULL,
-    idUsuario 				INT NOT NULL,
-    unidadMedida			VARCHAR(10) NOT NULL,
-	cantidad 				DECIMAL(10,2) NOT NULL,
-    cantidadEquinosTipos	VARCHAR(40) NOT NULL,
-    fechaMovimiento 		DATE DEFAULT NOW(), 
-    merma 					DECIMAL(10,2) NULL,
-    CONSTRAINT fk_idAlimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
-    CONSTRAINT fk_idTipoMovimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento),
-    CONSTRAINT fk_idusuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+    idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
+    idAlimento INT NOT NULL,            -- ID del alimento (relación con Alimentos)
+    tipoMovimiento VARCHAR(50) NOT NULL,-- Tipo de movimiento (Entrada/Salida)
+    cantidad DECIMAL(10,2) NOT NULL,    -- Cantidad de alimento
+    idEquino INT NULL,                  -- ID del equino (solo para Salida)
+    idUsuario INT NOT NULL,             -- ID del usuario que realiza el movimiento
+    unidadMedida VARCHAR(50) NOT NULL,  -- Unidad de medida (Kilos, Litros, etc.)
+    fechaMovimiento DATE DEFAULT NOW(), -- Fecha del movimiento
+    merma DECIMAL(10,2) NULL,           -- Merma (solo si aplica)
+    
+    -- Restricciones de Clave Foránea
+    FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
+    FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino), -- Relación con Equinos
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE=InnoDB;
+-- ----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 -- 13. TiposMedicamentos ----°°° admedi
 CREATE TABLE TiposMedicamentos (
@@ -323,18 +385,44 @@ CREATE TABLE Entrenamientos (
 ) ENGINE = INNODB;
 
 
+
+
 -- 26. HistorialHerrero
+CREATE TABLE EstadoHerramienta (
+    idEstado INT PRIMARY KEY AUTO_INCREMENT,
+    descripcionEstado VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE HistorialHerrero (
-    idHistorialHerrero 		INT PRIMARY KEY AUTO_INCREMENT,
-    idEquino 				INT NOT NULL,
-    idUsuario 				INT NOT NULL,
-    fecha 					DATE NOT NULL,
-    trabajoRealizado 		TEXT NOT NULL,
-    herramientasUsadas 		TEXT,
-    observaciones 			TEXT,
+    idHistorialHerrero INT PRIMARY KEY AUTO_INCREMENT,
+    idEquino INT NOT NULL,
+    idUsuario INT NOT NULL,
+    fecha DATE NOT NULL,
+    trabajoRealizado TEXT NOT NULL,
+    herramientasUsadas TEXT, -- Lista de herramientas en formato de texto
+    estadoInicio INT NOT NULL, -- Estado de las herramientas al inicio del trabajo
+    estadoFin INT, -- Estado de las herramientas al final del trabajo
+    observaciones TEXT,
     CONSTRAINT fk_historialherrero_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
-) ENGINE = INNODB;
+    CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
+    CONSTRAINT fk_historialherrero_estado_inicio FOREIGN KEY (estadoInicio) REFERENCES EstadoHerramienta(idEstado),
+    CONSTRAINT fk_historialherrero_estado_fin FOREIGN KEY (estadoFin) REFERENCES EstadoHerramienta(idEstado)
+);
+
+
+CREATE TABLE HerramientasUsadasHistorial (
+    idHerramientasUsadas INT PRIMARY KEY AUTO_INCREMENT,
+    idHistorialHerrero INT NOT NULL,
+    idHerramienta INT NOT NULL,
+    estadoInicio INT NOT NULL, -- Estado inicial de la herramienta individual
+    estadoFin INT, -- Estado final de la herramienta individual
+    CONSTRAINT fk_herramienta_historial FOREIGN KEY (idHistorialHerrero) REFERENCES HistorialHerrero(idHistorialHerrero),
+    CONSTRAINT fk_herramienta_estado_inicio FOREIGN KEY (estadoInicio) REFERENCES EstadoHerramienta(idEstado),
+    CONSTRAINT fk_herramienta_estado_fin FOREIGN KEY (estadoFin) REFERENCES EstadoHerramienta(idEstado)
+);
+
+
+
 
 -- Tipo Suelo
 CREATE TABLE tipoSuelo (
