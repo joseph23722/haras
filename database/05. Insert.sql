@@ -96,9 +96,6 @@ INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES
     (10, 14), -- cápsula
     (10, 16); -- dosificador
 
-
-
-
 -- 1. Insertar Datos en TipoInventarios
 INSERT INTO TipoInventarios (nombreInventario) 
 VALUES 
@@ -212,13 +209,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
 	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills'),
-<<<<<<< HEAD
     (4, 'registrar-implementos-caballos', 'S', 'Implementos Caballos', 'fa-solid fa-scissors'),
-    (4, 'registrar-implementos-campos', 'S', 'Implementos Campos', 'fa-solid fa-wrench');
-
-=======
+    (4, 'registrar-implementos-campos', 'S', 'Implementos Campos', 'fa-solid fa-wrench'),
     (4, 'administrar-herramienta', 'S', 'Herrero', 'fas fa-wrench');
->>>>>>> dcde77624c131031a62795dab1d1c5d4671c14d8
 -- Servicios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     (5, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools'),
@@ -226,19 +219,18 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(5, 'listar-servicio', 'S', 'Listado Servicios', 'fa-solid fa-list');
 -- Usuarios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
-    (6, 'registrar-usuario', 'N', NULL, NULL);
+	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet');
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
-    (1, 14);
+    (1, 17);
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
-    (2, 14);
+    (2, 17);
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
@@ -249,11 +241,11 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 10),
     (3, 11),
     (3, 12),
-    (3, 13),
     (3, 14),
     (3, 15),
     (3, 16),
-    (3, 17);
+    (3, 17),
+    (3, 18);
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
 	(4, 1),
@@ -261,7 +253,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (4, 3),
     (4, 6),
     (4, 7),
-    (4, 18);
+    (4, 13);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -271,7 +263,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
 	(6, 4),
-    (6, 17);
+    (6, 14);
 
 INSERT INTO Nacionalidades (nacionalidad) VALUES 
 ('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),

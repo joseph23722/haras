@@ -135,7 +135,6 @@ CREATE TABLE Implementos (
     CONSTRAINT fk_implemento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento)
 ) ENGINE = INNODB;
 
-<<<<<<< HEAD
 CREATE TABLE HistorialImplemento (
     idHistorial        INT PRIMARY KEY AUTO_INCREMENT,
     idInventario       INT NOT NULL,
@@ -148,23 +147,6 @@ CREATE TABLE HistorialImplemento (
     CONSTRAINT fk_historial_inventario FOREIGN KEY (idInventario) REFERENCES Implementos(idInventario),
     CONSTRAINT fk_historial_tipoinventario FOREIGN KEY (idTipoinventario) REFERENCES TipoInventarios(idTipoinventario)
 ) ENGINE = INNODB;
-
--- 
-CREATE TABLE LotesAlimento (
-    idLote       INT PRIMARY KEY AUTO_INCREMENT,
-    lote         VARCHAR(50) NOT NULL,          -- Número del lote
-    unidadMedida VARCHAR(10) NOT NULL,          -- Unidad de medida asociada al lote (Kilos, Litros, etc.)
-    fechaCaducidad DATE NULL,                   -- Fecha de caducidad del lote (opcional)
-    fechaIngreso DATETIME DEFAULT NOW(),        -- Fecha de ingreso del lote
-    CONSTRAINT UQ_lote_unidad UNIQUE (lote, unidadMedida)  -- Unicidad de lote por unidad de medida
-);
-=======
->>>>>>> dcde77624c131031a62795dab1d1c5d4671c14d8
-
-
-
-
--- 
 
 -- --------------------------------------------------------------------------------------------nuevo 
 -- 3. Tabla Unidades de Medida
