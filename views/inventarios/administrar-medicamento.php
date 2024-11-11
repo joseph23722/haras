@@ -183,7 +183,7 @@
     </div>
 
     <!-- Modal para Agregar Nueva Combinación -->
-    <div class="modal fade" id="modalAgregarTipoPresentacion" tabindex="-1" aria-labelledby="modalAgregarTipoPresentacionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAgregarTipoPresentacion" tabindex="-1" aria-labelledby="modalAgregarTipoPresentacionLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header" style="background: #004080; color: white; padding: 15px;">
@@ -232,7 +232,7 @@
 
 
     <!-- Modal para Registrar Entrada de Medicamento -->
-    <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -287,7 +287,7 @@
 
 
     <!-- Modal para Registrar Salida de Medicamento -->
-    <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -358,7 +358,7 @@
 
 
     <!-- Modal para Sugerencias de Medicamentos -->
-    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">
+    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -393,7 +393,7 @@
     </div>
 
     <!-- Modal para Editar Sugerencia de Medicamento -->
-    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" style="background-color: #f39c12; color: white;">
@@ -427,7 +427,8 @@
 
 
     <!-- Modal para Historial de Movimientos de Medicamentos -->
-    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+    <!-- Modal para Historial de Movimientos de Medicamentos -->
+    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -449,7 +450,7 @@
                                 <option value="todos">Todos</option>
                             </select>
                         </div>
-                        <button type="button" id="buscarHistorial" class="btn btn-primary ms-3"><i class="fas fa-search me-1"></i>Buscar</button>
+                        <button type="button" id="buscarHistorial" class="btn btn-primary ms-3" onclick="reloadHistorialMovimientos();"><i class="fas fa-search me-1"></i>Buscar</button>
                     </div>
 
                     <!-- Pestañas para Entrada y Salida -->
@@ -479,9 +480,6 @@
                                             <th>Fecha de Movimiento</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="historial-entradas-table">
-                                        <!-- Los datos se cargarán dinámicamente -->
-                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -502,9 +500,6 @@
                                             <th>Fecha de Movimiento</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="historial-salidas-table">
-                                        <!-- Los datos se cargarán dinámicamente -->
-                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -519,14 +514,18 @@
         </div>
     </div>
 
+
+
+
     <!-- Tabla de Medicamentos Registrados -->
     <div class="card mb-4 shadow-sm">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">
-            <table id="medicamentosTable" class="table table-striped table-hover table-bordered" style="width:100%">
-                <thead style="background-color: #caf0f8; color: #003366;">
+            <!-- Tabla de medicamentos con botones de exportación y búsqueda integrados en la parte superior -->
+            <table id="tabla-medicamentos" class="table table-striped table-hover table-bordered" style="width:100%">
+                <thead>
                     <tr>
                         <th>Nombre</th>
                         <th>Lote</th>
@@ -541,17 +540,28 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="medicamentos-table-body">
-                    <!-- Datos dinámicos de la tabla se cargarán aquí -->
-                </tbody>
             </table>
         </div>
     </div>
 
 
+
+
+
 </div>
 
 <?php require_once '../footer.php'; ?>
+<script src="/haras/vendor/medicamento/historial-medicamento.js"></script>
+<script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
+
+
+
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
@@ -754,40 +764,40 @@
 
 
         // Función para cargar las categorías de equinos
-        // Función para cargar los tipos de equinos
+         // Función para cargar los tipos de equinos
         const loadTipoEquinos = async () => {
-        try {
-            // Hacemos la solicitud GET con los parámetros en la URL
-            const response = await fetch('../../controllers/alimento.controller.php?operation=getTipoEquinos', {
-            method: "GET"
-            });
+            try {
+                // Hacemos la solicitud GET con los parámetros en la URL
+                const response = await fetch('../../controllers/alimento.controller.php?operation=getTipoEquinos', {
+                method: "GET"
+                });
 
-            const textResponse = await response.text();
+                const textResponse = await response.text();
 
-            // Intentar convertir el texto en JSON
-            const parsedResponse = JSON.parse(textResponse);
+                // Intentar convertir el texto en JSON
+                const parsedResponse = JSON.parse(textResponse);
 
-            // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
-            if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-            const tiposEquinos = parsedResponse.data;
+                // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
+                if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
+                const tiposEquinos = parsedResponse.data;
 
-            // Limpiar el select antes de añadir contenido nuevo
-            tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
+                // Limpiar el select antes de añadir contenido nuevo
+                tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
 
-            // Añadir cada tipo de equino al select
-            tiposEquinos.forEach(tipo => {
-                const option = document.createElement('option');
-                option.value = tipo.idTipoEquino; // Usamos el idTipoEquino como valor
-                option.textContent = tipo.tipoEquino; // Mostramos el tipo de equino
-                tipoEquinoMovimiento.appendChild(option);
-            });
-            } else {
-            mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+                // Añadir cada tipo de equino al select
+                tiposEquinos.forEach(tipo => {
+                    const option = document.createElement('option');
+                    option.value = tipo.idTipoEquino; // Usamos el idTipoEquino como valor
+                    option.textContent = tipo.tipoEquino; // Mostramos el tipo de equino
+                    tipoEquinoMovimiento.appendChild(option);
+                });
+                } else {
+                mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+                }
+            } catch (error) {
+                console.error("Error al cargar tipos de equinos:", error);
+                mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
             }
-        } catch (error) {
-            console.error("Error al cargar tipos de equinos:", error);
-            mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
-        }
         };
 
         // Código adicional en el frontend para mostrar el valor seleccionado
@@ -796,110 +806,59 @@
         });
 
         // Historial de movimientos de medicamentos
-        const loadHistorialMovimientos = async () => {
-            try {
+        // Función para ajustar las fechas basadas en el filtro seleccionado
+        const setFechaFiltro = () => {
+            const filtroRango = document.getElementById('filtroRango').value;
+            const hoy = new Date();
+            let fechaInicio, fechaFin;
 
-                const filtroRango = document.getElementById('filtroRango').value;
-                let fechaInicio, fechaFin;
-                const hoy = new Date();
-
-                // Definir el rango de fechas basado en el filtro
-                switch (filtroRango) {
-                    case 'hoy':
-                        fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
-                        break;
-                    case 'ultimaSemana':
-                        fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
-                        fechaFin = new Date().toISOString().split('T')[0];
-                        break;
-                    case 'ultimoMes':
-                        fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
-                        fechaFin = new Date().toISOString().split('T')[0];
-                        break;
-                    default:
-                        fechaInicio = '';
-                        fechaFin = '';
-                }
-
-
-                // Solicitud para Entradas de Medicamentos usando ruta relativa
-                const entradasURL = `../../controllers/admedi.controller.php?operation=obtenerHistorialMovimientosMedicamentos&tipoMovimiento=Entrada&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-
-                const responseEntradas = await fetch(entradasURL, { method: "GET" });
-                const parsedEntradas = await responseEntradas.json();
-
-                // Verificar que haya datos para Entradas de Medicamentos y cargarlos en DataTable
-                if (parsedEntradas.status === 'success' && Array.isArray(parsedEntradas.data)) {
-                    if (parsedEntradas.data.length > 0) {
-                        $('#tabla-entradas').DataTable().clear().destroy();
-                        $('#tabla-entradas').DataTable({
-                            data: parsedEntradas.data,
-                            columns: [
-                                { data: 'idMedicamento' },
-                                { data: 'nombreMedicamento' },
-                                { data: 'descripcion' },
-                                { data: 'lote' },
-                                { data: 'stockActual' },
-                                { data: 'cantidad' },
-                                { data: 'fechaMovimiento' }
-                            ],
-                            responsive: true,
-                            autoWidth: false,
-                            paging: true,
-                            searching: true,
-                            language: {
-                                url: '/haras/data/es_es.json'
-                            }
-                        });
-                    }
-                }
-
-                // Solicitud para Salidas de Medicamentos usando ruta relativa
-                const salidasURL = `../../controllers/admedi.controller.php?operation=obtenerHistorialMovimientosMedicamentos&tipoMovimiento=Salida&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-
-                const responseSalidas = await fetch(salidasURL, { method: "GET" });
-                const parsedSalidas = await responseSalidas.json();
-
-                // Verificar que haya datos para Salidas de Medicamentos y cargarlos en DataTable
-                if (parsedSalidas.status === 'success' && Array.isArray(parsedSalidas.data)) {
-                    if (parsedSalidas.data.length > 0) {
-                        $('#tabla-salidas').DataTable().clear().destroy();
-                        $('#tabla-salidas').DataTable({
-                            data: parsedSalidas.data,
-                            columns: [
-                                { data: 'idMedicamento' },
-                                { data: 'nombreMedicamento' },
-                                { data: 'descripcion' },
-                                { data: 'lote' },
-                                { data: 'tipoEquino' },
-                                { data: 'cantidad' },
-                                { data: 'motivo' },
-                                { data: 'fechaMovimiento' }
-                            ],
-                            responsive: true,
-                            autoWidth: false,
-                            paging: true,
-                            searching: true,
-                            language: {
-                                url: '/haras/data/es_es.json'
-                            }
-                        });
-                    } 
-                } 
-
-            } catch (error) {
-                console.error('Error al cargar historial de movimientos de medicamentos:', error);
-                mostrarMensajeDinamico('Error al cargar historial de movimientos de medicamentos.', 'ERROR');
+            switch (filtroRango) {
+                case 'hoy':
+                    fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
+                    break;
+                case 'ultimaSemana':
+                    fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
+                    fechaFin = new Date().toISOString().split('T')[0];
+                    break;
+                case 'ultimoMes':
+                    fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
+                    fechaFin = new Date().toISOString().split('T')[0];
+                    break;
+                default:
+                    fechaInicio = '';
+                    fechaFin = '';
             }
+
+            // Asigna las fechas como atributos del filtro para uso en AJAX
+            document.getElementById('filtroRango').setAttribute('data-fecha-inicio', fechaInicio);
+            document.getElementById('filtroRango').setAttribute('data-fecha-fin', fechaFin);
         };
 
-        // Vincular la función al cambio en el filtro de rango
-        document.getElementById('filtroRango').addEventListener('change', loadHistorialMovimientos);
-        document.getElementById('buscarHistorial').addEventListener('click', loadHistorialMovimientos);
+        // Función para recargar las tablas de Entradas y Salidas
+        const reloadHistorialMovimientos = () => {
+            $('#tabla-entradas').DataTable().ajax.reload();
+            $('#tabla-salidas').DataTable().ajax.reload();
+        };
 
-        // Cargar los tipos de medicamentos desde el servidor
-        // Cargar los tipos de medicamentos desde el servidor
-        // Cargar los tipos de medicamentos desde el servidor
+        // Evento para actualizar el filtro de fecha y recargar las tablas cuando el usuario selecciona un nuevo rango
+        document.getElementById('filtroRango').addEventListener('change', () => {
+            setFechaFiltro();
+            reloadHistorialMovimientos();
+        });
+
+        // Llamar a las funciones de configuración cuando el DOM esté listo
+        $(document).ready(() => {
+            configurarDataTableEntradas();
+            configurarDataTableSalidas();
+        });
+
+
+
+        
+
+
+        
+
         // Cargar los tipos de medicamentos desde el servidor
         const loadTiposMedicamentos = async () => {
             try {
@@ -1083,6 +1042,7 @@
         
 
         // Cargar lista de medicamentos en la tabla
+        // Cargar lista de medicamentos en la tabla
         const loadMedicamentos = async () => {
             try {
                 const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
@@ -1100,90 +1060,18 @@
                 const result = JSON.parse(textResponse);
                 const medicamentos = result.data;
 
-                if ($.fn.dataTable.isDataTable('#medicamentosTable')) {
-                    $('#medicamentosTable').DataTable().destroy();
+                if ($.fn.dataTable.isDataTable('#tabla-medicamentos')) {
+                    $('#tabla-medicamentos').DataTable().clear().rows.add(medicamentos).draw();
+                } else {
+                    configurarDataTableMedicamentos(); // Inicializa DataTable si no está inicializado
                 }
-
-                $('#medicamentosTable').DataTable({
-                    data: medicamentos,
-                    columns: [
-                        { data: 'nombreMedicamento' },
-                        { data: 'lote' },
-                        { data: 'presentacion', defaultContent: 'N/A' },
-                        { data: 'dosis', defaultContent: 'N/A' },
-                        { data: 'nombreTipo', defaultContent: 'N/A' },
-                        { data: 'fechaCaducidad', defaultContent: 'N/A' },
-                        { data: 'cantidad_stock', defaultContent: 'N/A' },
-                        { data: 'precioUnitario', defaultContent: 'N/A' },
-                        { data: 'fechaIngreso', defaultContent: 'N/A' },
-                        { data: 'estado', defaultContent: 'N/A' },
-                        {
-                            data: null,
-                            title: 'Acciones',
-                            render: function(data, type, row) {
-                                return `<button class="btn btn-danger btn-sm shadow-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>`;
-                            },
-                            orderable: false
-                        }
-                    ],
-                    pageLength: 5,
-                    autoWidth: true,
-                    responsive: true,
-                    scrollX: true,
-                    language: {
-                        url: '/haras/data/es_es.json'
-                    },
-                    createdRow: function(row, data, dataIndex) {
-                        $(row).css({
-                            'font-weight': 'bold',
-                            'color': '#333',
-                            'background-color': (dataIndex % 2 === 0) ? '#f7f9fc' : '#ffffff',
-                            'border-bottom': '2px solid #0077b6'
-                        });
-                    },
-                    initComplete: function() {
-                        $('#medicamentosTable').css({
-                            'border-collapse': 'collapse',
-                            'width': '100%',
-                            'font-size': '16px',
-                            'table-layout': 'auto'
-                        });
-
-                        $('th').css({
-                            'background-color': '#3498db',
-                            'color': '#ffffff',
-                            'font-size': '14px',
-                            'text-align': 'center'
-                        });
-
-                        $('td').css({
-                            'padding': '10px',
-                            'text-align': 'center'
-                        });
-
-                        $('.btn-danger').css({
-                            'border-radius': '5px',
-                            'font-weight': 'bold',
-                            'color': '#ffffff'
-                        });
-                    }
-                });
-                // Escuchar el evento de redimensionamiento de la ventana
-                $(window).resize(function() {
-                    if ($.fn.dataTable.isDataTable('#medicamentosTable')) {
-                        $('#medicamentosTable').DataTable().columns.adjust().draw();
-                    }
-                });
-
-
 
             } catch (error) {
                 mostrarMensaje("Error al cargar medicamentos: " + error.message, 'error');
                 showToast("Error al cargar medicamentos", 'ERROR');
             }
         };
+
 
         
 
@@ -1313,8 +1201,6 @@
         };
 
 
-        // Registrar medicamento
-        // Registrar medicamento
         // Registrar medicamento
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -1466,8 +1352,6 @@
 
 
         // Implementar para la salida de medicamentos
-        // Implementar para la salida de medicamentos
-        // Implementar para la salida de medicamentos
         if (formSalida) {
             formSalida.addEventListener("submit", async (event) => {
                 event.preventDefault();
@@ -1545,7 +1429,7 @@
         // Cargar datos al iniciar la página
         cargarLotes();
         loadTipoEquinos();
-        loadHistorialMovimientos();
+
         loadSelectMedicamentos();
         loadMedicamentos();
         loadTiposMedicamentos();

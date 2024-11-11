@@ -1,3 +1,104 @@
+-- Unidades de Medida
+INSERT INTO UnidadesMedidaAlimento (nombreUnidad) VALUES 
+    ('kg'),        -- Kilogramos, ID 1
+    ('g'),         -- Gramos, ID 2
+    ('t'),         -- Toneladas, ID 3
+    ('L'),         -- Litros, ID 4
+    ('ml'),        -- Mililitros, ID 5
+    ('paca'),      -- Pacas, ID 6
+    ('cubeta'),    -- Cubetas, ID 7
+    ('fardo'),     -- Fardos, ID 8
+    ('saco'),      -- Sacos, ID 9
+    ('bloque'),    -- Bloques, ID 10
+    ('mg'),        -- Miligramos, ID 11
+    ('cc'),        -- Centímetros cúbicos, ID 12
+    ('tableta'),   -- Tabletas, ID 13
+    ('cápsula'),   -- Cápsulas, ID 14
+    ('ración'),    -- Raciones, ID 15
+    ('dosificador'); -- Dosificador, ID 16
+
+-- Tipos de Alimentos
+INSERT INTO TipoAlimentos (tipoAlimento) VALUES 
+    ('Forrajes'),                            -- ID 1
+    ('Granos y Cereales'),                   -- ID 2
+    ('Suplementos y Concentrados'),          -- ID 3
+    ('Subproductos de la Agricultura'),      -- ID 4
+    ('Proteínas y Energéticos'),             -- ID 5
+    ('Heno y Pasto Preservado'),             -- ID 6
+    ('Fibras'),                              -- ID 7
+    ('Complementos Nutricionales'),          -- ID 8
+    ('Hierbas Medicinales'),                 -- ID 9
+    ('Alimentos Especializados para Caballos Deportivos'); -- ID 10
+
+
+-- Relación entre Tipos de Alimentos y Unidades de Medida
+
+-- Forrajes
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (1, 1),  -- kg
+    (1, 6),  -- paca
+    (1, 8),  -- fardo
+    (1, 3);  -- t
+
+-- Granos y Cereales
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (2, 1),  -- kg
+    (2, 2),  -- g
+    (2, 9),  -- saco
+    (2, 3);  -- t
+
+-- Suplementos y Concentrados
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (3, 1),  -- kg
+    (3, 2),  -- g
+    (3, 10), -- bloque
+    (3, 13); -- tableta
+
+-- Subproductos de la Agricultura
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (4, 1),  -- kg
+    (4, 2),  -- g
+    (4, 9);  -- saco
+
+-- Proteínas y Energéticos
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (5, 1),  -- kg
+    (5, 4),  -- L
+    (5, 5);  -- ml
+
+-- Heno y Pasto Preservado
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (6, 1),  -- kg
+    (6, 6),  -- paca
+    (6, 8);  -- fardo
+
+-- Fibras
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (7, 1),  -- kg
+    (7, 2),  -- g
+    (7, 8);  -- fardo
+
+-- Complementos Nutricionales
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (8, 1),  -- kg
+    (8, 2),  -- g
+    (8, 15); -- ración
+
+-- Hierbas Medicinales
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (9, 2),  -- g
+    (9, 11); -- mg
+
+-- Alimentos Especializados para Caballos Deportivos
+INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
+    (10, 1),  -- kg
+    (10, 4),  -- L
+    (10, 14), -- cápsula
+    (10, 16); -- dosificador
+
+
+
+
 -- 1. Insertar Datos en TipoInventarios
 INSERT INTO TipoInventarios (nombreInventario) 
 VALUES 
@@ -110,7 +211,8 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 -- Inventarios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
-	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills');
+	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills'),
+    (4, 'administrar-herramienta', 'S', 'Herrero', 'fas fa-wrench');
 -- Servicios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     (5, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools'),
@@ -160,7 +262,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
-	(6, 4);
+	(6, 4),
+    (6, 17);
 
 INSERT INTO Nacionalidades (nacionalidad) VALUES 
 ('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),

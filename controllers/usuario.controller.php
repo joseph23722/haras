@@ -170,10 +170,15 @@ if (isset($_POST['operation'])) {
                     $sesion["correo"] = $registro[0]['correo'];
                     $sesion["clave"] = $registro[0]['clave'];
                     $sesion["idRol"] = $registro[0]['idRol'];
+
+                    // Guardar el nombre completo en una sola variable, si es necesario
+                    $sesion["nombreCompleto"] = $registro[0]['nombres'] . ' ' . $registro[0]['apellidos'];
+
                     //$sesion["accesos"] = $accesosV2[$registro[0]['idRol']]; // Actualización
                     // Añadimos el idUsuario a la sesión global
                     $accesos = $usuario->obtenerPermisos(["idRol" => $registro[0]['idRol']]);
                     $sesion["accesos"] = $accesos;
+                    $_SESSION['login'] = $sesion;
                     $_SESSION['idUsuario'] = $registro[0]['idUsuario'];
                 } else {
                     $resultados["mensaje"] = "Error en la contraseña";

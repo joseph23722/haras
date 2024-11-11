@@ -5,6 +5,17 @@ session_start();
 if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     header('location:http://localhost/haras');
 } else {
+    // Captura el nombre completo y el correo del usuario desde la sesión de PHP
+    $nombreCompleto = $_SESSION['login']['nombres'] . ' ' . $_SESSION['login']['apellidos'];
+    $correo = $_SESSION['login']['correo'];
+
+    echo "<script>
+        const nombreCompletoUsuario = '{$nombreCompleto}';
+        const identificadorUsuario = '{$correo}';
+    </script>";
+        
+
+
     // El usuario a ingresado al sistema, solo se le permitirá acceso a las vistas indicadores por su PERFIL
     $url = $_SERVER['REQUEST_URI'];         // Obtener URL
     $rutaCompleta = explode("/", $url);     // URL > array()
@@ -124,3 +135,14 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             </nav>
         </div>
         <div id="layoutSidenav_content">
+        <script>
+            const nombres = "<?= htmlspecialchars($_SESSION['login']['nombres'] ?? 'Desconocido'); ?>";
+            const apellidos = "<?= htmlspecialchars($_SESSION['login']['apellidos'] ?? 'Desconocido'); ?>";
+            const correo = "<?= htmlspecialchars($_SESSION['login']['correo'] ?? 'Desconocido'); ?>";
+            
+            console.log("===== Información del Usuario =====");
+            console.log("Nombre Completo del Usuario: " + nombres + " " + apellidos);
+            console.log("Identificador de Usuario: " + correo);
+            console.log("===================================");
+        </script>
+
