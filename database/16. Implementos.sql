@@ -196,3 +196,30 @@ BEGIN
     SELECT * FROM tipomovimientos;
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_listar_historial_movimiento`;
+DELIMITER //
+CREATE PROCEDURE `spu_listar_historial_movimiento`(IN p_idTipoinventario INT, IN p_idTipomovimiento INT)
+BEGIN
+    SELECT 
+        h.idHistorial, 
+        i.nombreProducto, 
+        h.idTipomovimiento, 
+        h.cantidad, 
+        h.precioUnitario, 
+        h.descripcion, 
+        h.fechaMovimiento,
+        ti.nombreInventario
+    FROM 
+        HistorialImplemento h
+    INNER JOIN 
+        TipoInventarios ti ON h.idTipoinventario = ti.idTipoinventario
+	INNER JOIN
+        Implementos i ON h.idInventario = i.idInventario 
+    INNER JOIN 
+        TipoMovimientos tm ON h.idTipomovimiento = tm.idTipomovimiento
+	WHERE 
+        h.idTipoinventario = p_idTipoinventario
+		AND h.idTipomovimiento = p_idTipomovimiento;
+END //
+DELIMITER ;

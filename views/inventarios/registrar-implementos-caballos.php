@@ -187,19 +187,6 @@
 
                 <!-- Cuerpo del Modal -->
                 <div class="modal-body px-4 py-3">
-                    <!-- Opciones de Filtrado Rápido -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <label for="filtroRango" class="me-2 fw-bold">Ver movimientos de:</label>
-                            <select id="filtroRango" class="form-select form-select-sm">
-                                <option value="hoy">Hoy</option>
-                                <option value="ultimaSemana">Última semana</option>
-                                <option value="ultimoMes">Último mes</option>
-                                <option value="todos">Todos</option>
-                            </select>
-                        </div>
-                        <button type="button" id="buscarHistorial" class="btn btn-primary ms-3"><i class="fas fa-search me-1"></i>Buscar</button>
-                    </div>
 
                     <!-- Pestañas para Entrada y Salida -->
                     <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
@@ -219,13 +206,13 @@
                                 <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-primary">
                                         <tr class="text-center">
-                                            <th>ID Medicamento</th>
-                                            <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
-                                            <th>Stock Actual</th>
-                                            <th>Lote</th>
-                                            <th>Cantidad de Entrada</th>
-                                            <th>Fecha de Movimiento</th>
+                                            <th>ID Historial</th>
+                                            <th>Nombre Producto</th>
+                                            <th>Precio U.</th>
+                                            <th>Cantidad</th>
+                                            <th>Descripcion</th>
+                                            <th>Fecha Movimiento</th>
+                                            <th>Nombre Inventario</th> <!-- Si es necesario si no se modifica o elimina -->
                                         </tr>
                                     </thead>
                                     <tbody id="historial-entradas-table">
