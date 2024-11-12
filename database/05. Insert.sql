@@ -191,6 +191,7 @@ INSERT INTO modulos (modulo) VALUES
 -- HOME
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(NULL, 'home', 'S', 'Inicio', 'fas fa-home');
+    
 -- Campos
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(1, 'rotar-campo', 'S', 'Campos', 'fa-solid fa-group-arrows-rotate'),
