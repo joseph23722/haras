@@ -103,6 +103,65 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    const cargarImplementos = async (idTipoinventario = 1) => {
+        try {
+            console.log("Cargando implementos para idTipoinventario:", idTipoinventario);
+
+            const params = new URLSearchParams({
+                operation: 'implementosPorInventario',
+                idTipoinventario: idTipoinventario
+            });
+
+            console.log("URL de la solicitud:", `../../controllers/implemento.controller.php?${params.toString()}`);
+
+            const response = await fetch(`../../controllers/implemento.controller.php?${params.toString()}`, {
+                method: "GET"
+            });
+
+            const textResponse = await response.text();
+
+            console.log("Respuesta del servidor en texto:", textResponse);
+
+            if (textResponse.startsWith("<")) {
+                mostrarMensajeDinamico("Error en la respuesta del servidor.", 'ERROR');
+                showToast("Error en la respuesta del servidor", 'ERROR');
+                return;
+            }
+
+            const implementos = JSON.parse(textResponse);
+
+            console.log("Datos de implementos:", implementos);
+
+            if (implementos && implementos.length > 0) {
+                if ($.fn.dataTable.isDataTable('#implementos-table')) {
+                    console.log("La tabla ya existe. Actualizando datos...");
+                    $('#implementos-table').DataTable().clear().rows.add(implementos).draw();
+                } else {
+                    console.log("Inicializando DataTable...");
+                    $('#implementos-table').DataTable({
+                        data: implementos,
+                        columns: [
+                            { data: 'idInventario', title: 'ID' },
+                            { data: 'nombreProducto', title: 'Producto' },
+                            { data: 'stockFinal', title: 'Stock Final' },
+                            { data: 'cantidad', title: 'Cantidad' },
+                            { data: 'precioUnitario', title: 'Precio Unitario' },
+                            { data: 'precioTotal', title: 'Precio Total' },
+                            { data: 'estado', title: 'Estado' }
+                        ]
+                    });
+                }
+            } else {
+                console.log("No hay datos disponibles para mostrar en la tabla.");
+                mostrarMensajeDinamico("No hay datos para mostrar en esta tabla.", 'INFO');
+            }
+        } catch (error) {
+            console.error("Error al cargar implementos:", error.message);
+            mostrarMensajeDinamico("Error al cargar implementos: " + error.message, 'ERROR');
+            showToast("Error al cargar implementos", 'ERROR');
+        }
+    };
+
     // Función para calcular y mostrar el precio total
     function calcularPrecioTotal() {
         const precioUnitario = parseFloat(document.getElementById('precioUnitario').value);
@@ -231,4 +290,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    cargarImplementos();
 });

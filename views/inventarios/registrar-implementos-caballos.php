@@ -136,7 +136,7 @@
                             </div>
                         </div>
 
-                        <!-- Selección de Tipo inventario -->
+                        <!-- Selección de idInventario a traves del nombreProducto -->
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="idInventario" class="form-label fw-bold">Nombre Producto</label>
@@ -151,7 +151,7 @@
                             </div>
                         </div>
 
-                        <!-- Selección de Producto -->
+                        <!-- Precio Unitario -->
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="precioUnitario" class="form-label fw-bold">Precio Unitario</label>
@@ -164,10 +164,10 @@
                             </div>
                         </div>
 
-                        <!-- Botón para registrar la salida -->
+                        <!-- Botón para registrar movimiento -->
                         <div class="d-flex justify-content-end mt-4">
                             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger px-4">Registrar Salida</button>
+                            <button type="submit" class="btn btn-danger px-4">Registrar Movimiento</button>
                         </div>
                     </form>
                 </div>
@@ -175,13 +175,13 @@
         </div>
     </div>
 
-    <!-- Modal para Historial de Movimientos de Medicamentos -->
+    <!-- Modal para Historial de Movimientos de Implementos -->
     <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
                 <div class="modal-header" style="background-color: #17a2b8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Medicamentos</h5>
+                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Implementos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
 
@@ -254,9 +254,32 @@
             </div>
         </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+            <h5 class="text-center"><i class="fas fa-database"></i> Implementos Registrados</h5>
+        </div>
+        <div class="card-body" style="background-color: #f9f9f9;">
+            <table id="implementos-table" class="table table-striped table-hover table-bordered">
+                <thead style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+                </thead>
+            </table>
+        </div>
+    </div>
 </div>
 
 <?php require_once '../footer.php'; ?>
+
+<script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
+<script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
+
+
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>

@@ -177,9 +177,9 @@ CREATE PROCEDURE spu_listar_implementos_con_cantidad(IN p_idTipoinventario INT)
 BEGIN
     -- Consulta para obtener la lista de implementos filtrados por idTipoinventario
     SELECT 
-        idInventario,
-        nombreProducto,
-        stockFinal
+        idInventario, nombreProducto, stockFinal,
+        cantidad, precioUnitario, precioTotal,
+        estado
     FROM 
         Implementos
     WHERE
