@@ -228,14 +228,13 @@
                                 <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-danger">
                                         <tr class="text-center">
-                                            <th>ID Medicamento</th>
-                                            <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
-                                            <th>Lote</th>
-                                            <th>Tipo de Equino</th>
-                                            <th>Cantidad de Salida</th>
-                                            <th>Motivo</th>
-                                            <th>Fecha de Movimiento</th>
+                                            <th>ID Historial</th>
+                                            <th>Nombre Producto</th>
+                                            <th>Precio U.</th>
+                                            <th>Cantidad</th>
+                                            <th>Descripcion</th>
+                                            <th>Fecha</th>
+                                            <th>nombre Inventario</th>
                                         </tr>
                                     </thead>
                                     <tbody id="historial-salidas-table">

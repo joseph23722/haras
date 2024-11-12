@@ -18,12 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             case 'implementosPorInventario':
                 if (isset($_GET['idTipoinventario'])) {
                     $idTipoinventario = $_GET['idTipoinventario'];
-                    error_log("idTipoinventario recibido: " . $idTipoinventario); // Agrega esto para depurar
+                    error_log("idTipoinventario recibido: " . $idTipoinventario);
                     $response = $controller->listarProductosporInventario($idTipoinventario);
                     echo json_encode($response);
                 } else {
                     echo json_encode(["status" => "error", "message" => "idTipoinventario no especificado."]);
                 }
+                break;
+
+            case 'listarHistorialMovimiento':
+                $idTipoinventario = isset($_GET['idTipoinventario']) ? intval($_GET['idTipoinventario']) : 1;
+                $idTipomovimiento = isset($_GET['idTipomovimiento']) ? intval($_GET['idTipomovimiento']) : 1;
+                $historial = $controller->listarHistorialMovimiento($idTipoinventario, $idTipomovimiento);
+                echo json_encode($historial);
                 break;
 
             default:
