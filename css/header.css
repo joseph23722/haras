@@ -1,3 +1,27 @@
+/* Asegúrate de que este CSS se incluya después de cargar los estilos de DataTables */
+
+/* Alinear "Mostrar [10] registros" en una sola línea */
+.dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre "Mostrar" y el selector */
+}
+
+.dataTables_length label select {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
 /* Estilos globales */
 body {
     font-family: 'Poppins', sans-serif;
@@ -5,6 +29,8 @@ body {
     background-color: #f4f6f9;
     margin: 0;
 }
+
+
 
 /* Barra superior que ocupa todo el ancho */
 .sb-topnav {

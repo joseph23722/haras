@@ -34,6 +34,27 @@ class Alimento extends Conexion {
         }
     }
 
+    public function agregarTipoUnidadMedidaNuevo($tipoAlimento, $nombreUnidad) {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_agregarTipoUnidadMedidaNuevo(?, ?)");
+    
+            // Ejecutar el procedimiento con los parámetros para tipo de alimento y unidad de medida
+            $query->execute([$tipoAlimento, $nombreUnidad]);
+    
+            // Retornar una respuesta de éxito si la operación se realizó sin errores
+            return ['status' => 'success', 'message' => 'Tipo de alimento y unidad de medida agregados correctamente.'];
+    
+        } catch (PDOException $e) {
+            // Capturar el error y registrar en el log si ocurre una excepción
+            error_log("Error en agregarTipoUnidadMedidaNuevo: " . $e->getMessage());
+    
+            // Retornar un mensaje de error en caso de fallo
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+        }
+    }
+    
+
     // Método para registrar un nuevo alimento
     public function registrarNuevoAlimento($params = []) {
         try {

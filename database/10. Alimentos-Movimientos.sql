@@ -540,6 +540,45 @@ END $$
 DELIMITER ;
 
 
+-- agregar tipo y unidad 
+DELIMITER $$
+CREATE PROCEDURE spu_agregarTipoUnidadMedidaNuevo (
+    IN p_tipoAlimento VARCHAR(50),
+    IN p_nombreUnidad VARCHAR(10)
+)
+BEGIN
+    DECLARE tipoID INT;
+    DECLARE unidadID INT;
+
+    -- 1. Verificar si el tipo de alimento existe, si no, agregarlo
+    SET tipoID = (SELECT idTipoAlimento FROM TipoAlimentos WHERE tipoAlimento = p_tipoAlimento);
+    IF tipoID IS NULL THEN
+        INSERT INTO TipoAlimentos (tipoAlimento) VALUES (p_tipoAlimento);
+        SET tipoID = LAST_INSERT_ID();  -- Obtener el ID del tipo recién insertado
+    END IF;
+
+    -- 2. Verificar si la unidad de medida existe, si no, agregarla
+    SET unidadID = (SELECT idUnidadMedida FROM UnidadesMedidaAlimento WHERE nombreUnidad = p_nombreUnidad);
+    IF unidadID IS NULL THEN
+        INSERT INTO UnidadesMedidaAlimento (nombreUnidad) VALUES (p_nombreUnidad);
+        SET unidadID = LAST_INSERT_ID();  -- Obtener el ID de la unidad recién insertada
+    END IF;
+
+    -- 3. Verificar si la relación ya existe, si no, agregarla
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM TipoAlimento_UnidadMedida 
+        WHERE idTipoAlimento = tipoID AND idUnidadMedida = unidadID
+    ) THEN
+        INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida)
+        VALUES (tipoID, unidadID);
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La combinación de tipo de alimento y unidad de medida ya existe.';
+    END IF;
+END $$
+DELIMITER ;
+
 
 
 
@@ -549,7 +588,7 @@ DELIMITER ;
 -- esto no va es prueba 
 
 -- tipo de equino - alimento ------ 
-/*
+
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
@@ -558,6 +597,6 @@ BEGIN
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
 END $$
 DELIMITER ;
-*/
+
 -- -------------------------------------------------------------------------------
 

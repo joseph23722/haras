@@ -10,6 +10,14 @@
   <div class="card mb-4">
     <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
       <h5 class="text-center"><i class="fas fa-apple-alt" style="color: #3498db;"></i> Registrar Nuevo Alimento</h5>
+      <!-- Botón de Agregar en el header -->
+      <button type="button" class="btn btn-success btn-sm" 
+                    style="background-color: #28a745; border: none; position: absolute; right: 50px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
+                    id="btnAgregar" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalAgregarCategoriaMedida">
+          <i class="fas fa-plus"></i>
+      </button>
     </div>
     <div class="card-body" style="background-color: #f9f9f9;">
       <form action="" id="form-registrar-alimento" autocomplete="off">
@@ -116,38 +124,138 @@
       <button class="btn btn-outline-danger btn-lg me-3" style="border-color: #dc3545;" data-bs-toggle="modal" data-bs-target="#modalSalidaAlimento">
         <i class="fas fa-arrow-down"></i> Registrar Salida de Alimento
       </button>
-      <button class="btn btn-outline-info btn-lg" style="border-color: #17a2b8;" data-bs-toggle="modal" data-bs-target="#modalHistorial">
-        <i class="fas fa-history"></i> Ver Historial de Movimientos
+      <!-- Botón para abrir el modal -->
+      <button class="btn btn-outline-info btn-lg" style="border-color: #17a2b8;" data-bs-toggle="modal" data-bs-target="#modalHistorialAlimentos">
+          <i class="fas fa-history"></i> Ver Historial de Movimientos
       </button>
+
     </div>
   </div>
 
+  <!-- Modal para Agregar Tipo de Alimento y Unidad de Medida -->
+  <!-- Modal para Agregar Nueva Categoría de Alimento y Medida -->
+  <div class="modal fade" id="modalAgregarCategoriaMedida" tabindex="-1" aria-labelledby="labelAgregarCategoriaMedida" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-md">
+          <div class="modal-content">
+              <div class="modal-header" style="background-color: #28a745; color: white;">
+                  <h5 class="modal-title" id="labelAgregarCategoriaMedida">
+                      <i class="fas fa-plus-circle"></i> Agregar Categoría de Alimento y Unidad de Medida
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
+              </div>
+              <div class="modal-body">
+                  <form id="formNuevaCategoriaMedida" autocomplete="off">
+                      <div class="mb-3">
+                          <label for="inputCategoriaAlimento" class="form-label fw-bold">Categoría de Alimento</label>
+                          <input type="text" class="form-control" id="inputCategoriaAlimento" name="inputCategoriaAlimento" placeholder="Ingrese la categoría de alimento" required>
+                      </div>
+                      <div class="mb-3">
+                          <label for="inputUnidadMedida" class="form-label fw-bold">Unidad de Medida</label>
+                          <input type="text" class="form-control" id="inputUnidadMedida" name="inputUnidadMedida" placeholder="Ejemplo: kg, L, paca" required>
+                      </div>
+                      <div id="mensajeModal" class="text-center mt-3"></div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-success" id="btnGuardarCategoriaMedida">Guardar</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+
+
+
+  <!-- Tabla de Alimentos Registrados -->
   <!-- Tabla de Alimentos Registrados -->
   <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-      <h5 class="text-center"><i class="fas fa-database"></i> Alimentos Registrados</h5>
-    </div>
-    <div class="card-body" style="background-color: #f9f9f9;">
-      <table class="table table-striped table-hover table-bordered">
-        <thead style="background-color: #caf0f8; color: #003366;">
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>U.M</th>
-            <th>Lote</th>
-            <th>Cantidad</th>
-            <th>Stock minimo</th>
-            <th>Costo</th>
-            <th>Fecha Caducidad</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="alimentos-table"></tbody>
-      </table>
-    </div>
+      <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+          <h5 class="text-center"><i class="fas fa-database"></i> Alimentos Registrados</h5>
+      </div>
+      <div class="card-body" style="background-color: #f9f9f9;">
+          <table id="alimentos-table" class="table table-striped table-hover table-bordered">
+              <thead style="background-color: #caf0f8; color: #003366;">
+                  <tr>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Tipo</th>
+                      <th>U.M</th>
+                      <th>Lote</th>
+                      <th>Cantidad</th>
+                      <th>Stock mínimo</th>
+                      <th>Costo</th>
+                      <th>Fecha Caducidad</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                  </tr>
+              </thead>
+          </table>
+      </div>
   </div>
+  <style>
+    /* Asegúrate de que este CSS se incluya después de cargar los estilos de DataTables */
+
+    /* Alinear "Mostrar [10] registros" en una sola línea */
+    .dataTables_length label {
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Espacio entre "Mostrar" y el selector */
+    }
+
+    .dataTables_length label select {
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+    /* Estilos para la pantalla */
+    .card-header {
+        background: linear-gradient(to right, #a0c4ff, #c9f0ff);
+        color: #003366;
+    }
+
+    /* Estilos específicos para la impresión */
+    @media print {
+        /* Oculta cualquier fondo en la impresión y asegura color negro para el texto */
+        body, .card-header, .card-body, .dataTables_wrapper {
+            background: none !important;
+            color: black !important;
+        }
+
+        /* Asegura que el DataTable ocupe todo el ancho disponible */
+    alimentos-table {
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        /* Oculta elementos no necesarios en la impresión */
+        .card-header, .btn, .pagination, .dataTables_length, .dataTables_filter, .dataTables_info, .dataTables_paginate {
+            display: none !important;
+        }
+
+        /* Diseño de la tabla para impresión */
+        table.dataTable thead {
+            background-color: white;
+            color: black;
+        }
+
+        /* Bordes visibles y tamaño adecuado para impresión */
+        table.dataTable td,
+        table.dataTable th {
+            border: 1px solid black !important;
+            padding: 4px;
+        }
+
+        /* Ajusta el tamaño de la tabla en la impresión para que ocupe todo el ancho */
+        table.dataTable {
+            width: 100% !important;
+        }
+    }
+
+    
+  </style>
+
 
   <!-- Modal para Movimientos de Entrada -->
   <div class="modal fade" id="modalEntradaAlimento" tabindex="-1" aria-labelledby="modalEntradaAlimentoLabel" aria-hidden="true">
@@ -287,97 +395,106 @@
   </div>
 
   <!-- Modal para Historial de Movimientos Mejorado -->
-  <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header bg-info text-white">
-          <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          
-          <!-- Opciones de Filtrado Rápido -->
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center">
-              <label for="filtroRango" class="me-2">Ver movimientos de:</label>
-              <select id="filtroRango" class="form-select">
-                <option value="hoy">Hoy</option>
-                <option value="ultimaSemana">Última semana</option>
-                <option value="ultimoMes">Último mes</option>
-                <option value="todos">Todos</option>
-              </select>
-            </div>
-            <button type="button" id="buscarHistorial" class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
-          </div>
-
-          <!-- Pestañas para Entrada y Salida -->
-          <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="salidas-tab" data-bs-toggle="tab" data-bs-target="#salidas" type="button" role="tab" aria-controls="salidas" aria-selected="false">Salidas</button>
-            </li>
-          </ul>
-
-          <!-- Contenido de las pestañas -->
-          <div class="tab-content">
-            <!-- Tabla de Entradas -->
-            <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
-              <div class="table-responsive">
-                <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
-                  <thead class="table-primary">
-                    <tr>
-                      <th>ID</th>
-                      <th>Alimento</th>
-                      <th>Tipo Alimento</th>
-                      <th>Unidad</th>
-                      <th>Cantidad</th>
-                      <th>Lote</th>
-                      <th>Fecha Caducidad</th>
-                      <th>Fecha de Entrada</th>
-                    </tr>
-                  </thead>
-                  <tbody id="historial-entradas-table"></tbody>
-                </table>
+  <!-- Modal para Historial de Movimientos -->
+  <!-- Modal para Historial de Movimientos de Alimentos -->
+  <div class="modal fade" id="modalHistorialAlimentos" tabindex="-1" aria-labelledby="modalHistorialAlimentosLabel">
+      <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+              <div class="modal-header bg-info text-white">
+                  <h5 class="modal-title" id="modalHistorialAlimentosLabel">Historial de Movimientos de Alimentos</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-            </div>
+              <div class="modal-body">
+                  <!-- Opciones de Filtrado Rápido -->
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                      <div class="d-flex align-items-center">
+                          <label for="filtroRangoAlimentos" class="me-2 fw-bold">Ver movimientos de:</label>
+                          <select id="filtroRangoAlimentos" class="form-select form-select-sm">
+                              <option value="hoy">Hoy</option>
+                              <option value="ultimaSemana">Última semana</option>
+                              <option value="ultimoMes">Último mes</option>
+                              <option value="todos">Todos</option>
+                          </select>
+                      </div>
+                      <button type="button" id="buscarHistorialAlimentos" class="btn btn-primary ms-3" onclick="reloadHistorialAlimentos();"><i class="fas fa-search me-1"></i>Buscar</button>
+                  </div>
 
-            <!-- Tabla de Salidas -->
-            <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
-              <div class="table-responsive">
-                <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
-                  <thead class="table-danger">
-                    <tr>
-                      <th>ID</th>
-                      <th>Alimento</th>
-                      <th>Tipo Equino</th>
-                      <th>Cantidad Equino</th>
-                      <th>Cantidad Salida</th>
-                      <th>Unidad</th>
-                      <th>Merma</th>
-                      <th>Lote</th>
-                      <th>Fecha de Salida</th>
-                    </tr>
-                  </thead>
-                  <tbody id="historial-salidas-table"></tbody>
-                </table>
+                  <!-- Pestañas para Entrada y Salida -->
+                  <ul class="nav nav-tabs mb-3" id="historialTabAlimentos" role="tablist">
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="entradas-tab-alimentos" data-bs-toggle="tab" data-bs-target="#entradasAlimentos" type="button" role="tab" aria-controls="entradasAlimentos" aria-selected="true">Entradas</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="salidas-tab-alimentos" data-bs-toggle="tab" data-bs-target="#salidasAlimentos" type="button" role="tab" aria-controls="salidasAlimentos" aria-selected="false">Salidas</button>
+                      </li>
+                  </ul>
+
+                  <!-- Contenido de las Pestañas -->
+                  <div class="tab-content">
+                      <!-- Tabla de Entradas de Alimentos -->
+                      <div class="tab-pane fade show active" id="entradasAlimentos" role="tabpanel" aria-labelledby="entradas-tab-alimentos">
+                          <div class="table-responsive">
+                              <table id="tabla-entradas-alimentos" class="table table-bordered table-hover table-striped">
+                                  <thead class="table-primary">
+                                      <tr class="text-center">
+                                          <th>ID Alimento</th>
+                                          <th>Nombre Alimento</th>
+                                          <th>Tipo</th>
+                                          <th>Unidad</th>
+                                          <th>Cantidad</th>
+                                          <th>Lote</th>
+                                          <th>Fecha de Movimiento</th>
+                                      </tr>
+                                  </thead>
+                              </table>
+                          </div>
+                      </div>
+
+                      <!-- Tabla de Salidas de Alimentos -->
+                      <div class="tab-pane fade" id="salidasAlimentos" role="tabpanel" aria-labelledby="salidas-tab-alimentos">
+                          <div class="table-responsive">
+                              <table id="tabla-salidas-alimentos" class="table table-bordered table-hover table-striped">
+                                  <thead class="table-danger">
+                                      <tr class="text-center">
+                                          <th>ID Alimento</th>
+                                          <th>Nombre Alimento</th>
+                                          <th>Tipo</th>
+                                          <th>Unidad</th>
+                                          <th>Cantidad de Salida</th>
+                                          <th>Lote</th>
+                                          <th>Fecha de Movimiento</th>
+                                      </tr>
+                                  </thead>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
               </div>
-            </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
       </div>
-    </div>
   </div>
 
 
-<?php require_once '../footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
+
+<?php require_once '../footer.php'; ?>
+<script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
+<script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
+
+
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
+
 
 
 
@@ -406,10 +523,30 @@
     const loteInput = document.querySelector('#lote');
     const nombreAlimentoInput = document.querySelector('#nombreAlimento');
 
+    // Coloca la función `guardarTipoUnidad` aquí, fuera del bloque `DOMContentLoaded`
+    // Verificar campos
+    const verificarCampos = () => {
+        const categoriaAlimento = document.getElementById("inputCategoriaAlimento")?.value?.trim();
+        const unidadMedida = document.getElementById("inputUnidadMedida")?.value?.trim();
+        const mensajeModal = document.getElementById("mensajeModal");
 
-    // Función para cargar tipos de alimento en el formulario de registro
-    // Función para cargar tipos de alimento en el formulario de registro
-    // Función de utilidad para realizar una solicitud GET y obtener datos
+        mensajeModal.innerHTML = ""; // Limpiar mensajes previos
+
+        if (!categoriaAlimento) {
+            console.log("Campo 'Categoría de Alimento' vacío");
+            mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete el campo "Categoría de Alimento".</p>';
+            return false;
+        }
+        if (!unidadMedida) {
+            console.log("Campo 'Unidad de Medida' vacío");
+            mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete el campo "Unidad de Medida".</p>';
+            return false;
+        }
+        return { categoriaAlimento, unidadMedida };
+    };
+
+    
+    
     // Función de utilidad para realizar una solicitud GET y obtener datos
     const fetchData = async (url) => {
         try {
@@ -477,10 +614,6 @@
         }
     };
 
-
-
-
-
     // Cambiar evento para seleccionar alimento y cargar unidades de medida relacionadas
     alimentoSelectEntrada.addEventListener("change", e => cargarUnidadesMedida(e.target.value, unidadMedidaSelectEntrada, false));
     alimentoSelectSalida.addEventListener("change", e => cargarUnidadesMedida(e.target.value, unidadMedidaSelectSalida, false));
@@ -492,19 +625,57 @@
     document.addEventListener("DOMContentLoaded", cargarTiposAlimento);
 
 
+    // Guardar nueva categoría y unidad de medida
+    const guardarCategoriaMedida = async () => {
+        const valores = verificarCampos();
+        if (!valores) return;
 
+        const { categoriaAlimento, unidadMedida } = valores;
 
+        try {
+            console.log("Enviando datos...");
+            const response = await fetch(`../../controllers/alimento.controller.php`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    operation: "agregarTipoUnidadMedidaNuevo",
+                    tipoAlimento: categoriaAlimento,
+                    nombreUnidad: unidadMedida
+                })
+            });
 
+            const result = await response.json();
+            console.log("Respuesta del servidor:", result);
 
-    
+            const mensajeModal = document.getElementById("mensajeModal");
+            mensajeModal.innerHTML = result.status === "success"
+                ? '<p class="text-success">¡Agregado correctamente!</p>'
+                : `<p class="text-danger">${result.message}</p>`;
 
+            if (result.status === "success") {
+                setTimeout(() => {
+                    document.getElementById("formNuevaCategoriaMedida").reset();
+                    mensajeModal.innerHTML = "";
+                    bootstrap.Modal.getInstance(document.getElementById("modalAgregarCategoriaMedida")).hide();
+                }, 1500);
 
+                // Llamar a `cargarTiposAlimento` para actualizar la lista de tipos
+                await cargarTiposAlimento();
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            mensajeModal.innerHTML = '<p class="text-danger">Error al enviar los datos.</p>';
+        }
+    };
 
-    
-
-
-
-
+    // Asignar evento al botón de guardar
+    const btnGuardar = document.getElementById("btnGuardarCategoriaMedida");
+    if (btnGuardar) {
+        console.log("Botón 'Guardar' encontrado");
+        btnGuardar.addEventListener("click", guardarCategoriaMedida);
+    } else {
+        console.error("El botón #btnGuardarCategoriaMedida no se encontró.");
+    }
 
 
 
@@ -578,76 +749,38 @@
 
 
     // Función para cargar los alimentos registrados
+    // Cargar lista de alimentos en la tabla
+    // Cargar lista de alimentos en la tabla
     const loadAlimentos = async () => {
         try {
-            // Hacemos la solicitud GET para obtener los alimentos registrados
-            const response = await fetch('../../controllers/alimento.controller.php?operation=getAllAlimentos', {
-                method: 'GET',
+            const params = new URLSearchParams({ operation: 'getAllAlimentos' });
+            const response = await fetch(`../../controllers/alimento.controller.php?${params.toString()}`, {
+                method: "GET"
             });
 
-            const parsedResponse = await response.json();
-
-            // Verificar si la respuesta es exitosa y contiene los datos de alimentos
-            if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-                const alimentos = parsedResponse.data;
-
-                // Limpiar la tabla antes de añadir contenido nuevo
-                alimentosTable.innerHTML = alimentos.map(alim => `
-                    <tr>
-                        <td>${alim.idAlimento}</td>
-                        <td>${alim.nombreAlimento}</td>
-                        <td>${alim.nombreTipoAlimento}</td>
-                        <td>${alim.unidadMedidaNombre}</td>
-                        <td>${alim.lote}</td>
-                        <td>${alim.stockActual}</td>
-                        <td>${alim.stockMinimo}</td>
-                        <td>${alim.costo}</td>
-                        <td>${alim.fechaCaducidad}</td>
-                        <td>${alim.estado}</td>
-                        <td class="text-center">
-                            <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${alim.idAlimento})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-
-                // Actualizar los selects de entrada y salida sin duplicados
-                const uniqueAlimentos = new Set();
-                alimentoSelectEntrada.innerHTML = '<option value="">Seleccione un Alimento</option>';
-                alimentoSelectSalida.innerHTML = '<option value="">Seleccione un Alimento</option>';
-
-                alimentos.forEach(alim => {
-                    if (!uniqueAlimentos.has(alim.nombreAlimento)) {
-                        uniqueAlimentos.add(alim.nombreAlimento);
-
-                        // Añadir alimento a select de entrada
-                        const optionEntrada = document.createElement('option');
-                        optionEntrada.value = alim.nombreAlimento;
-                        optionEntrada.textContent = alim.nombreAlimento;
-                        alimentoSelectEntrada.appendChild(optionEntrada);
-
-                        // Añadir alimento a select de salida
-                        const optionSalida = document.createElement('option');
-                        optionSalida.value = alim.nombreAlimento;
-                        optionSalida.textContent = alim.nombreAlimento;
-                        alimentoSelectSalida.appendChild(optionSalida);
-                    }
-                });
-            } else {
-                mostrarMensajeDinamico('No se encontraron alimentos.', 'INFO');
-                alimentosTable.innerHTML = '<tr><td colspan="9">No se encontraron alimentos.</td></tr>';
+            const textResponse = await response.text();
+            if (textResponse.startsWith("<")) {
+                mostrarMensajeDinamico("Error en la respuesta del servidor.", 'ERROR');
+                showToast("Error en la respuesta del servidor", 'ERROR'); // Si `showToast` también es una función válida
+                return;
             }
+
+            const result = JSON.parse(textResponse);
+            const alimentos = result.data;
+
+            if ($.fn.dataTable.isDataTable('#alimentos-table')) {
+                $('#alimentos-table').DataTable().clear().rows.add(alimentos).draw();
+            } else {
+                configurarDataTableAlimentos(); // Inicializa DataTable si no está inicializado
+            }
+
         } catch (error) {
-            console.error('Error al cargar alimentos:', error);
-            mostrarMensajeDinamico('Error al cargar alimentos.', 'ERROR');
+            mostrarMensajeDinamico("Error al cargar alimentos: " + error.message, 'ERROR');
+            showToast("Error al cargar alimentos", 'ERROR'); // Si `showToast` también es una función válida
         }
     };
 
 
-
-    // Función para cargar los tipos de equinos
-    // Función para cargar las categorías de equinos con sus cantidades en el select del modal
     // Función para cargar las categorías de equinos con sus cantidades en el select del modal
     const loadCategoriaEquinos = async () => {
         try {
@@ -690,16 +823,6 @@
             console.error("Error al cargar categorías de equinos:", error);
         }
     };
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -845,106 +968,65 @@
     
     
     //historial de movimientos
-    const loadHistorialMovimientos = async () => {
-        try {
-            const filtroRango = document.getElementById('filtroRango').value;
-            let fechaInicio, fechaFin;
-            const hoy = new Date();
+    // Cargar historial de movimientos (controller simplificado dentro de JavaScript)
+    // Función para ajustar las fechas basadas en el filtro seleccionado
+    const modalElement = document.getElementById('modalHistorialAlimentos');
+    const modalAlimentos = new bootstrap.Modal(modalElement, {
+        keyboard: false
+    });
 
-            // Definir el rango de fechas basado en el filtro
-            switch (filtroRango) {
-                case 'hoy':
-                    fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
-                    break;
-                case 'ultimaSemana':
-                    fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
-                    fechaFin = new Date().toISOString().split('T')[0];
-                    break;
-                case 'ultimoMes':
-                    fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
-                    fechaFin = new Date().toISOString().split('T')[0];
-                    break;
-                default:
-                    fechaInicio = '';
-                    fechaFin = '';
-            }
 
-            // Configuración de la solicitud para Entradas
-            const entradasURL = `../../controllers/alimento.controller.php?operation=historial&tipoMovimiento=Entrada&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-            const responseEntradas = await fetch(entradasURL, { method: "GET" });
-            const parsedEntradas = await responseEntradas.json();
+    const setFechaFiltroAlimentos = () => {
+        const filtroRango = document.getElementById('filtroRangoAlimentos').value;
+        const hoy = new Date();
+        let fechaInicio, fechaFin;
 
-            // Verificar que haya datos para Entradas y cargarlos en DataTable
-            if (parsedEntradas.status === 'success' && Array.isArray(parsedEntradas.data)) {
-                $('#tabla-entradas').DataTable().clear().destroy();
-                $('#tabla-entradas').DataTable({
-                    data: parsedEntradas.data,
-                    columns: [
-                        { data: 'idAlimento' },
-                        { data: 'nombreAlimento' },
-                        { data: 'nombreTipoAlimento' },
-                        { data: 'nombreUnidadMedida' },
-                        { data: 'cantidad' },
-                        { data: 'lote' },
-                        { data: 'fechaCaducidad' },
-                        { data: 'fechaMovimiento' }
-                    ],
-                    responsive: true,
-                    autoWidth: false,
-                    paging: true,
-                    searching: true,
-                    language: {
-                        url: '/haras/data/es_es.json'
-                    }
-                });
-            } else {
-                console.warn("La respuesta para Entradas no contiene datos válidos:", parsedEntradas.data);
-            }
+        switch (filtroRango) {
+            case 'hoy':
+                fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
+                break;
+            case 'ultimaSemana':
+                fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
+                fechaFin = new Date().toISOString().split('T')[0];
+                break;
+            case 'ultimoMes':
+                fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
+                fechaFin = new Date().toISOString().split('T')[0];
+                break;
+            case 'todos':
+                fechaInicio = '1900-01-01';
+                fechaFin = new Date().toISOString().split('T')[0];
+                break;
+            default:
+                fechaInicio = '';
+                fechaFin = '';
+        }
 
-            // Configuración de la solicitud para Salidas
-            const salidasURL = `../../controllers/alimento.controller.php?operation=historial&tipoMovimiento=Salida&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-            const responseSalidas = await fetch(salidasURL, { method: "GET" });
-            const parsedSalidas = await responseSalidas.json();
+        document.getElementById('filtroRangoAlimentos').setAttribute('data-fecha-inicio', fechaInicio);
+        document.getElementById('filtroRangoAlimentos').setAttribute('data-fecha-fin', fechaFin);
+    };
 
-            // Verificar que haya datos para Salidas y cargarlos en DataTable
-            if (parsedSalidas.status === 'success' && Array.isArray(parsedSalidas.data)) {
-                $('#tabla-salidas').DataTable().clear().destroy();
-                $('#tabla-salidas').DataTable({
-                    data: parsedSalidas.data,
-                    columns: [
-                        { data: 'ID' },
-                        { data: 'Alimento' },
-                        { data: 'TipoEquino' },  // Tipo de equino según el estado
-                        { data: 'CantidadEquino' },  // Cantidad de equinos por categoría
-                        { data: 'Cantidad' },  // Cantidad de salida
-                        { data: 'Unidad' },  // Unidad de medida
-                        { data: 'Merma' },  // Merma (si aplica)
-                        { data: 'Lote' },  // Lote del alimento
-                        { data: 'FechaSalida' }  // Fecha del movimiento
-                    ],
-                    responsive: true,
-                    autoWidth: false,
-                    paging: true,
-                    searching: true,
-                    language: {
-                        url: '/haras/data/es_es.json'
-                    }
-                });
-            } else {
-                console.warn("La respuesta para Salidas no contiene datos válidos:", parsedSalidas.data);
-            }
-
-        } catch (error) {
-            console.error('Error al cargar historial de movimientos:', error);
-            mostrarMensajeDinamico('Error al cargar historial de movimientos.', 'ERROR');
+    // Función para recargar las tablas de Entradas y Salidas
+    const reloadHistorialAlimentos = () => {
+        if ($.fn.DataTable.isDataTable('#tabla-entradas-alimentos')) {
+            $('#tabla-entradas-alimentos').DataTable().ajax.reload(null, false);
+        }
+        if ($.fn.DataTable.isDataTable('#tabla-salidas-alimentos')) {
+            $('#tabla-salidas-alimentos').DataTable().ajax.reload(null, false);
         }
     };
 
 
+    // Evento para actualizar el filtro de fecha y recargar las tablas cuando el usuario selecciona un nuevo rango
+    document.getElementById('filtroRangoAlimentos').addEventListener('change', () => {
+        setFechaFiltroAlimentos();
+        reloadHistorialAlimentos();
+    });
 
-    // Vincular la función al cambio en el filtro de rango
-    document.getElementById('filtroRango').addEventListener('change', loadHistorialMovimientos);
-    document.getElementById('buscarHistorial').addEventListener('click', loadHistorialMovimientos);
+
+
+
+
 
 
 
@@ -1191,7 +1273,7 @@
     cargarTiposAlimento();
     loadAlimentos();
     loadCategoriaEquinos();
-    loadHistorialMovimientos();
+
     notificarStockBajo();
 
     

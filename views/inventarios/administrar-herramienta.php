@@ -19,10 +19,7 @@
                         <div class="form-floating">
                             <select id="tipoEquinoSelect" class="form-select" name="tipoEquino" required>
                                 <option value="">Seleccione Tipo de Equino</option>
-                                <option value="1">Yegua</option>
-                                <option value="2">Padrillo</option>
-                                <option value="3">Potranca</option>
-                                <option value="4">Potrillo</option>
+                                <!-- Opciones se llenarán dinámicamente -->
                             </select>
                             <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Tipo de Equino</label>
                         </div>
@@ -33,6 +30,7 @@
                         <div class="form-floating">
                             <select id="equinoSelect" class="form-select" name="idEquino" required>
                                 <option value="">Seleccione Equino</option>
+                                <!-- Opciones se llenarán dinámicamente -->
                             </select>
                             <label for="equinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Equino</label>
                         </div>
@@ -53,21 +51,7 @@
                         </div>
                     </div>
 
-                    <!-- Selector para Estado Inicial de los Cascos -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="estadoCascosInicio" class="form-select" name="estadoCascosInicio" required>
-                                <option value="">Seleccione Estado Inicial de los Cascos</option>
-                                <option value="1">Buen estado</option>
-                                <option value="2">Desgastado</option>
-                                <option value="3">Daño visible</option>
-                                <option value="4">Infección o enfermedad</option>
-                            </select>
-                            <label for="estadoCascosInicio"><i class="fas fa-info-circle" style="color: #6a5acd;"></i> Estado Inicial de Cascos</label>
-                        </div>
-                    </div>
-
-                    <!-- Herramientas Usadas como un selector simple -->
+                    <!-- Herramienta Usada como un selector simple -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select id="herramientaUsada" class="form-select" name="herramientaUsada" required>
@@ -82,45 +66,14 @@
                         </div>
                     </div>
 
-                    <!-- Estado Inicial de las Herramientas -->
+                    <!-- Campo de fecha -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="estadoInicio" id="estadoInicio" class="form-select" required>
-                                <option value="">Seleccione Estado Inicial de Herramientas</option>
-                                <option value="1">En buen estado</option>
-                                <option value="2">Desgastada</option>
-                                <option value="3">Necesita reparación</option>
-                            </select>
-                            <label for="estadoInicio"><i class="fas fa-info-circle" style="color: #6a5acd;"></i> Estado Inicial de Herramientas</label>
+                            <input type="date" id="fecha" name="fecha" class="form-control" required>
+                            <label for="fecha"><i class="fas fa-calendar-alt" style="color: #007bff;"></i> Fecha</label>
                         </div>
                     </div>
 
-                    <!-- Estado Final de Herramientas -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select name="estadoFin" id="estadoFin" class="form-select">
-                                <option value="">Seleccione Estado Final de Herramientas</option>
-                                <option value="1">En buen estado</option>
-                                <option value="2">Desgastada</option>
-                                <option value="3">Necesita reparación</option>
-                            </select>
-                            <label for="estadoFin"><i class="fas fa-info-circle" style="color: #ff6347;"></i> Estado Final de Herramientas</label>
-                        </div>
-                    </div>
-
-                    <!-- Estado Final de los Cascos -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="estadoCascosFin" class="form-select" name="estadoCascosFin">
-                                <option value="">Seleccione Estado Final de los Cascos</option>
-                                <option value="1">Buen estado</option>
-                                <option value="2">Mejorado</option>
-                                <option value="3">Sin cambios</option>
-                                <option value="4">Requiere atención adicional</option>
-                            </select>
-                            <label for="estadoCascosFin"><i class="fas fa-info-circle" style="color: #6a5acd;"></i> Estado Final de los Cascos</label>
-                        </div>
-                    </div>
 
                     <!-- Observaciones -->
                     <div class="col-md-12">
@@ -155,13 +108,9 @@
             <table id="historialHerreroTable" class="table table-striped" style="width:100%">
                 <thead>
                     <tr>
-                        <th>Equino</th>
+                        <th>Fecha</th>
                         <th>Trabajo Realizado</th>
                         <th>Herramienta Usada</th>
-                        <th>Estado Inicial Cascos</th>
-                        <th>Estado Final Cascos</th>
-                        <th>Estado Inicio Herramienta</th>
-                        <th>Estado Fin Herramienta</th>
                         <th>Observaciones</th>
                         <th>Acciones</th>
                     </tr>
@@ -177,11 +126,24 @@
 <?php require_once '../footer.php'; ?>
 
 
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
 <script src="../../swalcustom.js"></script>
-
 <script>
+    // Función para establecer la fecha mínima en el campo de fecha
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fecha');
+        
+        // Obtener la fecha actual en formato YYYY-MM-DD
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Mes con dos dígitos
+        const day = String(today.getDate()).padStart(2, '0'); // Día con dos dígitos
+        const minDate = `${year}-${month}-${day}`;
+        
+        // Establecer la fecha mínima
+        fechaInput.setAttribute('min', minDate);
+    });
+    
     // Función para cargar tipos de equinos en el selector
     function cargarTiposEquinos() {
         console.log("Iniciando carga de tipos de equinos...");
@@ -194,17 +156,19 @@
                     tipoEquinoSelect.innerHTML = '<option value="">Seleccione Tipo de Equino</option>'; // Limpia las opciones anteriores
                     
                     data.data.forEach(tipo => {
+                        console.log("Tipo de Equino:", tipo); // Log de cada tipo de equino
                         const option = document.createElement('option');
                         option.value = tipo.idTipoEquino;
                         option.textContent = tipo.tipoEquino;
                         tipoEquinoSelect.appendChild(option);
                     });
+                } else {
+                    console.warn("No se recibieron tipos de equinos o hubo un error.");
                 }
             })
             .catch(error => console.error('Error al cargar tipos de equinos:', error));
     }
 
-    // Función para cargar equinos según el tipo de equino seleccionado
     // Función para cargar equinos según el tipo de equino seleccionado
     function cargarEquinosPorTipo(tipoEquinoId) {
         console.log(`Cargando equinos para el tipo con ID ${tipoEquinoId}`);
@@ -217,15 +181,14 @@
                 
                 if (data.status === 'success' && data.data.length > 0) {
                     data.data.forEach(equino => {
+                        console.log("Equino recibido:", equino); // Log de cada equino recibido
                         const option = document.createElement('option');
-                        option.value = equino.idEquino;  // Asegúrate de que 'idEquino' es correcto
-                        option.textContent = equino.nombreEquino;  // Usa la clave correcta en lugar de 'nombre'
+                        option.value = equino.idEquino;
+                        option.textContent = equino.nombreEquino;
                         equinoSelect.appendChild(option);
-                        console.log("Equino agregado:", equino.nombreEquino); // Confirma el nombre del equino
                     });
-
                 } else {
-                    console.warn('No se encontraron equinos para este tipo.');
+                    console.warn("No se encontraron equinos para este tipo.");
                     const option = document.createElement('option');
                     option.value = '';
                     option.textContent = 'No hay equinos disponibles para este tipo';
@@ -234,46 +197,38 @@
             })
             .catch(error => console.error('Error al cargar equinos:', error));
     }
-
-
-    // Función para cargar herramientas disponibles
-    function cargarHerramientas() {
-        fetch('/haras/controllers/herrero.controller.php?operation=getHerramientas')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const herramientasSelect = document.getElementById('herramientasUsadas');
-                    herramientasSelect.innerHTML = ''; // Limpia las opciones anteriores
-                    data.data.forEach(herramienta => {
-                        const option = document.createElement('option');
-                        option.value = herramienta.idHerramienta;
-                        option.textContent = herramienta.nombre;
-                        herramientasSelect.appendChild(option);
-                    });
-                }
-            })
-            .catch(error => console.error('Error al cargar herramientas:', error));
-    }
-
     // Función para registrar un nuevo historial de herrero
-    function registrarHistorialHerrero() {
+
+        function registrarHistorialHerrero() {
         const formData = new FormData(document.getElementById('form-historial-herrero'));
         formData.append('operation', 'insertarHistorialHerrero');
-        
+
         const datos = {};
-        formData.forEach((value, key) => datos[key] = value);
+        formData.forEach((value, key) => {
+            if (key === 'herramientaUsada') key = 'herramientasUsadas';  // Asegura la clave correcta
+            datos[key] = value;
+            console.log(`Campo ${key}:`, value);  // Log de cada campo y valor en el frontend
+        });
+
+        datos['idUsuario'] = 'superE';  // Asegúrate de que idUsuario se pase correctamente
+
+        console.log("Datos a enviar para registrar historial:", datos);
 
         fetch('/haras/controllers/herrero.controller.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log("Respuesta de la API recibida:", response);
+            return response.json();
+        })
         .then(data => {
+            console.log("Datos procesados de la respuesta:", data);
             if (data.status === 'success') {
                 Swal.fire('Registrado', data.message, 'success');
                 document.getElementById('form-historial-herrero').reset();
-                cargarHistorialHerrero(); // Recargar el historial
+                cargarHistorialHerrero();
             } else {
                 Swal.fire('Error', data.message, 'error');
             }
@@ -281,23 +236,30 @@
         .catch(error => console.error('Error al registrar historial:', error));
     }
 
+
+
+
     // Función para cargar el historial del herrero en la tabla
     function cargarHistorialHerrero() {
+        console.log("Cargando historial del herrero...");
         fetch('/haras/controllers/herrero.controller.php?operation=consultarHistorialEquino&idEquino=1') // Cambia "1" por el ID dinámico del equino si es necesario
-            .then(response => response.json())
+            .then(response => {
+                console.log("Respuesta de la API para historial recibida:", response); // Log de respuesta sin procesar
+                return response.json();
+            })
             .then(data => {
-                if (data.status === 'success') {
-                    const historialTable = document.querySelector('#historialHerreroTable tbody');
-                    historialTable.innerHTML = '';
+                console.log("Datos del historial recibidos:", data);
+                const historialTable = document.querySelector('#historialHerreroTable tbody');
+                historialTable.innerHTML = '';
 
+                if (data.status === 'success') {
                     data.data.forEach(historial => {
+                        console.log("Registro de historial:", historial); // Log de cada registro de historial
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${historial.nombreEquino}</td>
+                            <td>${historial.fecha}</td>
                             <td>${historial.trabajoRealizado}</td>
                             <td>${historial.herramientasUsadas}</td>
-                            <td>${historial.estadoInicio}</td>
-                            <td>${historial.estadoFin}</td>
                             <td>${historial.observaciones}</td>
                             <td>
                                 <button class="btn btn-warning btn-sm" onclick="actualizarEstadoFinal(${historial.idHistorialHerrero})">Actualizar Estado</button>
@@ -305,65 +267,30 @@
                         `;
                         historialTable.appendChild(row);
                     });
+                } else {
+                    console.warn("No se encontró historial o hubo un error.");
                 }
             })
             .catch(error => console.error('Error al cargar historial de herrero:', error));
     }
 
-    // Función para actualizar el estado final de una herramienta
-    function actualizarEstadoFinal(idHistorialHerrero) {
-        Swal.fire({
-            title: 'Actualizar Estado Final',
-            input: 'select',
-            inputOptions: {
-                1: 'En buen estado',
-                2: 'Desgastada',
-                3: 'Necesita reparación'
-            },
-            inputPlaceholder: 'Seleccione el estado final',
-            showCancelButton: true,
-            confirmButtonText: 'Actualizar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch('/haras/controllers/herrero.controller.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        operation: 'actualizarEstadoFinalHerramientaUsada',
-                        idHerramientasUsadas: idHistorialHerrero,
-                        estadoFin: result.value
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        Swal.fire('Actualizado', data.message, 'success');
-                        cargarHistorialHerrero();
-                    } else {
-                        Swal.fire('Error', data.message, 'error');
-                    }
-                })
-                .catch(error => console.error('Error al actualizar estado final:', error));
-            }
-        });
-    }
-
     // Evento DOMContentLoaded para cargar datos iniciales
     document.addEventListener('DOMContentLoaded', function() {
+        console.log("Evento DOMContentLoaded disparado");
         cargarTiposEquinos();
-        cargarHerramientas();
         cargarHistorialHerrero();
 
         // Evento para el formulario de registro
         document.getElementById('form-historial-herrero').addEventListener('submit', function(event) {
             event.preventDefault();
+            console.log("Formulario de historial de herrero enviado");
             registrarHistorialHerrero();
         });
 
         // Evento para cargar equinos según el tipo seleccionado
         document.getElementById('tipoEquinoSelect').addEventListener('change', function() {
             const tipoEquinoId = this.value;
+            console.log("Tipo de equino seleccionado:", tipoEquinoId);
             cargarEquinosPorTipo(tipoEquinoId);
         });
     });

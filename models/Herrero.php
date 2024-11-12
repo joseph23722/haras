@@ -12,33 +12,79 @@ class Herrero extends Conexion {
     // Método para insertar un nuevo trabajo en el historial del herrero
     public function insertarHistorialHerrero($params = []) {
         try {
-            $stmt = $this->pdo->prepare("CALL InsertarHistorialHerrero(?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+    
+            $idUsuario = $_SESSION['idUsuario'] ?? null;
+            error_log("ID de usuario en la sesión: " . json_encode($idUsuario));
+    
+            if ($idUsuario === null) {
+                throw new Exception('Usuario no autenticado.');
+            }
+    
+            // Crear un array de campos obligatorios para verificar si alguno está vacío
+            $obligatorios = [
+                'idEquino' => $params['idEquino'] ?? null,
+                'fecha' => $params['fecha'] ?? null,
+                'trabajoRealizado' => $params['trabajoRealizado'] ?? null,
+                'herramientasUsadas' => $params['herramientasUsadas'] ?? null,
+                'observaciones' => $params['observaciones'] ?? null
+            ];
+    
+            // Log de cada campo obligatorio y su valor
+            foreach ($obligatorios as $campo => $valor) {
+                error_log("Campo obligatorio: $campo, Valor: " . json_encode($valor));
+                if (empty($valor)) {
+                    throw new Exception("Falta el campo obligatorio: $campo.");
+                }
+            }
+    
+            // Log de los datos completos preparados para insertar en la base de datos
+            error_log("Datos preparados para InsertarHistorialHerrero: " . json_encode([
                 $params['idEquino'],
-                $params['idUsuario'],
+                $idUsuario,
                 $params['fecha'],
                 $params['trabajoRealizado'],
                 $params['herramientasUsadas'],
-                $params['estadoInicio'],
-                $params['estadoFin'],
+                $params['observaciones']
+            ]));
+    
+            $stmt = $this->pdo->prepare("CALL InsertarHistorialHerrero(?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $params['idEquino'],
+                $idUsuario,
+                $params['fecha'],
+                $params['trabajoRealizado'],
+                $params['herramientasUsadas'],
                 $params['observaciones']
             ]);
+    
+            error_log("Inserción realizada correctamente en InsertarHistorialHerrero.");
+    
             return ['status' => 'success', 'message' => 'Trabajo registrado en el historial correctamente.'];
         } catch (PDOException $e) {
             error_log("Error al insertar historial de herrero: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error al registrar el trabajo en el historial.'];
+        } catch (Exception $e) {
+            error_log("Error en insertarHistorialHerrero: " . $e->getMessage());
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+    
+    
+    
+    
+    
+
 
     // Método para insertar una herramienta usada en el historial
     public function insertarHerramientaUsada($params = []) {
         try {
-            $stmt = $this->pdo->prepare("CALL InsertarHerramientaUsada(?, ?, ?, ?)");
+            $stmt = $this->pdo->prepare("CALL InsertarHerramientaUsada(?, ?)");
             $stmt->execute([
                 $params['idHistorialHerrero'],
-                $params['idHerramienta'],
-                $params['estadoInicio'],
-                $params['estadoFin']
+                $params['idHerramienta']
             ]);
             return ['status' => 'success', 'message' => 'Herramienta registrada correctamente en el historial.'];
         } catch (PDOException $e) {
@@ -59,18 +105,6 @@ class Herrero extends Conexion {
         }
     }
 
-    // Método para actualizar el estado final de una herramienta usada
-    public function actualizarEstadoFinalHerramientaUsada($params = []) {
-        try {
-            $stmt = $this->pdo->prepare("CALL ActualizarEstadoFinalHerramientaUsada(?, ?)");
-            $stmt->execute([$params['idHerramientasUsadas'], $params['estadoFin']]);
-            return ['status' => 'success', 'message' => 'Estado de herramienta actualizado correctamente.'];
-        } catch (PDOException $e) {
-            error_log("Error al actualizar estado de herramienta usada: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al actualizar el estado de la herramienta.'];
-        }
-    }
-
     // Método para consultar el estado actual de todas las herramientas
     public function consultarEstadoActualHerramientas() {
         try {
@@ -82,6 +116,8 @@ class Herrero extends Conexion {
             return false;
         }
     }
+
+    
 
     // Método para insertar un nuevo estado de herramienta en EstadoHerramienta
     public function insertarEstadoHerramienta($descripcionEstado) {
@@ -98,20 +134,16 @@ class Herrero extends Conexion {
     // Método para obtener los tipos de equinos
     public function getTipoEquinos() {
         try {
-            // Cambiamos la llamada al nuevo procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
             $query->execute();
-            
-            // Devolvemos los resultados como un arreglo asociativo
             return $query->fetchAll(PDO::FETCH_ASSOC);
-            
         } catch (PDOException $e) {
-            // Registramos el error en el log
             error_log("Error en getTipoEquinos: " . $e->getMessage());
             return [];
         }
     }
 
+    // Método para obtener los equinos por tipo
     public function obtenerEquinosPorTipo($idTipoEquino) {
         try {
             $stmt = $this->pdo->prepare("SELECT * FROM equinos WHERE idTipoEquino = ?");
@@ -122,8 +154,4 @@ class Herrero extends Conexion {
             return [];
         }
     }
-    
-    
-    
 }
-

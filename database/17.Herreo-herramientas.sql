@@ -1,5 +1,5 @@
---  1.Procedimiento para Insertar un Nuevo Trabajo en HistorialHerrero  
-
+-- 1. Procedimiento para Insertar un Nuevo Trabajo en HistorialHerrero
+-- Inserta un registro en el historial de trabajos del herrero, sin incluir estado de herramienta
 DELIMITER //
 
 CREATE PROCEDURE InsertarHistorialHerrero (
@@ -8,52 +8,48 @@ CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_fecha DATE,
     IN p_trabajoRealizado TEXT,
     IN p_herramientasUsadas TEXT,
-    IN p_estadoInicio INT,
-    IN p_estadoFin INT,
     IN p_observaciones TEXT
 )
 BEGIN
     INSERT INTO HistorialHerrero (
-        idEquino, idUsuario, fecha, trabajoRealizado, herramientasUsadas, estadoInicio, estadoFin, observaciones
+        idEquino, idUsuario, fecha, trabajoRealizado, herramientasUsadas, observaciones
     ) VALUES (
-        p_idEquino, p_idUsuario, p_fecha, p_trabajoRealizado, p_herramientasUsadas, p_estadoInicio, p_estadoFin, p_observaciones
+        p_idEquino, p_idUsuario, p_fecha, p_trabajoRealizado, p_herramientasUsadas, p_observaciones
     );
 END //
 
 DELIMITER ;
 
--- 2.Procedimiento para Insertar una Herramienta Usada en HerramientasUsadasHistorial ------------------------------------------------------------------------------------------------------
+
+-- 2. Procedimiento para Insertar una Herramienta Usada en HerramientasUsadasHistorial
+-- Registra una herramienta utilizada en un trabajo específico sin el estado de herramienta
 DELIMITER //
 
 CREATE PROCEDURE InsertarHerramientaUsada (
     IN p_idHistorialHerrero INT,
-    IN p_idHerramienta INT,
-    IN p_estadoInicio INT,
-    IN p_estadoFin INT
+    IN p_idHerramienta INT
 )
 BEGIN
     INSERT INTO HerramientasUsadasHistorial (
-        idHistorialHerrero, idHerramienta, estadoInicio, estadoFin
+        idHistorialHerrero, idHerramienta
     ) VALUES (
-        p_idHistorialHerrero, p_idHerramienta, p_estadoInicio, p_estadoFin
+        p_idHistorialHerrero, p_idHerramienta
     );
 END //
 
 DELIMITER ;
 
 
--- 3. Procedimiento para Consultar el Historial Completo de un Equino -------------------------
+-- 3. Procedimiento para Consultar el Historial Completo de un Equino
+-- Retorna el historial de trabajos de herrería para un equino específico, con detalles generales del trabajo
 DELIMITER //
 
 CREATE PROCEDURE ConsultarHistorialEquino (
     IN p_idEquino INT
 )
 BEGIN
-    SELECT H.idHistorialHerrero, H.fecha, H.trabajoRealizado, H.herramientasUsadas, E1.descripcionEstado AS estadoInicio,
-           E2.descripcionEstado AS estadoFin, H.observaciones
+    SELECT H.idHistorialHerrero, H.fecha, H.trabajoRealizado, H.herramientasUsadas, H.observaciones
     FROM HistorialHerrero H
-    JOIN EstadoHerramienta E1 ON H.estadoInicio = E1.idEstado
-    LEFT JOIN EstadoHerramienta E2 ON H.estadoFin = E2.idEstado
     WHERE H.idEquino = p_idEquino
     ORDER BY H.fecha DESC;
 END //
@@ -61,36 +57,23 @@ END //
 DELIMITER ;
 
 
--- 4. Procedimiento para Actualizar el Estado Final de una Herramienta Usada -------------------------
-DELIMITER //
-
-CREATE PROCEDURE ActualizarEstadoFinalHerramientaUsada (
-    IN p_idHerramientasUsadas INT,
-    IN p_estadoFin INT
-)
-BEGIN
-    UPDATE HerramientasUsadasHistorial
-    SET estadoFin = p_estadoFin
-    WHERE idHerramientasUsadas = p_idHerramientasUsadas;
-END //
-
-DELIMITER ;
-
--- -5. Procedimiento para Consultar el Estado Actual de Herramientas-----------------------------------
+-- 4. Procedimiento para Consultar el Estado Actual de Herramientas
+-- Muestra el estado actual de cada herramienta utilizada en trabajos recientes, sin incluir estado inicial y final
 DELIMITER //
 
 CREATE PROCEDURE ConsultarEstadoActualHerramientas ()
 BEGIN
-    SELECT H.idHerramienta, H.descripcionEstado AS estadoActual, HU.estadoInicio, HU.estadoFin
-    FROM HerramientasUsadasHistorial HU
-    JOIN EstadoHerramienta H ON HU.estadoFin = H.idEstado
-    ORDER BY HU.idHistorialHerrero DESC;
+    SELECT H.idHerramienta, E.descripcionEstado AS estadoActual
+    FROM HerramientasUsadasHistorial H
+    JOIN EstadoHerramienta E ON H.idHerramienta = E.idEstado
+    ORDER BY H.idHistorialHerrero DESC;
 END //
 
 DELIMITER ;
 
 
--- -----------6. Procedimiento para Insertar un Nuevo Estado de Herramienta en EstadoHerramienta-------
+-- 5. Procedimiento para Insertar un Nuevo Estado de Herramienta en EstadoHerramienta
+-- Inserta un nuevo estado de herramienta en la tabla EstadoHerramienta
 DELIMITER //
 
 CREATE PROCEDURE InsertarEstadoHerramienta (
@@ -103,3 +86,5 @@ END //
 
 DELIMITER ;
 
+
+CALL InsertarHistorialHerrero(1, 1, '2023-01-01', 'Recorte de casco', 'Herradura de acero', 'Observación de prueba');

@@ -32,8 +32,7 @@ INSERT INTO TipoAlimentos (tipoAlimento) VALUES
 
 
 -- Relación entre Tipos de Alimentos y Unidades de Medida
-
--- Forrajes
+-- Forraje 
 INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida) VALUES 
     (1, 1),  -- kg
     (1, 6),  -- paca

@@ -120,6 +120,20 @@ try {
         }
 
         switch ($operation) {
+
+            case 'agregarTipoUnidadMedidaNuevo':
+                // Verificar que se envíen los parámetros necesarios
+                if (!isset($params['tipoAlimento'], $params['nombreUnidad'])) {
+                    echo json_encode(['status' => 'error', 'message' => 'Faltan datos necesarios para agregar el tipo de alimento y la unidad de medida.']);
+                    exit();
+                }
+    
+                // Llamar al método en el modelo
+                $result = $alimento->agregarTipoUnidadMedidaNuevo($params['tipoAlimento'], $params['nombreUnidad']);
+                echo json_encode($result);
+                exit();
+
+                
             case 'registrar':
                 if (!isset($params['nombreAlimento'], $params['stockActual'], $params['costo'], $params['stockMinimo'], $params['tipoAlimento'], $params['unidadMedida'], $params['lote'], $params['fechaCaducidad'])) {
                     echo json_encode(['status' => 'error', 'message' => 'Faltan datos necesarios para el registro del alimento.']);

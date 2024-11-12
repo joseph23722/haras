@@ -175,8 +175,11 @@ CREATE TABLE TipoAlimento_UnidadMedida (
     idUnidadMedida INT NOT NULL,
     PRIMARY KEY (idTipoAlimento, idUnidadMedida),
     CONSTRAINT fk_tipoalimento FOREIGN KEY (idTipoAlimento) REFERENCES TipoAlimentos(idTipoAlimento) ON DELETE CASCADE,
-    CONSTRAINT fk_unidadmedida FOREIGN KEY (idUnidadMedida) REFERENCES UnidadesMedidaAlimento(idUnidadMedida) ON DELETE CASCADE
+    CONSTRAINT fk_unidadmedida FOREIGN KEY (idUnidadMedida) REFERENCES UnidadesMedidaAlimento(idUnidadMedida) ON DELETE CASCADE,
+	CONSTRAINT uq_tipo_unidad UNIQUE (idTipoAlimento, idUnidadMedida)
 ) ENGINE = INNODB;
+
+
 
 -- 7. Tabla Alimentos
 CREATE TABLE Alimentos (
@@ -368,40 +371,35 @@ CREATE TABLE Entrenamientos (
 
 
 
-
--- 26. HistorialHerrero
+-- 26
+-- Tabla para Estados de las Herramientas
 CREATE TABLE EstadoHerramienta (
     idEstado INT PRIMARY KEY AUTO_INCREMENT,
     descripcionEstado VARCHAR(50) NOT NULL
 );
 
+
+-- Tabla para el Historial del Trabajo de Herrería
 CREATE TABLE HistorialHerrero (
     idHistorialHerrero INT PRIMARY KEY AUTO_INCREMENT,
     idEquino INT NOT NULL,
     idUsuario INT NOT NULL,
     fecha DATE NOT NULL,
     trabajoRealizado TEXT NOT NULL,
-    herramientasUsadas TEXT, -- Lista de herramientas en formato de texto
-    estadoInicio INT NOT NULL, -- Estado de las herramientas al inicio del trabajo
-    estadoFin INT, -- Estado de las herramientas al final del trabajo
+    herramientasUsadas TEXT,  -- Lista de herramientas en formato texto
     observaciones TEXT,
     CONSTRAINT fk_historialherrero_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
-    CONSTRAINT fk_historialherrero_estado_inicio FOREIGN KEY (estadoInicio) REFERENCES EstadoHerramienta(idEstado),
-    CONSTRAINT fk_historialherrero_estado_fin FOREIGN KEY (estadoFin) REFERENCES EstadoHerramienta(idEstado)
+    CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 );
 
-
+-- Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados)
 CREATE TABLE HerramientasUsadasHistorial (
     idHerramientasUsadas INT PRIMARY KEY AUTO_INCREMENT,
-    idHistorialHerrero INT NOT NULL,
-    idHerramienta INT NOT NULL,
-    estadoInicio INT NOT NULL, -- Estado inicial de la herramienta individual
-    estadoFin INT, -- Estado final de la herramienta individual
-    CONSTRAINT fk_herramienta_historial FOREIGN KEY (idHistorialHerrero) REFERENCES HistorialHerrero(idHistorialHerrero),
-    CONSTRAINT fk_herramienta_estado_inicio FOREIGN KEY (estadoInicio) REFERENCES EstadoHerramienta(idEstado),
-    CONSTRAINT fk_herramienta_estado_fin FOREIGN KEY (estadoFin) REFERENCES EstadoHerramienta(idEstado)
+    idHistorialHerrero INT NOT NULL,  -- Referencia al historial específico
+    idHerramienta INT NOT NULL,       -- Identificación de la herramienta utilizada
+    CONSTRAINT fk_herramienta_historial FOREIGN KEY (idHistorialHerrero) REFERENCES HistorialHerrero(idHistorialHerrero)
 );
+
 
 
 

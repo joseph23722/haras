@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once '../models/Herrero.php';
 
 $herrero = new Herrero();
@@ -7,14 +12,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 header('Content-Type: application/json');
 
 // Función para enviar una respuesta JSON al cliente
-function sendResponse($status, $message, $data = []) {
-    echo json_encode([
-        'status' => $status,
-        'message' => $message,
-        'data' => $data
-    ]);
-    exit;
+function sendResponse($status, $message, $data = null) {
+    header('Content-Type: application/json'); // Asegura que la respuesta es JSON
+    echo json_encode(['status' => $status, 'message' => $message, 'data' => $data]);
+    exit();
 }
+
 
 // Obtener la operación
 $operation = '';
@@ -34,6 +37,9 @@ if ($method === 'GET') {
 try {
     if ($method === 'GET') {
         switch ($operation) {
+            
+
+            
             case 'consultarHistorialEquino':
                 $idEquino = intval($_GET['idEquino'] ?? 0);
                 $historial = $herrero->consultarHistorialEquino($idEquino);
@@ -54,15 +60,11 @@ try {
                 break;
 
             case 'getTipoEquinos':
-                try {
-                    $tiposEquinos = $herrero->getTipoEquinos();
-                    if ($tiposEquinos) {
-                        sendResponse('success', 'Tipos de equinos obtenidos correctamente.', $tiposEquinos);
-                    } else {
-                        sendResponse('error', 'No se pudieron obtener los tipos de equinos.');
-                    }
-                } catch (PDOException $e) {
-                    sendResponse('error', 'Error al obtener los tipos de equinos: ' . $e->getMessage());
+                $tiposEquinos = $herrero->getTipoEquinos();
+                if ($tiposEquinos) {
+                    sendResponse('success', 'Tipos de equinos obtenidos correctamente.', $tiposEquinos);
+                } else {
+                    sendResponse('error', 'No se pudieron obtener los tipos de equinos.');
                 }
                 break;
 
@@ -75,9 +77,6 @@ try {
                     sendResponse('error', 'No se encontraron equinos para este tipo.');
                 }
                 break;
-            
-                
-                
 
             default:
                 sendResponse('error', 'Operación no válida para GET.');
@@ -85,38 +84,46 @@ try {
     } elseif ($method === 'POST') {
         switch ($operation) {
             case 'insertarHistorialHerrero':
-                $params = json_decode(file_get_contents('php://input'), true); // Decodifica JSON
-                $params = [
-                    'idEquino' => $_POST['idEquino'],
-                    'idUsuario' => $_POST['idUsuario'],
-                    'fecha' => $_POST['fecha'],
-                    'trabajoRealizado' => $_POST['trabajoRealizado'],
-                    'herramientasUsadas' => $_POST['herramientasUsadas'],
-                    'estadoInicio' => $_POST['estadoInicio'],
-                    'estadoFin' => $_POST['estadoFin'],
-                    'observaciones' => $_POST['observaciones']
-                ];
-                $result = $herrero->insertarHistorialHerrero($params);
-                sendResponse($result['status'], $result['message']);
+                try {
+                    $params = json_decode(file_get_contents('php://input'), true);
+            
+                    // Log de todos los datos recibidos en el controlador
+                    error_log("Datos recibidos en el controlador insertarHistorialHerrero: " . json_encode($params));
+            
+                    // Verificación de los parámetros obligatorios y log de cada uno
+                    $requiredFields = ['idEquino', 'idUsuario', 'fecha', 'trabajoRealizado', 'herramientasUsadas', 'observaciones'];
+                    foreach ($requiredFields as $field) {
+                        if (!isset($params[$field]) || empty($params[$field])) {
+                            error_log("Campo faltante o vacío: $field con valor: " . json_encode($params[$field]));
+                            sendResponse('error', 'Datos incompletos para registrar el historial.');
+                            return;
+                        }
+                    }
+            
+                    // Llamar al método en el modelo para insertar el historial
+                    $result = $herrero->insertarHistorialHerrero($params);
+                    error_log("Resultado de la inserción en modelo: " . json_encode($result));  // Log del resultado del modelo
+                    sendResponse($result['status'], $result['message']);
+                } catch (Exception $e) {
+                    error_log("Excepción en insertarHistorialHerrero: " . $e->getMessage());
+                    sendResponse('error', 'Excepción al intentar registrar el historial.');
+                }
                 break;
+            
+            
+            
+            
+            
+            
+            
+            
 
             case 'insertarHerramientaUsada':
                 $params = [
                     'idHistorialHerrero' => $_POST['idHistorialHerrero'],
-                    'idHerramienta' => $_POST['idHerramienta'],
-                    'estadoInicio' => $_POST['estadoInicio'],
-                    'estadoFin' => $_POST['estadoFin']
+                    'idHerramienta' => $_POST['idHerramienta']
                 ];
                 $result = $herrero->insertarHerramientaUsada($params);
-                sendResponse($result['status'], $result['message']);
-                break;
-
-            case 'actualizarEstadoFinalHerramientaUsada':
-                $params = [
-                    'idHerramientasUsadas' => $_POST['idHerramientasUsadas'],
-                    'estadoFin' => $_POST['estadoFin']
-                ];
-                $result = $herrero->actualizarEstadoFinalHerramientaUsada($params);
                 sendResponse($result['status'], $result['message']);
                 break;
 
@@ -135,4 +142,3 @@ try {
 } catch (Exception $e) {
     sendResponse('error', 'Ocurrió un error: ' . $e->getMessage());
 }
-
