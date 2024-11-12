@@ -50,36 +50,37 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `spu_movimiento_implemento`;
 DELIMITER //
 CREATE PROCEDURE spu_movimiento_implemento(
-    IN p_idTipomovimiento INT,  -- ID del tipo de movimiento (por ejemplo, 1 para Entrada, 2 para Salida)
+    IN p_idTipomovimiento INT,  -- ID del tipo de movimiento (1 para Entrada, 2 para Salida)
     IN p_idTipoinventario INT,  -- Tipo de inventario (Ejemplo: 1 para implementos de caballo)
-    IN p_nombreProducto VARCHAR(100),  -- Nombre del producto
+    IN p_idInventario INT,  -- Nombre del producto
     IN p_cantidad INT,  -- Cantidad de la entrada o salida
+    IN p_precioUnitario DECIMAL(10,2),  -- Precio unitario del producto (solo en entrada)
     IN p_descripcion TEXT  -- Descripción del movimiento (puede ser NULL)
 )
 BEGIN
     DECLARE v_idInventario INT;
     DECLARE v_stockFinal INT;
-    DECLARE v_precioUnitario DECIMAL(10,2);
+    DECLARE v_precioTotal DECIMAL(10,2);
 
     -- Validar que la cantidad sea un número positivo
     IF p_cantidad <= 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad debe ser un número positivo.';
     END IF;
 
-    -- Obtener el idInventario, stockFinal y precioUnitario a partir del nombreProducto
-    SELECT idInventario, stockFinal, precioUnitario INTO v_idInventario, v_stockFinal, v_precioUnitario
+    -- Obtener el idInventario y stockFinal a partir del nombreProducto
+    SELECT idInventario, stockFinal INTO v_idInventario, v_stockFinal
     FROM Implementos
-    WHERE nombreProducto = p_nombreProducto AND idTipoinventario = p_idTipoinventario
+    WHERE idInventario = p_idInventario AND idTipoinventario = p_idTipoinventario
     LIMIT 1;
 
     -- Si el producto no existe y el tipo de movimiento es 'Entrada', se crea un nuevo registro
     IF v_idInventario IS NULL AND p_idTipomovimiento = 1 THEN  -- 1 = Entrada
-        -- Insertar un nuevo implemento en la tabla Implementos
+        -- Insertar un nuevo implemento en la tabla Implementos con el precio unitario
         INSERT INTO Implementos (
-            idTipoinventario, nombreProducto, descripcion, precioUnitario, stockFinal, estado
+            idTipoinventario, idInventario, descripcion, precioUnitario, stockFinal, estado
         )
         VALUES (
-            p_idTipoinventario, p_nombreProducto, p_descripcion, 0, p_cantidad, 1  -- Estado por defecto 1 (activo)
+            p_idTipoinventario, p_idInventario, p_descripcion, p_precioUnitario, p_cantidad, 1  -- Estado por defecto 1 (activo)
         );
 
         -- Obtener el ID del nuevo implemento
@@ -87,34 +88,50 @@ BEGIN
         SET v_stockFinal = p_cantidad;  -- La cantidad total que entra
 
     ELSEIF v_idInventario IS NOT NULL THEN
-        -- Si el producto ya existe, actualizamos el stock según el tipo de movimiento
+        -- Si el producto ya existe, actualizamos el stock y el precio según el tipo de movimiento
         IF p_idTipomovimiento = 1 THEN  -- 1 = Entrada
-            SET v_stockFinal = v_stockFinal + p_cantidad;  -- Sumar la cantidad en caso de entrada
+            -- Sumar la cantidad en caso de entrada
+            SET v_stockFinal = v_stockFinal + p_cantidad;
+            -- Actualizar el precio unitario si es diferente al actual
+            UPDATE Implementos
+            SET stockFinal = v_stockFinal, precioUnitario = p_precioUnitario
+            WHERE idInventario = v_idInventario;
         ELSEIF p_idTipomovimiento = 2 THEN  -- 2 = Salida
             -- Validar que haya suficiente stock para la salida
             IF v_stockFinal < p_cantidad THEN
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock para la salida solicitada.';
             END IF;
-            SET v_stockFinal = v_stockFinal - p_cantidad;  -- Restar la cantidad en caso de salida
+            -- Restar la cantidad en caso de salida
+            SET v_stockFinal = v_stockFinal - p_cantidad;
+            -- Actualizar el stock en la tabla Implementos
+            UPDATE Implementos
+            SET stockFinal = v_stockFinal
+            WHERE idInventario = v_idInventario;
         END IF;
-        -- Actualizar el stock en el inventario
-        UPDATE Implementos
-        SET stockFinal = v_stockFinal
-        WHERE idInventario = v_idInventario;
     ELSE
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El producto no existe.';
     END IF;
 
-    -- Registrar el movimiento en el historial
+    -- Calcular el precio total para el movimiento
+    SET v_precioTotal = p_precioUnitario * p_cantidad;
+
+    -- Registrar el movimiento en el historial de implementos
     INSERT INTO HistorialImplemento (
-        idInventario, idTipoinventario, idTipomovimiento, cantidad, precioUnitario, descripcion
+        idInventario, 
+        idTipoinventario, 
+        idTipomovimiento, 
+        cantidad, 
+        precioUnitario, 
+        precioTotal,  -- Este es el precio total que ahora se está calculando y guardando
+        descripcion
     )
     VALUES (
         v_idInventario, 
         p_idTipoinventario, 
         p_idTipomovimiento, 
         p_cantidad, 
-        v_precioUnitario,
+        p_precioUnitario,
+        v_precioTotal,  -- Precio total (precio unitario * cantidad)
         p_descripcion  -- La descripción puede ser NULL
     );
 
@@ -162,7 +179,7 @@ BEGIN
     SELECT 
         idInventario,
         nombreProducto,
-        cantidad
+        stockFinal
     FROM 
         Implementos
     WHERE
@@ -177,5 +194,32 @@ DELIMITER //
 CREATE PROCEDURE `spu_listar_tipo_movimiento`()
 BEGIN
     SELECT * FROM tipomovimientos;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_listar_historial_movimiento`;
+DELIMITER //
+CREATE PROCEDURE `spu_listar_historial_movimiento`(IN p_idTipoinventario INT, IN p_idTipomovimiento INT)
+BEGIN
+    SELECT 
+        h.idHistorial, 
+        i.nombreProducto, 
+        h.idTipomovimiento, 
+        h.cantidad, 
+        h.precioUnitario, 
+        h.descripcion, 
+        h.fechaMovimiento,
+        ti.nombreInventario
+    FROM 
+        HistorialImplemento h
+    INNER JOIN 
+        TipoInventarios ti ON h.idTipoinventario = ti.idTipoinventario
+	INNER JOIN
+        Implementos i ON h.idInventario = i.idInventario 
+    INNER JOIN 
+        TipoMovimientos tm ON h.idTipomovimiento = tm.idTipomovimiento
+	WHERE 
+        h.idTipoinventario = p_idTipoinventario
+		AND h.idTipomovimiento = p_idTipomovimiento;
 END //
 DELIMITER ;

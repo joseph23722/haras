@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Cerramos el modal con la X y no tocando cualquier parte de la pantalla
+    $('#modalMovimiento').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+
     // Mostrar alerta cuando se abre el modal de movimiento
     $('#modalMovimiento').on('shown.bs.modal', function () {
         cargarProductos();
@@ -65,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                const selectNombreProducto = document.getElementById('productos');
+                const selectNombreProducto = document.getElementById('idInventario');
                 if (selectNombreProducto) {
                     selectNombreProducto.innerHTML = '';
                     const defaultOption = document.createElement('option');
@@ -79,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         data.forEach(item => {
                             const option = document.createElement('option');
                             option.value = item.idInventario;
-                            option.textContent = `${item.nombreProducto} - Cantidad: ${item.cantidad}`;
+                            option.textContent = `${item.nombreProducto} - Stock: ${item.stockFinal}`;
                             selectNombreProducto.appendChild(option);
                         });
                     } else {
@@ -127,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
             descripcion: formData.get('descripcion')
         };
 
-        if (!data.idTipoinventario || !data.nombreProducto || !data.precioUnitario || !data.cantidad || !data.descripcion) {
+        if (!data.idTipoinventario || !data.nombreProducto || !data.precioUnitario || !data.cantidad) {
             showToast('Por favor complete todos los campos.', 'WARNING');
             return;
         }
@@ -157,6 +163,68 @@ document.addEventListener("DOMContentLoaded", function () {
                     .catch(error => {
                         console.error('Error de solicitud al registrar implemento:', error);
                         showToast('Hubo un problema al registrar el implemento', 'ERROR');
+                    });
+            } else {
+                showToast('Acción cancelada', 'WARNING');
+            }
+        });
+    });
+
+    document.getElementById('formMovimiento').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        const idTipoinventario = formData.get('idTipoinventario');
+        const idTipoMovimiento = formData.get('idTipoMovimiento');
+        const idInventario = formData.get('idInventario');
+        const cantidad = formData.get('cantidad');
+        const descripcion = formData.get('descripcion');
+        let precioUnitario = formData.get('precioUnitario');
+
+        let operation = 'registrarEntrada';
+        if (idTipoMovimiento === '2') {
+            operation = 'registrarSalida';
+            precioUnitario = null;
+        }
+
+        const data = {
+            operation: operation,
+            idTipoinventario: idTipoinventario,
+            idTipoMovimiento: idTipoMovimiento,
+            idInventario: idInventario,
+            cantidad: cantidad,
+            descripcion: descripcion,
+            precioUnitario: precioUnitario  // Será `null` si es "Salida"
+        };
+
+        if (!idTipoMovimiento || !idInventario || !cantidad || !descripcion || !idTipoinventario) {
+            showToast('Por favor complete todos los campos.', 'WARNING');
+            return;
+        }
+
+        // Confirmar antes de registrar
+        ask(`¿Está seguro de registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}?`, 'Módulo de Implementos').then(respuesta => {
+            if (respuesta) {
+                fetch('../../controllers/implemento.controller.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 1) {
+                            showToast(`${operation === 'registrarSalida' ? 'Salida' : 'Entrada'} registrada exitosamente`, 'SUCCESS');
+                            this.reset();
+                            cargarProductos();
+                        } else if (result.status === -1) {
+                            showToast(`Error al registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}: ${result.message}`, 'ERROR');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error de solicitud al registrar ${operation === 'registrarSalida' ? 'salida' : 'entrada'}:`, error);
+                        showToast(`Hubo un problema al registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}`, 'ERROR');
                     });
             } else {
                 showToast('Acción cancelada', 'WARNING');

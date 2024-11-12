@@ -56,8 +56,8 @@
                         </div>
                     </div>
 
-                     <!-- Precio Unitario -->
-                     <div class="col-md-6">
+                    <!-- Precio Unitario -->
+                    <div class="col-md-6">
                         <div class="form-floating">
                             <input type="number" name="precioTotal" id="precioTotal" class="form-control" placeholder="" disabled>
                             <label for="precioTotal">
@@ -111,7 +111,7 @@
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
                 <div class="modal-header" style="background-color: #5a67d8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalMovimientoLabel">Registrar Salida de Medicamento</h5>
+                    <h5 class="modal-title" id="modalMovimientoLabel">Registrar Movimientos de Implementos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
 
@@ -120,10 +120,17 @@
                     <form id="formMovimiento">
                         <!-- Selección de Tipo inventario -->
                         <div class="row mb-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6 ">
                                 <label for="idTipoinventario" class="form-label fw-bold">Tipo inventario</label>
-                                <select name="idTipoinventario" id="idTipoinventario" class="form-select form-select-lg" required>
-                                    <option value="1" disabled selected>Implementos Equinos</option>
+                                <select name="idTipoinventario" id="idTipoinventario" class="form-select form-select-lg" required readonly>
+                                    <option value="1">Implementos Equinos</option>
+                                    <!-- Opciones cargadas dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="idTipoMovimiento" class="form-label fw-bold">Tipo movimiento</label>
+                                <select name="idTipoMovimiento" id="idTipoMovimiento" class="form-select form-select-lg" required>
+                                    <option value="">Seleccione un tipo movimiento</option>
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
@@ -132,35 +139,30 @@
                         <!-- Selección de Tipo inventario -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="idTipoMovimiento" class="form-label fw-bold">Tipo movimiento</label>
-                                <select name="idTipoMovimiento" id="idTipoMovimiento" class="form-select form-select-lg" required>
-                                    <option value="">Seleccione un tipo movimiento</option>
+                                <label for="idInventario" class="form-label fw-bold">Nombre Producto</label>
+                                <select name="idInventario" id="idInventario" class="form-select form-select-lg" required>
+                                    <option value="">Seleccione un producto</option>
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="nombreProducto" class="form-label fw-bold">Nombre Producto</label>
-                                <select name="productos" id="productos" class="form-select form-select-lg" required>
-                                    <option value="">Seleccione un producto</option>
-                                    <!-- Opciones cargadas dinámicamente -->
-                                </select>
+                                <label for="cantidad" class="form-label fw-bold">Cantidad</label>
+                                <input type="number" name="cantidad" id="cantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
                             </div>
                         </div>
 
                         <!-- Selección de Producto -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="cantidad" class="form-label fw-bold">Cantidad</label>
-                                <input type="number" name="cantidad" id="cantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
+                                <label for="precioUnitario" class="form-label fw-bold">Precio Unitario</label>
+                                <input type="number" name="precioUnitario" id="precioUnitario" class="form-control form-control-lg" min="1" placeholder="Ingrese precio unitario">
                             </div>
                             <!-- Motivo de la salida -->
                             <div class="col-md-6">
                                 <label for="descripcion" class="form-label fw-bold">Motivo</label>
-                                <input name="descripcion" id="descripcion" class="form-control form-control-lg" placeholder="Ingrese el motivo de la salida"></input>
+                                <input name="descripcion" id="descripcion" class="form-control form-control-lg" placeholder="Explique el motivo del movimiento"></input>
                             </div>
                         </div>
-
-
 
                         <!-- Botón para registrar la salida -->
                         <div class="d-flex justify-content-end mt-4">
@@ -185,19 +187,6 @@
 
                 <!-- Cuerpo del Modal -->
                 <div class="modal-body px-4 py-3">
-                    <!-- Opciones de Filtrado Rápido -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <label for="filtroRango" class="me-2 fw-bold">Ver movimientos de:</label>
-                            <select id="filtroRango" class="form-select form-select-sm">
-                                <option value="hoy">Hoy</option>
-                                <option value="ultimaSemana">Última semana</option>
-                                <option value="ultimoMes">Último mes</option>
-                                <option value="todos">Todos</option>
-                            </select>
-                        </div>
-                        <button type="button" id="buscarHistorial" class="btn btn-primary ms-3"><i class="fas fa-search me-1"></i>Buscar</button>
-                    </div>
 
                     <!-- Pestañas para Entrada y Salida -->
                     <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
@@ -217,13 +206,13 @@
                                 <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-primary">
                                         <tr class="text-center">
-                                            <th>ID Medicamento</th>
-                                            <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
-                                            <th>Stock Actual</th>
-                                            <th>Lote</th>
-                                            <th>Cantidad de Entrada</th>
-                                            <th>Fecha de Movimiento</th>
+                                            <th>ID Historial</th>
+                                            <th>Nombre Producto</th>
+                                            <th>Precio U.</th>
+                                            <th>Cantidad</th>
+                                            <th>Descripcion</th>
+                                            <th>Fecha Movimiento</th>
+                                            <th>Nombre Inventario</th> <!-- Si es necesario si no se modifica o elimina -->
                                         </tr>
                                     </thead>
                                     <tbody id="historial-entradas-table">
