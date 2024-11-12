@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Cerramos el modal con la X y no tocando cualquier parte de la pantalla
+    $('#modalMovimiento').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+
     // Mostrar alerta cuando se abre el modal de movimiento
     $('#modalMovimiento').on('shown.bs.modal', function () {
         cargarProductos();
@@ -65,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                const selectNombreProducto = document.getElementById('productos');
+                const selectNombreProducto = document.getElementById('idInventario');
                 if (selectNombreProducto) {
                     selectNombreProducto.innerHTML = '';
                     const defaultOption = document.createElement('option');
@@ -79,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         data.forEach(item => {
                             const option = document.createElement('option');
                             option.value = item.idInventario;
-                            option.textContent = `${item.nombreProducto} - Cantidad: ${item.cantidad}`;
+                            option.textContent = `${item.nombreProducto} - Stock: ${item.stockFinal}`;
                             selectNombreProducto.appendChild(option);
                         });
                     } else {
@@ -96,6 +102,56 @@ document.addEventListener("DOMContentLoaded", function () {
                 showToast('Hubo un problema al cargar los productos', 'ERROR');
             });
     }
+
+    const cargarImplementos = async (idTipoinventario = 2) => {
+        try {
+            const params = new URLSearchParams({
+                operation: 'implementosPorInventario',
+                idTipoinventario: idTipoinventario
+            });
+
+            const response = await fetch(`../../controllers/implemento.controller.php?${params.toString()}`, {
+                method: "GET"
+            });
+
+            const textResponse = await response.text();
+
+            if (textResponse.startsWith("<")) {
+                mostrarMensajeDinamico("Error en la respuesta del servidor.", 'ERROR');
+                showToast("Error en la respuesta del servidor", 'ERROR');
+                return;
+            }
+
+            const implementos = JSON.parse(textResponse);
+
+            if (implementos && implementos.length > 0) {
+                if ($.fn.dataTable.isDataTable('#implementos-table')) {
+                    console.log("La tabla ya existe. Actualizando datos...");
+                    $('#implementos-table').DataTable().clear().rows.add(implementos).draw();
+                } else {
+                    console.log("Inicializando DataTable...");
+                    $('#implementos-table').DataTable({
+                        data: implementos,
+                        columns: [
+                            { data: 'idInventario', title: 'ID' },
+                            { data: 'nombreProducto', title: 'Producto' },
+                            { data: 'stockFinal', title: 'Stock Final' },
+                            { data: 'cantidad', title: 'Cantidad' },
+                            { data: 'precioUnitario', title: 'Precio Unitario' },
+                            { data: 'precioTotal', title: 'Precio Total' },
+                            { data: 'estado', title: 'Estado' }
+                        ]
+                    });
+                }
+            } else {
+                mostrarMensajeDinamico("No hay datos para mostrar en esta tabla.", 'INFO');
+            }
+        } catch (error) {
+            console.error("Error al cargar implementos:", error.message);
+            mostrarMensajeDinamico("Error al cargar implementos: " + error.message, 'ERROR');
+            showToast("Error al cargar implementos", 'ERROR');
+        }
+    };
 
     // Función para calcular y mostrar el precio total
     function calcularPrecioTotal() {
@@ -127,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
             descripcion: formData.get('descripcion')
         };
 
-        if (!data.idTipoinventario || !data.nombreProducto || !data.precioUnitario || !data.cantidad || !data.descripcion) {
+        if (!data.idTipoinventario || !data.nombreProducto || !data.precioUnitario || !data.cantidad) {
             showToast('Por favor complete todos los campos.', 'WARNING');
             return;
         }
@@ -146,6 +202,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (result.status === 1) {
                             showToast('Implemento registrado exitosamente', 'SUCCESS');
                             form.reset();
+                            cargarImplementos();
+                            cargarHistorialMovimiento();
                         } else if (result.status === -1) {
                             if (result.message && result.message.includes('Ya existe un producto con el mismo nombre')) {
                                 showToast('Error: Ya existe un producto con el mismo nombre en este tipo de inventario.', 'ERROR');
@@ -163,4 +221,136 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    document.getElementById('formMovimiento').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        const idTipoinventario = formData.get('idTipoinventario');
+        const idTipoMovimiento = formData.get('idTipoMovimiento');
+        const idInventario = formData.get('idInventario');
+        const cantidad = formData.get('cantidad');
+        const descripcion = formData.get('descripcion');
+        let precioUnitario = formData.get('precioUnitario');
+
+        let operation = 'registrarEntrada';
+        if (idTipoMovimiento === '2') {
+            operation = 'registrarSalida';
+            precioUnitario = null;
+        }
+
+        const data = {
+            operation: operation,
+            idTipoinventario: idTipoinventario,
+            idTipoMovimiento: idTipoMovimiento,
+            idInventario: idInventario,
+            cantidad: cantidad,
+            descripcion: descripcion,
+            precioUnitario: precioUnitario  // Será `null` si es "Salida"
+        };
+
+        if (!idTipoMovimiento || !idInventario || !cantidad || !descripcion || !idTipoinventario) {
+            showToast('Por favor complete todos los campos.', 'WARNING');
+            return;
+        }
+
+        // Confirmar antes de registrar
+        ask(`¿Está seguro de registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}?`, 'Módulo de Implementos').then(respuesta => {
+            if (respuesta) {
+                fetch('../../controllers/implemento.controller.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 1) {
+                            showToast(`${operation === 'registrarSalida' ? 'Salida' : 'Entrada'} registrada exitosamente`, 'SUCCESS');
+                            this.reset();
+                            cargarProductos();
+                            cargarImplementos();
+                        } else if (result.status === -1) {
+                            showToast(`Error al registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}: ${result.message}`, 'ERROR');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error de solicitud al registrar ${operation === 'registrarSalida' ? 'salida' : 'entrada'}:`, error);
+                        showToast(`Hubo un problema al registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}`, 'ERROR');
+                    });
+            } else {
+                showToast('Acción cancelada', 'WARNING');
+            }
+        });
+    });
+
+    // Función para cargar el historial de movimientos
+    const cargarHistorialMovimiento = async (idTipoinventario = 2, idTipomovimiento = 1, tablaID) => {
+        try {
+            const params = new URLSearchParams({
+                operation: 'listarHistorialMovimiento',
+                idTipoinventario: idTipoinventario,
+                idTipomovimiento: idTipomovimiento
+            });
+
+            const response = await fetch(`../../controllers/implemento.controller.php?${params.toString()}`, {
+                method: "GET"
+            });
+
+            const textResponse = await response.text();
+            console.log("Respuesta del servidor en texto:", textResponse);
+
+            if (textResponse.startsWith("<")) {
+                console.error("Error en la respuesta del servidor.");
+                return;
+            }
+
+            const implementos = JSON.parse(textResponse);
+            console.log("Datos de implementos:", implementos);
+
+            const tbody = document.getElementById(tablaID);
+            tbody.innerHTML = "";
+
+            if (implementos.length > 0) {
+                implementos.forEach(implemento => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                    <td>${implemento.idHistorial}</td>
+                    <td>${implemento.nombreProducto}</td>
+                    <td>${implemento.precioUnitario || '-'}</td>
+                    <td>${implemento.cantidad}</td>
+                    <td>${implemento.descripcion || '-'}</td>
+                    <td>${implemento.fechaMovimiento}</td>
+                    <td>${implemento.nombreInventario}</td>
+                `;
+
+                    tbody.appendChild(row);
+                });
+            } else {
+                const noDataRow = document.createElement("tr");
+                noDataRow.innerHTML = `<td colspan="7" class="text-center">No hay datos disponibles</td>`;
+                tbody.appendChild(noDataRow);
+            }
+        } catch (error) {
+            console.error("Error al cargar el historial de movimientos:", error);
+        }
+    };
+
+    // Event listeners para las pestañas del modal ENTRADA
+    document.getElementById('entradas-tab').addEventListener('click', () => {
+        cargarHistorialMovimiento(2, 1, 'historial-entradas-table');
+    });
+
+    document.getElementById('salidas-tab').addEventListener('click', () => {
+        cargarHistorialMovimiento(2, 2, 'historial-salidas-table');
+    });
+
+    // Llamar a cargar las entradas al abrir el modal
+    document.getElementById('modalHistorial').addEventListener('show.bs.modal', () => {
+        cargarHistorialMovimiento(2, 1, 'historial-entradas-table');
+    });
+
+    cargarImplementos();
 });

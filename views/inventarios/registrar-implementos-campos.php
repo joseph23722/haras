@@ -18,7 +18,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select name="idTipoinventario" id="idTipoinventario" class="form-select" required>
-                                <option value="1">Implementos Equinos</option>
+                                <option value="2">Implementos Campos</option>
                             </select>
                             <label for="idTipoinventario">
                                 <i class="fas fa-box" style="color: #6d6875;"></i> Tipo de Inventario
@@ -56,8 +56,8 @@
                         </div>
                     </div>
 
-                     <!-- Precio Unitario -->
-                     <div class="col-md-6">
+                    <!-- Precio Unitario -->
+                    <div class="col-md-6">
                         <div class="form-floating">
                             <input type="number" name="precioTotal" id="precioTotal" class="form-control" placeholder="" disabled>
                             <label for="precioTotal">
@@ -111,7 +111,7 @@
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
                 <div class="modal-header" style="background-color: #5a67d8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalMovimientoLabel">Registrar Salida de Medicamento</h5>
+                    <h5 class="modal-title" id="modalMovimientoLabel">Registrar Movimientos de Implementos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
 
@@ -120,17 +120,13 @@
                     <form id="formMovimiento">
                         <!-- Selección de Tipo inventario -->
                         <div class="row mb-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6 ">
                                 <label for="idTipoinventario" class="form-label fw-bold">Tipo inventario</label>
-                                <select name="idTipoinventario" id="idTipoinventario" class="form-select form-select-lg" required>
-                                    <option value="1" disabled selected>Implementos Equinos</option>
+                                <select name="idTipoinventario" id="idTipoinventario" class="form-select form-select-lg" required readonly>
+                                    <option value="2">Implementos Campos</option>
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
-                        </div>
-
-                        <!-- Selección de Tipo inventario -->
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="idTipoMovimiento" class="form-label fw-bold">Tipo movimiento</label>
                                 <select name="idTipoMovimiento" id="idTipoMovimiento" class="form-select form-select-lg" required>
@@ -138,34 +134,40 @@
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
+                        </div>
+
+                        <!-- Selección de idInventario a traves del nombreProducto -->
+                        <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="nombreProducto" class="form-label fw-bold">Nombre Producto</label>
-                                <select name="productos" id="productos" class="form-select form-select-lg" required>
+                                <label for="idInventario" class="form-label fw-bold">Nombre Producto</label>
+                                <select name="idInventario" id="idInventario" class="form-select form-select-lg" required>
                                     <option value="">Seleccione un producto</option>
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
-                        </div>
-
-                        <!-- Selección de Producto -->
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="cantidad" class="form-label fw-bold">Cantidad</label>
                                 <input type="number" name="cantidad" id="cantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
                             </div>
+                        </div>
+
+                        <!-- Precio Unitario -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="precioUnitario" class="form-label fw-bold">Precio Unitario</label>
+                                <input type="number" name="precioUnitario" id="precioUnitario" class="form-control form-control-lg" min="1" placeholder="Ingrese precio unitario">
+                            </div>
                             <!-- Motivo de la salida -->
                             <div class="col-md-6">
                                 <label for="descripcion" class="form-label fw-bold">Motivo</label>
-                                <input name="descripcion" id="descripcion" class="form-control form-control-lg" placeholder="Ingrese el motivo de la salida"></input>
+                                <input name="descripcion" id="descripcion" class="form-control form-control-lg" placeholder="Explique el motivo del movimiento"></input>
                             </div>
                         </div>
 
-
-
-                        <!-- Botón para registrar la salida -->
+                        <!-- Botón para registrar movimiento -->
                         <div class="d-flex justify-content-end mt-4">
                             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger px-4">Registrar Salida</button>
+                            <button type="submit" class="btn btn-danger px-4">Registrar Movimiento</button>
                         </div>
                     </form>
                 </div>
@@ -173,31 +175,18 @@
         </div>
     </div>
 
-    <!-- Modal para Historial de Movimientos de Medicamentos -->
+    <!-- Modal para Historial de Movimientos de Implementos -->
     <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
                 <div class="modal-header" style="background-color: #17a2b8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Medicamentos</h5>
+                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Implementos</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
 
                 <!-- Cuerpo del Modal -->
                 <div class="modal-body px-4 py-3">
-                    <!-- Opciones de Filtrado Rápido -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <label for="filtroRango" class="me-2 fw-bold">Ver movimientos de:</label>
-                            <select id="filtroRango" class="form-select form-select-sm">
-                                <option value="hoy">Hoy</option>
-                                <option value="ultimaSemana">Última semana</option>
-                                <option value="ultimoMes">Último mes</option>
-                                <option value="todos">Todos</option>
-                            </select>
-                        </div>
-                        <button type="button" id="buscarHistorial" class="btn btn-primary ms-3"><i class="fas fa-search me-1"></i>Buscar</button>
-                    </div>
 
                     <!-- Pestañas para Entrada y Salida -->
                     <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
@@ -211,19 +200,19 @@
 
                     <!-- Contenido de las Pestañas -->
                     <div class="tab-content">
-                        <!-- Tabla de Entradas de Medicamentos -->
+                        <!-- Tabla de Entradas de Implementos -->
                         <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
                             <div class="table-responsive">
                                 <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-primary">
                                         <tr class="text-center">
-                                            <th>ID Medicamento</th>
-                                            <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
-                                            <th>Stock Actual</th>
-                                            <th>Lote</th>
-                                            <th>Cantidad de Entrada</th>
-                                            <th>Fecha de Movimiento</th>
+                                            <th>ID Historial</th>
+                                            <th>Nombre Producto</th>
+                                            <th>Precio U.</th>
+                                            <th>Cantidad</th>
+                                            <th>Descripcion</th>
+                                            <th>Fecha Movimiento</th>
+                                            <th>Nombre Inventario</th> <!-- Si es necesario si no se modifica o elimina -->
                                         </tr>
                                     </thead>
                                     <tbody id="historial-entradas-table">
@@ -233,20 +222,19 @@
                             </div>
                         </div>
 
-                        <!-- Tabla de Salidas de Medicamentos -->
+                        <!-- Tabla de Salidas de Implementos -->
                         <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
                             <div class="table-responsive">
                                 <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-danger">
                                         <tr class="text-center">
-                                            <th>ID Medicamento</th>
-                                            <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
-                                            <th>Lote</th>
-                                            <th>Tipo de Equino</th>
-                                            <th>Cantidad de Salida</th>
-                                            <th>Motivo</th>
-                                            <th>Fecha de Movimiento</th>
+                                            <th>ID Historial</th>
+                                            <th>Nombre Producto</th>
+                                            <th>Precio U.</th>
+                                            <th>Cantidad</th>
+                                            <th>Descripcion</th>
+                                            <th>Fecha</th>
+                                            <th>nombre Inventario</th>
                                         </tr>
                                     </thead>
                                     <tbody id="historial-salidas-table">
@@ -265,9 +253,32 @@
             </div>
         </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+            <h5 class="text-center"><i class="fas fa-database"></i> Implementos Registrados</h5>
+        </div>
+        <div class="card-body" style="background-color: #f9f9f9;">
+            <table id="implementos-table" class="table table-striped table-hover table-bordered">
+                <thead style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+                </thead>
+            </table>
+        </div>
+    </div>
 </div>
 
 <?php require_once '../footer.php'; ?>
+
+<script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
+<script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
+
+
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>

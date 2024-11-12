@@ -200,7 +200,7 @@
 
                     <!-- Contenido de las Pestañas -->
                     <div class="tab-content">
-                        <!-- Tabla de Entradas de Medicamentos -->
+                        <!-- Tabla de Entradas de Implementos -->
                         <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
                             <div class="table-responsive">
                                 <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
@@ -222,7 +222,7 @@
                             </div>
                         </div>
 
-                        <!-- Tabla de Salidas de Medicamentos -->
+                        <!-- Tabla de Salidas de Implementos -->
                         <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
                             <div class="table-responsive">
                                 <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
