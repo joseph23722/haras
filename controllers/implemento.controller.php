@@ -46,19 +46,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'descripcion' => $requestBody['descripcion'],
                 'precioUnitario' => $requestBody['precioUnitario'],
                 'cantidad' => $requestBody['cantidad']
-                
+
             ];
 
             // Llamada al modelo para registrar el implemento
             $response = $controller->registroImplemento($params);
-            
+
             // Devolver la respuesta del modelo
             echo json_encode($response); // Devuelve la respuesta del modelo
         } else {
             echo json_encode(["status" => -1, "message" => "Faltan parámetros en la solicitud."]);
         }
-    } else {
-        echo json_encode(["status" => -1, "message" => "Operación no especificada o inválida."]);
+    }  // Verifica si la operación es registrarEntrada
+    elseif (isset($requestBody['operation']) && $requestBody['operation'] === 'registrarEntrada') {
+        if (isset($requestBody['idTipoinventario'], $requestBody['idTipoMovimiento'], $requestBody['idInventario'], $requestBody['cantidad'], $requestBody['descripcion'])) {
+            $params = [
+                'idTipoinventario' => $requestBody['idTipoinventario'], // Asegúrate de que 'idTipoinventario' esté presente aquí
+                'idTipoMovimiento' => $requestBody['idTipoMovimiento'],
+                'idInventario' => $requestBody['idInventario'],
+                'cantidad' => $requestBody['cantidad'],
+                'descripcion' => $requestBody['descripcion'],
+                'precioUnitario' => $requestBody['precioUnitario'],
+            ];
+
+            // Llamada al modelo para registrar la entrada de implementos
+            $response = $controller->registrarEntrada($params);
+
+            echo json_encode($response); // Devuelve la respuesta del modelo
+        } else {
+            echo json_encode(["status" => -1, "message" => "Faltan parámetros en la solicitud."]);
+        }
+    } elseif (isset($requestBody['operation']) && $requestBody['operation'] === 'registrarSalida') {
+        if (isset($requestBody['idInventario'], $requestBody['descripcion'], $requestBody['cantidad'], $requestBody['idTipoinventario'])) {
+            $params = [
+                'idTipoinventario' => $requestBody['idTipoinventario'],
+                'idInventario' => $requestBody['idInventario'],
+                'cantidad' => $requestBody['cantidad'],
+                'descripcion' => $requestBody['descripcion'],
+            ];
+
+            // Llamada al modelo para registrar la salida de implementos
+            $response = $controller->registrarSalida($params); // Método en el modelo
+
+            // Responder con el resultado del modelo
+            echo json_encode($response);
+        } else {
+            echo json_encode(["status" => -1, "message" => "Faltan parámetros en la solicitud."]);
+        }
     }
 } else {
     echo json_encode(["status" => -1, "message" => "Método no permitido."]);

@@ -549,7 +549,7 @@ DELIMITER ;
 -- esto no va es prueba 
 
 -- tipo de equino - alimento ------ 
-/*
+
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
@@ -558,6 +558,6 @@ BEGIN
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
 END $$
 DELIMITER ;
-*/
+
 -- -------------------------------------------------------------------------------
 
