@@ -14,7 +14,7 @@ class Registrarequino extends Conexion
     public function registrarEquino($data)
     {
         try {
-            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?,?)";
+            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?,?,?)";
             $stmt = $this->pdo->prepare($sql);
 
             $nombreEquino = ($data['nombreEquino']);
@@ -25,6 +25,7 @@ class Registrarequino extends Conexion
             $idNacionalidad = !empty($data['idNacionalidad']) ? $data['idNacionalidad'] : null;
             $detalles = !empty($data['detalles']) ? $data['detalles'] : null;
             $pesokg = !empty($data['pesokg']) ? $data['pesokg'] : null;
+            $fotografia = ($data['fotografia']); // Recibe el public_id de la imagen guardada en CLOUDINARY
 
             if (!empty($idPropietario)) {
                 $fechaNacimiento = null;
@@ -39,6 +40,7 @@ class Registrarequino extends Conexion
             $stmt->bindParam(6, $idPropietario);
             $stmt->bindParam(7, $pesokg);
             $stmt->bindParam(8, $idNacionalidad);
+            $stmt->bindParam(9, $fotografia);
 
             $stmt->execute();
 
