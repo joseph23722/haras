@@ -20,16 +20,15 @@ BEGIN
             ELSE 'Desconocido'
         END AS estadoDescriptivo,
         
-        (SELECT descripcion 
-         FROM HistorialEquinos HE 
-         WHERE HE.idEquino = E.idEquino 
-         LIMIT 1) AS descripcion
-         
+        -- Relacionamos el historial completo del equino
+        HE.descripcion AS descripcion
+        
     FROM
         Equinos E
     LEFT JOIN TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
     LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstadoMonta
     LEFT JOIN nacionalidades N ON E.idNacionalidad = N.idNacionalidad
+    LEFT JOIN HistorialEquinos HE ON E.idEquino = HE.idEquino  -- Relación con historial
     WHERE
         E.idPropietario IS NULL
     ORDER BY 

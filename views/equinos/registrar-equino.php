@@ -77,11 +77,12 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-10 d-flex justify-content-center">
                         <div class="form-floating">
-                            <button name="fotografia" id="upload_button" class="form-control" accept="image/*"> <!-- Campo para la fotografía -->
-                                <label for="fotografia"><i class="fas fa-camera" style="color: #007bff;"></i> Fotografía del Equino</label>
+                            <button name="fotografia" id="upload_button" class="form-control d-flex justify-content-center align-items-center" accept="image/*" style="text-align: center; padding: 10px; width: 205%;">
+                                <span><i class="fas fa-camera" style="color: #007bff;"></i> Seleccionar Fotografía</span>
                                 <input type="hidden" id="fotografia" name="fotografia">
+                            </button>
                         </div>
                     </div>
 
@@ -369,16 +370,18 @@
                 return;
             }
 
+            // Si no hay propietario seleccionado, la fotografía es obligatoria
+            if (!idPropietarioSelect.value && !document.querySelector("#fotografia").value) {
+                showToast('Debe cargar una fotografía del equino', 'ERROR');
+                return;
+            }
+
             // Confirmar si el usuario quiere registrar el equino
             const confirm = await ask("¿Está seguro de que desea registrar el equino?", "Registro de Equinos");
             if (!confirm) return;
 
             // Obtener el public_id de la fotografía
             const fotografiaPublicId = document.querySelector("#fotografia").value;
-            if (!fotografiaPublicId) {
-                showToast('Debe cargar una fotografía del equino.', 'ERROR');
-                return;
-            }
 
             // Crear un objeto FormData para enviar con el formulario
             const formData = new FormData(formEquino);

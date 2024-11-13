@@ -66,17 +66,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         let historialHtml = '<ul>';
+        // Mostrar la descripción de historial
+        if (equinoData.descripcion) {
+            historialHtml += `<li><strong>Descripción:</strong> ${equinoData.descripcion}</li>`;
+        }
+
+        // Mostrar historial
         if (equinoData.historial && Array.isArray(equinoData.historial) && equinoData.historial.length > 0) {
             equinoData.historial.forEach(historial => {
                 historialHtml += `<li>${historial.descripcion}</li>`;
             });
             historialHtml += '</ul>';
         } else {
-            historialHtml += '<li>No hay historial disponible.</li>';
+            if (!equinoData.descripcion) {
+                historialHtml += '<li>No hay historial disponible.</li>';
+            }
             historialHtml += '</ul>';
         }
 
-        // Mostrar foto
+        // Mostrar foto del equino
         if (equinoData.fotografia) {
             historialHtml += `
                 <div class="text-center mt-3">
@@ -100,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             mostrarHistorial(idEquino);
 
-            const historialModal = new bootstrap.Modal(document.getElementById('historialModal')); // Mostrar el modal
+            const historialModal = new bootstrap.Modal(document.getElementById('historialModal'));
             historialModal.show();
         }
     });
