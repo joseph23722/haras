@@ -93,15 +93,120 @@
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
-                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" onclick="window.location.href='listadoequinos.php';">
-                            <i class="fas fa-save"></i> Listado Equinos
+                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" data-bs-toggle="modal" data-bs-target="#editarEquinosModal">
+                            <i class="fas fa-save"></i> Editar Equinos
                         </button>
                     </div>
                 </div>
             </form>
         </div>
-    </div>
+        <!-- Modal -->
+        <div class="modal fade" id="editarEquinosModal" tabindex="-1" aria-labelledby="editarEquinosModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editarEquinosModalLabel">Editar Información del Equino</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Campo de búsqueda de Equino -->
+                        <div class="input-group mb-4">
+                            <div class="form-floating flex-grow-2">
+                                <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus>
+                                <label for="buscarEquino"><i class="fas fa-search" style="color: #3498db;"></i> Buscar Equino</label>
+                                <!-- Campo oculto para el idEquino -->
+                                <input type="hidden" id="idEquino" name="idEquino">
+                            </div>
+                            <button type="button" id="buscar-equino" class="btn btn-outline-success" title="Buscar">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
 
+                        <!-- Primera fila: Información básica del Equino -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="fechanacimiento">
+                                    <label for="fechaNacimiento"><i class="fas fa-calendar-alt" style="color: #3498db;"></i> Fecha Nacimiento</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="nacionalidades">
+                                    <label for="nacionalidad"><i class="fas fa-flag" style="color: #3498db;"></i> Nacionalidad</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Segunda fila: Información del Propietario y Características del Equino -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="propietario">
+                                    <label for="idPropietario"><i class="fas fa-user" style="color: #3498db;"></i> Propietario</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="genero">
+                                    <label for="sexo"><i class="fas fa-venus-mars" style="color: #3498db;"></i> Sexo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tercera fila: Información adicional del Equino -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="tipoEquino">
+                                    <label for="tipoEquino"><i class="fas fa-horse" style="color: #3498db;"></i> Tipo de Equino</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="idEstadoMonta">
+                                    <label for="idEstadoMonta"><i class="fas fa-chart-line" style="color: #3498db;"></i> Estado Monta</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cuarta fila: Peso, Fotografía y Estado -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="peso">
+                                    <label for="pesokg"><i class="fas fa-weight" style="color: #3498db;"></i> Peso (kg)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="fotografia">
+                                    <label for="fotografia"><i class="fas fa-camera" style="color: #3498db;"></i> Fotografía</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quinta fila: Estado -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="estado">
+                                    <label for="estado"><i class="fas fa-horse" style="color: #3498db;"></i> Estado</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary">Guardar cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
 </div>
 
 <?php require_once '../footer.php'; ?>
@@ -112,316 +217,4 @@
     type="text/javascript">
 </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const idPropietarioSelect = document.querySelector("#idPropietario");
-        const fechaNacimientoInput = document.querySelector("#fechaNacimiento");
-        const tipoEquinoSelect = document.querySelector("#TipoEquino");
-        const formEquino = document.querySelector("#form-registro-equino");
-        const sexoSelect = document.querySelector("#sexo");
-        const pesoKgInput = document.querySelector("#pesokg");
-        const nacionalidadInput = document.querySelector("#nacionalidad");
-        const sugerenciasNacionalidad = document.querySelector("#sugerenciasNacionalidad");
-        const idNacionalidadInput = document.querySelector("#idNacionalidad");
-
-        // Buscar nacionalidades cuando el usuario escribe en el campo
-        nacionalidadInput.addEventListener("input", async () => {
-            const query = nacionalidadInput.value;
-
-            if (query.length > 3) {
-                try {
-                    const response = await fetch('../../controllers/registrarequino.controller.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            operation: 'buscarNacionalidad',
-                            nacionalidad: query
-                        })
-                    });
-
-                    if (!response.ok) throw new Error('Error en la solicitud: ' + response.status);
-
-                    const data = await response.json();
-                    sugerenciasNacionalidad.innerHTML = ''; // Limpiar opciones anteriores
-
-                    if (Array.isArray(data) && data.length > 0) {
-                        sugerenciasNacionalidad.style.display = 'block';
-                        data.forEach(({
-                            idNacionalidad,
-                            nacionalidad
-                        }) => {
-                            const option = document.createElement('option');
-                            option.value = nacionalidad;
-                            option.dataset.id = idNacionalidad;
-                            sugerenciasNacionalidad.appendChild(option);
-                        });
-                    } else {
-                        sugerenciasNacionalidad.style.display = 'none';
-                        console.log('No se encontraron nacionalidades.');
-                    }
-                } catch (error) {
-                    console.error('Error al buscar la nacionalidad:', error);
-                }
-            } else {
-                sugerenciasNacionalidad.innerHTML = '';
-                sugerenciasNacionalidad.style.display = 'none';
-            }
-        });
-
-        // Captura el idNacionalidad al seleccionar una nacionalidad de las sugerencias (lista)
-        nacionalidadInput.addEventListener("change", () => {
-            const selectedOption = Array.from(sugerenciasNacionalidad.options)
-                .find(option => option.value === nacionalidadInput.value);
-
-            if (selectedOption) {
-                idNacionalidadInput.value = selectedOption.dataset.id;
-            } else {
-                idNacionalidadInput.value = "";
-            }
-        });
-
-        async function loadPropietarios() {
-            try {
-                const response = await fetch('../../controllers/registrarequino.controller.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        operation: 'listarPropietarios'
-                    })
-                });
-
-                const data = await response.json();
-                idPropietarioSelect.innerHTML = '<option value="">Haras Rancho Sur</option>';
-
-                if (Array.isArray(data) && data.length > 0) {
-                    data.forEach(({
-                        idPropietario,
-                        nombreHaras
-                    }) => {
-                        const option = document.createElement('option');
-                        option.value = idPropietario;
-                        option.textContent = nombreHaras;
-                        idPropietarioSelect.appendChild(option);
-                    });
-                } else {
-                    console.log('No se encontraron propietarios disponibles.');
-                }
-            } catch (error) {
-                console.error('Error al cargar los propietarios:', error);
-            }
-        }
-
-        // Función para cargar tipos de equinos
-        async function loadTipoEquinos() {
-            try {
-                const response = await fetch('../../controllers/registrarequino.controller.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        operation: 'listarTipoEquinos'
-                    })
-                });
-
-                const data = await response.json();
-                tipoEquinoSelect.innerHTML = '<option value="">Seleccione Tipo Equino</option>';
-
-                if (Array.isArray(data) && data.length > 0) {
-                    data.forEach(({
-                        idTipoEquino,
-                        tipoEquino
-                    }) => {
-                        const option = document.createElement('option');
-                        option.value = idTipoEquino;
-                        option.textContent = tipoEquino;
-                        tipoEquinoSelect.appendChild(option);
-                    });
-                } else {
-                    console.log('No se encontraron tipos de equinos disponibles.');
-                }
-            } catch (error) {
-                console.error('Error al cargar los tipos de equinos:', error);
-            }
-        }
-
-        // Función para calcular la diferencia de meses entre dos fechas
-        function getDifferenceInMonths(dateFrom, dateTo) {
-            const yearFrom = dateFrom.getFullYear();
-            const monthFrom = dateFrom.getMonth();
-            const yearTo = dateTo.getFullYear();
-            const monthTo = dateTo.getMonth();
-            return (yearTo - yearFrom) * 12 + (monthTo - monthFrom);
-        }
-
-        // Función para aplicar la lógica de validación de tipo de equino según la edad
-        function applyTipoEquinoLogic() {
-            const fechaNacimiento = new Date(fechaNacimientoInput.value);
-            const today = new Date();
-            const mesesDiferencia = getDifferenceInMonths(fechaNacimiento, today);
-            const sexo = sexoSelect.value;
-
-            tipoEquinoSelect.innerHTML = '';
-
-            if (mesesDiferencia <= 6) {
-                tipoEquinoSelect.innerHTML = '<option value="5">Recién nacido</option>';
-            } else if (mesesDiferencia <= 12) {
-                tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
-            } else if (mesesDiferencia > 6 && mesesDiferencia <= 24) {
-                if (sexo === 'Macho') {
-                    tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
-                } else if (sexo === 'Hembra') {
-                    tipoEquinoSelect.innerHTML = '<option value="3">Potranca</option>';
-                }
-            } else if (mesesDiferencia > 48) {
-                if (sexo === 'Macho') {
-                    tipoEquinoSelect.innerHTML = `
-                    <option value="2">Padrillo</option>
-                    <option value="4">Potrillo</option>`;
-                } else if (sexo === 'Hembra') {
-                    tipoEquinoSelect.innerHTML = `
-                    <option value="1">Yegua</option>
-                    <option value="3">Potranca</option>`;
-                }
-            }
-        }
-
-        // Función para manejar el cambio en propietario
-        idPropietarioSelect.addEventListener("change", () => {
-            if (idPropietarioSelect.value) {
-                tipoEquinoSelect.innerHTML = '';
-                sexoSelect.addEventListener("change", () => {
-                    const sexo = sexoSelect.value;
-                    if (sexo === "Macho") {
-                        tipoEquinoSelect.innerHTML = '<option value="2">Padrillo</option>';
-                    } else if (sexo === "Hembra") {
-                        tipoEquinoSelect.innerHTML = '<option value="1">Yegua</option>';
-                    }
-                });
-
-                nacionalidadInput.value = '';
-                fechaNacimientoInput.value = '';
-                pesoKgInput.disabled = true;
-                fechaNacimientoInput.disabled = true;
-
-                tipoEquinoSelect.innerHTML = '';
-                fechaNacimientoInput.removeEventListener("change", applyTipoEquinoLogic);
-                sexoSelect.removeEventListener("change", applyTipoEquinoLogic);
-
-            } else {
-                fechaNacimientoInput.addEventListener("change", applyTipoEquinoLogic);
-                sexoSelect.addEventListener("change", applyTipoEquinoLogic);
-                applyTipoEquinoLogic();
-
-                pesoKgInput.disabled = false;
-                fechaNacimientoInput.disabled = false;
-            }
-        });
-
-        fechaNacimientoInput.addEventListener("change", applyTipoEquinoLogic);
-        sexoSelect.addEventListener("change", applyTipoEquinoLogic);
-
-        // Función para validar si un número es positivo y mayor que 0
-        function isValidPositiveNumber(value) {
-            return !isNaN(value) && parseFloat(value) > 0;
-        }
-
-        // SE CONECTA CON EL CLOUDINARY Y LA FUNCION ESPERA PARA PODER ENVIAR EL public_id
-        const myWidget = cloudinary.createUploadWidget({
-            // Credenciales propias
-            cloudName: "dtbhq7drd",
-            uploadPreset: "upload-image-test",
-        }, async (error, result) => {
-            if (!error && result && result.event === "success") {
-                // Mostrar el public_id en la consola para verificar que se ha capturado correctamente
-                const public_id = result.info.public_id;
-                console.log("Public ID de la imagen:", public_id);
-
-                // Guardar el public_id en el campo hidden
-                $('#fotografia').val(public_id);
-            }
-        });
-
-        document.getElementById("upload_button").addEventListener(
-            "click",
-            function() {
-                myWidget.open();
-            },
-            false
-        );
-
-        formEquino.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            // Obtener los valores de los campos
-            const nombreEquino = document.querySelector("#nombreEquino").value;
-            const sexo = sexoSelect.value;
-            const idTipoEquino = tipoEquinoSelect.value;
-            const idNacionalidad = nacionalidadInput.value;
-
-            // Validación de campos obligatorios
-            if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!idNacionalidad || !fechaNacimientoInput.value))) {
-                showToast('Los campos nombre, sexo, tipo de equino, y nacionalidad y fecha de nacimiento (si no hay propietario) son obligatorios.', 'ERROR');
-                console.log('Registro fallido: faltan campos obligatorios.');
-                return;
-            }
-
-            // Si no hay propietario seleccionado, la fotografía es obligatoria
-            if (!idPropietarioSelect.value && !document.querySelector("#fotografia").value) {
-                showToast('Debe cargar una fotografía del equino', 'ERROR');
-                return;
-            }
-
-            // Confirmar si el usuario quiere registrar el equino
-            const confirm = await ask("¿Está seguro de que desea registrar el equino?", "Registro de Equinos");
-            if (!confirm) return;
-
-            // Obtener el public_id de la fotografía
-            const fotografiaPublicId = document.querySelector("#fotografia").value;
-
-            // Crear un objeto FormData para enviar con el formulario
-            const formData = new FormData(formEquino);
-            const data = {
-                operation: 'registrarEquino',
-                idNacionalidad: idNacionalidad,
-                fotografia: fotografiaPublicId // Incluir el public_id en los datos
-            };
-
-            // Recorrer el FormData y añadir los valores a 'data'
-            formData.forEach((value, key) => {
-                data[key] = value === "" && key === 'idPropietario' ? null : value;
-            });
-
-            try {
-                const response = await fetch('../../controllers/registrarequino.controller.php', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    showToast('Equino registrado exitosamente.', 'SUCCESS');
-                    formEquino.reset();
-                } else {
-                    const cleanMessage = result.message.replace(/SQLSTATE\[\d{5}\]: <<Unknown error>>: \d+ /, '');
-                    showToast(cleanMessage, 'ERROR');
-                }
-            } catch (error) {
-                console.error('Error en el envío del formulario:', error);
-                showToast('Error en el registro del equino. Inténtalo de nuevo más tarde.', 'ERROR');
-            }
-        });
-
-        loadPropietarios();
-        loadTipoEquinos();
-    });
-</script>
+<script src="../../JS/registroequino.js"></script>
