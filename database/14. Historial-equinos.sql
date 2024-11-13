@@ -8,11 +8,12 @@ BEGIN
         e.fechaNacimiento,
         e.sexo,
         te.tipoEquino,
-        em.nombreEstado AS estadoMonta,  -- Obtener el nombre del estado
-        n.nacionalidad,  -- Mostrar el nombre de la nacionalidad
+        em.nombreEstado AS estadoMonta,
+        n.nacionalidad,
         e.pesokg,
         e.idPropietario,
-        e.fotografia
+        e.fotografia,
+        IF(e.estado = 1, 'Vivo', IF(e.estado = 2, 'Muerto', 'Desconocido')) AS estado
     FROM 
         Equinos e
     JOIN 
