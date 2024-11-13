@@ -1,5 +1,4 @@
 -- Procedimiento para registrar los alimentos  
-DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
@@ -77,8 +76,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -86,9 +83,7 @@ DELIMITER ;
 
 
 
->>>>>>> 2bb51c11477b363d66c5c03e9b53250cb7585749
 -- -------
-DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
@@ -136,8 +131,9 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
-DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,
@@ -200,8 +196,10 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
 -- Procedimiento Salida de Alimentos 
-DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
 DELIMITER $$
 
 CREATE PROCEDURE spu_alimentos_salida(
@@ -285,8 +283,6 @@ END $$
 
 DELIMITER ;
 
-<<<<<<< HEAD
-=======
 
 CALL spu_alimentos_salida(
     3,                    -- _idUsuario (asegúrate de que el ID de usuario existe en la tabla Usuarios)
@@ -300,9 +296,7 @@ CALL spu_alimentos_salida(
 );
 
 select * from alimentos;
->>>>>>> 2bb51c11477b363d66c5c03e9b53250cb7585749
 -- -----------
-DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
 BEGIN
@@ -332,8 +326,11 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
+
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
-DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
@@ -383,9 +380,12 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
 -- Procedimiento para historial Alimentos -----------------------------------------
-DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
+
 CREATE PROCEDURE spu_historial_completo(
     IN tipoMovimiento VARCHAR(50),
     IN fechaInicio DATE,
@@ -490,9 +490,11 @@ BEGIN
         SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
 END $$
+
 DELIMITER ;
+
+
 --
-DROP PROCEDURE IF EXISTS `spu_eliminarAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_eliminarAlimento(IN _idAlimento INT)
 BEGIN
@@ -506,10 +508,18 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+
+
+
+
+
+
+
+
 -- separado  
 
 -- Procedimiento para obtener la lista de tipos de alimentos
-DROP PROCEDURE IF EXISTS `spu_obtenerTiposAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerTiposAlimento()
 BEGIN
@@ -520,7 +530,6 @@ END $$
 DELIMITER ;
 
 -- Procedimiento para obtener las unidades de medida asociadas a un tipo de alimento
-DROP PROCEDURE IF EXISTS `spu_obtenerUnidadesPorTipoAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerUnidadesPorTipoAlimento(IN _idTipoAlimento INT)
 BEGIN
@@ -538,8 +547,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 -- agregar tipo y unidad 
-DROP PROCEDURE IF EXISTS `spu_agregarTipoUnidadMedidaNuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregarTipoUnidadMedidaNuevo (
     IN p_tipoAlimento VARCHAR(50),
@@ -578,11 +587,16 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
+
+
+
 -- esto no va es prueba 
 
 -- tipo de equino - alimento ------ 
 
-DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
@@ -593,4 +607,3 @@ END $$
 DELIMITER ;
 
 -- -------------------------------------------------------------------------------
-
