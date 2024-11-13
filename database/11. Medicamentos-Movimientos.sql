@@ -218,7 +218,7 @@ CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,                    -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255),    -- Nombre del medicamento
     IN _cantidad DECIMAL(10,2),            -- Cantidad de medicamento a retirar
-    IN _idTipoEquino INT,                  -- Tipo de equino relacionado con la salida
+    IN _idEquino INT,                      -- ID del equino relacionado con la salida
     IN _lote VARCHAR(100),                 -- Número de lote del medicamento (puede ser NULL)
     IN _motivo TEXT                        -- Motivo de la salida del medicamento
 )
@@ -290,8 +290,8 @@ BEGIN
         WHERE idMedicamento = _idMedicamento;
 
         -- Registrar la salida en el historial de movimientos con motivo
-        INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, idTipoEquino, motivo)
-        VALUES (_idMedicamento, 'Salida', _cantidad, _idUsuario, NOW(), _idTipoEquino, _motivo);
+        INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, idEquino, motivo)
+        VALUES (_idMedicamento, 'Salida', _cantidad, _idUsuario, NOW(), _idEquino, _motivo);
 
         -- Confirmar la transacción
         COMMIT;
@@ -341,7 +341,6 @@ DELIMITER ;
 
 -- 2. Procedimiento para registrar historial de medicamentos 
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_completo_medicamentos(
     IN tipoMovimiento VARCHAR(50),
     IN fechaInicio DATE,
@@ -366,52 +365,68 @@ BEGIN
     IF tipoMovimiento = 'Entrada' THEN
         SELECT 
             h.idMedicamento,
-            m.nombreMedicamento,               -- Nombre del medicamento
-            m.descripcion,                     -- Descripción del medicamento
-            lm.lote,                           -- Número de lote del medicamento
-            m.cantidad_stock AS stockActual,   -- Stock actual
-            h.cantidad,                        -- Cantidad de entrada
-            h.fechaMovimiento                  -- Fecha del movimiento
+            m.nombreMedicamento AS Medicamento,
+            m.descripcion AS Descripcion,
+            lm.lote AS Lote,
+            m.cantidad_stock AS StockActual,
+            h.cantidad AS Cantidad,
+            h.fechaMovimiento AS FechaMovimiento
         FROM 
             HistorialMovimientosMedicamentos h
         JOIN 
-            Medicamentos m ON h.idMedicamento = m.idMedicamento  -- Unimos ambas tablas por idMedicamento
+            Medicamentos m ON h.idMedicamento = m.idMedicamento
         JOIN
-            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento  -- Unimos con LotesMedicamento para obtener el lote
+            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
         WHERE 
-            h.tipoMovimiento = 'Entrada'  
-            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
-            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
-            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
+            h.tipoMovimiento = 'Entrada'
+            AND h.fechaMovimiento >= fechaInicio
+            AND h.fechaMovimiento <= fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
         ORDER BY 
             h.fechaMovimiento DESC
         LIMIT 
             limite OFFSET desplazamiento;
-        
-    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos para salidas
+
+    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos incluyendo tipo de equino y cantidad por categoría
     ELSEIF tipoMovimiento = 'Salida' THEN
         SELECT 
-            h.idMedicamento,
-            m.nombreMedicamento,               -- Nombre del medicamento
-            m.descripcion,                     -- Descripción del medicamento
-            lm.lote,                           -- Número de lote del medicamento
-            te.tipoEquino,                     -- Tipo de equino (solo en salidas, si aplica)
-            h.cantidad,                        -- Cantidad de salida
-            h.motivo,                          -- Motivo de la salida
-            h.fechaMovimiento                  -- Fecha del movimiento
+            h.idMovimiento AS ID,
+            m.nombreMedicamento AS Medicamento,
+            m.descripcion AS Descripcion,
+            lm.lote AS Lote,
+            CASE 
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+                WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+                WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+                ELSE 'Desconocido'
+            END AS TipoEquino, 
+            COUNT(h.idEquino) AS CantidadEquino, 
+            h.cantidad AS Cantidad, 
+            h.motivo AS Motivo, 
+            h.fechaMovimiento AS FechaSalida
         FROM 
             HistorialMovimientosMedicamentos h
         JOIN 
-            Medicamentos m ON h.idMedicamento = m.idMedicamento  -- Unimos ambas tablas por idMedicamento
+            Medicamentos m ON h.idMedicamento = m.idMedicamento
         JOIN
-            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento  -- Unimos con LotesMedicamento para obtener el lote
+            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
         LEFT JOIN
-            TipoEquinos te ON h.idTipoEquino = te.idTipoEquino  -- Unimos con la tabla TipoEquinos (solo para salidas)
+            Equinos eq ON h.idEquino = eq.idEquino
+        LEFT JOIN
+            TipoEquinos te ON eq.idTipoEquino = te.idTipoEquino
+        LEFT JOIN
+            EstadoMonta em ON eq.idEstadoMonta = em.idEstadoMonta
         WHERE 
             h.tipoMovimiento = 'Salida'
-            AND h.fechaMovimiento >= fechaInicio   -- Usar la variable de entrada
-            AND h.fechaMovimiento <= fechaFin      -- Usar la variable de entrada
-            AND (idUsuario = 0 OR h.idUsuario = idUsuario)  -- Usar la variable de entrada
+            AND h.fechaMovimiento >= fechaInicio
+            AND h.fechaMovimiento <= fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
+        GROUP BY 
+            h.idMovimiento, Medicamento, TipoEquino, Motivo, FechaSalida
         ORDER BY 
             h.fechaMovimiento DESC
         LIMIT 
@@ -421,219 +436,9 @@ BEGIN
         SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
 END $$
-
 DELIMITER ;
 
 
---  Mejortar los otros  ----------------------------------------------------------------------------
-
--- 1.Procedimiento para agregar un nuevo tipo
--- 2.Procedimiento para agregar una nueva presentacion
--- 3.Procedimiento para agregar una nueva dosis (composicion)
-DELIMITER $$
-CREATE PROCEDURE spu_agregar_nueva_combinacion_medicamento(
-    IN _tipo VARCHAR(100),
-    IN _presentacion VARCHAR(100),
-    IN _unidad VARCHAR(50),
-    IN _dosis DECIMAL(10, 2),
-    OUT mensaje VARCHAR(255) -- Variable de salida para mensajes amigables
-)
-BEGIN
-    DECLARE _idTipo INT;
-    DECLARE _idPresentacion INT;
-    DECLARE _idUnidad INT;
-
-    -- Paso 1: Verificar si el tipo ya existe en TiposMedicamentos
-    SELECT idTipo INTO _idTipo
-    FROM TiposMedicamentos
-    WHERE LOWER(tipo) = LOWER(_tipo);
-    
-    -- Si el tipo no existe, lo insertamos
-    IF _idTipo IS NULL THEN
-        INSERT INTO TiposMedicamentos (tipo) VALUES (_tipo);
-        SET _idTipo = LAST_INSERT_ID();
-        SET mensaje = CONCAT('Nuevo tipo de medicamento agregado: ', _tipo);
-    ELSE
-        SET mensaje = CONCAT('Tipo de medicamento ya existente: ', _tipo);
-    END IF;
-
-    -- Paso 2: Verificar si la presentación ya existe en PresentacionesMedicamentos
-    SELECT idPresentacion INTO _idPresentacion
-    FROM PresentacionesMedicamentos
-    WHERE LOWER(presentacion) = LOWER(_presentacion);
-    
-    -- Si la presentación no existe, la insertamos
-    IF _idPresentacion IS NULL THEN
-        INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (_presentacion);
-        SET _idPresentacion = LAST_INSERT_ID();
-        SET mensaje = CONCAT(mensaje, '; Nueva presentación agregada: ', _presentacion);
-    ELSE
-        SET mensaje = CONCAT(mensaje, '; Presentación ya existente: ', _presentacion);
-    END IF;
-
-    -- Paso 3: Verificar si la unidad ya existe en UnidadesMedida
-    SELECT idUnidad INTO _idUnidad
-    FROM UnidadesMedida
-    WHERE LOWER(unidad) = LOWER(_unidad);
-    
-    -- Si la unidad no existe, la insertamos
-    IF _idUnidad IS NULL THEN
-        INSERT INTO UnidadesMedida (unidad) VALUES (_unidad);
-        SET _idUnidad = LAST_INSERT_ID();
-        SET mensaje = CONCAT(mensaje, '; Nueva unidad de medida agregada: ', _unidad);
-    ELSE
-        SET mensaje = CONCAT(mensaje, '; Unidad de medida ya existente: ', _unidad);
-    END IF;
-
-    -- Paso 4: Verificar si la combinación ya existe en CombinacionesMedicamentos
-    IF EXISTS (
-        SELECT 1 FROM CombinacionesMedicamentos 
-        WHERE idTipo = _idTipo 
-          AND idPresentacion = _idPresentacion 
-          AND idUnidad = _idUnidad
-          AND dosis = _dosis
-    ) THEN
-        -- Mensaje de advertencia amigable en lugar de error
-        SET mensaje = CONCAT(mensaje, '; La combinación de tipo, presentación, unidad y dosis ya existe.');
-    ELSE
-        -- Insertar la combinación si no existe
-        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, idUnidad, dosis) 
-        VALUES (_idTipo, _idPresentacion, _idUnidad, _dosis);
-        SET mensaje = 'Combinación agregada exitosamente.';
-    END IF;
-END $$
-DELIMITER ;
-
-
-
--- apartes - combinaciones validas para el registrar 
--- 1. Procedimiento para validar presentación tipo y dosis:
--- Validar y registrar combinación
-DELIMITER $$
-
-CREATE PROCEDURE spu_validar_registrar_combinacion(
-    IN _idTipo INT,
-    IN _idPresentacion INT,
-    IN _dosisMedicamento DECIMAL(10, 2),
-    IN _unidadMedida VARCHAR(50)
-)
-BEGIN
-    DECLARE _idUnidad INT;
-    DECLARE _idCombinacion INT;
-    DECLARE _errorMensaje VARCHAR(255);
-
-    -- Manejador de errores
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        IF _errorMensaje IS NULL THEN
-            SET _errorMensaje = 'Lo sentimos, ha ocurrido un error inesperado. Por favor, inténtalo de nuevo o contacta al administrador.';
-        END IF;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
-    END;
-
-    -- Iniciar la transacción
-    START TRANSACTION;
-
-    -- Validar unidad de medida y agregar depuración
-    SELECT idUnidad INTO _idUnidad
-    FROM UnidadesMedida
-    WHERE LOWER(unidad) = LOWER(_unidadMedida)
-    LIMIT 1;
-
-    -- Verificar si la unidad de medida existe
-    IF _idUnidad IS NULL THEN
-        SET _errorMensaje = CONCAT('La unidad de medida "', _unidadMedida, '" no está registrada. Verifica que sea correcta.');
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
-    END IF;
-
-    -- Agregar mensaje de depuración para _idTipo, _idPresentacion, _dosisMedicamento y _idUnidad
-    SELECT _idTipo AS "ID Tipo", _idPresentacion AS "ID Presentacion", _dosisMedicamento AS "Dosis", _idUnidad AS "ID Unidad";
-
-    -- Buscar combinación exacta
-    SELECT idCombinacion INTO _idCombinacion
-    FROM CombinacionesMedicamentos
-    WHERE idTipo = _idTipo
-      AND idPresentacion = _idPresentacion
-      AND dosis = _dosisMedicamento
-      AND idUnidad = _idUnidad
-    LIMIT 1;
-
-    -- Verificar si existe la combinación y agregar mensaje de depuración
-    IF _idCombinacion IS NOT NULL THEN
-        COMMIT;
-        SELECT 'Combinación exacta encontrada.' AS mensaje, _idCombinacion AS idCombinacion;
-    ELSE
-        -- Registrar nueva combinación
-        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis, idUnidad)
-        VALUES (_idTipo, _idPresentacion, _dosisMedicamento, _idUnidad);
-
-        SET _idCombinacion = LAST_INSERT_ID();
-        COMMIT;
-
-        SELECT 'Nueva combinación registrada.' AS mensaje, _idCombinacion AS idCombinacion;
-    END IF;
-END $$
-
-DELIMITER ;
-
-
-
-
--- sugerencias
-DELIMITER $$
-CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
-BEGIN
-    -- Selecciona los tipos de medicamentos junto con la presentación y la dosis (cantidad y unidad), agrupados
-    SELECT 
-        c.idCombinacion,  -- Incluye el ID de combinación para poder identificar cada sugerencia de combinación de manera única
-        t.tipo, 
-        GROUP_CONCAT(DISTINCT p.presentacion ORDER BY p.presentacion ASC SEPARATOR ', ') AS presentaciones,
-        GROUP_CONCAT(DISTINCT u.unidad ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
-    FROM 
-        CombinacionesMedicamentos c
-    JOIN 
-        TiposMedicamentos t ON c.idTipo = t.idTipo
-    JOIN 
-        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
-    JOIN 
-        UnidadesMedida u ON c.idUnidad = u.idUnidad
-    GROUP BY 
-        c.idCombinacion, t.tipo  -- Asegúrate de agrupar por idCombinacion para evitar resultados ambiguos
-    ORDER BY 
-        t.tipo ASC;  -- Ordena por tipo de medicamento
-END $$
-DELIMITER ;
-
-
--- todo lo que es listar :
-
-
--- listar tipo
-DELIMITER $$
-CREATE PROCEDURE spu_listar_tipos_unicos()
-BEGIN
-    SELECT DISTINCT t.idTipo, t.tipo
-    FROM TiposMedicamentos t
-    JOIN CombinacionesMedicamentos c ON t.idTipo = c.idTipo
-    ORDER BY t.tipo ASC;
-END $$
-DELIMITER ;
-
-
-
--- ---- listar presentaciones por tipo
-DELIMITER $$
-CREATE PROCEDURE spu_listar_presentaciones_por_tipo(IN _idTipo INT)
-BEGIN
-    SELECT DISTINCT p.idPresentacion, p.presentacion
-    FROM CombinacionesMedicamentos c
-    JOIN PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
-    WHERE c.idTipo = _idTipo
-    ORDER BY p.presentacion ASC;
-END $$
-DELIMITER ;
 
 -- --------------------- listar lotes
 DELIMITER $$

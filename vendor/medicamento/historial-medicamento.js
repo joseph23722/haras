@@ -19,12 +19,11 @@ const configurarDataTableEntradas = () => {
             },
             columns: [
                 { data: 'idMedicamento' },
-                { data: 'nombreMedicamento' },
-                { data: 'descripcion' },
-                { data: 'lote' },
-                { data: 'stockActual' },
-                { data: 'cantidad' },
-                { data: 'fechaMovimiento' }
+                { data: 'Medicamento' },
+                { data: 'Lote' },
+                { data: 'StockActual' },
+                { data: 'Cantidad' },
+                { data: 'FechaMovimiento' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
@@ -57,14 +56,14 @@ const configurarDataTableSalidas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'idMedicamento' },
-                { data: 'nombreMedicamento' },
-                { data: 'descripcion' },
-                { data: 'lote' },
-                { data: 'tipoEquino' },
-                { data: 'cantidad' },
-                { data: 'motivo' },
-                { data: 'fechaMovimiento' }
+                { data: 'ID' },
+                { data: 'Medicamento' },
+                { data: 'Lote' },
+                { data: 'TipoEquino' },
+                { data: 'CantidadEquino' }, // Cambiado para coincidir con el procedimiento
+                { data: 'Cantidad' },
+                { data: 'Motivo' },
+                { data: 'FechaSalida' }
             ],
             language: {
                 url: '/haras/data/es_es.json'

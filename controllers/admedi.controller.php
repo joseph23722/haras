@@ -56,17 +56,11 @@ try {
                 break;
 
             case 'getTipoEquinos':
-                try {
-                    $tiposEquinos = $admi->getTipoEquinos();
-                    if ($tiposEquinos) {
-                        sendResponse('success', 'Tipos de equinos obtenidos correctamente.', $tiposEquinos);
-                    } else {
-                        sendResponse('error', 'No se pudieron obtener los tipos de equinos.');
-                    }
-                } catch (PDOException $e) {
-                    sendResponse('error', 'Error al obtener los tipos de equinos: ' . $e->getMessage());
-                }
-                break;
+                $result = $alimento->getEquinosPorCategoria();
+        
+                header('Content-Type: application/json');
+                echo json_encode($result);  // Directamente devolver $result
+                exit();
 
             case 'listarTiposMedicamentos':
                 try {
@@ -236,7 +230,7 @@ try {
                     'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
                     'unidadMedida' => $_POST['unidadMedida'] ?? '',
                     'cantidad' => floatval($_POST['cantidad'] ?? 0),
-                    'idTipoEquino' => intval($_POST['idTipoEquino'] ?? 0),
+                    'idEquino' => intval($_POST['idEquino'] ?? 0),  // Cambiar de idTipoEquino a idEquino
                     'lote' => $_POST['lote'] ?? null,  // Cambiar a NULL si no se proporciona
                     'motivo' => $_POST['motivo'] ?? ''  // Nuevo campo motivo
                 ];

@@ -316,11 +316,13 @@
                                 <label for="salidaCantidad" class="form-label fw-bold">Cantidad</label>
                                 <input type="number" name="cantidad" id="salidaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
                             </div>
+
+                            
                             <div class="col-md-6">
-                                <label for="tipoEquinoMovimiento" class="form-label fw-bold">Tipo de Equino</label>
-                                <select id="tipoEquinoMovimiento" name="idTipoEquino" class="form-select form-select-lg" required>
-                                    <option value="" disabled selected>Seleccione Tipo de Equino</option>
-                                    <!-- Opciones cargadas dinámicamente -->
+                                <label for="idEquino" class="form-label fw-bold">Categoría de Equino</label> <!-- Etiqueta agregada para consistencia -->
+                                <select id="idEquino" name="idEquino" class="form-select form-control-lg" required>
+                                    <option value="">Seleccione Categoría de Equino</option>
+                                    <!-- Opciones se cargarán dinámicamente -->
                                 </select>
                             </div>
                         </div>
@@ -473,7 +475,6 @@
                                         <tr class="text-center">
                                             <th>ID Medicamento</th>
                                             <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
                                             <th>Stock Actual</th>
                                             <th>Lote</th>
                                             <th>Cantidad de Entrada</th>
@@ -489,16 +490,16 @@
                             <div class="table-responsive">
                                 <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-danger">
-                                        <tr class="text-center">
-                                            <th>ID Medicamento</th>
-                                            <th>Nombre Medicamento</th>
-                                            <th>Descripción</th>
-                                            <th>Lote</th>
-                                            <th>Tipo de Equino</th>
-                                            <th>Cantidad de Salida</th>
-                                            <th>Motivo</th>
-                                            <th>Fecha de Movimiento</th>
-                                        </tr>
+                                    <tr class="text-center">
+                                        <th>ID Medicamento</th>
+                                        <th>Nombre Medicamento</th>
+                                        <th>Lote</th>
+                                        <th>Tipo de Equino</th>
+                                        <th>Cantidad de Equinos</th> <!-- Este es el conteo de equinos -->
+                                        <th>Cantidad de Salida</th>
+                                        <th>Motivo</th>
+                                        <th>Fecha de Movimiento</th>
+                                    </tr>
                                     </thead>
                                 </table>
                             </div>
@@ -584,7 +585,7 @@
         const messageArea = document.getElementById("message-area");
         const btnSugerencias = document.getElementById("btnSugerencias");
 
-        const tipoEquinoMovimiento = document.querySelector("#tipoEquinoMovimiento");
+        
 
         // Función para mostrar mensajes dinámicos para medicamentos
         function mostrarMensaje(mensaje, tipo = 'INFO') {
@@ -764,46 +765,48 @@
 
 
         // Función para cargar las categorías de equinos
-         // Función para cargar los tipos de equinos
-        const loadTipoEquinos = async () => {
+        // Función para cargar las categorías de equinos con sus cantidades en el select del modal
+        const loadCategoriaEquinos = async () => {
             try {
-                // Hacemos la solicitud GET con los parámetros en la URL
                 const response = await fetch('../../controllers/alimento.controller.php?operation=getTipoEquinos', {
-                method: "GET"
+                    method: "GET"
                 });
 
-                const textResponse = await response.text();
+                const parsedResponse = await response.json();
+                console.log("Respuesta de la API para cargar categorías de equinos:", parsedResponse);
 
-                // Intentar convertir el texto en JSON
-                const parsedResponse = JSON.parse(textResponse);
-
-                // Verificar si la respuesta es exitosa y contiene los datos de tipos de equinos
                 if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-                const tiposEquinos = parsedResponse.data;
+                    const categorias = parsedResponse.data;
+                    const idEquinoSelect = document.getElementById('idEquino');
 
-                // Limpiar el select antes de añadir contenido nuevo
-                tipoEquinoMovimiento.innerHTML = '<option value="">Seleccione Tipo de Equino</option>';
+                    if (!idEquinoSelect) {
+                        console.error("El select con ID 'idEquino' no existe en el DOM.");
+                        return;
+                    }
 
-                // Añadir cada tipo de equino al select
-                tiposEquinos.forEach(tipo => {
-                    const option = document.createElement('option');
-                    option.value = tipo.idTipoEquino; // Usamos el idTipoEquino como valor
-                    option.textContent = tipo.tipoEquino; // Mostramos el tipo de equino
-                    tipoEquinoMovimiento.appendChild(option);
-                });
+                    // Limpiar opciones previas
+                    idEquinoSelect.innerHTML = '<option value="">Seleccione Categoría de Equino</option>';
+
+                    // Agregar opciones y verificar que `idEquino` sea válido
+                    categorias.forEach(categoria => {
+                        console.log("Verificando categoría:", categoria);  // Añadir este log
+
+                        if (categoria.idEquino) {  // Asegurarse de que el idEquino existe y no está undefined
+                            const option = document.createElement('option');
+                            option.value = categoria.idEquino;  // Confirmar que `idEquino` se usa correctamente
+                            option.textContent = `${categoria.Categoria} (${categoria.Cantidad})`;
+                            idEquinoSelect.appendChild(option);
+                        } else {
+                            console.warn(`Categoría sin idEquino:`, categoria);  // Log en caso de un valor faltante
+                        }
+                    });
                 } else {
-                mostrarMensajeDinamico('No se encontraron tipos de equinos.', 'INFO');
+                    console.warn('No se encontraron categorías de equinos.');
                 }
             } catch (error) {
-                console.error("Error al cargar tipos de equinos:", error);
-                mostrarMensajeDinamico('Error al cargar tipos de equinos.', 'ERROR');
+                console.error("Error al cargar categorías de equinos:", error);
             }
         };
-
-        // Código adicional en el frontend para mostrar el valor seleccionado
-        tipoEquinoMovimiento.addEventListener("change", (e) => {
-            console.log("Tipo de equino seleccionado (id):", e.target.value); // Mostrar el valor seleccionado
-        });
 
         // Historial de movimientos de medicamentos
         // Función para ajustar las fechas basadas en el filtro seleccionado
@@ -1368,7 +1371,8 @@
                 const motivoField = document.getElementById('motivoSalida');
                 const loteField = document.getElementById('salidaLote');
                 const medicamentoField = document.getElementById('salidaMedicamento');
-                const tipoEquinoField = document.getElementById('tipoEquinoMovimiento');
+                const tipoEquinoField = document.getElementById('idEquino');
+
 
                 // Validación de motivo
                 const motivo = motivoField.value.trim();
@@ -1389,7 +1393,7 @@
                 formData.append('operation', 'salida');
                 formData.append('nombreMedicamento', medicamentoField.value);
                 formData.append('cantidad', cantidad);
-                formData.append('idTipoEquino', tipoEquinoField.value);
+                formData.append('idEquino', tipoEquinoField.value);
                 formData.append('motivo', motivo);
 
                 const lote = loteField.value.trim() || null;
@@ -1428,7 +1432,8 @@
 
         // Cargar datos al iniciar la página
         cargarLotes();
-        loadTipoEquinos();
+        loadCategoriaEquinos();
+
 
         loadSelectMedicamentos();
         loadMedicamentos();

@@ -291,7 +291,7 @@ CREATE TABLE Medicamentos (
     cantidad_stock        INT NOT NULL,                    -- Stock actual del medicamento
     stockMinimo           INT DEFAULT 0,                   -- Stock mínimo para generar alertas
     estado                ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible', -- Estado del medicamento
-    idTipoEquino INT NULL,
+    idEquino INT NULL,
     idLoteMedicamento     INT NOT NULL,                    -- Referencia al lote específico de medicamento
     precioUnitario        DECIMAL(10,2) NOT NULL,          -- Precio unitario
     motivo TEXT  NULL,
@@ -300,8 +300,11 @@ CREATE TABLE Medicamentos (
     CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),    -- Relación con Usuarios
     CONSTRAINT fk_medicamento_combinacion FOREIGN KEY (idCombinacion) REFERENCES CombinacionesMedicamentos(idCombinacion), -- Relación con combinaciones
     CONSTRAINT fk_medicamento_lote FOREIGN KEY (idLoteMedicamento) REFERENCES LotesMedicamento(idLoteMedicamento), -- Relación con LotesMedicamento
-    CONSTRAINT fk_medicamento_tipoequino FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino)
+    CONSTRAINT fk_medicamento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
+
+
+
 
 -- 17. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
@@ -323,6 +326,7 @@ CREATE TABLE DetalleMedicamentos (
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
+
 -- 19. HistorialMedicamentosMedi ----°°° admedi..
 CREATE TABLE HistorialMovimientosMedicamentos (
     idMovimiento INT PRIMARY KEY AUTO_INCREMENT,
@@ -330,13 +334,16 @@ CREATE TABLE HistorialMovimientosMedicamentos (
     tipoMovimiento VARCHAR(50) NOT NULL,       -- Tipo de movimiento (Entrada/Salida)
     cantidad INT NOT NULL,                     -- Cantidad de medicamento
     motivo TEXT NOT NULL,
-    idTipoEquino INT NULL,                     -- ID del tipo de equino (solo para Salida)
+    idEquino INT NULL,                     -- ID del tipo de equino (solo para Salida)
     idUsuario INT NOT NULL,                    -- ID del usuario que realiza el movimiento
     fechaMovimiento DATE DEFAULT NOW(), -- Fecha del movimiento
     FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
-    FOREIGN KEY (idTipoEquino) REFERENCES TipoEquinos(idTipoEquino), -- Relación con TipoEquinos
+    CONSTRAINT fk_historialmedicamentos_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
+
+
+
 
 CREATE TABLE Servicios (
     idServicio               INT PRIMARY KEY AUTO_INCREMENT,

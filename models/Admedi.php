@@ -133,34 +133,35 @@ class Admi extends Conexion {
     }
 
     // Registrar salida de medicamentos
+    // Registrar salida de medicamentos
     public function salidaMedicamento($params = []) {
         try {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start(); // Iniciar la sesión si no está iniciada
             }
-    
+
             $idUsuario = $_SESSION['idUsuario'] ?? null; // Obtener idUsuario de la sesión
-    
+
             if ($idUsuario === null) {
                 throw new Exception('Usuario no autenticado.'); // Si no hay usuario, lanzar error
             }
-    
+
             // Verificar que los parámetros obligatorios estén presentes y sean válidos
-            if (empty($params['nombreMedicamento']) || $params['cantidad'] <= 0 || empty($params['idTipoEquino']) || empty($params['motivo'])) {
+            if (empty($params['nombreMedicamento']) || $params['cantidad'] <= 0 || empty($params['idEquino']) || empty($params['motivo'])) {
                 throw new Exception('Faltan datos obligatorios o valores incorrectos.');
             }
-    
+
             // Ejecutar el procedimiento almacenado para registrar la salida de medicamentos
             $query = $this->pdo->prepare("CALL spu_medicamentos_salida(?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreMedicamento'],
                 $params['cantidad'],
-                $params['idTipoEquino'],
+                $params['idEquino'], // Cambiado a idEquino
                 $params['lote'] ?? null, // Permitir que 'lote' sea NULL si no se proporciona
                 $params['motivo']
             ]);
-    
+
             // Verificar si la operación fue exitosa
             if ($query->rowCount() > 0) {
                 return ['status' => 'success', 'message' => 'Salida de medicamento registrada correctamente.'];
@@ -176,6 +177,7 @@ class Admi extends Conexion {
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $errorMessage];
         }
     }
+
     
 
 
@@ -601,20 +603,29 @@ class Admi extends Conexion {
         }
     }
     
-    // Método para obtener los tipos de equinos
-    public function getTipoEquinos() {
+    // Método para obtener la cantidad de equinos por categoría
+    public function getEquinosPorCategoria() {
         try {
-            // Cambiamos la llamada al nuevo procedimiento almacenado
-            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_contar_equinos_por_categoria()");
             $query->execute();
-            
-            // Devolvemos los resultados como un arreglo asociativo
-            return $query->fetchAll(PDO::FETCH_ASSOC);
-            
+
+            // Obtener los resultados y devolverlos en formato asociativo
+            $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Verificar si se encontraron resultados
+            if (!empty($resultados)) {
+                return ['status' => 'success', 'data' => $resultados];
+            } else {
+                return ['status' => 'info', 'message' => 'No se encontraron equinos en las categorías especificadas.'];
+            }
+
         } catch (PDOException $e) {
-            // Registramos el error en el log
-            error_log("Error en getTipoEquinos: " . $e->getMessage());
-            return [];
+            // Registrar el error en los logs
+            error_log("Error en la base de datos: " . $e->getMessage());
+
+            // Devolver un mensaje de error al usuario
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
     
