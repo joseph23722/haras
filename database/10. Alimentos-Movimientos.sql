@@ -82,6 +82,7 @@ DELIMITER ;
 
 
 
+
 -- -------
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
@@ -200,38 +201,33 @@ DELIMITER ;
 
 -- Procedimiento Salida de Alimentos 
 DELIMITER $$
+
 CREATE PROCEDURE spu_alimentos_salida(
-    IN _idUsuario INT,
-    IN _nombreAlimento VARCHAR(100),
-    IN _idUnidadMedida INT,               -- Cambiado a INT para recibir el id de la unidad de medida
-    IN _cantidad DECIMAL(10,2),
-    IN _idEquino INT,                     -- Uso de idEquino en lugar de idTipoEquino
-    IN _lote VARCHAR(50),
-    IN _merma DECIMAL(10,2)
+    IN _idUsuario INT,                 -- ID del usuario que realiza la salida
+    IN _nombreAlimento VARCHAR(100),   -- Nombre del alimento
+    IN _idUnidadMedida INT,            -- ID de la unidad de medida del alimento
+    IN _cantidad DECIMAL(10,2),        -- Cantidad total de salida
+    IN _uso DECIMAL(10,2),             -- Cantidad que se usará
+    IN _merma DECIMAL(10,2),           -- Cantidad que irá a merma
+    IN _idEquino INT,                  -- ID del equino al que se destina la salida (si aplica)
+    IN _lote VARCHAR(50)               -- Identificación del lote
 )
 BEGIN
     DECLARE _idAlimento INT;
     DECLARE _idLote INT;
     DECLARE _currentStock DECIMAL(10,2);
-    DECLARE _cantidadNecesaria DECIMAL(10,2);
-    DECLARE _debugInfo VARCHAR(255) DEFAULT '';
 
     -- Iniciar transacción
     START TRANSACTION;
 
-    -- Validar que la cantidad a retirar sea mayor que cero
-    IF _cantidad <= 0 THEN
-        SET _debugInfo = 'La cantidad a retirar debe ser mayor que cero.';
+    -- Validar que la cantidad de uso y merma sumen la cantidad total de salida
+    IF _cantidad != (_uso + _merma) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad de uso y merma deben sumar el total de la salida.';
+        ROLLBACK;
+    ELSEIF _cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad a retirar debe ser mayor que cero.';
         ROLLBACK;
     ELSE
-        -- Asignar valor por defecto a la merma si es NULL
-        IF _merma IS NULL THEN
-            SET _merma = 0;
-        END IF;
-
-        -- Calcular la cantidad total necesaria (cantidad + merma)
-        SET _cantidadNecesaria = _cantidad + _merma;
-
         -- Verificar si el lote existe y obtener su ID
         SELECT idLote INTO _idLote
         FROM LotesAlimento
@@ -240,54 +236,66 @@ BEGIN
 
         -- Si el lote no existe, generar un error
         IF _idLote IS NULL THEN
-            SET _debugInfo = 'El lote especificado no existe.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El lote especificado no existe.';
             ROLLBACK;
         ELSE
             -- Buscar el alimento usando el lote, nombre de alimento, y idUnidadMedida
-            SELECT a.idAlimento, a.stockActual
-            INTO _idAlimento, _currentStock
+            SELECT a.idAlimento, a.stockActual INTO _idAlimento, _currentStock
             FROM Alimentos a
             WHERE LOWER(a.nombreAlimento) = LOWER(_nombreAlimento)
               AND a.idLote = _idLote
               AND a.idUnidadMedida = _idUnidadMedida
             LIMIT 1 FOR UPDATE;
 
-            -- Verificar si el alimento existe para el lote y unidad de medida, y que el stock sea suficiente
+            -- Verificar si el alimento existe y que el stock sea suficiente
             IF _idAlimento IS NULL THEN
-                SET _debugInfo = 'El alimento con este lote y unidad de medida no está registrado.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El alimento con este lote y unidad de medida no está registrado.';
                 ROLLBACK;
-            ELSEIF _currentStock < _cantidadNecesaria THEN
-                SET _debugInfo = 'No hay suficiente stock disponible en el lote seleccionado.';
+            ELSEIF _currentStock < _cantidad THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock disponible.';
                 ROLLBACK;
             ELSE
-                -- Realizar la salida del stock en el lote seleccionado
+                -- Actualizar el stock del alimento
                 UPDATE Alimentos
-                SET stockActual = stockActual - _cantidadNecesaria,
+                SET stockActual = stockActual - _cantidad,
                     idEquino = _idEquino,
                     fechaMovimiento = NOW()
                 WHERE idAlimento = _idAlimento;
 
-                -- Registrar la salida y la merma en el historial de movimientos
+                -- Insertar en el historial de movimientos
                 INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, idEquino, unidadMedida)
-                VALUES (_idAlimento, 'Salida', _cantidad, _merma, _idUsuario, NOW(), _idEquino, _idUnidadMedida);
+                VALUES (_idAlimento, 'Salida', _uso, _merma, _idUsuario, NOW(), _idEquino, (SELECT nombreUnidad FROM UnidadesMedidaAlimento WHERE idUnidadMedida = _idUnidadMedida));
 
-                -- Confirmar la transacción
-                COMMIT;
+                -- Insertar en la tabla de Mermas
+                IF _merma > 0 THEN
+                    INSERT INTO MermasAlimento (idAlimento, cantidadMerma, fechaMerma, motivo)
+                    VALUES (_idAlimento, _merma, NOW(), 'Merma registrada en salida de inventario');
+                END IF;
 
                 -- Confirmación de éxito
-                SET _debugInfo = 'Transacción completada exitosamente.';
-                SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
+                COMMIT;
+                SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = 'Salida registrada exitosamente con desglose de uso y merma.';
             END IF;
         END IF;
     END IF;
 
 END $$
+
 DELIMITER ;
 
 
+CALL spu_alimentos_salida(
+    3,                    -- _idUsuario (asegúrate de que el ID de usuario existe en la tabla Usuarios)
+    'vd',                  -- _nombreAlimento (asegúrate de que el nombre coincide exactamente en la tabla Alimentos)
+    1,                    -- _idUnidadMedida (verifica que esta unidad de medida esté registrada y asociada al alimento)
+    10,                   -- _cantidad (total de salida)
+    8,                    -- _uso (cantidad destinada para uso)
+    2,                    -- _merma (cantidad destinada para merma)
+    1,                    -- _idEquino (asegúrate de que este ID de equino existe si se está usando en el contexto)
+    'LOTE-56'             -- _lote (verifica que el lote esté registrado en la tabla LotesAlimento)
+);
 
-
-
+select * from alimentos;
 -- -----------
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()

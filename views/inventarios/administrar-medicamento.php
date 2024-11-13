@@ -13,7 +13,7 @@
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Medicamento</h5>
             <!-- Botón de Sugerencias integrado en el header -->
             <button type="button" class="btn btn-info btn-sm" 
-                    style=" border: none; position: absolute; right: 1px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
+                    style=" border: none; position: absolute; right: 1px; top: 2px; padding: 10px 12px; font-size: 1.2em;"
                     id="btnSugerencias" 
                     data-bs-toggle="modal" 
                     data-bs-target="#modalSugerencias">
@@ -21,7 +21,7 @@
             </button>
             <!-- Botón de Agregar en el header -->
             <button type="button" class="btn btn-success btn-sm" 
-                    style="background-color: #28a745; border: none; position: absolute; right: 50px; top: 1px; padding: 5px 8px; font-size: 1.2em;"
+                    style="background-color: #28a745; border: none; position: absolute; right: 50px; top: 1px; padding: 10px 12px; font-size: 1.2em;"
                     id="btnAgregar" 
                     data-bs-toggle="modal" 
                     data-bs-target="#modalAgregarTipoPresentacion">
@@ -196,28 +196,25 @@
                     <div class="modal-body p-4">
                         <div class="row">
                             <!-- Formulario para Agregar Tipo -->
-                            <div class="col-md-3 mb-4">
+                            <div class="col-md-4 mb-4">
                                 <label for="nuevoTipoMedicamento">Tipo de Medicamento</label>
                                 <input type="text" name="nuevoTipoMedicamento" id="nuevoTipoMedicamento" class="form-control" required>
                             </div>
 
                             <!-- Formulario para Agregar Presentación -->
-                            <div class="col-md-3 mb-4">
+                            <div class="col-md-4 mb-4">
                                 <label for="nuevaPresentacion">Presentación</label>
                                 <input type="text" name="nuevaPresentacion" id="nuevaPresentacion" class="form-control" required>
                             </div>
 
                             <!-- Formulario para Agregar Unidad de Medida -->
-                            <div class="col-md-3 mb-4">
+                            <div class="col-md-4 mb-4">
                                 <label for="nuevaUnidadMedida">Unidad de Medida</label>
                                 <input type="text" name="nuevaUnidadMedida" id="nuevaUnidadMedida" class="form-control" required>
                             </div>
 
-                            <!-- Campo de Dosis -->
-                            <div class="col-md-3 mb-4">
-                                <label for="dosisMedicamento">Dosis</label>
-                                <input type="number" step="0.01" name="dosisMedicamento" id="dosisMedicamento" class="form-control" required>
-                            </div>
+                            <!-- Campo de Dosis Oculto -->
+                            <input type="hidden" name="dosisMedicamento" id="dosisMedicamento" value="10">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -228,6 +225,7 @@
             </div>
         </div>
     </div>
+
 
 
 
@@ -903,17 +901,18 @@
         };
 
 
-       // Registrar combinaciones 
+        // Registrar combinaciones 
+        // Registrar combinaciones 
         document.querySelector("#formAgregarTipoPresentacion").addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const nuevoTipo = document.querySelector("#nuevoTipoMedicamento").value;
             const nuevaPresentacion = document.querySelector("#nuevaPresentacion").value;
             const nuevaUnidad = document.querySelector("#nuevaUnidadMedida").value;
-            const dosis = parseFloat(document.querySelector("#dosisMedicamento").value); // Suponiendo que agregues un campo de dosis
+            const dosis = parseFloat(document.querySelector("#dosisMedicamento").value); // Siempre será 10
 
-            // Verificar que todos los campos tengan un valor
-            if (!nuevoTipo || !nuevaPresentacion || !nuevaUnidad || isNaN(dosis)) {
+            // Verificar que todos los campos visibles tengan un valor
+            if (!nuevoTipo || !nuevaPresentacion || !nuevaUnidad) {
                 alert("Todos los campos son obligatorios.");
                 return;
             }
@@ -926,7 +925,7 @@
                         tipo: nuevoTipo,
                         presentacion: nuevaPresentacion,
                         unidad: nuevaUnidad,
-                        dosis: dosis
+                        dosis: dosis // Envía siempre 10
                     })
                 });
 
@@ -944,6 +943,7 @@
                 showToast("Error al agregar la combinación", 'ERROR');
             }
         });
+
 
 
         

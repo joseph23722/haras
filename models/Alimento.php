@@ -212,10 +212,6 @@ class Alimento extends Conexion {
     
 
 
-    
-
-    
-    // Método para registrar una salida de alimento
     // Método para registrar una salida de alimento
     public function registrarSalidaAlimento($params = []) {
         try {
@@ -234,35 +230,41 @@ class Alimento extends Conexion {
 
             // Validar los datos necesarios
             if (empty($params['nombreAlimento']) || !is_numeric($params['cantidad']) || $params['cantidad'] <= 0 || 
-                empty($params['idEquino']) || empty($params['unidadMedida'])) {
-                throw new Exception('Datos inválidos. Verifique el nombre del alimento, la cantidad, la unidad de medida y el tipo de equino.');
+                empty($params['idEquino']) || empty($params['unidadMedida']) || 
+                !isset($params['uso']) || !isset($params['merma'])) {
+                throw new Exception('Datos inválidos. Verifique el nombre del alimento, la cantidad, el uso, la merma, la unidad de medida y el tipo de equino.');
             }
 
-            // Asignar valores opcionales (lote y merma)
-            $lote = !empty($params['lote']) ? $params['lote'] : null;
-            $merma = isset($params['merma']) && is_numeric($params['merma']) ? $params['merma'] : 0;
+            // Verificar que la suma de uso y merma sea igual a la cantidad total
+            if ($params['cantidad'] != ($params['uso'] + $params['merma'])) {
+                throw new Exception('La cantidad de uso y merma deben sumar el total de la salida.');
+            }
 
-            // Validar que la merma sea numérica y mayor o igual a cero
-            if ($merma < 0) {
-                throw new Exception('La merma debe ser un valor numérico mayor o igual a 0.');
+            // Asignar valores opcionales (lote)
+            $lote = !empty($params['lote']) ? $params['lote'] : null;
+
+            // Validar que la merma y el uso sean numéricos y mayores o iguales a cero
+            if ($params['merma'] < 0 || $params['uso'] < 0) {
+                throw new Exception('La merma y el uso deben ser valores numéricos mayores o iguales a 0.');
             }
 
             // `unidadMedida` ya debería ser el ID, por lo que no necesitamos hacer una búsqueda
             $idUnidadMedida = $params['unidadMedida'];
             
             // Registrar en el log los datos enviados para depuración
-            error_log("Llamada al procedimiento almacenado: spu_alimentos_salida con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, unidadMedida={$idUnidadMedida}, cantidad={$params['cantidad']}, idEquino={$params['idEquino']}, lote={$lote}, merma={$merma}");
+            error_log("Llamada al procedimiento almacenado: spu_alimentos_salida con parámetros: idUsuario=$idUsuario, nombreAlimento={$params['nombreAlimento']}, unidadMedida={$idUnidadMedida}, cantidad={$params['cantidad']}, uso={$params['uso']}, merma={$params['merma']}, idEquino={$params['idEquino']}, lote={$lote}");
 
             // Llamar al procedimiento almacenado para registrar la salida de alimento
-            $query = $this->pdo->prepare("CALL spu_alimentos_salida(?, ?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_alimentos_salida(?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $idUsuario,
                 $params['nombreAlimento'],
                 $idUnidadMedida,  // Directamente usa el ID de la unidad de medida
                 $params['cantidad'],
+                $params['uso'],
+                $params['merma'],
                 $params['idEquino'],
-                $lote,   // Usar el valor exacto de lote
-                $merma
+                $lote   // Usar el valor exacto de lote
             ]);
 
             // Cerrar el cursor después de ejecutar la consulta
@@ -276,7 +278,7 @@ class Alimento extends Conexion {
                 }
             }
 
-            return ['status' => 'success', 'message' => 'Salida registrada exitosamente.'];
+            return ['status' => 'success', 'message' => 'Salida registrada exitosamente con desglose de uso y merma.'];
 
         } catch (PDOException $e) {
             if ($e->getCode() == '45000') {
@@ -289,6 +291,7 @@ class Alimento extends Conexion {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
 
 
 
@@ -537,7 +540,6 @@ class Alimento extends Conexion {
     }
 
 
-    // Método para verificar si un lote ya está registrado con una unidad de medida específica
     // Método para verificar si un lote ya está registrado con una unidad de medida específica
     public function verificarLote($lote, $idUnidadMedida) {
         try {
