@@ -77,10 +77,12 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-10 d-flex justify-content-center">
                         <div class="form-floating">
-                            <input type="file" name="fotografia" id="fotografia" class="form-control" accept="image/*"> <!-- Campo para la fotografía -->
-                            <label for="fotografia"><i class="fas fa-camera" style="color: #007bff;"></i> Fotografía del Equino</label>
+                            <button name="fotografia" id="upload_button" class="form-control d-flex justify-content-center align-items-center" accept="image/*" style="text-align: center; padding: 10px; width: 205%;">
+                                <span><i class="fas fa-camera" style="color: #007bff;"></i> Seleccionar Fotografía</span>
+                                <input type="hidden" id="fotografia" name="fotografia">
+                            </button>
                         </div>
                     </div>
 
@@ -105,6 +107,11 @@
 <?php require_once '../footer.php'; ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
+<script
+    src="https://widget.cloudinary.com/v2.0/global/all.js"
+    type="text/javascript">
+</script>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const idPropietarioSelect = document.querySelector("#idPropietario");
@@ -323,29 +330,68 @@
             return !isNaN(value) && parseFloat(value) > 0;
         }
 
+        // SE CONECTA CON EL CLOUDINARY Y LA FUNCION ESPERA PARA PODER ENVIAR EL public_id
+        const myWidget = cloudinary.createUploadWidget({
+            // Credenciales propias
+            cloudName: "dtbhq7drd",
+            uploadPreset: "upload-image-test",
+        }, async (error, result) => {
+            if (!error && result && result.event === "success") {
+                // Mostrar el public_id en la consola para verificar que se ha capturado correctamente
+                const public_id = result.info.public_id;
+                console.log("Public ID de la imagen:", public_id);
+
+                // Guardar el public_id en el campo hidden
+                $('#fotografia').val(public_id);
+            }
+        });
+
+        document.getElementById("upload_button").addEventListener(
+            "click",
+            function() {
+                myWidget.open();
+            },
+            false
+        );
+
         formEquino.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            // Obtener los valores de los campos
             const nombreEquino = document.querySelector("#nombreEquino").value;
             const sexo = sexoSelect.value;
             const idTipoEquino = tipoEquinoSelect.value;
             const idNacionalidad = nacionalidadInput.value;
 
+            // Validación de campos obligatorios
             if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!idNacionalidad || !fechaNacimientoInput.value))) {
                 showToast('Los campos nombre, sexo, tipo de equino, y nacionalidad y fecha de nacimiento (si no hay propietario) son obligatorios.', 'ERROR');
                 console.log('Registro fallido: faltan campos obligatorios.');
                 return;
             }
 
+            // Si no hay propietario seleccionado, la fotografía es obligatoria
+            if (!idPropietarioSelect.value && !document.querySelector("#fotografia").value) {
+                showToast('Debe cargar una fotografía del equino', 'ERROR');
+                return;
+            }
+
+            // Confirmar si el usuario quiere registrar el equino
             const confirm = await ask("¿Está seguro de que desea registrar el equino?", "Registro de Equinos");
             if (!confirm) return;
 
+            // Obtener el public_id de la fotografía
+            const fotografiaPublicId = document.querySelector("#fotografia").value;
+
+            // Crear un objeto FormData para enviar con el formulario
             const formData = new FormData(formEquino);
             const data = {
                 operation: 'registrarEquino',
-                idNacionalidad: idNacionalidad
+                idNacionalidad: idNacionalidad,
+                fotografia: fotografiaPublicId // Incluir el public_id en los datos
             };
 
+            // Recorrer el FormData y añadir los valores a 'data'
             formData.forEach((value, key) => {
                 data[key] = value === "" && key === 'idPropietario' ? null : value;
             });
@@ -374,6 +420,7 @@
                 showToast('Error en el registro del equino. Inténtalo de nuevo más tarde.', 'ERROR');
             }
         });
+
         loadPropietarios();
         loadTipoEquinos();
     });

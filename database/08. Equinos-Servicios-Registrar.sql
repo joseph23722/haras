@@ -9,7 +9,8 @@ CREATE PROCEDURE `spu_equino_registrar`(
     IN _idTipoEquino INT,
     IN _idPropietario INT,
     IN _pesokg DECIMAL(5,1),
-    IN _idNacionalidad INT
+    IN _idNacionalidad INT,
+	IN _public_id VARCHAR(255)  -- Añadir el public_id de la imagen
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
@@ -96,6 +97,7 @@ BEGIN
         pesokg,
         idNacionalidad,
         idEstadoMonta,
+		fotografia,       -- Aquí guardaremos el public_id
         estado
     ) 
     VALUES (
@@ -108,6 +110,7 @@ BEGIN
         _pesokg,
         _idNacionalidad,
         _idEstadoMonta,
+		_public_id,       -- Guardar el public_id en la columna fotografia
         1  -- Estado "Vivo" (1)
     );
 

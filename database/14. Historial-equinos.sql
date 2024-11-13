@@ -43,14 +43,21 @@ DROP PROCEDURE IF EXISTS `spu_obtener_historial_equino`;
 DELIMITER //
 CREATE PROCEDURE `spu_obtener_historial_equino`(IN p_idEquino INT)
 BEGIN
-    SELECT
-        HE.descripcion,
-        E.fotografia
-    FROM
-        HistorialEquinos HE
-    JOIN
-        Equinos E ON HE.idEquino = E.idEquino
-    WHERE
-        HE.idEquino = p_idEquino;
+    -- Verificar si existen registros en el historial
+    IF EXISTS (SELECT 1 FROM HistorialEquinos WHERE idEquino = p_idEquino) THEN
+        -- Selección del historial y la fotografía
+        SELECT
+            HE.descripcion,
+            E.fotografia
+        FROM
+            HistorialEquinos HE
+        JOIN
+            Equinos E ON HE.idEquino = E.idEquino
+        WHERE
+            HE.idEquino = p_idEquino;
+    ELSE
+        -- Mensaje en caso de no haber registros
+        SELECT 'No se encontró historial para el equino con ID ' AS mensaje;
+    END IF;
 END //
 DELIMITER ;

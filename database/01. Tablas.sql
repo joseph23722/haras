@@ -108,7 +108,7 @@ CREATE TABLE Equinos (
     idNacionalidad      INT                         NULL,
     idPropietario 		INT							NULL,  -- Relación con propietarios (puede ser NULL para indicar propiedad del haras propio)
     pesokg				DECIMAL (5,1)				NULL,
-    fotografia			LONGBLOB 					NULL,
+    fotografia			VARCHAR(255)				NULL,
     estado				BIT							NOT NULL, -- Vivo o muerto
     created_at 			TIMESTAMP DEFAULT NOW()		NOT NULL,  -- Fecha y hora de creación
 	updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
