@@ -77,9 +77,9 @@
                         </div>
                     </div>
 
-                    <div class="col-md-10 d-flex justify-content-center">
+                    <div class="col-md-6">
                         <div class="form-floating">
-                            <button name="fotografia" id="upload_button" class="form-control d-flex justify-content-center align-items-center" accept="image/*" style="text-align: center; padding: 10px; width: 205%;">
+                            <button name="fotografia" id="upload_button" class="form-control justify-content-center align-items-center" accept="image/*" style="text-align: center; padding: 10px; background-color: #e0f2ff; color: #007bff; border: 1px solid #007bff;">
                                 <span><i class="fas fa-camera" style="color: #007bff;"></i> Seleccionar Fotografía</span>
                                 <input type="hidden" id="fotografia" name="fotografia">
                             </button>
