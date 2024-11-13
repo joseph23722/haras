@@ -134,43 +134,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Función para calcular la diferencia de meses entre dos fechas
-    function getDifferenceInMonths(dateFrom, dateTo) {
-        const yearFrom = dateFrom.getFullYear();
-        const monthFrom = dateFrom.getMonth();
-        const yearTo = dateTo.getFullYear();
-        const monthTo = dateTo.getMonth();
-        return (yearTo - yearFrom) * 12 + (monthTo - monthFrom);
+    // Función para calcular la diferencia en días entre dos fechas
+    function getDifferenceInDays(dateFrom, dateTo) {
+        const timeDifference = dateTo - dateFrom;
+        return Math.floor(timeDifference / (1000 * 3600 * 24));
     }
 
-    // Función para aplicar la lógica de validación de tipo de equino según la edad
+    // Función para aplicar la lógica de validación de tipo de equino según la edad en días
     function applyTipoEquinoLogic() {
         const fechaNacimiento = new Date(fechaNacimientoInput.value);
         const today = new Date();
-        const mesesDiferencia = getDifferenceInMonths(fechaNacimiento, today);
+        const diasDiferencia = getDifferenceInDays(fechaNacimiento, today);
         const sexo = sexoSelect.value;
 
         tipoEquinoSelect.innerHTML = '';
 
-        if (mesesDiferencia <= 6) {
+        // Lógica de validación basada en días
+        if (diasDiferencia <= 180) {  // Recién nacido menor o igual a 6 meses
             tipoEquinoSelect.innerHTML = '<option value="5">Recién nacido</option>';
-        } else if (mesesDiferencia <= 12) {
-            tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
-        } else if (mesesDiferencia > 6 && mesesDiferencia <= 24) {
+
+        } else if (diasDiferencia > 180 && diasDiferencia <= 730) {  // Potrillo/Potranca menor a 2 años
             if (sexo === 'Macho') {
                 tipoEquinoSelect.innerHTML = '<option value="4">Potrillo</option>';
             } else if (sexo === 'Hembra') {
                 tipoEquinoSelect.innerHTML = '<option value="3">Potranca</option>';
             }
-        } else if (mesesDiferencia > 48) {
+
+        } else if (diasDiferencia > 730) {  // Equinos mayores de 730 días es mayor a 2 años o 24 meses
             if (sexo === 'Macho') {
                 tipoEquinoSelect.innerHTML = `
-                <option value="2">Padrillo</option>
-                <option value="4">Potrillo</option>`;
+            <option value="2">Padrillo</option>
+            <option value="4">Potrillo</option>`;
             } else if (sexo === 'Hembra') {
                 tipoEquinoSelect.innerHTML = `
-                <option value="1">Yegua</option>
-                <option value="3">Potranca</option>`;
+            <option value="1">Yegua</option>
+            <option value="3">Potranca</option>`;
             }
         }
     }

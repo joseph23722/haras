@@ -10,17 +10,16 @@ CREATE PROCEDURE `spu_equino_registrar`(
     IN _idPropietario INT,
     IN _pesokg DECIMAL(5,1),
     IN _idNacionalidad INT,
-	IN _public_id VARCHAR(255)  -- Añadir el public_id de la imagen
+    IN _public_id VARCHAR(255)  -- Añadir el public_id de la imagen
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
-    DECLARE _edadMeses INT;
-    DECLARE _edadAnios INT;
+    DECLARE _edadDias INT;
     DECLARE _idEquino INT;
     DECLARE _idEstadoMonta INT;
 
-    SET _edadMeses = TIMESTAMPDIFF(MONTH, _fechaNacimiento, CURDATE());
-    SET _edadAnios = TIMESTAMPDIFF(YEAR, _fechaNacimiento, CURDATE());
+    -- Calcular la edad en días
+    SET _edadDias = TIMESTAMPDIFF(DAY, _fechaNacimiento, CURDATE());
 
     -- Validaciones de fecha y propietario
     IF _fechaNacimiento > CURDATE() THEN
@@ -40,20 +39,14 @@ BEGIN
 
     -- Validaciones de edad y tipo de equino
     IF _idPropietario IS NULL THEN
-        -- Recién nacido (<= 6 meses)
-        IF _edadMeses <= 6 THEN
+        -- Recién nacido (<= 180 días)
+        IF _edadDias <= 180 THEN
             IF _idTipoEquino NOT IN (5) THEN
-                SET _errorMsg = 'Error: Verifica la fecha de nacimiento, sexo y tipo de equino.';
+                SET _errorMsg = 'Error: Un equino recién nacido debe ser registrado como tipo "Recién nacido".';
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
             END IF;
-        -- Destete (<= 12 meses)
-        ELSEIF _edadMeses > 6 AND _edadMeses <= 12 THEN
-            IF _idTipoEquino NOT IN (6) THEN
-                SET _errorMsg = 'Error: Un equino destete debe ser registrado como macho o hembra.';
-                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-            END IF;
-        -- Potrillo o potranca (<= 24 meses)
-        ELSEIF _edadMeses <= 24 THEN
+        -- Potrillo o potranca (<= 730 días)
+        ELSEIF _edadDias > 180 AND _edadDias <= 730 THEN
             IF _sexo = 'Macho' AND _idTipoEquino != 4 THEN
                 SET _errorMsg = 'Error: Un macho de esta edad debe ser registrado como potrillo.';
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
@@ -62,14 +55,14 @@ BEGIN
                 SET _errorMsg = 'Error: Una hembra de esta edad debe ser registrada como potranca.';
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
             END IF;
-        -- Equinos mayores de 4 años
-        ELSEIF _edadAnios > 4 THEN
+        -- Equinos mayores de 730 días
+        ELSEIF _edadDias > 730 THEN
             IF _sexo = 'Macho' AND _idTipoEquino NOT IN (2, 4) THEN
-                SET _errorMsg = 'Error: Un macho mayor de 4 años debe ser registrado como padrillo o potrillo.';
+                SET _errorMsg = 'Error: Un macho mayor de 730 días debe ser registrado como padrillo o potrillo.';
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
             END IF;
             IF _sexo = 'Hembra' AND _idTipoEquino NOT IN (1, 3) THEN
-                SET _errorMsg = 'Error: Una hembra mayor de 4 años debe ser registrada como yegua o potranca.';
+                SET _errorMsg = 'Error: Una hembra mayor de 730 días debe ser registrada como yegua o potranca.';
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
             END IF;
         END IF;
@@ -97,7 +90,7 @@ BEGIN
         pesokg,
         idNacionalidad,
         idEstadoMonta,
-		fotografia,       -- Aquí guardaremos el public_id
+        fotografia,       -- Aquí guardaremos el public_id
         estado
     ) 
     VALUES (
@@ -110,7 +103,7 @@ BEGIN
         _pesokg,
         _idNacionalidad,
         _idEstadoMonta,
-		_public_id,       -- Guardar el public_id en la columna fotografia
+        _public_id,       -- Guardar el public_id en la columna fotografia
         1  -- Estado "Vivo" (1)
     );
 
