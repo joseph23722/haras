@@ -1,4 +1,5 @@
 -- Procedimiento para registrar los alimentos  
+DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
@@ -76,14 +77,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
-
-
-
 -- -------
+DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
@@ -131,9 +126,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 -- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,
@@ -196,12 +190,9 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
 -- Procedimiento Salida de Alimentos 
+DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_salida(
     IN _idUsuario INT,                 -- ID del usuario que realiza la salida
     IN _nombreAlimento VARCHAR(100),   -- Nombre del alimento
@@ -280,23 +271,10 @@ BEGIN
     END IF;
 
 END $$
-
 DELIMITER ;
 
-
-CALL spu_alimentos_salida(
-    3,                    -- _idUsuario (asegúrate de que el ID de usuario existe en la tabla Usuarios)
-    'vd',                  -- _nombreAlimento (asegúrate de que el nombre coincide exactamente en la tabla Alimentos)
-    1,                    -- _idUnidadMedida (verifica que esta unidad de medida esté registrada y asociada al alimento)
-    10,                   -- _cantidad (total de salida)
-    8,                    -- _uso (cantidad destinada para uso)
-    2,                    -- _merma (cantidad destinada para merma)
-    1,                    -- _idEquino (asegúrate de que este ID de equino existe si se está usando en el contexto)
-    'LOTE-56'             -- _lote (verifica que el lote esté registrado en la tabla LotesAlimento)
-);
-
-select * from alimentos;
 -- -----------
+DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
 BEGIN
@@ -326,11 +304,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
 -- Procedimiento para notificar Stock Bajo-----------------------------------------
+DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
@@ -380,12 +355,9 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
 -- Procedimiento para historial Alimentos -----------------------------------------
+DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_historial_completo(
     IN tipoMovimiento VARCHAR(50),
     IN fechaInicio DATE,
@@ -490,11 +462,9 @@ BEGIN
         SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
 END $$
-
 DELIMITER ;
 
-
---
+DROP PROCEDURE IF EXISTS `spu_eliminarAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_eliminarAlimento(IN _idAlimento INT)
 BEGIN
@@ -509,17 +479,10 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
-
-
-
-
 -- separado  
 
 -- Procedimiento para obtener la lista de tipos de alimentos
+DROP PROCEDURE IF EXISTS `spu_obtenerTiposAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerTiposAlimento()
 BEGIN
@@ -530,6 +493,7 @@ END $$
 DELIMITER ;
 
 -- Procedimiento para obtener las unidades de medida asociadas a un tipo de alimento
+DROP PROCEDURE IF EXISTS `spu_obtenerUnidadesPorTipoAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerUnidadesPorTipoAlimento(IN _idTipoAlimento INT)
 BEGIN
@@ -547,8 +511,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- agregar tipo y unidad 
+DROP PROCEDURE IF EXISTS `spu_agregarTipoUnidadMedidaNuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregarTipoUnidadMedidaNuevo (
     IN p_tipoAlimento VARCHAR(50),
@@ -587,16 +551,9 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
-
-
 -- esto no va es prueba 
-
 -- tipo de equino - alimento ------ 
-
+DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
