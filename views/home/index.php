@@ -356,30 +356,33 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
 
 
 
-      // Mostrar imagenes en el dashboard, CARRUSEL
+      // Mostrar imágenes en el dashboard, CARRUSEL
       fetch('../../controllers/dashboard.controller.php?action=fotografias_equinos')
         .then(response => response.json())
         .then(data => {
           const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
-          carouselInner.innerHTML = ''; // Limpiar el contenido de carga predeterminado
+          carouselInner.innerHTML = '';
 
           if (data.error) {
             console.error(data.error);
             carouselInner.innerHTML = `
-                    <div class="carousel-item active">
-                        <img src="https://via.placeholder.com/400x300?text=No+se+encontraron+imágenes" class="d-block w-100 equino-image" alt="No se encontraron imágenes">
-                    </div>
-                `;
+            <div class="carousel-item active">
+              <img src="https://via.placeholder.com/400x300?text=No+se+encontraron+imágenes" class="d-block w-100 equino-image" alt="No se encontraron imágenes">
+            </div>
+          `;
             return;
           }
 
-          data.forEach((foto, index) => {
+          data.forEach((equino, index) => {
             const isActive = index === 0 ? 'active' : '';
             const item = `
-                    <div class="carousel-item ${isActive}">
-                        <img src="${foto.url}" class="d-block w-100 equino-image" alt="Foto Equino">
-                    </div>
-                `;
+            <div class="carousel-item ${isActive}">
+              <img src="${equino.url}" class="d-block w-100 equino-image" alt="${equino.nombreEquino}">
+              <div class="equino-name text-center mt-2">
+                <strong>${equino.nombreEquino}</strong>
+              </div>
+            </div>
+          `;
             carouselInner.insertAdjacentHTML('beforeend', item);
           });
         })
@@ -387,10 +390,10 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
           console.error('Error:', error);
           const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
           carouselInner.innerHTML = `
-                <div class="carousel-item active">
-                    <img src="https://via.placeholder.com/400x300?text=Error+cargando+imágenes" class="d-block w-100 equino-image" alt="Error cargando imágenes">
-                </div>
-            `;
+          <div class="carousel-item active">
+            <img src="https://via.placeholder.com/400x300?text=Error+cargando+imágenes" class="d-block w-100 equino-image" alt="Error cargando imágenes">
+          </div>
+        `;
         });
     }
     // Función de validación para asegurar respuesta JSON válida

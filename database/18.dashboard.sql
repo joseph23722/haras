@@ -89,6 +89,6 @@ DROP PROCEDURE IF EXISTS `spu_listar_fotografia_dashboard`;
 DELIMITER //
 CREATE PROCEDURE spu_listar_fotografia_dashboard()
 BEGIN
-    SELECT fotografia FROM Equinos;
+    SELECT nombreEquino, fotografia FROM Equinos;
 END //
 DELIMITER ;

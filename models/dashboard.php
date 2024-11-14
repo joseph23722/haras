@@ -98,7 +98,7 @@ class Dashboard extends Conexion
         try {
             $cmd = $this->pdo->prepare("CALL spu_listar_fotografia_dashboard()");
             $cmd->execute();
-            return $cmd->fetchAll(PDO::FETCH_COLUMN); // Devuelve un array con solo la columna 'fotografia'
+            return $cmd->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             error_log("Error en ObtenerFotografiasEquinos: " . $e->getMessage());
             return [];

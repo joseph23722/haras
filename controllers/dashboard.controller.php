@@ -55,25 +55,25 @@ try {
             jsonResponse($data);
             break;
 
-            case 'resumen_servicios':
-                // Obtenemos los datos del resumen de servicios
-                $data = $dashboard->ObtenerResumenServicios() ?: [
-                    "totalServicios" => 0,
-                    "totalServiciosPropios" => 0,
-                    "totalServiciosMixtos" => 0
-                ];
-            
-                // Calculamos los porcentajes
-                $totalServicios = $data['totalServicios'] ?: 1; // Evitamos división por cero
-                $porcentajeServiciosPropios = ($data['totalServiciosPropios'] / $totalServicios) * 100;
-                $porcentajeServiciosMixtos = ($data['totalServiciosMixtos'] / $totalServicios) * 100;
-            
-                // Agregamos los porcentajes a los datos
-                $data['porcentajeServiciosPropios'] = number_format($porcentajeServiciosPropios, 2);  // Limitamos a 2 decimales
-                $data['porcentajeServiciosMixtos'] = number_format($porcentajeServiciosMixtos, 2);
-            
-                jsonResponse($data);
-                break;            
+        case 'resumen_servicios':
+            // Obtenemos los datos del resumen de servicios
+            $data = $dashboard->ObtenerResumenServicios() ?: [
+                "totalServicios" => 0,
+                "totalServiciosPropios" => 0,
+                "totalServiciosMixtos" => 0
+            ];
+
+            // Calculamos los porcentajes
+            $totalServicios = $data['totalServicios'] ?: 1; // Evitamos división por cero
+            $porcentajeServiciosPropios = ($data['totalServiciosPropios'] / $totalServicios) * 100;
+            $porcentajeServiciosMixtos = ($data['totalServiciosMixtos'] / $totalServicios) * 100;
+
+            // Agregamos los porcentajes a los datos
+            $data['porcentajeServiciosPropios'] = number_format($porcentajeServiciosPropios, 2);  // Limitamos a 2 decimales
+            $data['porcentajeServiciosMixtos'] = number_format($porcentajeServiciosMixtos, 2);
+
+            jsonResponse($data);
+            break;
 
         case 'servicios_mensual':
             $meta = $_GET['meta'] ?? 100;
@@ -89,10 +89,12 @@ try {
         case 'fotografias_equinos':
             $fotografias = $dashboard->ObtenerFotografiasEquinos();
             if ($fotografias) {
-                $data = array_map(function ($fotoId) {
+                // Aquí se devuelve un array con la url y el nombreEquino
+                $data = array_map(function ($equino) {
                     return [
-                        'url' => "https://res.cloudinary.com/dtbhq7drd/image/upload/$fotoId",
-                        'fotoId' => $fotoId
+                        'nombreEquino' => $equino['nombreEquino'],
+                        'url' => "https://res.cloudinary.com/dtbhq7drd/image/upload/{$equino['fotografia']}",
+                        'fotografia' => $equino['fotografia']
                     ];
                 }, $fotografias);
             } else {
