@@ -457,7 +457,8 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
           data: [enStock, bajaCantidad], // Los valores que se muestran en las barras
           backgroundColor: ['#4caf50', '#f44336'],
           borderColor: ['#388e3c', '#d32f2f'],
-          borderWidth: 1
+          borderWidth: 1,
+          barThickness: 80 // Se puede ajustar el ancho de la barra
         }]
       };
 
