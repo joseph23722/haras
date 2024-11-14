@@ -36,8 +36,8 @@ try {
             $data = $dashboard->ObtenerResumenStockAlimentos() ?: [
                 "stock_total" => 0,
                 "cantidad_alimentos" => 0,
-                "baja_cantidad" => 0,
-                "en_stock" => 0
+                "baja_cantidad" => '',
+                "en_stock" => ''
             ];
             jsonResponse($data);
             break;

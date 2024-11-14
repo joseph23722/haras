@@ -137,24 +137,27 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
-
-
       <!-- Barra de progreso alimentos -->
       <div class="col-md-6 col-lg-6">
         <div class="card">
           <h5 class="card-title">Stock de Alimentos</h5>
-          <h3 class="text-purple"><?php echo $totalAlimentosDisponibles; ?> <span class="text-success" style="font-size: 0.8rem;"><?php echo $cambioAlimentos; ?></span></h3>
+          <h3 class="text-purple" id="totalAlimentos">0</h3>
           <p class="small text-muted">Cantidad total de alimentos disponibles</p>
           <div class="chart-container">
             <canvas id="earningsBarChart"></canvas>
           </div>
           <div class="d-flex justify-content-between mt-3 text-muted">
-            <span><i class="fas fa-dollar-sign text-blue"></i> En Stock <strong><?php echo $alimentosEnStock; ?></strong></span>
-            <span><i class="fas fa-chart-line text-pink"></i> Baja Cantidad <strong><?php echo $alimentosBajaCantidad; ?></strong></span>
+            <span>
+              <i class="fas fa-dollar-sign text-blue"></i> En Stock
+              <strong id="enStock">0</strong>
+            </span>
+            <span>
+              <i class="fas fa-chart-line text-pink"></i> Baja Cantidad
+              <strong id="bajaCantidad">0</strong>
+            </span>
           </div>
         </div>
       </div>
-
 
       <!-- Gráfico y barra de medicamento -->
       <div class="col-md-6 col-lg-6">
@@ -324,27 +327,46 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         .then(response => validarRespuestaJSON(response))
         .then(data => {
           console.log("Datos de alimento:", data);
+
           if (data) {
-            const totalAlimentosElement = document.querySelector(".text-purple");
+            // Obtener las cantidades de alimentos en stock y baja cantidad
+            const alimentosEnStock = data.en_stock_count || 0;
+            const alimentosBajaCantidad = data.baja_cantidad_count || 0;
+
+            // Mostrar la cantidad total de alimentos
+            const totalAlimentosElement = document.querySelector("#totalAlimentos");
             if (totalAlimentosElement) {
               totalAlimentosElement.textContent = data.stock_total || 0;
             }
-            const dollarSignElement = document.querySelector(".fas.fa-dollar-sign");
-            const chartLineElement = document.querySelector(".fas.fa-chart-line");
-            if (dollarSignElement && dollarSignElement.nextElementSibling) {
-              dollarSignElement.nextElementSibling.textContent = data.en_stock || 0;
+
+            // Mostrar la cantidad de alimentos en stock
+            const enStockElement = document.querySelector("#enStock");
+            if (enStockElement) {
+              enStockElement.textContent = alimentosEnStock || '0';
             }
-            if (chartLineElement && chartLineElement.nextElementSibling) {
-              chartLineElement.nextElementSibling.textContent = data.baja_cantidad || 0;
+
+            // Mostrar la cantidad de alimentos con baja cantidad
+            const bajaCantidadElement = document.querySelector("#bajaCantidad");
+            if (bajaCantidadElement) {
+              bajaCantidadElement.textContent = alimentosBajaCantidad || '0';
             }
-            actualizarGraficoBarrasAlimentos([data.en_stock || 0, data.baja_cantidad || 0]);
+
+            // Separar los nombres de los alimentos en stock y con baja cantidad
+            const alimentosEnStockList = data.en_stock ? data.en_stock.split(',') : [];
+            const alimentosBajaCantidadList = data.baja_cantidad ? data.baja_cantidad.split(',') : [];
+
+            // Actualizar el gráfico de barras con las cantidades de stock y baja cantidad
+            actualizarGraficoBarrasAlimentos([alimentosEnStock, alimentosBajaCantidad], alimentosEnStockList, alimentosBajaCantidadList);
+
+            // Aquí puedes mostrar los nombres de los alimentos si los necesitas
+            console.log("Alimentos en stock:", alimentosEnStockList);
+            console.log("Alimentos con baja cantidad:", alimentosBajaCantidadList);
           }
         })
         .catch(error => console.error("Error fetching alimentos_stock:", error));
 
 
     }
-
     // Función de validación para asegurar respuesta JSON válida
     function validarRespuestaJSON(response) {
       if (!response.ok) {
@@ -424,36 +446,55 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
     }
 
     // Función para actualizar el gráfico de barras de Alimentos
-    function actualizarGraficoBarrasAlimentos(dataSeries) {
-      const earningsCtx = document.getElementById('earningsBarChart').getContext('2d');
-      new Chart(earningsCtx, {
-        type: 'bar',
-        data: {
-          labels: ['En Stock', 'Baja Cantidad'],
-          datasets: [{
-            data: dataSeries,
-            backgroundColor: '#6f42c1',
-            borderRadius: 10,
-            barThickness: 12,
-          }]
-        },
+    function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnStockList, alimentosBajaCantidadList) {
+      const ctx = document.getElementById("earningsBarChart").getContext("2d");
+
+      // Aquí definimos los datos para el gráfico
+      const data = {
+        labels: ['En Stock', 'Baja Cantidad'], // Las etiquetas de las barras
+        datasets: [{
+          label: 'Cantidad',
+          data: [enStock, bajaCantidad], // Los valores que se muestran en las barras
+          backgroundColor: ['#4caf50', '#f44336'],
+          borderColor: ['#388e3c', '#d32f2f'],
+          borderWidth: 1
+        }]
+      };
+
+      const config = {
+        type: 'bar', // Gráfico de barras
+        data: data,
         options: {
+          responsive: true,
           plugins: {
-            legend: {
-              display: false
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  let value = context.raw;
+
+                  // Aquí decidimos qué mostrar dependiendo de la barra en la que estamos
+                  if (context.dataIndex === 0) {
+                    label += ': ' + value + ' alimentos';
+                    // Añadir salto de línea entre los alimentos
+                    label += '\n' + alimentosEnStockList.join('\n');
+                  } else if (context.dataIndex === 1) {
+                    label += ': ' + value + ' alimentos';
+                    label += '\n' + alimentosBajaCantidadList.join('\n');
+                  }
+                  return label;
+                }
+              }
             }
           },
           scales: {
-            x: {
-              display: true
-            },
             y: {
-              display: false
+              beginAtZero: true
             }
-          },
-          animation: animationOptions
+          }
         }
-      });
+      };
+      new Chart(ctx, config);
     }
 
     // Función para actualizar el gráfico de donut de Medicamentos

@@ -1,4 +1,5 @@
 -- procedimiento almacenado que soporte el dashboard de "Stock de Medicamentos"
+DROP PROCEDURE IF EXISTS `ObtenerResumenStockMedicamentos`;
 DELIMITER //
 CREATE PROCEDURE ObtenerResumenStockMedicamentos()
 BEGIN
@@ -14,25 +15,24 @@ END //
 DELIMITER ;
 
 -- procedimiento calcula el stock total de alimentos, la cantidad de alimentos en stock y el número de alimentos con baja cantidad
+DROP PROCEDURE IF EXISTS `ObtenerResumenStockAlimentos`;
 DELIMITER //
 CREATE PROCEDURE ObtenerResumenStockAlimentos()
 BEGIN
     SELECT 
-        SUM(stockActual) AS stock_total,                                 -- Stock total de todos los alimentos
-        COUNT(*) AS cantidad_alimentos,                                  -- Número total de registros de alimentos
-        SUM(CASE WHEN stockActual <= stockMinimo THEN 1 ELSE 0 END) AS baja_cantidad, -- Número de alimentos con stock bajo
-        SUM(CASE WHEN stockActual > stockMinimo THEN 1 ELSE 0 END) AS en_stock       -- Número de alimentos en stock suficiente
+        SUM(stockActual) AS stock_total,
+        COUNT(*) AS cantidad_alimentos,
+        GROUP_CONCAT(CASE WHEN stockActual <= stockMinimo THEN CONCAT(nombreAlimento, ' (', stockActual, ')') ELSE NULL END) AS baja_cantidad,
+        GROUP_CONCAT(CASE WHEN stockActual > stockMinimo THEN CONCAT(nombreAlimento, ' (', stockActual, ')') ELSE NULL END) AS en_stock,
+        COUNT(CASE WHEN stockActual <= stockMinimo THEN 1 ELSE NULL END) AS baja_cantidad_count,
+        COUNT(CASE WHEN stockActual > stockMinimo THEN 1 ELSE NULL END) AS en_stock_count
     FROM 
         Alimentos;
 END //
 DELIMITER ;
 
-
-CALL ObtenerResumenStockMedicamentos();
-CALL ObtenerResumenStockAlimentos();
-
-
 -- Procedimiento para Equinos Registrados
+DROP PROCEDURE IF EXISTS `ObtenerTotalEquinosRegistrados`;
 DELIMITER //
 CREATE PROCEDURE ObtenerTotalEquinosRegistrados()
 BEGIN
@@ -41,6 +41,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento para Servicios Realizados (en la semana actual)
+DROP PROCEDURE IF EXISTS `ObtenerServiciosSemanaActual`;
 DELIMITER //
 CREATE PROCEDURE ObtenerServiciosSemanaActual()
 BEGIN
@@ -51,6 +52,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento para Medicamentos en Stock
+DROP PROCEDURE IF EXISTS `ObtenerMedicamentosEnStock`;
 DELIMITER //
 CREATE PROCEDURE ObtenerMedicamentosEnStock()
 BEGIN
@@ -59,6 +61,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento para Alimentos en Stock
+DROP PROCEDURE IF EXISTS `ObtenerAlimentosEnStock`;
 DELIMITER //
 CREATE PROCEDURE ObtenerAlimentosEnStock()
 BEGIN
@@ -67,6 +70,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento Almacenado para Calcular Porcentajes de Servicios
+DROP PROCEDURE IF EXISTS `ObtenerResumenServicios`;
 DELIMITER $$
 CREATE PROCEDURE ObtenerResumenServicios()
 BEGIN
@@ -82,6 +86,7 @@ END $$
 DELIMITER ;
 
 --  Procedimiento Almacenado para Obtener los Servicios Realizados y el Progreso Mensual
+DROP PROCEDURE IF EXISTS `ObtenerServiciosRealizadosMensual`;
 DELIMITER $$
 CREATE PROCEDURE ObtenerServiciosRealizadosMensual(IN p_meta INT)
 BEGIN
