@@ -11,7 +11,8 @@ ini_set("error_log", "../logs/error_log.log");
 require_once '../models/dashboard.php';
 
 // Función para retornar siempre una respuesta en JSON
-function jsonResponse($data) {
+function jsonResponse($data)
+{
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     exit();
 }
@@ -40,7 +41,7 @@ try {
             ];
             jsonResponse($data);
             break;
-            
+
 
         case 'total_equinos':
             $data = ['totalEquinos' => $dashboard->ObtenerTotalEquinosRegistrados() ?: 0];
@@ -80,6 +81,21 @@ try {
                 "porcentajeProgreso" => 0,
                 "seriesMensual" => []
             ];
+            jsonResponse($data);
+            break;
+
+        case 'fotografias_equinos':
+            $fotografias = $dashboard->ObtenerFotografiasEquinos();
+            if ($fotografias) {
+                $data = array_map(function ($fotoId) {
+                    return [
+                        'url' => "https://res.cloudinary.com/dtbhq7drd/image/upload/$fotoId",
+                        'fotoId' => $fotoId
+                    ];
+                }, $fotografias);
+            } else {
+                $data = ["error" => "No se encontraron fotografías"];
+            }
             jsonResponse($data);
             break;
 

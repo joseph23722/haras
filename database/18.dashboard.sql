@@ -94,6 +94,10 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
+DROP PROCEDURE IF EXISTS `spu_listar_fotografia_dashboard`;
+DELIMITER //
+CREATE PROCEDURE spu_listar_fotografia_dashboard()
+BEGIN
+    SELECT fotografia FROM Equinos;
+END //
+DELIMITER ;
