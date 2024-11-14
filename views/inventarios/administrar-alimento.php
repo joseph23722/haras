@@ -354,7 +354,7 @@
                     <!-- Cantidad de Merma -->
                     <div class="col-md-6">
                     <div class="form-floating">
-                        <input type="number" step="0.01" name="merma" id="merma" class="form-control" required min="0">
+                        <input type="number" step="0.01" name="merma" id="merma" class="form-control" required min="0" readonly>
                         <label for="merma">Merma</label>
                     </div>
                     </div>
