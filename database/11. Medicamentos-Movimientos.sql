@@ -305,7 +305,190 @@ END $$
 DELIMITER ;
 
 
+--  Mejortar los otros  ----------------------------------------------------------------------------
+-- 1.Procedimiento para agregar un nuevo tipo
+-- 2.Procedimiento para agregar una nueva presentacion
+-- 3.Procedimiento para agregar una nueva dosis (composicion)
+DELIMITER $$
+CREATE PROCEDURE spu_agregar_nueva_combinacion_medicamento(
+    IN _tipo VARCHAR(100),
+    IN _presentacion VARCHAR(100),
+    IN _unidad VARCHAR(50),
+    IN _dosis DECIMAL(10, 2),
+    OUT mensaje VARCHAR(255) -- Variable de salida para mensajes amigables
+)
+BEGIN
+    DECLARE _idTipo INT;
+    DECLARE _idPresentacion INT;
+    DECLARE _idUnidad INT;
+    -- Paso 1: Verificar si el tipo ya existe en TiposMedicamentos
+    SELECT idTipo INTO _idTipo
+    FROM TiposMedicamentos
+    WHERE LOWER(tipo) = LOWER(_tipo);
+    
+    -- Si el tipo no existe, lo insertamos
+    IF _idTipo IS NULL THEN
+        INSERT INTO TiposMedicamentos (tipo) VALUES (_tipo);
+        SET _idTipo = LAST_INSERT_ID();
+        SET mensaje = CONCAT('Nuevo tipo de medicamento agregado: ', _tipo);
+    ELSE
+        SET mensaje = CONCAT('Tipo de medicamento ya existente: ', _tipo);
+    END IF;
+    -- Paso 2: Verificar si la presentación ya existe en PresentacionesMedicamentos
+    SELECT idPresentacion INTO _idPresentacion
+    FROM PresentacionesMedicamentos
+    WHERE LOWER(presentacion) = LOWER(_presentacion);
+    
+    -- Si la presentación no existe, la insertamos
+    IF _idPresentacion IS NULL THEN
+        INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (_presentacion);
+        SET _idPresentacion = LAST_INSERT_ID();
+        SET mensaje = CONCAT(mensaje, '; Nueva presentación agregada: ', _presentacion);
+    ELSE
+        SET mensaje = CONCAT(mensaje, '; Presentación ya existente: ', _presentacion);
+    END IF;
+    -- Paso 3: Verificar si la unidad ya existe en UnidadesMedida
+    SELECT idUnidad INTO _idUnidad
+    FROM UnidadesMedida
+    WHERE LOWER(unidad) = LOWER(_unidad);
+    
+    -- Si la unidad no existe, la insertamos
+    IF _idUnidad IS NULL THEN
+        INSERT INTO UnidadesMedida (unidad) VALUES (_unidad);
+        SET _idUnidad = LAST_INSERT_ID();
+        SET mensaje = CONCAT(mensaje, '; Nueva unidad de medida agregada: ', _unidad);
+    ELSE
+        SET mensaje = CONCAT(mensaje, '; Unidad de medida ya existente: ', _unidad);
+    END IF;
+    -- Paso 4: Verificar si la combinación ya existe en CombinacionesMedicamentos
+    IF EXISTS (
+        SELECT 1 FROM CombinacionesMedicamentos 
+        WHERE idTipo = _idTipo 
+          AND idPresentacion = _idPresentacion 
+          AND idUnidad = _idUnidad
+          AND dosis = _dosis
+    ) THEN
+        -- Mensaje de advertencia amigable en lugar de error
+        SET mensaje = CONCAT(mensaje, '; La combinación de tipo, presentación, unidad y dosis ya existe.');
+    ELSE
+        -- Insertar la combinación si no existe
+        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, idUnidad, dosis) 
+        VALUES (_idTipo, _idPresentacion, _idUnidad, _dosis);
+        SET mensaje = 'Combinación agregada exitosamente.';
+    END IF;
+END $$
+DELIMITER ;
 
+
+-- apartes - combinaciones validas para el registrar 
+-- 1. Procedimiento para validar presentación tipo y dosis:
+-- Validar y registrar combinación
+DELIMITER $$
+CREATE PROCEDURE spu_validar_registrar_combinacion(
+    IN _idTipo INT,
+    IN _idPresentacion INT,
+    IN _dosisMedicamento DECIMAL(10, 2),
+    IN _unidadMedida VARCHAR(50)
+)
+BEGIN
+    DECLARE _idUnidad INT;
+    DECLARE _idCombinacion INT;
+    DECLARE _errorMensaje VARCHAR(255);
+    -- Manejador de errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF _errorMensaje IS NULL THEN
+            SET _errorMensaje = 'Lo sentimos, ha ocurrido un error inesperado. Por favor, inténtalo de nuevo o contacta al administrador.';
+        END IF;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END;
+    -- Iniciar la transacción
+    START TRANSACTION;
+    -- Validar unidad de medida y agregar depuración
+    SELECT idUnidad INTO _idUnidad
+    FROM UnidadesMedida
+    WHERE LOWER(unidad) = LOWER(_unidadMedida)
+    LIMIT 1;
+    -- Verificar si la unidad de medida existe
+    IF _idUnidad IS NULL THEN
+        SET _errorMensaje = CONCAT('La unidad de medida "', _unidadMedida, '" no está registrada. Verifica que sea correcta.');
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END IF;
+    -- Agregar mensaje de depuración para _idTipo, _idPresentacion, _dosisMedicamento y _idUnidad
+    SELECT _idTipo AS "ID Tipo", _idPresentacion AS "ID Presentacion", _dosisMedicamento AS "Dosis", _idUnidad AS "ID Unidad";
+    -- Buscar combinación exacta
+    SELECT idCombinacion INTO _idCombinacion
+    FROM CombinacionesMedicamentos
+    WHERE idTipo = _idTipo
+      AND idPresentacion = _idPresentacion
+      AND dosis = _dosisMedicamento
+      AND idUnidad = _idUnidad
+    LIMIT 1;
+    -- Verificar si existe la combinación y agregar mensaje de depuración
+    IF _idCombinacion IS NOT NULL THEN
+        COMMIT;
+        SELECT 'Combinación exacta encontrada.' AS mensaje, _idCombinacion AS idCombinacion;
+    ELSE
+        -- Registrar nueva combinación
+        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis, idUnidad)
+        VALUES (_idTipo, _idPresentacion, _dosisMedicamento, _idUnidad);
+        SET _idCombinacion = LAST_INSERT_ID();
+        COMMIT;
+        SELECT 'Nueva combinación registrada.' AS mensaje, _idCombinacion AS idCombinacion;
+    END IF;
+END $$
+DELIMITER ;
+
+
+
+-- sugerencias
+DELIMITER $$
+CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
+BEGIN
+    -- Selecciona los tipos de medicamentos junto con la presentación y la dosis (cantidad y unidad), agrupados
+    SELECT 
+        c.idCombinacion,  -- Incluye el ID de combinación para poder identificar cada sugerencia de combinación de manera única
+        t.tipo, 
+        GROUP_CONCAT(DISTINCT p.presentacion ORDER BY p.presentacion ASC SEPARATOR ', ') AS presentaciones,
+        GROUP_CONCAT(DISTINCT u.unidad ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
+    FROM 
+        CombinacionesMedicamentos c
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN 
+        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    JOIN 
+        UnidadesMedida u ON c.idUnidad = u.idUnidad
+    GROUP BY 
+        c.idCombinacion, t.tipo  -- Asegúrate de agrupar por idCombinacion para evitar resultados ambiguos
+    ORDER BY 
+        t.tipo ASC;  -- Ordena por tipo de medicamento
+END $$
+DELIMITER ;
+-- todo lo que es listar :
+-- listar tipo
+DELIMITER $$
+CREATE PROCEDURE spu_listar_tipos_unicos()
+BEGIN
+    SELECT DISTINCT t.idTipo, t.tipo
+    FROM TiposMedicamentos t
+    JOIN CombinacionesMedicamentos c ON t.idTipo = c.idTipo
+    ORDER BY t.tipo ASC;
+END $$
+DELIMITER ;
+-- ---- listar presentaciones por tipo
+DELIMITER $$
+CREATE PROCEDURE spu_listar_presentaciones_por_tipo(IN _idTipo INT)
+BEGIN
+    SELECT DISTINCT p.idPresentacion, p.presentacion
+    FROM CombinacionesMedicamentos c
+    JOIN PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    WHERE c.idTipo = _idTipo
+    ORDER BY p.presentacion ASC;
+END $$
+DELIMITER ;
 
 
 -- 1. Notificación de Stock Bajo

@@ -64,6 +64,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="http://localhost/haras/plugins/css/adminlte.min.css" rel="stylesheet" />
     <link href="http://localhost/haras/css/styles.css" rel="stylesheet" />
+    <link href="http://localhost/haras/css/registro-medi-ali.css" rel="stylesheet" />
 
     <!-- Iconos de Font Awesome -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>

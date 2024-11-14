@@ -50,72 +50,22 @@ document.addEventListener("DOMContentLoaded", () => {
     fechaFinInput.min = new Date().toISOString().split("T")[0];
 
     // Función para cargar la tabla de historial médico
+    // Función para cargar la tabla de historial médico
     const loadHistorialTable = async () => {
         if (!$.fn.DataTable.isDataTable('#historialTable')) {
-            historialTable = $('#historialTable').DataTable({
-                ajax: {
-                    url: '../../controllers/historialme.controller.php',
-                    type: 'GET',
-                    data: { operation: 'consultarHistorialMedico' },
-                    dataSrc: 'data',
-                    complete: function () {
-                        console.log("Datos cargados exitosamente en DataTable de historial.");
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.error("Error en DataTable AJAX:", textStatus, errorThrown);
-                    }
-                },
-                columns: [
-                    { data: 'nombreEquino' },
-                    { data: 'pesokg' },
-                    { data: 'tipoTratamiento' },
-                    { data: 'estadoTratamiento' },
-                    { data: 'nombreMedicamento' },
-                    { data: 'dosis' },
-                    { data: 'frecuenciaAdministracion' },
-                    { data: 'viaAdministracion' },
-                    { data: 'fechaInicio' },
-                    { data: 'fechaFin' },
-                    {
-                        data: 'observaciones',
-                        render: function (data) {
-                            return data ? data : 'Ninguna';
-                        }
-                    },
-                    {
-                        data: 'reaccionesAdversas',
-                        render: function (data) {
-                            return data ? data : 'Ninguna';
-                        }
-                    },
-                    {
-                        data: null,
-                        orderable: false,
-                        render: function (data, type, row) {
-                            return `
-                                    <div class="btn-group" role="group" aria-label="Acciones">
-                                        <button class="btn btn-sm btn-warning" onclick="pausarRegistro(${row.idRegistro})" title="Pausar">
-                                            <i class="fas fa-pause-circle"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-success" onclick="continuarRegistro(${row.idRegistro})" title="Continuar">
-                                            <i class="fas fa-play-circle"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${row.idRegistro})" title="Eliminar">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                `;
-                        }
-                    }
-                ],
-                language: {
-                    url: '/haras/data/es_es.json'
-                }
-            });
+            // Si el DataTable no está inicializado, crea uno con la configuración
+            $('#historialTable').DataTable(configurarDataTableHistorial());
         } else {
-            historialTable.ajax.reload();
+            // Si ya está inicializado, simplemente recarga los datos
+            $('#historialTable').DataTable().ajax.reload();
         }
     };
+    $(document).ready(function () {
+        loadHistorialTable();
+    });
+    
+
+    
 
     // Función genérica para enviar la solicitud al servidor
     const sendRequest = async (idRegistro, accion) => {
@@ -294,5 +244,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadMedicamentos();
-    loadHistorialTable();
+
 });

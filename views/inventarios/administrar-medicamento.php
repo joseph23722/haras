@@ -183,7 +183,7 @@
     </div>
 
     <!-- Modal para Agregar Nueva Combinación -->
-    <div class="modal fade" id="modalAgregarTipoPresentacion" tabindex="-1" aria-labelledby="modalAgregarTipoPresentacionLabel">
+    <div class="modal fade" id="modalAgregarTipoPresentacion" tabindex="-1" aria-labelledby="modalAgregarTipoPresentacionLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header" style="background: #004080; color: white; padding: 15px;">
@@ -230,7 +230,7 @@
 
 
     <!-- Modal para Registrar Entrada de Medicamento -->
-    <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel">
+    <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel"data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -285,7 +285,7 @@
 
 
     <!-- Modal para Registrar Salida de Medicamento -->
-    <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel">
+    <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -358,7 +358,7 @@
 
 
     <!-- Modal para Sugerencias de Medicamentos -->
-    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel">
+    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -393,7 +393,7 @@
     </div>
 
     <!-- Modal para Editar Sugerencia de Medicamento -->
-    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel">
+    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" style="background-color: #f39c12; color: white;">
@@ -427,8 +427,7 @@
 
 
     <!-- Modal para Historial de Movimientos de Medicamentos -->
-    <!-- Modal para Historial de Movimientos de Medicamentos -->
-    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel">
+    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->

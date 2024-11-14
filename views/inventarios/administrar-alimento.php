@@ -133,7 +133,7 @@
   </div>
 
   <!-- Modal para Agregar Nueva Categoría de Alimento y Medida -->
-  <div class="modal fade" id="modalAgregarCategoriaMedida" tabindex="-1" aria-labelledby="labelAgregarCategoriaMedida" aria-hidden="true">
+  <div class="modal fade" id="modalAgregarCategoriaMedida" tabindex="-1" aria-labelledby="labelAgregarCategoriaMedida" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-dialog-centered modal-md">
           <div class="modal-content">
               <div class="modal-header" style="background-color: #28a745; color: white;">
@@ -189,71 +189,10 @@
           </table>
       </div>
   </div>
-  <style>
-    /* Asegúrate de que este CSS se incluya después de cargar los estilos de DataTables */
-
-    /* Alinear "Mostrar [10] registros" en una sola línea */
-    .dataTables_length label {
-        display: flex;
-        align-items: center;
-        gap: 5px; /* Espacio entre "Mostrar" y el selector */
-    }
-
-    .dataTables_length label select {
-        display: inline-block;
-        margin-left: 5px;
-    }
-
-    /* Estilos para la pantalla */
-    .card-header {
-        background: linear-gradient(to right, #a0c4ff, #c9f0ff);
-        color: #003366;
-    }
-
-    /* Estilos específicos para la impresión */
-    @media print {
-        /* Oculta cualquier fondo en la impresión y asegura color negro para el texto */
-        body, .card-header, .card-body, .dataTables_wrapper {
-            background: none !important;
-            color: black !important;
-        }
-
-        /* Asegura que el DataTable ocupe todo el ancho disponible */
-    alimentos-table {
-            width: 100% !important;
-            border-collapse: collapse;
-        }
-
-        /* Oculta elementos no necesarios en la impresión */
-        .card-header, .btn, .pagination, .dataTables_length, .dataTables_filter, .dataTables_info, .dataTables_paginate {
-            display: none !important;
-        }
-
-        /* Diseño de la tabla para impresión */
-        table.dataTable thead {
-            background-color: white;
-            color: black;
-        }
-
-        /* Bordes visibles y tamaño adecuado para impresión */
-        table.dataTable td,
-        table.dataTable th {
-            border: 1px solid black !important;
-            padding: 4px;
-        }
-
-        /* Ajusta el tamaño de la tabla en la impresión para que ocupe todo el ancho */
-        table.dataTable {
-            width: 100% !important;
-        }
-    }
-
-    
-  </style>
 
 
   <!-- Modal para Movimientos de Entrada -->
-  <div class="modal fade" id="modalEntradaAlimento" tabindex="-1" aria-labelledby="modalEntradaAlimentoLabel" aria-hidden="true">
+  <div class="modal fade" id="modalEntradaAlimento" tabindex="-1" aria-labelledby="modalEntradaAlimentoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header" style="background: #48cae4; color: white;">
@@ -315,7 +254,7 @@
 
 
     <!-- Modal para Movimientos de Salida -->
-    <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel">
+    <div class="modal fade" id="modalSalidaAlimento" tabindex="-1" aria-labelledby="modalSalidaAlimentoLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
             <div class="modal-header" style="background: #ff6b6b; color: white;">
@@ -402,7 +341,7 @@
 
 
   <!-- Modal para Historial de Movimientos de Alimentos -->
-  <div class="modal fade" id="modalHistorialAlimentos" tabindex="-1" aria-labelledby="modalHistorialAlimentosLabel">
+  <div class="modal fade" id="modalHistorialAlimentos" tabindex="-1" aria-labelledby="modalHistorialAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog modal-xl">
           <div class="modal-content">
               <div class="modal-header bg-info text-white">

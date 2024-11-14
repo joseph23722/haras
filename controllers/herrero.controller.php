@@ -43,12 +43,25 @@ try {
             case 'consultarHistorialEquino':
                 $idEquino = intval($_GET['idEquino'] ?? 0);
                 $historial = $herrero->consultarHistorialEquino($idEquino);
+                
                 if ($historial) {
-                    sendResponse('success', 'Historial del equino consultado correctamente.', $historial);
+                    $response = array(
+                        "draw" => intval($_GET['draw'] ?? 1),
+                        "recordsTotal" => count($historial),
+                        "recordsFiltered" => count($historial),
+                        "data" => $historial
+                    );
+                    echo json_encode($response);
                 } else {
-                    sendResponse('error', 'No se pudo consultar el historial del equino.');
+                    echo json_encode(array(
+                        "draw" => intval($_GET['draw'] ?? 1),
+                        "recordsTotal" => 0,
+                        "recordsFiltered" => 0,
+                        "data" => []
+                    ));
                 }
                 break;
+            
 
             case 'consultarEstadoActualHerramientas':
                 $estadoActual = $herrero->consultarEstadoActualHerramientas();

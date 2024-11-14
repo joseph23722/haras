@@ -344,7 +344,7 @@ CREATE TABLE HistorialMovimientosMedicamentos (
 
 
 
-
+-- servicios
 CREATE TABLE Servicios (
     idServicio               INT PRIMARY KEY AUTO_INCREMENT,
     idEquinoMacho            INT NULL,

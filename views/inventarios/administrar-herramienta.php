@@ -100,6 +100,7 @@
     </div>
 
     <!-- Tabla para DataTable -->
+    <!-- Tabla para DataTable -->
     <div class="card mt-4">
         <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Historiales de Herrero</h5>
@@ -108,6 +109,8 @@
             <table id="historialHerreroTable" class="table table-striped" style="width:100%">
                 <thead>
                     <tr>
+                        <th>Nombre del Equino</th>
+                        <th>Tipo de Equino</th>
                         <th>Fecha</th>
                         <th>Trabajo Realizado</th>
                         <th>Herramienta Usada</th>
@@ -115,15 +118,25 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Se llenará dinámicamente -->
-                </tbody>
             </table>
         </div>
     </div>
+
 </div>
 
 <?php require_once '../footer.php'; ?>
+
+<script src="/haras/vendor/herrero/herrero.js" defer></script>
+
+
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
@@ -240,58 +253,24 @@
 
 
     // Función para cargar el historial del herrero en la tabla
-    function cargarHistorialHerrero() {
-        console.log("Cargando historial del herrero...");
-        fetch('/haras/controllers/herrero.controller.php?operation=consultarHistorialEquino&idEquino=1') // Cambia "1" por el ID dinámico del equino si es necesario
-            .then(response => {
-                console.log("Respuesta de la API para historial recibida:", response); // Log de respuesta sin procesar
-                return response.json();
-            })
-            .then(data => {
-                console.log("Datos del historial recibidos:", data);
-                const historialTable = document.querySelector('#historialHerreroTable tbody');
-                historialTable.innerHTML = '';
+    // Función para cargar el historial del herrero en la tabla
+    // Función para cargar el DataTable de historial de herrero
+    const loadHistorialHerreroTable = (idEquino) => {
+        if (!$.fn.DataTable.isDataTable('#historialHerreroTable')) {
+            $('#historialHerreroTable').DataTable(configurarDataTableHerrero(idEquino));
+        } else {
+            $('#historialHerreroTable').DataTable().ajax.reload();
+        }
+    };
 
-                if (data.status === 'success') {
-                    data.data.forEach(historial => {
-                        console.log("Registro de historial:", historial); // Log de cada registro de historial
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${historial.fecha}</td>
-                            <td>${historial.trabajoRealizado}</td>
-                            <td>${historial.herramientasUsadas}</td>
-                            <td>${historial.observaciones}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="actualizarEstadoFinal(${historial.idHistorialHerrero})">Actualizar Estado</button>
-                            </td>
-                        `;
-                        historialTable.appendChild(row);
-                    });
-                } else {
-                    console.warn("No se encontró historial o hubo un error.");
-                }
-            })
-            .catch(error => console.error('Error al cargar historial de herrero:', error));
-    }
-
-    // Evento DOMContentLoaded para cargar datos iniciales
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Evento DOMContentLoaded disparado");
-        cargarTiposEquinos();
-        cargarHistorialHerrero();
-
-        // Evento para el formulario de registro
-        document.getElementById('form-historial-herrero').addEventListener('submit', function(event) {
-            event.preventDefault();
-            console.log("Formulario de historial de herrero enviado");
-            registrarHistorialHerrero();
-        });
-
-        // Evento para cargar equinos según el tipo seleccionado
-        document.getElementById('tipoEquinoSelect').addEventListener('change', function() {
-            const tipoEquinoId = this.value;
-            console.log("Tipo de equino seleccionado:", tipoEquinoId);
-            cargarEquinosPorTipo(tipoEquinoId);
-        });
+    // Inicializar la tabla al cargar la página
+    $(document).ready(function () {
+        const idEquino = 1; // Cambia esto a un ID real o dinámico
+        loadHistorialHerreroTable(idEquino);
     });
+
+    
+
+
+    
 </script>

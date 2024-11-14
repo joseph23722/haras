@@ -1,0 +1,174 @@
+body {
+    background-color: #f4f5f7;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .text-accent { color: #34c38f; }
+  .text-purple { color: #6f42c1; }
+  .text-blue { color: #4c84ff; }
+  .text-pink { color: #d63384; }
+  .progress {
+    background-color: #e9ecef;
+    border-radius: 5px;
+  }
+  .progress-bar {
+    border-radius: 5px;
+  }
+  .container {
+    max-width: 1800px;
+  }
+
+  /* Estilos personalizados para reducir el tamaño de la tarjeta Support Tracker */
+  .support-tracker-card {
+      padding: 15px;
+      min-height: 470px; /* Ajusta la altura de la tarjeta */
+  }
+  .small-title {
+      font-size: 2rem; /* Reduce el tamaño de la fuente del título */
+      margin-bottom: 15px;
+  }
+  .small-number {
+      font-size: 2 rem; /* Reduce el tamaño de la fuente del número principal */
+  }
+  .chart-container.small-chart {
+      height: 200px; /* Reduce la altura del gráfico */
+      width: 200px; /* Reduce el ancho del gráfico */
+      margin: 0 auto; /* Centra el gráfico */
+  }
+  #supportDonutChart {
+      max-width: 100%; /* Limita el ancho máximo del canvas */
+      max-height: 100%; /* Limita la altura máxima del canvas */
+  }
+  .small-info {
+      font-size: 1.1rem; /* Reduce el tamaño de fuente de la información inferior */
+  }
+
+  /* Estilos personalizados para la tarjeta de Nosotros y carrusel de Equinos */
+  .fancy-title {
+  font-size: 2rem; /* Ajusta este valor para cambiar el tamaño del título */
+  font-family: 'Georgia', serif;
+  margin-bottom: 5px;
+  text-align: center; /* Mantiene el título centrado */
+  color: #808080; /* Nuevo color para el texto */
+  }
+
+  .equinos-carousel {
+  max-height: 770px; /* Ajusta la altura máxima del carrusel */
+  }
+
+  .equino-image {
+  height: 290px; /* Ajusta este valor para cambiar el tamaño de las imágenes */
+  object-fit: cover;
+  border-radius: 12px;
+  }
+
+  /* propios y mixto**/
+  .card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  min-height: 400px; /* Aumenta la altura de la tarjeta ajustando este valor */
+  }
+
+  /** tarjetas **/
+  .custom-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffffff; /* Fondo blanco para la tarjeta */
+  }
+
+  .custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .custom-card-title {
+  font-size: 1.2rem; /* Tamaño del título */
+  color: #333; /* Color del texto del título */
+  }
+
+  .custom-text-muted {
+  color: #6c757d; /* Color del texto descriptivo */
+  font-size: 0.9rem; /* Tamaño del texto */
+  }
+
+  .custom-card h3 {
+  font-size: 2rem; /* Tamaño del número */
+  margin-bottom: 5px;
+  }
+
+  .custom-card .text-info {
+  color: #17a2b8; /* Color personalizado para números */
+  }
+
+  .custom-card .text-purple {
+  color: #6f42c1;
+  }
+
+  .custom-card .text-success {
+  color: #28a745;
+  }
+
+  .custom-card .text-danger {
+  color: #dc3545;
+  }
+
+  /**alimentos */
+  .food-stock-card {
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .food-stock-title {
+  font-size: 1.2rem;
+  color: #333;
+  }
+
+  .food-stock-count {
+  font-size: 2rem;
+  margin-bottom: 5px;
+  }
+
+  .food-stock-chart-container {
+  height: 150px; /* Ajuste para el tamaño del gráfico */
+  margin-top: 15px;
+  }
+
+  /**medicamentos */
+  .medication-stock-card {
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .medication-stock-title {
+  font-size: 1.2rem;
+  color: #333;
+  }
+
+  .medication-stock-count {
+  font-size: 2rem;
+  margin-bottom: 5px;
+  }
+
+  .medication-stock-chart-container {
+  height: 150px; /* Ajuste para el tamaño del gráfico */
+  margin-top: 15px;
+  }
+
+
+  
+
+
+
+
+
+
+

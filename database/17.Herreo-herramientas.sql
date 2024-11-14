@@ -43,19 +43,33 @@ DELIMITER ;
 -- 3. Procedimiento para Consultar el Historial Completo de un Equino
 -- Retorna el historial de trabajos de herrería para un equino específico, con detalles generales del trabajo
 DELIMITER //
-
 CREATE PROCEDURE ConsultarHistorialEquino (
     IN p_idEquino INT
 )
 BEGIN
-    SELECT H.idHistorialHerrero, H.fecha, H.trabajoRealizado, H.herramientasUsadas, H.observaciones
-    FROM HistorialHerrero H
-    WHERE H.idEquino = p_idEquino
-    ORDER BY H.fecha DESC;
+    SELECT 
+        H.idHistorialHerrero, 
+        H.fecha, 
+        H.trabajoRealizado, 
+        H.herramientasUsadas, 
+        H.observaciones,
+        E.nombreEquino,              -- Agrega el nombre del equino
+        T.tipoEquino                 -- Agrega el tipo de equino
+    FROM 
+        HistorialHerrero H
+    INNER JOIN 
+        Equinos E ON H.idEquino = E.idEquino
+    INNER JOIN 
+        TipoEquinos T ON E.idTipoEquino = T.idTipoEquino
+    WHERE 
+        H.idEquino = p_idEquino
+    ORDER BY 
+        H.fecha DESC;
 END //
-
 DELIMITER ;
 
+
+CALL ConsultarHistorialEquino(1); -- Cambia "1" por un ID de prueba
 
 -- 4. Procedimiento para Consultar el Estado Actual de Herramientas
 -- Muestra el estado actual de cada herramienta utilizada en trabajos recientes, sin incluir estado inicial y final
@@ -87,4 +101,3 @@ END //
 DELIMITER ;
 
 
-CALL InsertarHistorialHerrero(1, 1, '2023-01-01', 'Recorte de casco', 'Herradura de acero', 'Observación de prueba');

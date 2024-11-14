@@ -284,18 +284,6 @@ END $$
 DELIMITER ;
 
 
-CALL spu_alimentos_salida(
-    3,                    -- _idUsuario (asegúrate de que el ID de usuario existe en la tabla Usuarios)
-    'vd',                  -- _nombreAlimento (asegúrate de que el nombre coincide exactamente en la tabla Alimentos)
-    1,                    -- _idUnidadMedida (verifica que esta unidad de medida esté registrada y asociada al alimento)
-    10,                   -- _cantidad (total de salida)
-    8,                    -- _uso (cantidad destinada para uso)
-    2,                    -- _merma (cantidad destinada para merma)
-    1,                    -- _idEquino (asegúrate de que este ID de equino existe si se está usando en el contexto)
-    'LOTE-56'             -- _lote (verifica que el lote esté registrado en la tabla LotesAlimento)
-);
-
-select * from alimentos;
 -- -----------
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()

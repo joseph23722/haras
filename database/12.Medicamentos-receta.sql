@@ -14,6 +14,8 @@ CREATE PROCEDURE spu_historial_medico_registrarMedi(
 )
 BEGIN
     DECLARE _errorMensaje VARCHAR(255);
+    DECLARE _dosisCantidad DECIMAL(10, 2);
+    DECLARE _unidadMedida VARCHAR(50);
 
     -- Manejador de errores para revertir la transacción si hay algún error
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -66,6 +68,16 @@ BEGIN
         SIGNAL SQLSTATE '45000';
     END IF;
 
+    -- Separar la dosis y la unidad de medida, similar al registro de medicamentos
+    SET _dosisCantidad = CAST(SUBSTRING_INDEX(_dosis, ' ', 1) AS DECIMAL(10,2));
+    SET _unidadMedida = TRIM(SUBSTRING_INDEX(_dosis, ' ', -1));
+
+    -- Verificar que la unidad de medida esté registrada en la tabla UnidadesMedida
+    IF NOT EXISTS (SELECT 1 FROM UnidadesMedida WHERE unidad = _unidadMedida) THEN
+        SET _errorMensaje = CONCAT('La unidad de medida "', _unidadMedida, '" no está registrada. Verifica que sea correcta.');
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
     -- Insertar el detalle del medicamento administrado al equino con la fecha de inicio como la fecha actual
     INSERT INTO DetalleMedicamentos (
         idMedicamento,
@@ -100,6 +112,8 @@ BEGIN
 
 END $$
 DELIMITER ;
+
+
 
 -- listar equinos propios para medicamentos;
 DELIMITER $$
