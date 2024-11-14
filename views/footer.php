@@ -15,6 +15,7 @@
 </footer>
 
 <!-- Scripts -->
+ 
 
 <!-- Cargar jQuery primero -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -35,4 +36,5 @@
 </div> <!-- Cierre de layoutSidenav_content -->
 </div> <!-- Cierre de layoutSidenav -->
 </body>
+<script src="http://localhost/haras/JS/notificaciones.js"></script>
 </html>

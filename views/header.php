@@ -66,6 +66,8 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     <link href="http://localhost/haras/css/styles.css" rel="stylesheet" />
     <link href="http://localhost/haras/css/registro-medi-ali.css" rel="stylesheet" />
 
+    <!-- Notificaciones -->
+
     <!-- Iconos de Font Awesome -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
@@ -79,16 +81,42 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     
+
+
         <!-- Navbar Notifications -->
         <div class="ms-auto me-3 my-2 my-md-0">
-            <button class="btn btn-primary position-relative" id="btnNotifications" type="button">
+            <button class="btn btn-info position-relative" id="btnNotifications" type="button" onclick="mostrarNotificaciones()">
                 <i class="fas fa-bell"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount">
-                    10<!-- Número de notificaciones -->
+                    0<!-- Contador de notificaciones dinámico -->
                     <span class="visually-hidden">nuevas notificaciones</span>
                 </span>
             </button>
         </div>
+
+        <!-- Contenedor de Notificaciones -->
+        <div id="notificationsContainer" class="dropdown-menu" aria-labelledby="btnNotifications" style="display: none; max-width: 300px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);">
+            <!-- Cabecera de notificaciones -->
+            <div class="d-flex justify-content-between align-items-center p-3 custom-header">
+                <span style="font-weight: bold; font-size: 18px;">Notificaciones</span>
+                <button onclick="marcarComoLeidas()" style="background: none; border: none; color: #0056b3;">Marcar todo como leído</button>
+            </div>
+
+            <!-- Lista de Notificaciones -->
+            <div id="notificationsList" style="max-height: 200px; overflow-y: auto; padding: 0 15px;">
+                <!-- Aquí se agregarán las notificaciones dinámicamente -->
+            </div>
+
+            <!-- Ver todas las notificaciones -->
+            <div class="text-center">
+                <button class="btn btn-outline-primary btn-view-all" onclick="verTodasNotificaciones()">Ver todas las notificaciones</button>
+            </div>
+        </div>
+
+
+
+
+
 
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
@@ -136,14 +164,5 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             </nav>
         </div>
         <div id="layoutSidenav_content">
-        <script>
-            const nombres = "<?= htmlspecialchars($_SESSION['login']['nombres'] ?? 'Desconocido'); ?>";
-            const apellidos = "<?= htmlspecialchars($_SESSION['login']['apellidos'] ?? 'Desconocido'); ?>";
-            const correo = "<?= htmlspecialchars($_SESSION['login']['correo'] ?? 'Desconocido'); ?>";
-            
-            console.log("===== Información del Usuario =====");
-            console.log("Nombre Completo del Usuario: " + nombres + " " + apellidos);
-            console.log("Identificador de Usuario: " + correo);
-            console.log("===================================");
-        </script>
+        
 

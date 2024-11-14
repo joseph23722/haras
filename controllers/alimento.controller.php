@@ -186,8 +186,13 @@ try {
             case 'notificarStockBajo':
                 $minimoStock = $params['minimoStock'] ?? 0;
                 $result = $alimento->notificarStockBajo();
-                echo json_encode($result);
+                
+                // Depuración
+                error_log(print_r($result, true));  // Registra la respuesta en el log para verificar el contenido
+                
+                echo json_encode($result);  // Envía la respuesta JSON
                 exit();
+                
 
             default:
                 echo json_encode(['status' => 'error', 'message' => 'Operación no válida para POST.']);

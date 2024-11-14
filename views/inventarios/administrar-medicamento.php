@@ -954,7 +954,7 @@
             try {
                 // Verificar si idTipo está definido
                 if (!idTipo) {
-                    mostrarMensaje("Debe seleccionar un tipo de medicamento antes de cargar las presentaciones.", 'warning');
+                    showToast("No se olvide ,Debe seleccionar un tipo de medicamento antes de cargar las presentaciones.",'INFO');
                     return;
                 }
 
@@ -1432,7 +1432,7 @@
         // Cargar datos al iniciar la página
         cargarLotes();
         loadCategoriaEquinos();
-
+        notificarStockBajo();
 
         loadSelectMedicamentos();
         loadMedicamentos();

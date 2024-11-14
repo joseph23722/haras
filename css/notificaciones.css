@@ -1,0 +1,127 @@
+/* Estilo para el contenedor de notificaciones */
+#notificationsContainer {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    max-width: 300px;
+    width: auto;
+    display: none; /* Se oculta por defecto */
+    position: fixed; /* Fijamos la posición para que esté siempre visible */
+    bottom: 20px; /* Distancia desde la parte inferior de la pantalla */
+    right: 20px; /* Alineado a la derecha */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 9999; /* Asegura que esté por encima de otros elementos */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    animation: fadeIn 0.3s ease-in-out; /* Animación para el fade-in */
+}
+
+/* Animación de entrada suave */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo de las notificaciones individuales */
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: background-color 0.3s ease;
+}
+
+/* Efecto hover de las notificaciones */
+.notification-item:hover {
+    background-color: #f4f7fb;
+    transform: translateX(5px); /* Desplazamiento sutil */
+}
+
+/* Iconos y texto de la notificación */
+.notification-icon {
+    font-size: 22px;
+    margin-right: 15px;
+    color: #5c6bc0; /* Color vibrante y moderno */
+    transition: transform 0.3s ease;
+}
+
+.notification-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #888;
+    margin-left: 10px;
+}
+
+/* Animación para los iconos (un pequeño giro cuando se hace hover) */
+.notification-icon:hover {
+    transform: rotate(10deg);
+}
+
+/* Estilo del botón de "Marcar todo como leído" */
+#notificationsContainer button {
+    font-size: 14px;
+    color: #007bff;
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+/* Hover sobre el botón */
+#notificationsContainer button:hover {
+    color: #0056b3;
+}
+
+/* Cabecera de las notificaciones */
+#notificationsContainer .custom-header {
+    padding: 15px 20px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+    background-color: #f1f3f8;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Estilo de la lista de notificaciones */
+#notificationsList {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 0 15px;
+    background-color: #ffffff;
+}
+
+/* Estilo del botón de "Ver todas las notificaciones" */
+#notificationsContainer .btn-view-all {
+    font-size: 14px;
+    color: #5c6bc0;
+    text-decoration: none;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
+
+#notificationsContainer .btn-view-all:hover {
+    color: #3949ab;
+}
+
+/* Botón de cerrar */
+#notificationsContainer .custom-close-notifications {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+#notificationsContainer .custom-close-notifications:hover {
+    color: #333;
+}

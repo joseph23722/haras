@@ -634,35 +634,47 @@
 
     
     // **Función para mostrar notificaciones en el div `mensaje`**
+    // **Función para mostrar notificaciones dinámicas para alimentos**
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
         const mensajeDiv = document.getElementById('mensaje'); // Asegúrate de tener un div con el id 'mensaje'
-        
-        if (mensajeDiv) {
-            const colores = {
-                'INFO': 'blue',
-                'SUCCESS': 'green',
-                'ERROR': 'red',
-                'WARNING': 'orange'
-            };
-            
-            // Estilos del mensaje
-            mensajeDiv.style.color = colores[tipo] || 'black';
-            mensajeDiv.style.fontWeight = 'bold';
-            mensajeDiv.style.padding = '10px';
-            mensajeDiv.style.marginBottom = '15px';
-            mensajeDiv.style.border = `2px solid ${colores[tipo] || 'black'}`;
-            mensajeDiv.style.backgroundColor = '#f9f9f9';
-            
-            // Mostrar el mensaje
-            mensajeDiv.innerHTML = mensaje;
 
-            // Eliminar el mensaje después de 5 segundos
+        if (mensajeDiv) {
+            // Definición de estilos para cada tipo de mensaje
+            const estilos = {
+                'INFO': { color: '#3178c6', bgColor: '#e7f3ff', icon: 'ℹ️' },
+                'SUCCESS': { color: '#3c763d', bgColor: '#dff0d8', icon: '✅' },
+                'ERROR': { color: '#a94442', bgColor: '#f2dede', icon: '❌' },
+                'WARNING': { color: '#8a6d3b', bgColor: '#fcf8e3', icon: '⚠️' }
+            };
+
+            // Obtener los estilos correspondientes al tipo de mensaje
+            const estilo = estilos[tipo] || estilos['INFO'];
+
+            // Aplicar estilos al contenedor del mensaje
+            mensajeDiv.style.display = 'flex';
+            mensajeDiv.style.alignItems = 'center';
+            mensajeDiv.style.color = estilo.color;
+            mensajeDiv.style.backgroundColor = estilo.bgColor;
+            mensajeDiv.style.fontWeight = 'bold';
+            mensajeDiv.style.padding = '15px';
+            mensajeDiv.style.marginBottom = '15px';
+            mensajeDiv.style.border = `1px solid ${estilo.color}`;
+            mensajeDiv.style.borderRadius = '8px';
+            mensajeDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+
+            // Mostrar el mensaje con un icono
+            mensajeDiv.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
+
+            // Ocultar el mensaje después de 5 segundos
             setTimeout(() => {
-                mensajeDiv.innerHTML = '';
+                mensajeDiv.style.display = 'none';
+                mensajeDiv.innerHTML = ''; // Limpiar contenido
                 mensajeDiv.style.border = 'none';
+                mensajeDiv.style.boxShadow = 'none';
+                mensajeDiv.style.backgroundColor = 'transparent';
             }, 5000);
         } else {
-            console.warn('El contenedor de mensajes no está presente en el DOM.');
+            console.warn('El contenedor de mensajes para alimentos no está presente en el DOM.');
         }
     };
 
@@ -1003,24 +1015,41 @@
 
     // **Función para manejar la notificación de stock bajo/agotado**
     const notificarStockBajo = async () => {
-      try {
-        const response = await fetch('../../controllers/alimento.controller.php', {
-          method: "POST",
-          body: new URLSearchParams({ operation: 'notificarStockBajo' })
-        });
+        try {
+            // Realizar la solicitud al backend
+            const response = await fetch('../../controllers/alimento.controller.php', {
+            method: "POST",
+            body: new URLSearchParams({ operation: 'notificarStockBajo' })
+            });
 
-        const textResponse = await response.text();
-        const result = JSON.parse(textResponse);
+            // Verifica si la respuesta fue exitosa
+            console.log("Respuesta del servidor:", response);
 
-        if (Array.isArray(result)) {
-          result.forEach(notificacion => {
-            mostrarMensajeDinamico(notificacion.Notificacion, 'WARNING');
-          });
+            const textResponse = await response.text();
+            console.log("Texto recibido del servidor:", textResponse);
+
+            // Intenta convertir la respuesta a JSON
+            const result = JSON.parse(textResponse);
+            console.log("Respuesta convertida a JSON:", result);
+
+            // Verifica si 'data' es un array y contiene las notificaciones
+            if (Array.isArray(result.data) && result.data.length > 0) {
+            console.log("Notificaciones:", result.data);
+            result.data.forEach(notificacion => {
+                console.log("Notificación individual:", notificacion); // Verifica el contenido de cada notificación
+                mostrarMensajeDinamico(notificacion.Notificacion, 'WARNING');
+            });
+            } else {
+            console.log("No se encontraron notificaciones de stock bajo");
+            mostrarMensajeDinamico('No hay productos con stock bajo o agotados.', 'INFO');
+            }
+        } catch (error) {
+            console.error("Error al notificar stock bajo:", error);
+            mostrarMensajeDinamico('Error al notificar stock bajo.', 'ERROR');
         }
-      } catch (error) {
-        mostrarMensajeDinamico('Error al notificar stock bajo.', 'ERROR');
-      }
     };
+
+
 
     // Función para cargar los lotes en los select de entrada y salida de alimentos
     const cargarLotes = async () => {
@@ -1191,6 +1220,7 @@
 
                 await loadAlimentos();
                 await setFechaFiltroAlimentos();
+                await notificarStockBajo();
                 console.log("Stock y movimientos actualizados en la interfaz.");
             } else {
                 showToast(result.message || "Error al registrar la salida.", 'ERROR');
