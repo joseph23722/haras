@@ -23,11 +23,13 @@ try {
 
     switch ($action) {
         case 'medicamentos_stock':
-            // Aseguramos que el array tenga valores predeterminados
             $data = $dashboard->ObtenerResumenStockMedicamentos() ?: [
                 "stock_total" => 0,
-                "en_stock" => 0,
-                "criticos" => 0
+                "cantidad_medicamentos" => 0,
+                "criticos" => '',
+                "en_stock" => '',
+                "criticos_count" => 0,
+                "en_stock_count" => 0
             ];
             jsonResponse($data);
             break;

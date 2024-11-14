@@ -159,18 +159,24 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
-      <!-- Gráfico y barra de medicamento -->
+      <!-- Gráfico circular para Medicamentos -->
       <div class="col-md-6 col-lg-6">
-        <div class="card support-tracker-card">
-          <h5 class="card-title small-title">Stock de Medicamentos</h5>
-          <h3 class="text-info small-number"><?php echo $totalMedicamentosDisponibles; ?></h3>
+        <div class="card">
+          <h5 class="card-title">Stock de Medicamentos</h5>
+          <h3 class="text-purple" id="totalMedicamentos">0</h3>
           <p class="small text-muted">Cantidad total de medicamentos disponibles</p>
-          <div class="chart-container small-chart">
+          <div class="chart-container">
             <canvas id="supportDonutChart"></canvas>
           </div>
-          <div class="d-flex justify-content-between mt-2 text-muted">
-            <span class="small-info"><i class="fas fa-ticket-alt text-blue"></i> En Stock <strong><?php echo $medicamentosEnStock; ?></strong></span>
-            <span class="small-info"><i class="fas fa-envelope-open-text text-pink"></i> Críticos <strong><?php echo $medicamentosCriticos; ?></strong></span>
+          <div class="d-flex justify-content-between mt-3 text-muted">
+            <span>
+              <i class="fas fa-capsules text-blue"></i> En Stock
+              <strong id="enStockMedicamentos">0</strong>
+            </span>
+            <span>
+              <i class="fas fa-exclamation-triangle text-pink"></i> Críticos
+              <strong id="criticosMedicamentos">0</strong>
+            </span>
           </div>
         </div>
       </div>
@@ -303,21 +309,37 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       fetch('../../controllers/dashboard.controller.php?action=medicamentos_stock')
         .then(response => validarRespuestaJSON(response))
         .then(data => {
-          console.log("Datos de medicamentos:", data);
+          console.log("Datos de medicamento:", data);
+
           if (data) {
-            const stockTotalElement = document.querySelector(".text-info.small-number");
-            if (stockTotalElement) {
-              stockTotalElement.textContent = data.stock_total || 0;
+            // Obtener las cantidades de medicamentos en stock y críticos
+            const medicamentosEnStock = data.en_stock_count || 0;
+            const medicamentosCriticos = data.criticos_count || 0;
+
+            // Mostrar la cantidad total de medicamentos
+            const totalMedicamentosElement = document.querySelector("#totalMedicamentos");
+            if (totalMedicamentosElement) {
+              totalMedicamentosElement.textContent = data.stock_total || 0;
             }
-            const ticketElement = document.querySelector(".fas.fa-ticket-alt");
-            const envelopeElement = document.querySelector(".fas.fa-envelope-open-text");
-            if (ticketElement && ticketElement.nextElementSibling) {
-              ticketElement.nextElementSibling.textContent = data.en_stock || 0;
+
+            // Mostrar la cantidad de medicamentos en stock
+            const enStockElement = document.querySelector("#enStockMedicamentos");
+            if (enStockElement) {
+              enStockElement.textContent = medicamentosEnStock || '0';
             }
-            if (envelopeElement && envelopeElement.nextElementSibling) {
-              envelopeElement.nextElementSibling.textContent = data.criticos || 0;
+
+            // Mostrar la cantidad de medicamentos críticos
+            const criticosElement = document.querySelector("#criticosMedicamentos");
+            if (criticosElement) {
+              criticosElement.textContent = medicamentosCriticos || '0';
             }
-            actualizarGraficoDonutMedicamentos([data.en_stock || 0, data.criticos || 0]);
+
+            // Separar los nombres de los medicamentos en stock y críticos
+            const medicamentosEnStockList = data.en_stock ? data.en_stock.split(',') : [];
+            const medicamentosCriticosList = data.criticos ? data.criticos.split(',') : [];
+
+            // Actualizar el gráfico circular con las cantidades de stock y críticos
+            actualizarGraficoCircularMedicamentos([medicamentosEnStock, medicamentosCriticos], medicamentosEnStockList, medicamentosCriticosList);
           }
         })
         .catch(error => console.error("Error fetching medicamentos_stock:", error));
@@ -498,34 +520,56 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       new Chart(ctx, config);
     }
 
-    // Función para actualizar el gráfico de donut de Medicamentos
-    function actualizarGraficoDonutMedicamentos(dataSeries) {
-      const supportCtx = document.getElementById('supportDonutChart').getContext('2d');
-      new Chart(supportCtx, {
+    // Función para actualizar el gráfico circular de Medicamentos
+    function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentosEnStockList, medicamentosCriticosList) {
+      const ctx = document.getElementById("supportDonutChart").getContext("2d");
+
+      const data = {
+        labels: ['En Stock', 'Críticos'],
+        datasets: [{
+          data: [enStock, criticos],
+          backgroundColor: ['#34c38f', '#e9ecef'],
+          hoverBackgroundColor: ['#34c38f', '#e9ecef'],
+          borderWidth: 5
+        }]
+      };
+
+      const config = {
         type: 'doughnut',
-        data: {
-          labels: ['En Stock', 'Críticos'],
-          datasets: [{
-            data: dataSeries,
-            backgroundColor: ['#34c38f', '#e9ecef'],
-            hoverBackgroundColor: ['#34c38f', '#e9ecef'],
-            borderWidth: 0
-          }]
-        },
+        data: data,
         options: {
+          responsive: true,
           plugins: {
-            legend: {
-              display: false
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  let value = context.raw;
+
+                  if (context.dataIndex === 0) {
+                    label += ': ' + value + ' medicamentos';
+                    label += '\n' + medicamentosEnStockList.join('\n');
+                  } else if (context.dataIndex === 1) {
+                    label += ': ' + value + ' medicamentos';
+                    label += '\n' + medicamentosCriticosList.join('\n');
+                  }
+                  return label;
+                }
+              }
             }
           },
-          cutout: '80%',
-          animation: animationOptions
+          cutout: '80%', // Ajustar el tamaño del agujero central del gráfico donut
+          animation: {
+            animateRotate: true,
+            animateScale: true
+          }
         }
-      });
+      };
+
+      // Crear o actualizar el gráfico
+      new Chart(ctx, config);
     }
   </script>
-
-
 
 </body>
 

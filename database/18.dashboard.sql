@@ -3,12 +3,14 @@ DROP PROCEDURE IF EXISTS `ObtenerResumenStockMedicamentos`;
 DELIMITER //
 CREATE PROCEDURE ObtenerResumenStockMedicamentos()
 BEGIN
-    -- Total de medicamentos disponibles (que tengan stock > 0)
+    -- Resumen de stock de medicamentos
     SELECT 
-        SUM(cantidad_stock) AS stock_total,
-        COUNT(*) AS cantidad_medicamentos,
-        SUM(CASE WHEN cantidad_stock <= stockMinimo THEN 1 ELSE 0 END) AS criticos,
-        SUM(CASE WHEN cantidad_stock > stockMinimo THEN 1 ELSE 0 END) AS en_stock
+        SUM(cantidad_stock) AS stock_total,                              -- Total de cantidad de stock
+        COUNT(*) AS cantidad_medicamentos,                                 -- Total de registros de medicamentos
+        GROUP_CONCAT(CASE WHEN cantidad_stock <= stockMinimo THEN CONCAT(nombreMedicamento, ' (', cantidad_stock, ')') ELSE NULL END) AS criticos,  -- Lista de medicamentos con stock bajo
+        GROUP_CONCAT(CASE WHEN cantidad_stock > stockMinimo THEN CONCAT(nombreMedicamento, ' (', cantidad_stock, ')') ELSE NULL END) AS en_stock, -- Lista de medicamentos en stock suficiente
+        COUNT(CASE WHEN cantidad_stock <= stockMinimo THEN 1 ELSE NULL END) AS criticos_count,  -- Contador de medicamentos con stock bajo
+        COUNT(CASE WHEN cantidad_stock > stockMinimo THEN 1 ELSE NULL END) AS en_stock_count  -- Contador de medicamentos en stock suficiente
     FROM 
         Medicamentos;
 END //
