@@ -273,11 +273,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> cb00aa67093cce85cc3dd7b6b1ca3e42ab29fea0
--- -----------
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
@@ -358,6 +354,8 @@ BEGIN
     CLOSE cur;
 END $$
 DELIMITER ;
+
+CALL spu_notificar_stock_bajo_alimentos();
 
 -- Procedimiento para historial Alimentos -----------------------------------------
 DROP PROCEDURE IF EXISTS `spu_historial_completo`;
