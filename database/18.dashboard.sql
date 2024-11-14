@@ -53,24 +53,6 @@ BEGIN
 END //
 DELIMITER ;
 
--- Procedimiento para Medicamentos en Stock
-DROP PROCEDURE IF EXISTS `ObtenerMedicamentosEnStock`;
-DELIMITER //
-CREATE PROCEDURE ObtenerMedicamentosEnStock()
-BEGIN
-    SELECT SUM(cantidad_stock) AS total_medicamentos FROM Medicamentos WHERE estado = 'Disponible';
-END //
-DELIMITER ;
-
--- Procedimiento para Alimentos en Stock
-DROP PROCEDURE IF EXISTS `ObtenerAlimentosEnStock`;
-DELIMITER //
-CREATE PROCEDURE ObtenerAlimentosEnStock()
-BEGIN
-    SELECT SUM(stockActual) AS total_alimentos FROM Alimentos WHERE estado = 'Disponible';
-END //
-DELIMITER ;
-
 -- Procedimiento Almacenado para Calcular Porcentajes de Servicios
 DROP PROCEDURE IF EXISTS `ObtenerResumenServicios`;
 DELIMITER $$

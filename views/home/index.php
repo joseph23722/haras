@@ -120,10 +120,11 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       </div>
 
       <!-- Nueva tarjeta para Medicamentos en Stock -->
+      <!-- Nueva tarjeta para Medicamentos en Stock -->
       <div class="col-md-6 col-lg-3">
         <div class="custom-card text-center">
           <h5 class="custom-card-title">Medicamentos en Stock</h5>
-          <h3 class="text-success"><?php echo $totalMedicamentos; ?></h3>
+          <h3 class="text-success" id="total_medicamentos">0</h3>
           <p class="small custom-text-muted">Total de medicamentos disponibles</p>
         </div>
       </div>
@@ -132,12 +133,13 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       <div class="col-md-6 col-lg-3">
         <div class="custom-card text-center">
           <h5 class="custom-card-title">Alimentos en Stock</h5>
-          <h3 class="text-danger"><?php echo $totalAlimentos; ?></h3>
+          <h3 class="text-success" id="total_alimentos">0</h3>
           <p class="small custom-text-muted">Cantidad total de alimentos disponibles</p>
         </div>
       </div>
 
-      <!-- Barra de progreso alimentos -->
+
+      <!-- Barra de progreso alimentos GRAFICO -->
       <div class="col-md-6 col-lg-6">
         <div class="card">
           <h5 class="card-title">Stock de Alimentos</h5>
@@ -159,7 +161,7 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
-      <!-- Gráfico circular para Medicamentos -->
+      <!-- Gráfico circular para Medicamentos GRAFICO -->
       <div class="col-md-6 col-lg-6">
         <div class="card">
           <h5 class="card-title">Stock de Medicamentos</h5>
@@ -318,8 +320,10 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
 
             // Mostrar la cantidad total de medicamentos
             const totalMedicamentosElement = document.querySelector("#totalMedicamentos");
+            const totalMedicamentos = document.querySelector("#total_medicamentos");
             if (totalMedicamentosElement) {
               totalMedicamentosElement.textContent = data.stock_total || 0;
+              totalMedicamentos.textContent = data.stock_total || 0;
             }
 
             // Mostrar la cantidad de medicamentos en stock
@@ -357,8 +361,10 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
 
             // Mostrar la cantidad total de alimentos
             const totalAlimentosElement = document.querySelector("#totalAlimentos");
+            const totalALimentos = document.querySelector("#total_alimentos");
             if (totalAlimentosElement) {
               totalAlimentosElement.textContent = data.stock_total || 0;
+              totalALimentos.textContent = data.stock_total || 0;
             }
 
             // Mostrar la cantidad de alimentos en stock

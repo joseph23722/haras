@@ -55,15 +55,7 @@ try {
             jsonResponse($data);
             break;
 
-        case 'medicamentos_en_stock':
-            $data = ['totalMedicamentos' => $dashboard->ObtenerMedicamentosEnStock() ?: 0];
-            jsonResponse($data);
-            break;
 
-        case 'alimentos_en_stock':
-            $data = ['totalAlimentos' => $dashboard->ObtenerAlimentosEnStock() ?: 0];
-            jsonResponse($data);
-            break;
 
         case 'resumen_servicios':
             // Proporcionamos valores predeterminados
