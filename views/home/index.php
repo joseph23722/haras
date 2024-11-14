@@ -62,8 +62,7 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
-
-      <!-- Servicios Realizados con barra de progreso -->
+      <!-- Servicios Realizados GRAFICO + TOTAL -->
       <div class="col-md-6 col-lg-4">
         <div class="card">
           <h5 class="card-title">Servicios Realizados</h5>
@@ -72,12 +71,8 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
           <div class="progress my-2">
             <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $porcentajeProgreso; ?>%;" aria-valuenow="<?php echo $porcentajeProgreso; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $porcentajeProgreso; ?>%</div>
           </div>
-          <div class="chart-container mt-3">
-            <canvas id="salesLineChart"></canvas>
-          </div>
         </div>
       </div>
-
 
       <!-- Servicios con iconos para Servicios Propios y Mixtos -->
       <div class="col-md-6 col-lg-4">
@@ -100,11 +95,10 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
-
       <!-- Nueva tarjeta para Equinos Registrados -->
       <div class="col-md-6 col-lg-3">
         <div class="custom-card text-center">
-          <h5 class="custom-card-title">Equinos Registrados</h5>
+          <h5 class="custom-card-title">Equinos Propios Registrados</h5>
           <h3 class="text-info"><?php echo $totalEquinosRegistrados; ?></h3>
           <p class="small custom-text-muted">Total de equinos actualmente registrados</p>
         </div>
@@ -119,16 +113,6 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
-      <!-- Nueva tarjeta para Medicamentos en Stock -->
-      <!-- Nueva tarjeta para Medicamentos en Stock -->
-      <div class="col-md-6 col-lg-3">
-        <div class="custom-card text-center">
-          <h5 class="custom-card-title">Medicamentos en Stock</h5>
-          <h3 class="text-success" id="total_medicamentos">0</h3>
-          <p class="small custom-text-muted">Total de medicamentos disponibles</p>
-        </div>
-      </div>
-
       <!-- Nueva tarjeta para Alimentos en Stock -->
       <div class="col-md-6 col-lg-3">
         <div class="custom-card text-center">
@@ -138,6 +122,14 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         </div>
       </div>
 
+      <!-- Nueva tarjeta para Medicamentos en Stock -->
+      <div class="col-md-6 col-lg-3">
+        <div class="custom-card text-center">
+          <h5 class="custom-card-title">Medicamentos en Stock</h5>
+          <h3 class="text-success" id="total_medicamentos">0</h3>
+          <p class="small custom-text-muted">Total de medicamentos disponibles</p>
+        </div>
+      </div>
 
       <!-- Barra de progreso alimentos GRAFICO -->
       <div class="col-md-6 col-lg-6">
@@ -200,45 +192,7 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       cargarDatosDashboard();
     });
 
-    // Mostrar imagenes en el dashboard, CARRUSEL
-    fetch('../../controllers/dashboard.controller.php?action=fotografias_equinos')
-      .then(response => response.json())
-      .then(data => {
-        const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
-        carouselInner.innerHTML = ''; // Limpiar el contenido de carga predeterminado
-
-        if (data.error) {
-          console.error(data.error);
-          carouselInner.innerHTML = `
-                    <div class="carousel-item active">
-                        <img src="https://via.placeholder.com/400x300?text=No+se+encontraron+imágenes" class="d-block w-100 equino-image" alt="No se encontraron imágenes">
-                    </div>
-                `;
-          return;
-        }
-
-        data.forEach((foto, index) => {
-          const isActive = index === 0 ? 'active' : '';
-          const item = `
-                    <div class="carousel-item ${isActive}">
-                        <img src="${foto.url}" class="d-block w-100 equino-image" alt="Foto Equino">
-                    </div>
-                `;
-          carouselInner.insertAdjacentHTML('beforeend', item);
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
-        carouselInner.innerHTML = `
-                <div class="carousel-item active">
-                    <img src="https://via.placeholder.com/400x300?text=Error+cargando+imágenes" class="d-block w-100 equino-image" alt="Error cargando imágenes">
-                </div>
-            `;
-      });
-
     function cargarDatosDashboard() {
-
       // Servicios Realizados este Mes
       fetch('../../controllers/dashboard.controller.php?action=servicios_mensual&meta=100')
         .then(response => validarRespuestaJSON(response))
@@ -246,7 +200,7 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
           if (data) {
             const totalServiciosMesElement = document.querySelector(".text-accent");
             if (totalServiciosMesElement) {
-              totalServiciosMesElement.textContent = data.totalServicios || 0;
+              totalServiciosMesElement.textContent = data.totalServiciosRealizados || 0;
             }
             const progressBar = document.querySelector(".progress-bar");
             if (progressBar) {
@@ -259,28 +213,35 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         })
         .catch(error => console.error("Error fetching servicios_mensual:", error));
 
-      // Servicios Totales y Detalle de Propios/Mixtos
+      // Realizar una solicitud GET para obtener el resumen de los servicios
       fetch('../../controllers/dashboard.controller.php?action=resumen_servicios')
-        .then(response => validarRespuestaJSON(response))
+        .then(response => response.json())
         .then(data => {
+          // Si la respuesta contiene los datos esperados, actualizar los elementos en la página
           if (data) {
-            const totalServiciosElement = document.querySelector(".text-primary");
+            // Total de servicios
+            const totalServiciosElement = document.querySelector('.text-primary');
             if (totalServiciosElement) {
-              totalServiciosElement.textContent = `Total: ${data.totalServicios || 0} Servicios`;
+              totalServiciosElement.innerHTML = `Total: ${data.totalServicios} Servicios
+          <span class="text-success" style="font-size: 0.8rem;">
+            +${data.porcentajeCrecimiento || 0}%
+          </span>`;
             }
-            const crecimientoElement = document.querySelector(".text-success");
-            if (crecimientoElement) {
-              crecimientoElement.textContent = `+${data.porcentajeCrecimiento || 0}%`;
+
+            // Porcentaje de Servicios Propios
+            const serviciosPropiosElement = document.querySelector('.d-flex .text-blue');
+            if (serviciosPropiosElement) {
+              serviciosPropiosElement.innerHTML = `Servicios Propios <strong>${data.porcentajeServiciosPropios || 0}%</strong>`;
             }
-            const toolsElement = document.querySelector(".fas.fa-tools");
-            const handshakeElement = document.querySelector(".fas.fa-handshake");
-            if (toolsElement && toolsElement.nextElementSibling) {
-              toolsElement.nextElementSibling.textContent = `${data.porcentajeServiciosPropios || 0}%`;
+
+            // Porcentaje de Servicios Mixtos
+            const serviciosMixtosElement = document.querySelector('.d-flex .text-purple');
+            if (serviciosMixtosElement) {
+              serviciosMixtosElement.innerHTML = `Servicios Mixtos <strong>${data.porcentajeServiciosMixtos || 0}%</strong>`;
             }
-            if (handshakeElement && handshakeElement.nextElementSibling) {
-              handshakeElement.nextElementSibling.textContent = `${data.porcentajeServiciosMixtos || 0}%`;
-            }
-            actualizarGraficoBarrasServicios(data.seriesServicios || [0, 0]);
+
+            // Llamar a la función para actualizar el gráfico
+            actualizarGraficoBarra(data.totalServiciosPropios, data.totalServiciosMixtos);
           }
         })
         .catch(error => console.error("Error fetching resumen_servicios:", error));
@@ -394,6 +355,43 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
         .catch(error => console.error("Error fetching alimentos_stock:", error));
 
 
+
+      // Mostrar imagenes en el dashboard, CARRUSEL
+      fetch('../../controllers/dashboard.controller.php?action=fotografias_equinos')
+        .then(response => response.json())
+        .then(data => {
+          const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
+          carouselInner.innerHTML = ''; // Limpiar el contenido de carga predeterminado
+
+          if (data.error) {
+            console.error(data.error);
+            carouselInner.innerHTML = `
+                    <div class="carousel-item active">
+                        <img src="https://via.placeholder.com/400x300?text=No+se+encontraron+imágenes" class="d-block w-100 equino-image" alt="No se encontraron imágenes">
+                    </div>
+                `;
+            return;
+          }
+
+          data.forEach((foto, index) => {
+            const isActive = index === 0 ? 'active' : '';
+            const item = `
+                    <div class="carousel-item ${isActive}">
+                        <img src="${foto.url}" class="d-block w-100 equino-image" alt="Foto Equino">
+                    </div>
+                `;
+            carouselInner.insertAdjacentHTML('beforeend', item);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
+          carouselInner.innerHTML = `
+                <div class="carousel-item active">
+                    <img src="https://via.placeholder.com/400x300?text=Error+cargando+imágenes" class="d-block w-100 equino-image" alt="Error cargando imágenes">
+                </div>
+            `;
+        });
     }
     // Función de validación para asegurar respuesta JSON válida
     function validarRespuestaJSON(response) {
@@ -440,39 +438,39 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       });
     }
 
-    // Función para actualizar el gráfico de barras de Servicios
-    function actualizarGraficoBarrasServicios(dataSeries) {
-      const overviewCtx = document.getElementById('overviewBarChart').getContext('2d');
-      new Chart(overviewCtx, {
+    // Función para actualizar el gráfico de barras de Servicios PROPIOS Y MIXTOS
+    function actualizarGraficoBarra(serviciosPropios, serviciosMixtos) {
+      const ctx = document.getElementById('overviewBarChart').getContext('2d');
+      new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Propios', 'Mixtos'],
+          labels: ['Servicios Propios', 'Servicios Mixtos'],
           datasets: [{
-            data: dataSeries,
-            backgroundColor: ['#4c84ff', '#8f94fb'],
-            borderRadius: 5,
-            barThickness: 20,
+            label: 'Servicios',
+            data: [serviciosPropios, serviciosMixtos],
+            backgroundColor: ['#4CAF50', '#9C27B0'],
+            borderColor: ['#388E3C', '#7B1FA2'],
+            borderWidth: 1
           }]
         },
         options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          },
+          responsive: true,
           plugins: {
             legend: {
-              display: false
+              display: false // Desactivar leyenda
             }
-          },
-          scales: {
-            x: {
-              display: true
-            },
-            y: {
-              display: false
-            }
-          },
-          animation: animationOptions
+          }
         }
       });
     }
-
     // Función para actualizar el gráfico de barras de Alimentos
     function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnStockList, alimentosBajaCantidadList) {
       const ctx = document.getElementById("earningsBarChart").getContext("2d");

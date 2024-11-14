@@ -38,7 +38,10 @@ DROP PROCEDURE IF EXISTS `ObtenerTotalEquinosRegistrados`;
 DELIMITER //
 CREATE PROCEDURE ObtenerTotalEquinosRegistrados()
 BEGIN
-    SELECT COUNT(*) AS total_equinos FROM Equinos WHERE estado = 1; -- Estado 1 representa "Vivo" o "Activo"
+    SELECT COUNT(*) AS total_equinos 
+    FROM Equinos 
+    WHERE estado = 1  -- Estado 1 representa "Vivo" o "Activo"
+    AND idPropietario IS NULL;  -- Filtrar solo los equinos sin propietario
 END //
 DELIMITER ;
 
@@ -58,14 +61,11 @@ DROP PROCEDURE IF EXISTS `ObtenerResumenServicios`;
 DELIMITER $$
 CREATE PROCEDURE ObtenerResumenServicios()
 BEGIN
-    -- Total de Servicios
-    SELECT COUNT(*) AS totalServicios FROM Servicios;
-
-    -- Total de Servicios Propios
-    SELECT COUNT(*) AS totalServiciosPropios FROM Servicios WHERE tipoServicio = 'Propio';
-
-    -- Total de Servicios Mixtos
-    SELECT COUNT(*) AS totalServiciosMixtos FROM Servicios WHERE tipoServicio = 'Mixto';
+    SELECT 
+        COUNT(*) AS totalServicios, 
+        SUM(CASE WHEN tipoServicio = 'Propio' THEN 1 ELSE 0 END) AS totalServiciosPropios,
+        SUM(CASE WHEN tipoServicio = 'Mixto' THEN 1 ELSE 0 END) AS totalServiciosMixtos
+    FROM Servicios;
 END $$
 DELIMITER ;
 
@@ -82,6 +82,8 @@ BEGIN
       AND YEAR(fechaServicio) = YEAR(CURDATE());
 END $$
 DELIMITER ;
+
+call ObtenerServiciosRealizadosMensual(2);
 
 DROP PROCEDURE IF EXISTS `spu_listar_fotografia_dashboard`;
 DELIMITER //

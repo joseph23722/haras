@@ -55,17 +55,25 @@ try {
             jsonResponse($data);
             break;
 
-
-
-        case 'resumen_servicios':
-            // Proporcionamos valores predeterminados
-            $data = $dashboard->ObtenerResumenServicios() ?: [
-                "totalServicios" => 0,
-                "porcentajeServiciosPropios" => 0,
-                "porcentajeServiciosMixtos" => 0
-            ];
-            jsonResponse($data);
-            break;
+            case 'resumen_servicios':
+                // Obtenemos los datos del resumen de servicios
+                $data = $dashboard->ObtenerResumenServicios() ?: [
+                    "totalServicios" => 0,
+                    "totalServiciosPropios" => 0,
+                    "totalServiciosMixtos" => 0
+                ];
+            
+                // Calculamos los porcentajes
+                $totalServicios = $data['totalServicios'] ?: 1; // Evitamos división por cero
+                $porcentajeServiciosPropios = ($data['totalServiciosPropios'] / $totalServicios) * 100;
+                $porcentajeServiciosMixtos = ($data['totalServiciosMixtos'] / $totalServicios) * 100;
+            
+                // Agregamos los porcentajes a los datos
+                $data['porcentajeServiciosPropios'] = number_format($porcentajeServiciosPropios, 2);  // Limitamos a 2 decimales
+                $data['porcentajeServiciosMixtos'] = number_format($porcentajeServiciosMixtos, 2);
+            
+                jsonResponse($data);
+                break;            
 
         case 'servicios_mensual':
             $meta = $_GET['meta'] ?? 100;

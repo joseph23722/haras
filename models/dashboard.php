@@ -59,41 +59,17 @@ class Dashboard extends Conexion
         }
     }
 
-    public function ObtenerMedicamentosEnStock(): int
-    {
-        try {
-            $cmd = $this->pdo->prepare("CALL ObtenerMedicamentosEnStock()");
-            $cmd->execute();
-            return $cmd->fetchColumn();
-        } catch (Exception $e) {
-            error_log("Error en ObtenerMedicamentosEnStock: " . $e->getMessage());
-            return 0;
-        }
-    }
-
-    public function ObtenerAlimentosEnStock(): int
-    {
-        try {
-            $cmd = $this->pdo->prepare("CALL ObtenerAlimentosEnStock()");
-            $cmd->execute();
-            return $cmd->fetchColumn();
-        } catch (Exception $e) {
-            error_log("Error en ObtenerAlimentosEnStock: " . $e->getMessage());
-            return 0;
-        }
-    }
-
     public function ObtenerResumenServicios(): array
     {
         try {
             $cmd = $this->pdo->prepare("CALL ObtenerResumenServicios()");
             $cmd->execute();
-            $result = $cmd->fetchAll(PDO::FETCH_ASSOC);
+            $result = $cmd->fetch(PDO::FETCH_ASSOC);  // Cambié fetchAll() por fetch()
 
             return [
-                "totalServicios" => $result[0]['totalServicios'] ?? 0,
-                "totalServiciosPropios" => $result[1]['totalServiciosPropios'] ?? 0,
-                "totalServiciosMixtos" => $result[2]['totalServiciosMixtos'] ?? 0
+                "totalServicios" => $result['totalServicios'] ?? 0,
+                "totalServiciosPropios" => $result['totalServiciosPropios'] ?? 0,
+                "totalServiciosMixtos" => $result['totalServiciosMixtos'] ?? 0
             ];
         } catch (Exception $e) {
             error_log("Error en ObtenerResumenServicios: " . $e->getMessage());
