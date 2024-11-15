@@ -125,17 +125,20 @@ class Herrero extends Conexion {
     }
 
     // Método para obtener los tipos de equinos
-    public function getTipoEquinos() {
+    // Método para listar equinos propios (sin propietario) para medicamentos
+    public function listarEquinosPorTipo()
+    {
         try {
-            $query = $this->pdo->prepare("CALL spu_obtener_tipo_equino_alimento()");
+            $query = $this->pdo->prepare("CALL spu_listar_equinos_propiosMedi()");
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error en getTipoEquinos: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return [];
         }
     }
 
+    /*
     // Método para obtener los equinos por tipo
     public function obtenerEquinosPorTipo($idTipoEquino) {
         try {
@@ -147,4 +150,5 @@ class Herrero extends Conexion {
             return [];
         }
     }
+        */
 }

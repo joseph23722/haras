@@ -19,18 +19,20 @@
                         <div class="form-floating">
                             <select id="tipoEquinoSelect" class="form-select" name="tipoEquino" required>
                                 <option value="">Seleccione Tipo de Equino</option>
-                                <!-- Opciones se llenarán dinámicamente -->
+                                <option value="1">Yegua</option>
+                                <option value="2">Padrillo</option>
+                                <option value="3">Potranca</option>
+                                <option value="4">Potrillo</option>
                             </select>
                             <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Tipo de Equino</label>
                         </div>
                     </div>
 
-                    <!-- Selector para el nombre del Equino -->
+                    <!-- Selector para el nombre del Tipo de Equino -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select id="equinoSelect" class="form-select" name="idEquino" required>
                                 <option value="">Seleccione Equino</option>
-                                <!-- Opciones se llenarán dinámicamente -->
                             </select>
                             <label for="equinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Equino</label>
                         </div>
@@ -145,6 +147,8 @@
     // Función para establecer la fecha mínima en el campo de fecha
     document.addEventListener('DOMContentLoaded', function() {
         const fechaInput = document.getElementById('fecha');
+        const tipoEquinoSelect = document.getElementById("tipoEquino");
+        const equinoSelect = document.getElementById("equino");
         
         // Obtener la fecha actual en formato YYYY-MM-DD
         const today = new Date();
@@ -157,62 +161,56 @@
         fechaInput.setAttribute('min', minDate);
     });
     
-    // Función para cargar tipos de equinos en el selector
-    function cargarTiposEquinos() {
-        console.log("Iniciando carga de tipos de equinos...");
-        fetch('/haras/controllers/herrero.controller.php?operation=getTipoEquinos')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Datos de tipos de equinos recibidos:", data);
-                if (data.status === 'success') {
-                    const tipoEquinoSelect = document.getElementById('tipoEquinoSelect');
-                    tipoEquinoSelect.innerHTML = '<option value="">Seleccione Tipo de Equino</option>'; // Limpia las opciones anteriores
-                    
-                    data.data.forEach(tipo => {
-                        console.log("Tipo de Equino:", tipo); // Log de cada tipo de equino
-                        const option = document.createElement('option');
-                        option.value = tipo.idTipoEquino;
-                        option.textContent = tipo.tipoEquino;
-                        tipoEquinoSelect.appendChild(option);
-                    });
-                } else {
-                    console.warn("No se recibieron tipos de equinos o hubo un error.");
-                }
-            })
-            .catch(error => console.error('Error al cargar tipos de equinos:', error));
-    }
+    // Función para cargar los equinos según el tipo seleccionado
+    async function loadEquinosPorTipo(tipoEquino) {
+        const equinoSelect = document.getElementById("equinoSelect");
 
-    // Función para cargar equinos según el tipo de equino seleccionado
-    function cargarEquinosPorTipo(tipoEquinoId) {
-        console.log(`Cargando equinos para el tipo con ID ${tipoEquinoId}`);
-        fetch(`/haras/controllers/herrero.controller.php?operation=getEquinosByTipo&idTipoEquino=${tipoEquinoId}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Datos de equinos recibidos:", data);
-                const equinoSelect = document.getElementById('equinoSelect');
-                equinoSelect.innerHTML = '<option value="">Seleccione Equino</option>'; // Limpia las opciones anteriores
-                
-                if (data.status === 'success' && data.data.length > 0) {
-                    data.data.forEach(equino => {
-                        console.log("Equino recibido:", equino); // Log de cada equino recibido
+        try {
+            const response = await fetch(`../../controllers/historialme.controller.php?operation=listarEquinosPorTipo`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            // Limpiar el selector de equinos
+            equinoSelect.innerHTML = '<option value="">Seleccione Equino</option>';
+
+            // Verificar si se obtuvieron datos
+            if (data.data && Array.isArray(data.data)) {
+                data.data.forEach(equino => {
+                    if (equino.idTipoEquino == tipoEquino) {
                         const option = document.createElement('option');
                         option.value = equino.idEquino;
                         option.textContent = equino.nombreEquino;
+                        option.setAttribute('data-peso', equino.pesokg);
                         equinoSelect.appendChild(option);
-                    });
-                } else {
-                    console.warn("No se encontraron equinos para este tipo.");
-                    const option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'No hay equinos disponibles para este tipo';
-                    equinoSelect.appendChild(option);
-                }
-            })
-            .catch(error => console.error('Error al cargar equinos:', error));
+                    }
+                });
+            } else {
+                mostrarMensajeDinamico("No se encontraron equinos para el tipo seleccionado.", "WARNING");
+            }
+        } catch (error) {
+            mostrarMensajeDinamico("Error al cargar los equinos", "ERROR");
+            console.error("Error:", error);
+        }
     }
+
+    // Evento para actualizar el select de equinos cuando cambia el tipo de equino
+    document.getElementById("tipoEquinoSelect").addEventListener("change", function () {
+        const tipoEquino = this.value;
+        if (tipoEquino) {
+            loadEquinosPorTipo(tipoEquino);
+        } else {
+            // Limpiar si no hay tipo seleccionado
+            document.getElementById("equinoSelect").innerHTML = '<option value="">Seleccione Equino</option>';
+        }
+    });
+
+    
     // Función para registrar un nuevo historial de herrero
 
-        function registrarHistorialHerrero() {
+    function registrarHistorialHerrero() {
         const formData = new FormData(document.getElementById('form-historial-herrero'));
         formData.append('operation', 'insertarHistorialHerrero');
 
@@ -223,7 +221,6 @@
             console.log(`Campo ${key}:`, value);  // Log de cada campo y valor en el frontend
         });
 
-        datos['idUsuario'] = 'superE';  // Asegúrate de que idUsuario se pase correctamente
 
         console.log("Datos a enviar para registrar historial:", datos);
 
@@ -250,10 +247,6 @@
     }
 
 
-
-
-    // Función para cargar el historial del herrero en la tabla
-    // Función para cargar el historial del herrero en la tabla
     // Función para cargar el DataTable de historial de herrero
     const loadHistorialHerreroTable = (idEquino) => {
         if (!$.fn.DataTable.isDataTable('#historialHerreroTable')) {

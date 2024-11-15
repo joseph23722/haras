@@ -72,24 +72,12 @@ try {
                 }
                 break;
 
-            case 'getTipoEquinos':
-                $tiposEquinos = $herrero->getTipoEquinos();
-                if ($tiposEquinos) {
-                    sendResponse('success', 'Tipos de equinos obtenidos correctamente.', $tiposEquinos);
-                } else {
-                    sendResponse('error', 'No se pudieron obtener los tipos de equinos.');
-                }
+            case 'listarEquinosPorTipo':
+                // Llamada al método para listar equinos sin propietario para medicamentos
+                $result = $historialme->listarEquinosPorTipo();
+                echo json_encode(['data' => $result]);
                 break;
 
-            case 'getEquinosByTipo':
-                $idTipoEquino = $_GET['idTipoEquino'] ?? 0;
-                $equinos = $herrero->obtenerEquinosPorTipo($idTipoEquino);
-                if ($equinos) {
-                    sendResponse('success', 'Equinos obtenidos correctamente.', $equinos);
-                } else {
-                    sendResponse('error', 'No se encontraron equinos para este tipo.');
-                }
-                break;
 
             default:
                 sendResponse('error', 'Operación no válida para GET.');
@@ -123,14 +111,7 @@ try {
                 }
                 break;
             
-            
-            
-            
-            
-            
-            
-            
-
+    
             case 'insertarHerramientaUsada':
                 $params = [
                     'idHistorialHerrero' => $_POST['idHistorialHerrero'],
