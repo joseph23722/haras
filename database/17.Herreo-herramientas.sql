@@ -21,6 +21,7 @@ END //
 DELIMITER ;
 
 
+
 -- 2. Procedimiento para Insertar una Herramienta Usada en HerramientasUsadasHistorial
 -- Registra una herramienta utilizada en un trabajo específico sin el estado de herramienta
 DELIMITER //
