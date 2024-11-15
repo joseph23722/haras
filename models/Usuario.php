@@ -95,4 +95,21 @@ class Usuario extends Conexion
     {
         return parent::getData("spu_usuarios_listar");
     }
+
+    // Actualizar la contraseña
+    public function ActualizarContrasenia($data = [])
+    {
+        try {
+            $consulta = $this->pdo->prepare("CALL spu_actualizar_contraseña(?,?)");
+            $consulta->execute(
+                array(
+                    $data['correo'], /* Correo del usuario que se actualizará la contraseña */
+                    $data['clave']
+                )
+            );
+            return $consulta->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al actualizar contraseña: " . $e->getMessage());
+        }
+    }
 }
