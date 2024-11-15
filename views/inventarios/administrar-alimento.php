@@ -26,7 +26,7 @@
           <!-- Campo: Nombre del Alimento -->
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required>
+              <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required placeholder="">
               <label for="nombreAlimento"><i class="fas fa-seedling" style="color: #3498db;"></i> Nombre del Alimento</label>
             </div>
           </div>
@@ -45,7 +45,7 @@
           <!-- Campo: Stock Actual -->
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="number" name="stockActual" id="stockActual" class="form-control" required min="0">
+              <input type="number" name="stockActual" id="stockActual" class="form-control" required min="0" placeholder="">
               <label for="stockActual"><i class="fas fa-weight" style="color: #3498db;"></i> Stock Actual</label>
             </div>
           </div>
@@ -72,7 +72,7 @@
           <!-- Campo: Costo -->
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="number" step="0.01" name="costo" id="costo" class="form-control" required>
+              <input type="number" step="0.01" name="costo" id="costo" class="form-control" required placeholder="">
               <label for="costo"><i class="fas fa-dollar-sign" style="color: #3498db;"></i> Costo</label>
             </div>
           </div>
@@ -80,8 +80,8 @@
           <!-- Campo: Lote -->
           <div class="col-md-4">
             <div class="form-floating">
-              <input type="text" name="lote" id="lote" class="form-control" value="LOTE-" required>
-              <label for="lote"><i class="fas fa-box" style="color: #3498db;"></i> Lote</label>
+              <input type="text" name="lote" id="lote" class="form-control" placeholder="" required>
+              <label for="lote"><i class="fas fa-box" style="color: #3498db;"></i> Lote--</label>
             </div>
           </div>
 
@@ -405,6 +405,8 @@
                                           <th>Tipo</th>
                                           <th>Unidad</th>
                                           <th>Cantidad de Salida</th>
+                                          <th>Unidad Medida</th>
+                                          <th>Merma</th>
                                           <th>Lote</th>
                                           <th>Fecha de Movimiento</th>
                                       </tr>

@@ -209,9 +209,3 @@ BEGIN
     WHERE c.idCampo = p_idCampo;
 END //
 DELIMITER ;
-
-INSERT INTO Campos (numeroCampo, tamanoCampo, idTipoSuelo, estado)
-VALUES (1, 12.50, 1, 'Activo');
-
-INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
-VALUES (1, 2, '2024-10-21', 'Deshierve del campo número 1');

@@ -37,11 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             <td>${element.nacionalidad}</td>
                             <td style="${colorTexto}">${estado}</td>
                             <td>
-                                <button class="btn btn-sm btn-primary edit" data-idequino="${element.idEquino}" title="Editar">
-                                    <i class="fas fa-edit" style="font-size: 12px;"></i> E.
-                                </button>
                                 <button class="btn btn-sm btn-success historial" data-idequino="${element.idEquino}" title="Historial" data-bs-toggle="modal" data-bs-target="#historialModal">
-                                    <i class="fas fa-file-alt" style="font-size: 12px;"></i> H.
+                                    <i class="fas fa-file-alt" style="font-size: 12px;"></i> Historial.
                                 </button>
                             </td>
                         </tr>`;

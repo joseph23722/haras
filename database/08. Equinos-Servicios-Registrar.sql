@@ -124,7 +124,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Registrar Servicio
 DROP PROCEDURE IF EXISTS `registrarServicio`;
 DELIMITER $$
 CREATE PROCEDURE registrarServicio(
@@ -148,6 +147,7 @@ BEGIN
     DECLARE v_idPropietarioEquinoExterno INT;
     DECLARE v_idPropietarioEquinoMacho INT;
     DECLARE v_idPropietarioEquinoHembra INT;
+    DECLARE v_sexoEquinoExterno CHAR(1);
 
     -- Obtener los ID de estados correspondientes
     SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida' LIMIT 1;
@@ -160,34 +160,77 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
     END IF;
 
-    -- Si el servicio es mixto, verificar que el propietario del equino macho/hembra coincida con el propietario del equino externo
+    -- Si la fecha de servicio es hoy, validar que la hora de entrada y salida no sean mayores que la hora actual
+    IF p_fechaServicio = CURDATE() THEN
+        IF p_horaEntrada > CURTIME() THEN
+            SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor que la hora actual.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+        IF p_horaSalida > CURTIME() THEN
+            SET v_mensajeError = 'Error: La hora de salida no puede ser mayor que la hora actual.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+    END IF;
+
+    -- Verificar que la yegua no haya recibido ningún servicio en el mismo día, tanto propio como mixto
+    IF EXISTS (
+        SELECT 1
+        FROM Servicios
+        WHERE idEquinoHembra = p_idEquinoHembra
+        AND fechaServicio = p_fechaServicio
+    ) THEN
+        SET v_mensajeError = 'Error: La yegua ya recibió un servicio (propio o mixto) en esta fecha.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Si el servicio es mixto, verificar el tipo de equino externo
     IF p_tipoServicio = 'mixto' THEN
-        -- Obtener el propietario del equino externo
-        SELECT idPropietario INTO v_idPropietarioEquinoExterno 
-        FROM Equinos WHERE idEquino = p_idEquinoExterno LIMIT 1;
-
-        -- Verificar que el propietario del equino macho coincida con el propietario del equino externo
-        SELECT idPropietario INTO v_idPropietarioEquinoMacho 
-        FROM Equinos WHERE idEquino = p_idEquinoMacho LIMIT 1;
-
-        IF v_idPropietarioEquinoExterno != v_idPropietarioEquinoMacho THEN
-            SET v_mensajeError = 'Error: El propietario del equino macho debe ser el mismo que el del equino externo.';
+        -- Verificar que la hora de entrada no sea mayor que la hora de salida
+        IF p_horaEntrada >= p_horaSalida THEN
+            SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor o igual que la hora de salida.';
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
         END IF;
 
-        -- Verificar que el propietario del equino hembra coincida con el propietario del equino externo
-        SELECT idPropietario INTO v_idPropietarioEquinoHembra 
-        FROM Equinos WHERE idEquino = p_idEquinoHembra LIMIT 1;
+        -- Obtener el propietario y sexo del equino externo
+        SELECT idPropietario, sexo INTO v_idPropietarioEquinoExterno, v_sexoEquinoExterno
+        FROM Equinos WHERE idEquino = p_idEquinoExterno LIMIT 1;
 
-        IF v_idPropietarioEquinoExterno != v_idPropietarioEquinoHembra THEN
-            SET v_mensajeError = 'Error: El propietario del equino hembra debe ser el mismo que el del equino externo.';
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        -- Verificar que el equino externo sea hembra
+        IF v_sexoEquinoExterno = 'H' THEN
+            -- Si el equino externo es hembra, verificar que no haya un servicio registrado para esa hembra en la misma fecha
+            IF EXISTS (
+                SELECT 1
+                FROM Servicios
+                WHERE idEquinoExterno = p_idEquinoExterno
+                AND fechaServicio = p_fechaServicio
+            ) THEN
+                SET v_mensajeError = 'Error: La yegua externa ya tiene un servicio registrado en esta fecha.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+            END IF;
+        ELSE
+            -- Si el equino externo no es hembra, no hay restricciones de servicio por fecha
+            -- Verificar que el propietario del equino macho coincida con el propietario del equino externo
+            SELECT idPropietario INTO v_idPropietarioEquinoMacho 
+            FROM Equinos WHERE idEquino = p_idEquinoMacho LIMIT 1;
+
+            IF v_idPropietarioEquinoExterno != v_idPropietarioEquinoMacho THEN
+                SET v_mensajeError = 'Error: El propietario del equino macho debe ser el mismo que el del equino externo.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+            END IF;
+
+            -- Verificar que el propietario del equino hembra coincida con el propietario del equino externo
+            SELECT idPropietario INTO v_idPropietarioEquinoHembra 
+            FROM Equinos WHERE idEquino = p_idEquinoHembra LIMIT 1;
+
+            IF v_idPropietarioEquinoExterno != v_idPropietarioEquinoHembra THEN
+                SET v_mensajeError = 'Error: El propietario del equino hembra debe ser el mismo que el del equino externo.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+            END IF;
         END IF;
     END IF;
 
     -- Registrar el servicio y actualizar estados según el tipo de servicio
     IF p_tipoServicio = 'propio' THEN
-        -- Servicio propio entre equinos del haras
         INSERT INTO Servicios (
             idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
         ) VALUES (
@@ -200,7 +243,6 @@ BEGIN
         WHERE idEquino = p_idEquinoMacho;
 
     ELSEIF p_tipoServicio = 'mixto' THEN
-        -- Servicio mixto (con propietario externo)
         INSERT INTO Servicios (
             idEquinoMacho, idEquinoHembra, idEquinoExterno, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
         ) VALUES (
@@ -226,11 +268,10 @@ BEGIN
 END $$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 
 -- --------- listar equinos en estado monta 
+DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_contar_equinos_por_categoria()
 BEGIN
     SELECT 
@@ -260,7 +301,6 @@ BEGIN
     ORDER BY 
         Categoria;
 END $$
-
 DELIMITER ;
 
 
