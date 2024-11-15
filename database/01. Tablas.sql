@@ -237,7 +237,11 @@ CREATE TABLE HistorialMovimientos (
 -- 13. TiposMedicamentos ----°°° admedi
 CREATE TABLE TiposMedicamentos (
     idTipo INT AUTO_INCREMENT PRIMARY KEY,
+<<<<<<< HEAD
     tipo VARCHAR(100) NOT NULL UNIQUE
+=======
+    tipo VARCHAR(100) NOT NULL UNIQUE 
+>>>>>>> 3daa80bdcfc6c8fd1d0ed446814012ad15daa65c
 ) ENGINE = INNODB;
 
 -- 14. PresentacionesMedicamentos ----°°° admedi
@@ -256,21 +260,38 @@ CREATE TABLE CombinacionesMedicamentos (
     idCombinacion INT AUTO_INCREMENT PRIMARY KEY,
     idTipo INT NOT NULL,
     idPresentacion INT NOT NULL,
+<<<<<<< HEAD
     dosis DECIMAL(10, 2) NOT NULL,
     idUnidad INT NOT NULL,
     FOREIGN KEY (idTipo) REFERENCES TiposMedicamentos(idTipo),
     FOREIGN KEY (idPresentacion) REFERENCES PresentacionesMedicamentos(idPresentacion),
     FOREIGN KEY (idUnidad) REFERENCES UnidadesMedida(idUnidad),
     UNIQUE (idTipo, idPresentacion, dosis, idUnidad)
+=======
+    dosis DECIMAL(10, 2) NOT NULL, 
+    idUnidad INT NOT NULL, 
+    FOREIGN KEY (idTipo) REFERENCES TiposMedicamentos(idTipo),
+    FOREIGN KEY (idPresentacion) REFERENCES PresentacionesMedicamentos(idPresentacion),
+    FOREIGN KEY (idUnidad) REFERENCES UnidadesMedida(idUnidad),
+    UNIQUE (idTipo, idPresentacion, dosis, idUnidad) 
+>>>>>>> 3daa80bdcfc6c8fd1d0ed446814012ad15daa65c
 ) ENGINE = INNODB;
 
 -- Tabla de Lotes de Medicamentos - admedi
 CREATE TABLE LotesMedicamento (
+<<<<<<< HEAD
     idLoteMedicamento INT PRIMARY KEY AUTO_INCREMENT,
     lote              VARCHAR(100) NOT NULL,
     fechaCaducidad    DATE NOT NULL,
     fechaIngreso DATE DEFAULT (CURDATE()),
     CONSTRAINT UQ_lote_medicamento UNIQUE (lote)
+=======
+    idLoteMedicamento INT PRIMARY KEY AUTO_INCREMENT,  
+    lote              VARCHAR(100) NOT NULL,             
+    fechaCaducidad    DATE NOT NULL,                      
+    fechaIngreso DATE DEFAULT (CURDATE()),           
+    CONSTRAINT UQ_lote_medicamento UNIQUE (lote)  
+>>>>>>> 3daa80bdcfc6c8fd1d0ed446814012ad15daa65c
 ) ENGINE = INNODB;
 
 -- 16  Tabla de Medicamentos
@@ -373,11 +394,6 @@ CREATE TABLE Entrenamientos (
 
 
 -- 26
--- Tabla para Estados de las Herramientas
-CREATE TABLE EstadoHerramienta (
-    idEstado INT PRIMARY KEY AUTO_INCREMENT,
-    descripcionEstado VARCHAR(50) NOT NULL
-);
 
 
 -- Tabla para el Historial del Trabajo de Herrería
