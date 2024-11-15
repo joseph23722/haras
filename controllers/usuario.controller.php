@@ -200,7 +200,7 @@ if (isset($_POST['operation'])) {
         case 'actualizarcontrasenia':
             $claveEncriptada = password_hash($_POST["clave"], PASSWORD_BCRYPT);
             $datos = [
-                "nombreUsuario" => $_POST["nombreUsuario"],
+                "correo" => $_POST["correo"],
                 "clave" => $claveEncriptada
             ];
             $resultado = $usuario->ActualizarContrasenia($datos);

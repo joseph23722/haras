@@ -103,7 +103,7 @@ class Usuario extends Conexion
             $consulta = $this->pdo->prepare("CALL spu_actualizar_contraseña(?,?)");
             $consulta->execute(
                 array(
-                    $data['correo'],
+                    $data['correo'], /* Correo del usuario que se actualizará la contraseña */
                     $data['clave']
                 )
             );
