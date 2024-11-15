@@ -72,12 +72,6 @@ class Herrero extends Conexion {
         }
     }
     
-    
-    
-    
-    
-
-
     // Método para insertar una herramienta usada en el historial
     public function insertarHerramientaUsada($params = []) {
         try {
@@ -117,7 +111,6 @@ class Herrero extends Conexion {
         }
     }
 
-    
 
     // Método para insertar un nuevo estado de herramienta en EstadoHerramienta
     public function insertarEstadoHerramienta($descripcionEstado) {

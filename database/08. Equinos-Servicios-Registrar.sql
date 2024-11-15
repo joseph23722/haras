@@ -293,16 +293,18 @@ BEGIN
     LEFT JOIN 
         EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
     WHERE 
-        (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))  -- Incluimos 'Con Cria' en el filtro
-        OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
-        OR te.tipoEquino IN ('Potranca', 'Potrillo')
+        (e.estado = 1)  -- Solo los equinos vivos
+        AND (
+            (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))  -- Incluimos 'Con Cria' en el filtro
+            OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
+            OR te.tipoEquino IN ('Potranca', 'Potrillo')
+        )
     GROUP BY 
-        e.idEquino, Categoria  -- Asegurarse de agrupar por idEquino para obtener el detalle
+        e.idEquino, Categoria
     ORDER BY 
         Categoria;
 END $$
 DELIMITER ;
-
 
 -- Editar Equinos
 DROP PROCEDURE IF EXISTS `spu_equino_editar`;

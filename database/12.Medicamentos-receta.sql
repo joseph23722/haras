@@ -128,8 +128,9 @@ BEGIN
 	FROM 
 		Equinos
 	WHERE 
-		idPropietario IS NULL  -- Filtrar solo los equinos que no tienen propietario
-		AND idTipoEquino IN (1, 2, 3, 4);
+		idPropietario IS NULL
+		AND idTipoEquino IN (1, 2, 3, 4)
+		AND estado = 1;
 END $$
 DELIMITER ;
 
