@@ -196,5 +196,15 @@ if (isset($_POST['operation'])) {
             $_SESSION['login'] = $sesion;
             echo json_encode($resultados);
             break;
+
+        case 'actualizarcontrasenia':
+            $claveEncriptada = password_hash($_POST["clave"], PASSWORD_BCRYPT);
+            $datos = [
+                "nombreUsuario" => $_POST["nombreUsuario"],
+                "clave" => $claveEncriptada
+            ];
+            $resultado = $usuario->ActualizarContrasenia($datos);
+            echo json_encode($resultado);
+            break;
     }
 }

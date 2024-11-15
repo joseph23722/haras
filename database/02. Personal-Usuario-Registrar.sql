@@ -67,3 +67,17 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+-- Actualizar contraseñalterDELIMITER $$
+DROP PROCEDURE IF EXISTS `spu_actualizar_contraseña`;
+DELIMITER $$
+CREATE PROCEDURE spu_actualizar_contraseña(
+    IN _correo VARCHAR(120),
+    IN p_clave VARCHAR(120)
+)
+BEGIN 
+    UPDATE usuarios
+    SET clave = p_clave
+    WHERE correo = _correo;
+END $$
+DELIMITER ;
