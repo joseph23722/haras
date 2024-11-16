@@ -57,7 +57,16 @@ function verTodasNotificaciones() {
 }
 
 // Función para cerrar el contenedor de notificaciones
-function cerrarNotificaciones() {
-    const container = document.getElementById('notificationsContainer');
-    container.style.display = 'none';  // Ocultar el contenedor de notificaciones
-}
+document.addEventListener("DOMContentLoaded", () => {
+    function cerrarNotificaciones() {
+        const container = document.getElementById('notificationsContainer');
+        if (container) {
+            container.style.display = 'none'; // Oculta el contenedor
+        } else {
+            console.error("El contenedor de notificaciones no se encuentra.");
+        }
+    }
+
+    // Asegúrate de que la función esté disponible globalmente
+    window.cerrarNotificaciones = cerrarNotificaciones;
+});

@@ -64,15 +64,20 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
 
       <!-- Servicios Realizados GRAFICO + TOTAL -->
       <div class="col-md-6 col-lg-4">
-        <div class="card">
-          <h5 class="card-title">Servicios Realizados</h5>
-          <h3 class="text-accent"><?php echo $totalServiciosMes; ?></h3>
-          <p class="small text-muted">Total de Servicios Realizados este Mes</p>
-          <div class="progress my-2">
-            <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $porcentajeProgreso; ?>%;" aria-valuenow="<?php echo $porcentajeProgreso; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $porcentajeProgreso; ?>%</div>
+          <div class="card">
+              <h5 class="card-title">Servicios Realizados</h5>
+              <h3 class="text-accent"><?php echo $totalServiciosMes; ?></h3>
+              <p class="small text-muted">Total de Servicios Realizados este Mes</p>
+              <div class="progress my-2">
+                  <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $porcentajeProgreso; ?>%;" aria-valuenow="<?php echo $porcentajeProgreso; ?>" aria-valuemin="0" aria-valuemax="100"><?php echo $porcentajeProgreso; ?>%</div>
+              </div>
+              <!-- Agregamos el canvas aquí -->
+              <div class="chart-container mt-3">
+                  <canvas id="salesLineChart" style="max-height: 300px;"></canvas>
+              </div>
           </div>
-        </div>
       </div>
+
 
       <!-- Servicios con iconos para Servicios Propios y Mixtos -->
       <div class="col-md-6 col-lg-4">
@@ -182,6 +187,8 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+
+
     // Definir las opciones de animación globalmente
     const animationOptions = {
       duration: 1500,
@@ -189,6 +196,7 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
     };
 
     document.addEventListener("DOMContentLoaded", () => {
+      
       cargarDatosDashboard();
     });
 
@@ -576,6 +584,85 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       // Crear o actualizar el gráfico
       new Chart(ctx, config);
     }
+
+
+
+
+    const notificaciones = [
+        { mensaje: "Felicitaciones Lettie 🎉 Ganó la insignia de oro del mejor vendedor del mes", tipo: "INFO", hora: "Hace 1 hora" },
+        { mensaje: "Charles Franklin - Aceptó su conexión", tipo: "SUCCESS", hora: "Hace 12 horas" },
+        { mensaje: "Nuevo mensaje ✉️ Tienes un nuevo mensaje de Natalie", tipo: "INFO", hora: "Hace 1 hora" },
+        { mensaje: "¡Guau! Tienes un nuevo pedido", tipo: "SUCCESS", hora: "Hace 2 horas" }
+    ];
+
+    function mostrarNotificaciones() {
+        const notificationsList = document.getElementById("notificationsList");
+        const notificationCount = document.getElementById("notificationCount");
+        const notificationsContainer = document.getElementById("notificationsContainer");
+
+        if (!notificationsList || !notificationCount || !notificationsContainer) {
+            console.error("Error: Elementos del DOM no encontrados");
+            return;
+        }
+
+        notificationsList.innerHTML = "";
+        notificationCount.innerText = notificaciones.length;
+
+        notificaciones.forEach((notificacion, index) => {
+            const notificationDiv = document.createElement("div");
+            notificationDiv.classList.add("notification-item");
+            const icon = notificacion.tipo === "INFO" ? "ℹ️" : "✅";
+            notificationDiv.innerHTML = `
+                <span class="notification-icon">${icon}</span>
+                <div class="notification-text">${notificacion.mensaje}</div>
+                <div class="notification-time">${notificacion.hora}</div>
+            `;
+            notificationsList.appendChild(notificationDiv);
+        });
+
+        notificationsContainer.style.display = "block";
+    }
+
+    function marcarComoLeidas() {
+        notificaciones.length = 0;
+        mostrarNotificaciones();
+    }
+
+    function verTodasNotificaciones() {
+        alert("Ver todas las notificaciones");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const btnNotifications = document.getElementById("btnNotifications");
+        if (btnNotifications) {
+            btnNotifications.addEventListener("click", mostrarNotificaciones);
+        }
+
+        const btnMarkAsRead = document.getElementById("btnMarkAsRead");
+        if (btnMarkAsRead) {
+            btnMarkAsRead.addEventListener("click", marcarComoLeidas);
+        }
+
+        const btnViewAll = document.getElementById("btnViewAll");
+        if (btnViewAll) {
+            btnViewAll.addEventListener("click", verTodasNotificaciones);
+        }
+    });
+    // Función para cerrar el contenedor de notificaciones
+    document.addEventListener("DOMContentLoaded", () => {
+        function cerrarNotificaciones() {
+            const container = document.getElementById('notificationsContainer');
+            if (container) {
+                container.style.display = 'none'; // Oculta el contenedor
+            } else {
+                console.error("El contenedor de notificaciones no se encuentra.");
+            }
+        }
+
+        // Asegúrate de que la función esté disponible globalmente
+        window.cerrarNotificaciones = cerrarNotificaciones;
+    });
+
   </script>
 
 </body>

@@ -65,8 +65,10 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     <link href="http://localhost/haras/plugins/css/adminlte.min.css" rel="stylesheet" />
     <link href="http://localhost/haras/css/styles.css" rel="stylesheet" />
     <link href="http://localhost/haras/css/registro-medi-ali.css" rel="stylesheet" />
+    
 
     <!-- Notificaciones -->
+    <link href="http://localhost/haras/css/notificaciones.css" rel="stylesheet" />
 
     <!-- Iconos de Font Awesome -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -84,6 +86,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
 
 
         <!-- Navbar Notifications -->
+        <!-- Navbar Notifications -->
         <div class="ms-auto me-3 my-2 my-md-0">
             <button class="btn btn-info position-relative" id="btnNotifications" type="button" onclick="mostrarNotificaciones()">
                 <i class="fas fa-bell"></i>
@@ -100,6 +103,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             <div class="d-flex justify-content-between align-items-center p-3 custom-header">
                 <span style="font-weight: bold; font-size: 18px;">Notificaciones</span>
                 <button onclick="marcarComoLeidas()" style="background: none; border: none; color: #0056b3;">Marcar todo como leído</button>
+                <button onclick="cerrarNotificaciones()" class="btn-close" aria-label="Close"></button>
             </div>
 
             <!-- Lista de Notificaciones -->
@@ -112,6 +116,9 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
                 <button class="btn btn-outline-primary btn-view-all" onclick="verTodasNotificaciones()">Ver todas las notificaciones</button>
             </div>
         </div>
+
+
+
 
 
 
