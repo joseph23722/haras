@@ -9,6 +9,22 @@ class Personal extends Conexion {
         $this->pdo = parent::getConexion();
     }
 
+    public function estadoUsuario($idUsuario) /* Parámetro idUsuario */
+    {
+        try {
+            $query = $this->pdo->prepare("CALL spu_modificar_estado_user(:idUsuario)");
+            $query->bindParam(':idUsuario', $idUsuario, PDO::PARAM_INT);
+            $query->execute();
+
+            /* Obtiene el mensaje del procedure creado */
+            $resultado = $query->fetch(PDO::FETCH_ASSOC);
+            return $resultado['mensaje'] ?? 'Operación realziada correctamente';
+        } catch (Exception $e) {
+            error_log("Error al modificar estado: " . $e->getMessage());
+            return 'Ocurrió un error al intentar modificar el estado';
+        }
+    }
+
     // Método para registrar una persona
     public function add($params = []): int {
         try {

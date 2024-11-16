@@ -110,13 +110,16 @@
             <table id="tabla-personal" class="table table-striped table-hover table-bordered">
               <thead style="background-color: #caf0f8; color: #003366;">
                 <tr>
-                  <th><i class="fas fa-hashtag"></i> #</th>
+                  <th><i class="fas fa-hashtag"></i></th>
                   <th><i class="fas fa-id-card"></i> Tipo Documento</th>
                   <th><i class="fas fa-address-card"></i> Nro. Documento</th>
                   <th><i class="fas fa-user"></i> Apellidos</th>
                   <th><i class="fas fa-user"></i> Nombres</th>
                   <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
-                  <th><i class="fas fa-user-circle"></i> Usuario</th>
+                  <th><i class="fas fa-user-circle"></i> Cuenta Usuario</th>
+                  <th><i class="fas fa-envelope"></i> Usuario</th> <!-- Columna de correo -->
+                  <th><i class="fas fa-sync-alt"></i> Estado</th>
+                  <th style="display:none;">ID Usuario</th> <!-- Columna oculta -->
                 </tr>
               </thead>
               <tbody>
@@ -172,6 +175,9 @@
 <?php require_once '../footer.php'; ?>
 
 
+<!-- SweetAlert y Swalcustom -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../swalcustom.js"></script>
 <!-- Incluye DataTables -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

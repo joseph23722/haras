@@ -23,16 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 cache: 'no-cache'
             });
 
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
 
             const data = await response.json();
             console.log(data);
 
             let numeroFila = 1;
             data.forEach(personal => {
+                const correoUsuario = personal.correo || '---';
                 const tieneUsuario = personal.tieneUsuario == 1 ? '✔️' : `<button data-id="${personal.idPersonal}" class="btn btn-sm btn-outline-primary register-user" data-bs-toggle="modal" data-bs-target="#modalRegistrarUsuario">Registrar Usuario</button>`;
+                const cambiarEstadoBtn = `<button class="btn btn-sm btn-outline-success cambiar-estado" data-idusuario="${personal.idUsuario}" data-estado="${personal.estado}" data-correo="${personal.correo}">Cambiar Estado</button>`;
 
                 const nuevaFila = `
                     <tr>
@@ -43,6 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td>${personal.nombres}</td>
                         <td>${personal.direccion}</td>
                         <td class="text-center">${tieneUsuario}</td>
+                        <td>${correoUsuario}</td>
+                        <td>${cambiarEstadoBtn}</td>
+                        <td style="display:none;" class="idUsuario">${personal.idUsuario}</td>
                     </tr>
                 `;
 
@@ -50,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 numeroFila++;
             });
 
-            inicializarDataTable(); 
+            inicializarDataTable();
 
             document.querySelectorAll(".register-user").forEach(button => {
                 button.addEventListener("click", (event) => {
@@ -59,8 +62,47 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             });
 
+            document.querySelectorAll(".cambiar-estado").forEach(button => {
+                button.addEventListener("click", async (event) => {
+                    const idUsuario = event.currentTarget.getAttribute("data-idusuario");
+                    const correoUsuario = event.currentTarget.getAttribute("data-correo");
+                    const estadoActual = event.currentTarget.getAttribute("data-estado");
+                    const nuevoEstado = estadoActual === '1' ? '0' : '1';
+
+                    if (await ask(`¿Deseas cambiar el estado del usuario ${correoUsuario}?`)) {
+                        try {
+                            const respuesta = await fetch("../../controllers/Persona.controller.php", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: new URLSearchParams({
+                                    operation: 'modificarestadousuario',
+                                    idUsuario: idUsuario,
+                                }),
+                            });
+
+                            const resultado = await respuesta.json();
+
+                            if (resultado.status === 'success') {
+                                console.log('Estado cambiado correctamente');
+                                showToast(resultado.mensaje, 'SUCCESS');
+                                obtenerPersonal();
+                            } else {
+                                console.error('Error:', resultado.mensaje);
+                                showToast(resultado.mensaje, 'ERROR');
+                            }
+
+                        } catch (error) {
+                            console.error('Error al cambiar el estado:', error);
+                            showToast('Hubo un problema con la conexión', 'ERROR');
+                        }
+                    }
+                });
+            });
         } catch (error) {
             console.error("Error al obtener personal:", error);
+            showToast('Hubo un problema al obtener los datos del personal', 'ERROR');
         }
     }
 
@@ -85,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data); 
+                console.log(data);
                 if (data['idPersonal'] > 0) {
                     alert('Personal registrado exitosamente');
                     $("#formulario-personal")[0].reset();
@@ -104,6 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Registrar Usuario
     async function registrarUsuario(event) {
         event.preventDefault();
+
+        const confirmarRegistro = await ask("¿Deseas registrar este usuario?");
+
+        if (!confirmarRegistro) {
+            showToast("Registro cancelado", "ERROR");
+            return;
+        }
+
         const parametros = new FormData();
         parametros.append("operation", "add");
         parametros.append("idPersonal", $("#idPersonal").val());
@@ -120,17 +170,18 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.status) {
-                    alert('Usuario registrado exitosamente');
+                    showToast('Usuario registrado exitosamente', 'SUCCESS');
                     $('#modalRegistrarUsuario').modal('hide');
-                    await obtenerPersonal(); // Recargar la lista
+                    await obtenerPersonal();
                 } else {
-                    alert('Error al registrar usuario');
+                    showToast('Error al registrar usuario', 'ERROR');
                 }
             } else {
-                alert('Error en la respuesta del servidor');
+                showToast('Error en la respuesta del servidor', 'ERROR');
             }
         } catch (error) {
             console.error("Error al registrar usuario:", error);
+            showToast('Hubo un problema al registrar el usuario', 'ERROR');
         }
     }
 

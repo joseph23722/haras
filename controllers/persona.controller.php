@@ -11,7 +11,7 @@ $personal = new Personal();
 
 if (isset($_GET['operation'])) {
     switch ($_GET['operation']) {
-        /* case 'searchByDoc':
+            /* case 'searchByDoc':
             $nrodocumento = $_GET['nrodocumento'];
             $result = $personal->searchByDoc($nrodocumento);
             echo json_encode($result);
@@ -41,6 +41,23 @@ if (isset($_POST['operation'])) {
             // Insertar el personal y obtener el ID generado
             $idPersonal = $personal->add($datosRecibidos);
             echo json_encode(['idPersonal' => $idPersonal]);
+            break;
+
+        case 'modificarestadousuario':
+            if (isset($_POST['idUsuario'])) {
+                $idUsuario = $_POST['idUsuario'];
+                $resultado = $personal->estadoUsuario($idUsuario);
+
+                echo json_encode([
+                    'status' => 'success',
+                    'mensaje' => $resultado
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'mensaje' => 'Falta el envío del parámetro solicitado'
+                ]);
+            }
             break;
     }
 }

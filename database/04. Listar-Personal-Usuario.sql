@@ -21,12 +21,30 @@ BEGIN
 END $$
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `spu_modificar_estado_user`;
+DELIMITER $$
+CREATE PROCEDURE spu_modificar_estado_user(IN p_idUsuario INT)
+BEGIN
+	IF EXISTS (SELECT 1 FROM Usuarios WHERE idUsuario = p_idUsuario) THEN
+    UPDATE Usuarios
+    SET estado = CASE
+		WHEN estado = 1 THEN 0
+        ELSE 1
+        END
+	WHERE idUsuario = p_idUsuario;
+    
+    SELECT 'Estado cambiado correctamente' AS mensaje;
+    ELSE
+		SELECT 'Usuario no encontrado' AS mensaje;
+	end if;
+END $$
+DELIMITER ;
+
 -- Procedimiento para listar 'Personal'------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_personal_listar`;
 DELIMITER $$
 CREATE PROCEDURE `spu_personal_listar`()
 BEGIN
-    -- Consulta para listar personal y verificar si ya tienen un usuario
     SELECT 
         p.idPersonal, 
         p.nombres, 
@@ -37,7 +55,9 @@ BEGIN
         CASE 
             WHEN u.idUsuario IS NOT NULL THEN 1 
             ELSE 0 
-        END AS tieneUsuario
+        END AS tieneUsuario,
+        u.idUsuario,
+        u.correo
     FROM 
         Personal p
     LEFT JOIN 

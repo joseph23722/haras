@@ -15,7 +15,8 @@ BEGIN
     INNER JOIN 
         Personal PER ON PER.idPersonal = USU.idPersonal
     WHERE 
-        USU.correo = _correo;
+        USU.correo = _correo
+        AND USU.estado = 1; -- Filtro para solo usuarios activos
 END //
 DELIMITER ;
 

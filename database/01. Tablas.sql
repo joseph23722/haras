@@ -53,6 +53,8 @@ CREATE TABLE Usuarios (
     correo 				VARCHAR(50) NOT NULL,
     clave 				VARCHAR(100) NOT NULL,
 	idRol 				INT,
+    estado				BIT NOT NULL DEFAULT 1,
+    create_at			TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     inactive_at 		DATETIME NULL,
     CONSTRAINT uk_correo UNIQUE (correo),
     CONSTRAINT fk_usuario_personal FOREIGN KEY (idPersonal) REFERENCES Personal(idPersonal),
