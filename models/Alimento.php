@@ -146,10 +146,6 @@ class Alimento extends Conexion {
 
 
     
-    
-    
-
-    // Método para registrar una entrada de alimento
     // Método para registrar una entrada de alimento
     public function registrarEntradaAlimento($params = []) {
         try {

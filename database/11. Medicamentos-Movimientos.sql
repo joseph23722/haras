@@ -489,27 +489,25 @@ DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_medicamentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_medicamentos()
 BEGIN
-    -- Notificaciones para medicamentos agotados
+    -- Seleccionamos directamente las columnas necesarias, incluyendo un mensaje personalizado
     SELECT 
-        CONCAT('Medicamento agotado: ', m.nombreMedicamento, ', Lote: ', lm.lote, ', Stock: ', m.cantidad_stock) AS Notificacion
+        m.nombreMedicamento AS nombreMedicamento,
+        lm.lote AS loteMedicamento,
+        m.cantidad_stock AS stockActual,
+        m.stockMinimo AS stockMinimo,
+        CASE 
+            WHEN m.cantidad_stock = 0 THEN 'Agotado'
+            WHEN m.cantidad_stock > 0 AND m.cantidad_stock < m.stockMinimo THEN 'Stock bajo'
+        END AS mensaje
     FROM 
         Medicamentos m
     JOIN 
         LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
     WHERE 
-        m.cantidad_stock = 0
-    LIMIT 5;
-
-    -- Notificaciones para medicamentos con stock bajo
-    SELECT 
-        CONCAT('Medicamento con stock bajo: ', m.nombreMedicamento, ', Lote: ', lm.lote, ', Stock: ', m.cantidad_stock, ' (Stock mínimo: ', m.stockMinimo, ')') AS Notificacion
-    FROM 
-        Medicamentos m
-    JOIN 
-        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
-    WHERE 
-        m.cantidad_stock > 0 AND m.cantidad_stock < m.stockMinimo
-    LIMIT 5;
+        m.cantidad_stock <= m.stockMinimo
+    ORDER BY 
+        m.cantidad_stock ASC
+    LIMIT 10; -- Limitar a las primeras 10 notificaciones
 END $$
 DELIMITER ;
 

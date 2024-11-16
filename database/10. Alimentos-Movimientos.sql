@@ -309,53 +309,29 @@ DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE alimentoNombre VARCHAR(100);
-    DECLARE loteAlimento VARCHAR(50);
-    DECLARE stockActual DECIMAL(10,2);
-    DECLARE stockMinimo DECIMAL(10,2);
-    DECLARE tipoAlimento VARCHAR(50);
-    DECLARE unidadMedida VARCHAR(10);
-
-    -- Cursor para seleccionar los alimentos con stock bajo o agotados, limitando a 5
-    DECLARE cur CURSOR FOR
-        SELECT a.nombreAlimento, l.lote, a.stockActual, a.stockMinimo, ta.tipoAlimento, um.nombreUnidad 
-        FROM Alimentos a
-        JOIN LotesAlimento l ON a.idLote = l.idLote
-        JOIN TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento
-        JOIN UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
-        WHERE a.stockActual <= a.stockMinimo
-        ORDER BY a.stockActual ASC
-        LIMIT 5;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    -- Abrir el cursor
-    OPEN cur;
-
-    -- Bucle para recorrer los resultados
-    read_loop: LOOP
-        FETCH cur INTO alimentoNombre, loteAlimento, stockActual, stockMinimo, tipoAlimento, unidadMedida;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Imprimir el mensaje de notificación
-        IF stockActual = 0 THEN
-            -- Notificación de alimentos agotados
-            SELECT CONCAT('Alimento agotado: ', alimentoNombre, ' (Tipo: ', tipoAlimento, '), Lote: ', loteAlimento, ', Unidad: ', unidadMedida, ', Stock: ', stockActual) AS Notificacion;
-        ELSE
-            -- Notificación de alimentos con stock bajo
-            SELECT CONCAT('Alimento con stock bajo: ', alimentoNombre, ' (Tipo: ', tipoAlimento, '), Lote: ', loteAlimento, ', Unidad: ', unidadMedida, ', Stock: ', stockActual, ' (Stock mínimo: ', stockMinimo, ')') AS Notificacion;
-        END IF;
-    END LOOP;
-
-    -- Cerrar cursor
-    CLOSE cur;
+    -- Seleccionamos directamente las columnas necesarias, incluyendo un mensaje personalizado
+    SELECT 
+        a.nombreAlimento AS nombreAlimento,       -- Nombre del alimento
+        l.lote AS loteAlimento,                  -- Lote del alimento
+        a.stockActual AS stockActual,            -- Stock actual del alimento
+        a.stockMinimo AS stockMinimo,            -- Stock mínimo permitido
+        ta.tipoAlimento AS tipoAlimento,         -- Tipo de alimento
+        um.nombreUnidad AS unidadMedida,         -- Unidad de medida
+        CASE 
+            WHEN a.stockActual = 0 THEN 'Agotado'   -- Mensaje si el stock es 0
+            WHEN a.stockActual < a.stockMinimo THEN 'Stock bajo' -- Mensaje si está por debajo del mínimo
+            ELSE 'En stock'                         -- Por si acaso, un valor genérico
+        END AS mensaje                            -- Mensaje personalizado basado en la condición
+    FROM Alimentos a
+    JOIN LotesAlimento l ON a.idLote = l.idLote
+    JOIN TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento
+    JOIN UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+    WHERE a.stockActual <= a.stockMinimo          -- Filtro para stock bajo o agotado
+    ORDER BY a.stockActual ASC                   -- Orden por stock más bajo
+    LIMIT 5;                                     -- Limitamos los resultados a 5
 END $$
 DELIMITER ;
 
-CALL spu_notificar_stock_bajo_alimentos();
 
 -- Procedimiento para historial Alimentos -----------------------------------------
 DROP PROCEDURE IF EXISTS `spu_historial_completo`;

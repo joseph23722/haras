@@ -1083,7 +1083,7 @@
             try {
                 // Realizar la solicitud GET al controlador de medicamentos
                 const response = await fetch('../../controllers/admedi.controller.php?operation=notificarStockBajo', {
-                method: "GET"
+                    method: "GET"
                 });
 
                 // Leer la respuesta y parsear a JSON
@@ -1092,24 +1092,42 @@
 
                 // Verificar si hay datos y recorrer los resultados
                 if (result.status === 'success' && result.data) {
-                const { agotados, bajoStock } = result.data;
+                    const { agotados, bajoStock } = result.data;
 
-                // Mostrar notificaciones de medicamentos agotados
-                agotados.forEach(notificacion => {
-                    mostrarMensaje(notificacion.Notificacion, 'ERROR'); // Puedes usar 'ERROR' para más énfasis
-                });
+                    // Mostrar notificaciones de medicamentos agotados
+                    agotados.forEach(notificacion => {
+                        mostrarMensaje(
+                            `
+                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}  , 
+                            <span class="text-success">Lote:</span> ${notificacion.loteMedicamento}  , 
+                            <span class="text-info">Estado:</span> Agotado 
+                            `,
+                            'ERROR' // Puedes usar 'ERROR' para más énfasis
+                        );
+                    });
 
-                // Mostrar notificaciones de medicamentos con stock bajo
-                bajoStock.forEach(notificacion => {
-                    mostrarMensaje(notificacion.Notificacion, 'WARNING');
-                });
+                    // Mostrar notificaciones de medicamentos con stock bajo
+                    bajoStock.forEach(notificacion => {
+                        mostrarMensaje(
+                            `
+                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}   , 
+                            <span class="text-success">Lote:</span> ${notificacion.loteMedicamento} , 
+                            <span class="text-warning">Stock:</span> ${notificacion.stockActual}  ,
+                            <span class="text-danger">(Mínimo: ${notificacion.stockMinimo})  , 
+                            <span class="text-info">Estado:</span> Stock Bajo
+                            `,
+                            'WARNING'
+                        );
+                    });
                 } else if (result.status === 'info') {
                     mostrarMensaje(result.message, 'INFO');
                 }
             } catch (error) {
                 mostrarMensaje('Error al notificar stock bajo.', 'ERROR');
+                console.error("Error al cargar notificaciones de medicamentos:", error);
             }
         };
+
 
 
         // Función para confirmar la eliminación del medicamento

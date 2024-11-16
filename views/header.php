@@ -86,36 +86,35 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
 
 
         <!-- Navbar Notifications -->
-        <!-- Navbar Notifications -->
         <div class="ms-auto me-3 my-2 my-md-0">
+            <!-- Botón único para todas las notificaciones -->
             <button class="btn btn-info position-relative" id="btnNotifications" type="button" onclick="mostrarNotificaciones()">
                 <i class="fas fa-bell"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount">
-                    0<!-- Contador de notificaciones dinámico -->
-                    <span class="visually-hidden">nuevas notificaciones</span>
+                    0 <!-- Contador de notificaciones dinámico -->
                 </span>
             </button>
         </div>
 
-        <!-- Contenedor de Notificaciones -->
-        <div id="notificationsContainer" class="dropdown-menu" aria-labelledby="btnNotifications" style="display: none; max-width: 300px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);">
-            <!-- Cabecera de notificaciones -->
+        <!-- Contenedor único de Notificaciones -->
+        <div id="notificationsContainer" class="dropdown-menu" style="display: none; max-width: 300px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);">
+            <!-- Cabecera de Notificaciones -->
             <div class="d-flex justify-content-between align-items-center p-3 custom-header">
                 <span style="font-weight: bold; font-size: 18px;">Notificaciones</span>
                 <button onclick="marcarComoLeidas()" style="background: none; border: none; color: #0056b3;">Marcar todo como leído</button>
                 <button onclick="cerrarNotificaciones()" class="btn-close" aria-label="Close"></button>
             </div>
-
             <!-- Lista de Notificaciones -->
             <div id="notificationsList" style="max-height: 200px; overflow-y: auto; padding: 0 15px;">
                 <!-- Aquí se agregarán las notificaciones dinámicamente -->
             </div>
-
             <!-- Ver todas las notificaciones -->
             <div class="text-center">
                 <button class="btn btn-outline-primary btn-view-all" onclick="verTodasNotificaciones()">Ver todas las notificaciones</button>
             </div>
         </div>
+
+
 
 
 

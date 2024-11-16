@@ -1020,33 +1020,31 @@
         try {
             // Realizar la solicitud al backend
             const response = await fetch('../../controllers/alimento.controller.php', {
-            method: "POST",
-            body: new URLSearchParams({ operation: 'notificarStockBajo' })
+                method: "POST",
+                body: new URLSearchParams({ operation: 'notificarStockBajo' })
             });
 
-            // Verifica si la respuesta fue exitosa
-            console.log("Respuesta del servidor:", response);
-
             const textResponse = await response.text();
-            console.log("Texto recibido del servidor:", textResponse);
-
-            // Intenta convertir la respuesta a JSON
             const result = JSON.parse(textResponse);
-            console.log("Respuesta convertida a JSON:", result);
 
             // Verifica si 'data' es un array y contiene las notificaciones
             if (Array.isArray(result.data) && result.data.length > 0) {
-            console.log("Notificaciones:", result.data);
-            result.data.forEach(notificacion => {
-                console.log("Notificación individual:", notificacion); // Verifica el contenido de cada notificación
-                mostrarMensajeDinamico(notificacion.Notificacion, 'WARNING');
-            });
+                result.data.forEach(notificacion => {
+                    // Crear el mensaje dinámico con espacios adicionales para claridad
+                    const mensajeDinamico = `
+                        <span class="text-primary">Alimento:</span> <strong>${notificacion.nombreAlimento}   , 
+                        <span class="text-success">Lote:</span> ${notificacion.loteAlimento}  , 
+                        <span class="text-warning">Stock:</span> ${notificacion.stockActual}  ,
+                        <span class="text-danger">(Mínimo: ${notificacion.stockMinimo})   , 
+                        <span class="text-info">Estado:</span> ${notificacion.mensaje} 
+                    `.replace(/\s+/g, ' ').trim(); // Elimina espacios extra
+
+                    mostrarMensajeDinamico(mensajeDinamico, 'WARNING');
+                });
             } else {
-            console.log("No se encontraron notificaciones de stock bajo");
-            mostrarMensajeDinamico('No hay productos con stock bajo o agotados.', 'INFO');
+                mostrarMensajeDinamico('No hay productos con stock bajo o agotados.', 'INFO');
             }
         } catch (error) {
-            console.error("Error al notificar stock bajo:", error);
             mostrarMensajeDinamico('Error al notificar stock bajo.', 'ERROR');
         }
     };

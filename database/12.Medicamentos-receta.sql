@@ -230,3 +230,59 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+-- notificar veterianrio
+-- 1.Notificar tratamientos próximos a finalizar (dentro de 3 días).
+-- 2.Notificar tratamientos ya finalizados.
+
+DELIMITER $$
+CREATE PROCEDURE spu_notificar_tratamientos_veterinarios()
+BEGIN
+    -- Seleccionar tratamientos próximos a finalizar (dentro de los próximos 3 días)
+    SELECT 
+        CONCAT(
+            'El tratamiento del equino "', E.nombreEquino, 
+            '" con el medicamento "', M.nombreMedicamento, 
+            '" finaliza pronto (', DATE_FORMAT(DM.fechaFin, '%d-%m-%Y'), ').'
+        ) AS Notificacion,
+        DM.idDetalleMed AS idTratamiento,
+        E.idEquino,
+        M.idMedicamento,
+        DM.fechaFin,
+        'PRONTO' AS TipoNotificacion
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    WHERE 
+        DM.estadoTratamiento = 'Activo' 
+        AND DM.fechaFin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY);
+
+    -- Seleccionar tratamientos finalizados recientemente (últimos 7 días)
+    SELECT 
+        CONCAT(
+            'El tratamiento del equino "', E.nombreEquino, 
+            '" con el medicamento "', M.nombreMedicamento, 
+            '" ha finalizado el ', DATE_FORMAT(DM.fechaFin, '%d-%m-%Y'), '.'
+        ) AS Notificacion,
+        DM.idDetalleMed AS idTratamiento,
+        E.idEquino,
+        M.idMedicamento,
+        DM.fechaFin,
+        'FINALIZADO' AS TipoNotificacion
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    WHERE 
+        DM.estadoTratamiento = 'Finalizado' 
+        AND DM.fechaFin BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE();
+END $$
+DELIMITER ;
+
+
+CALL spu_notificar_tratamientos_veterinarios();

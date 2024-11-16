@@ -27,8 +27,7 @@ class Admi extends Conexion {
         }
     }
     
-    
-    // Método para registrar un nuevo medicamento
+
     // Método para registrar un nuevo medicamento
     public function registrarMedicamento($params = []) {
         try {
@@ -80,11 +79,6 @@ class Admi extends Conexion {
         }
     }
     
-    
-    
-
-    
-    
 
     // Registrar entrada de medicamentos
     public function entradaMedicamento($params = []) {
@@ -132,7 +126,6 @@ class Admi extends Conexion {
         }
     }
 
-    // Registrar salida de medicamentos
     // Registrar salida de medicamentos
     public function salidaMedicamento($params = []) {
         try {
