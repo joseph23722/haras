@@ -163,5 +163,50 @@ class Historialme extends Conexion
         }
     }
 
+    // Método 1: Listar todas las vías de administración
+    public function listarViasAdministracion()
+    {
+        try {
+            // Preparar y ejecutar el procedimiento almacenado
+            $query = $this->pdo->prepare("CALL ListarViasAdministracion()");
+            $query->execute();
+
+            // Obtener resultados
+            $vias = [];
+            do {
+                $result = $query->fetchAll(PDO::FETCH_ASSOC);
+                if ($result) {
+                    $vias = array_merge($vias, $result);
+                }
+            } while ($query->nextRowset());
+
+            return ['status' => 'success', 'data' => $vias];
+        } catch (Exception $e) {
+            error_log("Error en listarViasAdministracion: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al listar vías de administración.'];
+        }
+    }
+
+
+    // Método 2: Agregar una nueva vía de administración
+    public function agregarViaAdministracion($nombreVia, $descripcion = null)
+    {
+        try {
+            // Preparar el procedimiento almacenado con parámetros
+            $query = $this->pdo->prepare("CALL AgregarViaAdministracion(:nombreVia, :descripcion)");
+            $query->bindParam(':nombreVia', $nombreVia, PDO::PARAM_STR);
+            $query->bindParam(':descripcion', $descripcion, PDO::PARAM_STR);
+
+            // Ejecutar el procedimiento almacenado
+            $query->execute();
+
+            return ['status' => 'success', 'message' => 'Vía de administración agregada correctamente.'];
+        } catch (Exception $e) {
+            error_log("Error en agregarViaAdministracion: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al agregar vía de administración.'];
+        }
+    }
+
+
 
 }
