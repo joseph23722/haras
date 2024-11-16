@@ -587,83 +587,8 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
 
 
 
-
-    const notificaciones = [
-        { mensaje: "Felicitaciones Lettie 🎉 Ganó la insignia de oro del mejor vendedor del mes", tipo: "INFO", hora: "Hace 1 hora" },
-        { mensaje: "Charles Franklin - Aceptó su conexión", tipo: "SUCCESS", hora: "Hace 12 horas" },
-        { mensaje: "Nuevo mensaje ✉️ Tienes un nuevo mensaje de Natalie", tipo: "INFO", hora: "Hace 1 hora" },
-        { mensaje: "¡Guau! Tienes un nuevo pedido", tipo: "SUCCESS", hora: "Hace 2 horas" }
-    ];
-
-    function mostrarNotificaciones() {
-        const notificationsList = document.getElementById("notificationsList");
-        const notificationCount = document.getElementById("notificationCount");
-        const notificationsContainer = document.getElementById("notificationsContainer");
-
-        if (!notificationsList || !notificationCount || !notificationsContainer) {
-            console.error("Error: Elementos del DOM no encontrados");
-            return;
-        }
-
-        notificationsList.innerHTML = "";
-        notificationCount.innerText = notificaciones.length;
-
-        notificaciones.forEach((notificacion, index) => {
-            const notificationDiv = document.createElement("div");
-            notificationDiv.classList.add("notification-item");
-            const icon = notificacion.tipo === "INFO" ? "ℹ️" : "✅";
-            notificationDiv.innerHTML = `
-                <span class="notification-icon">${icon}</span>
-                <div class="notification-text">${notificacion.mensaje}</div>
-                <div class="notification-time">${notificacion.hora}</div>
-            `;
-            notificationsList.appendChild(notificationDiv);
-        });
-
-        notificationsContainer.style.display = "block";
-    }
-
-    function marcarComoLeidas() {
-        notificaciones.length = 0;
-        mostrarNotificaciones();
-    }
-
-    function verTodasNotificaciones() {
-        alert("Ver todas las notificaciones");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const btnNotifications = document.getElementById("btnNotifications");
-        if (btnNotifications) {
-            btnNotifications.addEventListener("click", mostrarNotificaciones);
-        }
-
-        const btnMarkAsRead = document.getElementById("btnMarkAsRead");
-        if (btnMarkAsRead) {
-            btnMarkAsRead.addEventListener("click", marcarComoLeidas);
-        }
-
-        const btnViewAll = document.getElementById("btnViewAll");
-        if (btnViewAll) {
-            btnViewAll.addEventListener("click", verTodasNotificaciones);
-        }
-    });
-    // Función para cerrar el contenedor de notificaciones
-    document.addEventListener("DOMContentLoaded", () => {
-        function cerrarNotificaciones() {
-            const container = document.getElementById('notificationsContainer');
-            if (container) {
-                container.style.display = 'none'; // Oculta el contenedor
-            } else {
-                console.error("El contenedor de notificaciones no se encuentra.");
-            }
-        }
-
-        // Asegúrate de que la función esté disponible globalmente
-        window.cerrarNotificaciones = cerrarNotificaciones;
-    });
-
   </script>
+  <script src="http://localhost/haras/JS/notificaciones.js"></script>
 
 </body>
 
