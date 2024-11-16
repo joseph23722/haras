@@ -29,30 +29,40 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $contentType === "application/json") {
         // Leer JSON del cuerpo de la solicitud
         $inputData = json_decode(file_get_contents('php://input'), true);
-        error_log("Datos JSON recibidos: " . print_r($inputData, true));
 
         // Asegurarse de que se capturó correctamente el JSON
         if ($inputData === null) {
-            error_log("Error: JSON inválido recibido.");
             echo json_encode(['status' => 'error', 'message' => 'JSON inválido']);
             exit;
         }
 
         // Obtener la operación desde el JSON
         $operation = $inputData['operation'] ?? '';
-        error_log("Operación recibida (JSON): " . $operation);
-
         switch ($operation) {
+
+
+            case 'agregarVia':
+                // Verificar los parámetros recibidos
+                $nombreVia = $_POST['nombreVia'] ?? null;
+                $descripcion = $_POST['descripcion'] ?? null;
+        
+                if ($nombreVia) {
+                    // Llamada al método para agregar una nueva vía de administración
+                    $result = $model->agregarViaAdministracion($nombreVia, $descripcion);
+                    echo json_encode(['status' => $result['status'], 'message' => $result['message']]);
+                } else {
+                    // Manejo de error si faltan datos
+                    echo json_encode(['status' => 'error', 'message' => 'El nombre de la vía es obligatorio.']);
+                }
+                break;
 
             
             case 'registrarHistorialMedico':
-                error_log("Entrando en el case 'registrarHistorialMedico'");
 
                 // Decodificar los datos JSON desde el cuerpo de la solicitud
                 $inputData = json_decode(file_get_contents('php://input'), true);
 
                 if ($inputData === null) {
-                    error_log("Error: No se recibieron datos JSON válidos o están mal formateados.");
                     echo json_encode(['status' => 'error', 'message' => 'Datos JSON inválidos o mal formateados']);
                     break;
                 }
@@ -86,8 +96,6 @@ try {
                 break;
 
             case 'gestionarTratamiento':
-                error_log("Entrando en el case 'gestionarTratamiento'");
-
                 // Decodificar los datos JSON recibidos desde php://input
                 $inputData = json_decode(file_get_contents('php://input'), true);
 
@@ -104,17 +112,11 @@ try {
                 $idRegistro = $inputData['idRegistro'] ?? null;
                 $accion = $inputData['accion'] ?? null;
 
-                error_log("ID de Registro recibido: " . var_export($idRegistro, true));
-                error_log("Acción recibida: " . var_export($accion, true));
-
                 // Validar los parámetros y continuar con la ejecución
                 if ($idRegistro && in_array($accion, ['pausar', 'continuar', 'eliminar'])) {
-                    error_log("Parámetros válidos. Llamando a 'gestionarTratamiento' en el modelo.");
 
                     // Llamar al método en el modelo
                     $result = $historialme->gestionarTratamiento($idRegistro, $accion);
-
-                    error_log("Resultado de gestionarTratamiento en el modelo: " . ($result ? "Éxito" : "Fallo"));
 
                     echo json_encode([
                         'status' => $result ? 'success' : 'error',
@@ -125,7 +127,6 @@ try {
                     ]);
                 } else {
                     // Error en los parámetros recibidos
-                    error_log("Error: ID de registro o acción no válidos o no proporcionados.");
                     echo json_encode([
                         'status' => 'error',
                         'message' => 'ID de registro o acción no proporcionados o acción no válida.'
@@ -138,28 +139,29 @@ try {
                 echo json_encode(['error' => 'Operación no válida']);
         }
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        // Verificar qué tipo de consulta se está realizando
         $operation = $_GET['operation'] ?? '';
 
         switch ($operation) {
 
+            case 'listarVias':
+                // Llamada al método para listar las vías de administración
+                $result = $model->listarViasAdministracion();
+                echo json_encode(['status' => 'success', 'data' => $result]);
+                break;
+
             case 'notificarTratamientosVeterinarios':
                 try {
                     $result = $historialme->notificarTratamientosVeterinarios();
-                    error_log("Datos enviados al frontend: " . json_encode($result));
                     if ($result['status'] === 'success') {
                         sendResponse('success', 'Notificaciones obtenidas correctamente.', $result['data']);
                     } else {
                         sendResponse('error', $result['message']);
                     }
                 } catch (Exception $e) {
-                    error_log("Error en notificarTratamientosVeterinarios: " . $e->getMessage());
                     sendResponse('error', 'Error al procesar la solicitud.');
                 }
                 break;
 
-            
-            
             case 'listarEquinosPorTipo':
                 // Llamada al método para listar equinos sin propietario para medicamentos
                 $result = $historialme->listarEquinosPorTipo();
@@ -176,6 +178,8 @@ try {
                 $result = $historialme->getAllMedicamentos();
                 echo json_encode(['data' => $result]);
                 break;
+
+
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }
