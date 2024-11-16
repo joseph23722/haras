@@ -289,3 +289,39 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- Procedimiento 1: Listar todas las vías de administración
+DELIMITER //
+
+CREATE PROCEDURE ListarViasAdministracion()
+BEGIN
+    SELECT idViaAdministracion, nombreVia, descripcion
+    FROM ViasAdministracion;
+END //
+
+DELIMITER ;
+
+
+-- Procedimiento 2: Agregar una nueva vía de administración
+DELIMITER //
+
+CREATE PROCEDURE AgregarViaAdministracion(
+    IN p_nombreVia VARCHAR(50),
+    IN p_descripcion TEXT
+)
+BEGIN
+    -- Verificar si ya existe una vía con el mismo nombre
+    IF EXISTS (SELECT 1 FROM ViasAdministracion WHERE nombreVia = p_nombreVia) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ya existe una vía de administración con este nombre.';
+    ELSE
+        -- Insertar la nueva vía en la tabla
+        INSERT INTO ViasAdministracion (nombreVia, descripcion)
+        VALUES (p_nombreVia, p_descripcion);
+    END IF;
+END //
+
+DELIMITER ;
+
+
+
+
