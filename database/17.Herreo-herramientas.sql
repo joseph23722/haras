@@ -11,11 +11,32 @@ CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_observaciones TEXT
 )
 BEGIN
+    -- Manejo de errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error al insertar en HistorialHerrero';
+    END;
+
+    -- Validación de entrada
+    IF p_idEquino IS NULL OR p_idUsuario IS NULL OR p_fecha IS NULL OR p_trabajoRealizado IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Campos obligatorios faltantes para la inserción.';
+    END IF;
+
+    -- Iniciar una transacción
+    START TRANSACTION;
+
+    -- Inserción en la tabla HistorialHerrero
     INSERT INTO HistorialHerrero (
         idEquino, idUsuario, fecha, trabajoRealizado, herramientasUsadas, observaciones
     ) VALUES (
         p_idEquino, p_idUsuario, p_fecha, p_trabajoRealizado, p_herramientasUsadas, p_observaciones
     );
+
+    -- Confirmar la transacción
+    COMMIT;
 END //
 
 DELIMITER ;

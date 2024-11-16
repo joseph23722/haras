@@ -234,7 +234,6 @@ DELIMITER ;
 -- notificar veterianrio
 -- 1.Notificar tratamientos próximos a finalizar (dentro de 3 días).
 -- 2.Notificar tratamientos ya finalizados.
-
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_tratamientos_veterinarios()
 BEGIN
@@ -243,11 +242,13 @@ BEGIN
         CONCAT(
             'El tratamiento del equino "', E.nombreEquino, 
             '" con el medicamento "', M.nombreMedicamento, 
-            '" finaliza pronto (', DATE_FORMAT(DM.fechaFin, '%d-%m-%Y'), ').'
+            '" finaliza pronto el ', DATE_FORMAT(DM.fechaFin, '%d-%m-%Y'), '.'
         ) AS Notificacion,
         DM.idDetalleMed AS idTratamiento,
         E.idEquino,
+        E.nombreEquino AS nombreEquino, -- Alias explícito
         M.idMedicamento,
+        M.nombreMedicamento AS nombreMedicamento, -- Alias explícito
         DM.fechaFin,
         'PRONTO' AS TipoNotificacion
     FROM 
@@ -258,7 +259,9 @@ BEGIN
         Equinos E ON DM.idEquino = E.idEquino
     WHERE 
         DM.estadoTratamiento = 'Activo' 
-        AND DM.fechaFin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY);
+        AND DM.fechaFin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)
+
+    UNION ALL
 
     -- Seleccionar tratamientos finalizados recientemente (últimos 7 días)
     SELECT 
@@ -269,7 +272,9 @@ BEGIN
         ) AS Notificacion,
         DM.idDetalleMed AS idTratamiento,
         E.idEquino,
+        E.nombreEquino AS nombreEquino, -- Alias explícito
         M.idMedicamento,
+        M.nombreMedicamento AS nombreMedicamento, -- Alias explícito
         DM.fechaFin,
         'FINALIZADO' AS TipoNotificacion
     FROM 
@@ -284,5 +289,3 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-CALL spu_notificar_tratamientos_veterinarios();

@@ -139,4 +139,29 @@ class Historialme extends Conexion
             return false;
         }
     }
+
+    //notificar al usuario que el tratamiento ha finalizado
+    public function notificarTratamientosVeterinarios()
+    {
+        try {
+            $query = $this->pdo->prepare("CALL spu_notificar_tratamientos_veterinarios()");
+            $query->execute();
+
+            $notificaciones = [];
+            do {
+                $result = $query->fetchAll(PDO::FETCH_ASSOC);
+                if ($result) {
+                    error_log("Resultados obtenidos: " . json_encode($result));
+                    $notificaciones = array_merge($notificaciones, $result);
+                }
+            } while ($query->nextRowset());
+
+            return ['status' => 'success', 'data' => $notificaciones];
+        } catch (Exception $e) {
+            error_log("Error en notificarTratamientosVeterinarios: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al obtener notificaciones.'];
+        }
+    }
+
+
 }

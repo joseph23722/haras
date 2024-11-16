@@ -46,6 +46,55 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    // Función para mostrar un mensaje de equinos notificaciones
+    const notificarTratamientosVeterinarios = async () => {
+        try {
+            // Realizar la solicitud al backend usando GET
+            console.log('Iniciando solicitud al backend...'); // Log inicial
+            const response = await fetch('../../controllers/historialme.controller.php?operation=notificarTratamientosVeterinarios', {
+                method: "GET",
+            });
+    
+            console.log('Respuesta del servidor recibida:', response); // Log de la respuesta inicial
+    
+            const textResponse = await response.text();
+            console.log('Texto crudo de la respuesta:', textResponse); // Log del texto sin procesar
+    
+            const result = JSON.parse(textResponse);
+            console.log('Respuesta procesada como JSON:', result); // Log del objeto JSON procesado
+    
+            // Verifica si 'data' es un array y contiene las notificaciones
+            if (Array.isArray(result.data) && result.data.length > 0) {
+                console.log('Cantidad de notificaciones recibidas:', result.data.length); // Log del tamaño del array
+                result.data.forEach(notificacion => {
+                    console.log('Notificación actual:', notificacion); // Log de cada notificación
+    
+                    // Crear el mensaje dinámico con la información del tratamiento
+                    const mensajeDinamico = `
+                        <span class="text-primary">Equino:</span> <strong>${notificacion.nombreEquino}     ,
+                        <span class="text-success">Medicamento:</span> <strong>${notificacion.nombreMedicamento}  ,
+                        <span class="text-warning">Fecha Fin:</span> ${notificacion.fechaFin} ,
+                        <span class="text-danger">Estado:</span> ${notificacion.TipoNotificacion} 
+                    `.replace(/\s+/g, '  ').trim(); // Elimina espacios extra
+    
+                    console.log('Mensaje dinámico generado:', mensajeDinamico); // Log del mensaje dinámico
+                    mostrarMensajeDinamico(mensajeDinamico, notificacion.TipoNotificacion === 'PRONTO' ? 'WARNING' : 'INFO');
+                });
+            } else {
+                console.log('No se encontraron notificaciones.'); // Log cuando no hay notificaciones
+                mostrarMensajeDinamico('No hay notificaciones de tratamientos veterinarios.', 'INFO');
+            }
+        } catch (error) {
+            console.error('Error al procesar las notificaciones:', error); // Log del error
+            mostrarMensajeDinamico('Error al obtener notificaciones de tratamientos.', 'ERROR');
+        }
+    };
+    
+    
+
+    
+
+
     // Restringir la fecha de fin a hoy y futuras
     fechaFinInput.min = new Date().toISOString().split("T")[0];
 
@@ -244,5 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadMedicamentos();
+    notificarTratamientosVeterinarios();
 
 });

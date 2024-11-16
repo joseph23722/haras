@@ -1,8 +1,27 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once '../models/Historialme.php';
 
 // Crear una instancia de la clase Historialme
 $historialme = new Historialme();
+$method = $_SERVER['REQUEST_METHOD'];
+
+header('Content-Type: application/json');
+
+
+// Función para enviar respuestas en formato JSON
+function sendResponse($status, $message, $data = null) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'status' => $status,
+        'message' => $message,
+        'data' => $data
+    ]);
+    exit(); // Asegura que no se envíe contenido adicional
+}
+
 
 try {
     // Verificar si el contenido es JSON
@@ -24,6 +43,8 @@ try {
         error_log("Operación recibida (JSON): " . $operation);
 
         switch ($operation) {
+
+            
             case 'registrarHistorialMedico':
                 error_log("Entrando en el case 'registrarHistorialMedico'");
 
@@ -121,6 +142,24 @@ try {
         $operation = $_GET['operation'] ?? '';
 
         switch ($operation) {
+
+            case 'notificarTratamientosVeterinarios':
+                try {
+                    $result = $historialme->notificarTratamientosVeterinarios();
+                    error_log("Datos enviados al frontend: " . json_encode($result));
+                    if ($result['status'] === 'success') {
+                        sendResponse('success', 'Notificaciones obtenidas correctamente.', $result['data']);
+                    } else {
+                        sendResponse('error', $result['message']);
+                    }
+                } catch (Exception $e) {
+                    error_log("Error en notificarTratamientosVeterinarios: " . $e->getMessage());
+                    sendResponse('error', 'Error al procesar la solicitud.');
+                }
+                break;
+
+            
+            
             case 'listarEquinosPorTipo':
                 // Llamada al método para listar equinos sin propietario para medicamentos
                 $result = $historialme->listarEquinosPorTipo();
