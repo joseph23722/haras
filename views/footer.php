@@ -36,5 +36,5 @@
 </div> <!-- Cierre de layoutSidenav_content -->
 </div> <!-- Cierre de layoutSidenav -->
 </body>
-<script src="http://localhost/haras/JS/notificaciones.js"></script>
+<script src="http://localhost/haras/JS/notificaciones.js" defer></script>
 </html>

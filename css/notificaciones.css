@@ -3,13 +3,13 @@
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 12px;
-    max-width: 300px;
+    max-width: 800px;
     width: auto;
     display: none; /* Oculto por defecto */
     position: absolute; /* Relativo al contenedor padre */
     top: 100%; /* Aparece justo debajo del botón */
     right: 20px; /* Ajusta la distancia desde el borde derecho */
-    transform: translate(-10px, 10px); /* Mueve un poco hacia la izquierda (-10px) y hacia abajo (10px) */
+    transform: translate(-1px, 1px); /* Mueve un poco hacia la izquierda (-10px) y hacia abajo (10px) */
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     z-index: 9999;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

@@ -1,22 +1,25 @@
-let notificaciones = [];
+let notificaciones = []; // Almacena todas las notificaciones
 
 // Función para cargar notificaciones dinámicas desde el backend
 async function cargarNotificacionesDinamicas() {
     try {
-        // Realizar solicitudes al backend para alimentos y medicamentos
-        const [responseAlimentos, responseMedicamentos] = await Promise.all([
+        // Realizar solicitudes al backend para alimentos, medicamentos y tratamientos veterinarios
+        const [responseAlimentos, responseMedicamentos, responseTratamientos] = await Promise.all([
             fetch('../../controllers/alimento.controller.php', {
                 method: 'POST',
                 body: new URLSearchParams({ operation: 'notificarStockBajo' })
             }),
-            fetch('../../controllers/admedi.controller.php?operation=notificarStockBajo')
+            fetch('../../controllers/admedi.controller.php?operation=notificarStockBajo'),
+            fetch('../../controllers/historialme.controller.php?operation=notificarTratamientosVeterinarios')
         ]);
 
         const alimentosResult = await responseAlimentos.json();
         const medicamentosResult = await responseMedicamentos.json();
+        const tratamientosResult = await responseTratamientos.json();
 
         console.log("Alimentos Result:", alimentosResult);
         console.log("Medicamentos Result:", medicamentosResult);
+        console.log("Tratamientos Result:", tratamientosResult);
 
         // Limpiar el array de notificaciones actual
         notificaciones = [];
@@ -26,14 +29,14 @@ async function cargarNotificacionesDinamicas() {
             alimentosResult.data.forEach((notificacion) => {
                 notificaciones.push({
                     mensaje: `
-                        <span class="text-primary">Alimento:</span> <strong>${notificacion.nombreAlimento}</strong> , 
+                        <span class="text-primary">Alimento:</span> <strong>${notificacion.nombreAlimento} , 
                         <span class="text-success">Lote:</span> ${notificacion.loteAlimento} , 
-                        <span class="text-warning">Stock:</span> ${notificacion.stockActual} 
-                        <span class="text-danger">(Mínimo: ${notificacion.stockMinimo})</span> , 
-                        <span class="text-info">Estado:</span> ${notificacion.mensaje}
+                        <span class="text-warning">Stock:</span> ${notificacion.stockActual}  
+                        <span class="text-danger">(Mínimo: ${notificacion.stockMinimo}) , 
+                        <span class="text-info">Estado:</span> ${notificacion.mensaje} 
                     `.replace(/\s+/g, ' ').trim(),
                     tipo: 'WARNING',
-                    timestamp: new Date().toISOString() // Marca de tiempo exacta
+                    timestamp: new Date().toISOString()
                 });
             });
         }
@@ -44,10 +47,10 @@ async function cargarNotificacionesDinamicas() {
                 medicamentosResult.data.agotados.forEach((notificacion) => {
                     notificaciones.push({
                         mensaje: `
-                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}</strong> , 
+                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}  , 
                             <span class="text-success">Lote:</span> ${notificacion.loteMedicamento} , 
-                            <span class="text-warning">Stock:</span> ${notificacion.stockActual} 
-                            <span class="text-info">Estado:</span> Agotado
+                            <span class="text-warning">Stock:</span> ${notificacion.stockActual} , 
+                            <span class="text-info">Estado:</span> Agotado 
                         `.replace(/\s+/g, ' ').trim(),
                         tipo: 'ERROR',
                         timestamp: new Date().toISOString()
@@ -59,10 +62,10 @@ async function cargarNotificacionesDinamicas() {
                 medicamentosResult.data.bajoStock.forEach((notificacion) => {
                     notificaciones.push({
                         mensaje: `
-                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}</strong> , 
-                            <span class="text-success">Lote:</span> ${notificacion.loteMedicamento} , 
-                            <span class="text-warning">Stock:</span> ${notificacion.stockActual} 
-                            <span class="text-danger">(Mínimo: ${notificacion.stockMinimo})</span> , 
+                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}  , 
+                            <span class="text-success">Lote:</span> ${notificacion.loteMedicamento}  , 
+                            <span class="text-warning">Stock:</span> ${notificacion.stockActual}  
+                            <span class="text-danger">(Mínimo: ${notificacion.stockMinimo})  , 
                             <span class="text-info">Estado:</span> Stock Bajo
                         `.replace(/\s+/g, ' ').trim(),
                         tipo: 'WARNING',
@@ -72,11 +75,24 @@ async function cargarNotificacionesDinamicas() {
             }
         }
 
-        // Mostrar notificaciones en la interfaz
-        mostrarNotificaciones();
+        // Procesar notificaciones de tratamientos veterinarios
+        if (tratamientosResult.status === 'success' && Array.isArray(tratamientosResult.data)) {
+            tratamientosResult.data.forEach((notificacion) => {
+                notificaciones.push({
+                    mensaje: `
+                        <span class="text-primary">Equino:</span> <strong>${notificacion.nombreEquino}  , 
+                        <span class="text-success">Medicamento:</span> <strong>${notificacion.nombreMedicamento}  , 
+                        <span class="text-warning">Fecha Fin:</span> ${notificacion.fechaFin} , 
+                        <span class="text-danger">Estado:</span> ${notificacion.TipoNotificacion}
+                    `.replace(/\s+/g, ' ').trim(),
+                    tipo: notificacion.TipoNotificacion === 'PRONTO' ? 'WARNING' : 'INFO',
+                    timestamp: new Date().toISOString()
+                });
+            });
+        }
 
-        // Eliminar notificaciones antiguas
-        eliminarNotificacionesAntiguas();
+        // Actualizar el contador al inicio
+        actualizarContadorNotificaciones();
 
     } catch (error) {
         console.error('Error al cargar notificaciones:', error);
@@ -99,28 +115,24 @@ function calcularTiempoRelativo(timestamp) {
     return "Hace unos segundos";
 }
 
-// Función para eliminar notificaciones con más de 30 días
-function eliminarNotificacionesAntiguas() {
-    const now = new Date();
-    notificaciones = notificaciones.filter(notificacion => {
-        const notificacionFecha = new Date(notificacion.timestamp);
-        const diffDays = (now - notificacionFecha) / (1000 * 60 * 60 * 24);
-        return diffDays <= 30; // Mantener solo las notificaciones más recientes
-    });
+// Función para actualizar el contador de notificaciones
+function actualizarContadorNotificaciones() {
+    const notificationCount = document.getElementById('notificationCount');
+    if (notificationCount) {
+        notificationCount.innerText = notificaciones.length;
+    }
 }
 
 // Función para mostrar las notificaciones en la interfaz
-function mostrarNotificaciones() {
+function mostrarNotificaciones(limit = 6) {
     const container = document.getElementById('notificationsContainer');
-    const notificationCount = document.getElementById('notificationCount');
     const notificationsList = document.getElementById('notificationsList');
 
     // Limpiar el contenido actual
     notificationsList.innerHTML = "";
-    notificationCount.innerText = notificaciones.length; // Actualizar el contador
 
-    // Renderizar cada notificación
-    notificaciones.forEach((notificacion) => {
+    // Renderizar las primeras `limit` notificaciones
+    notificaciones.slice(0, limit).forEach((notificacion) => {
         const notificationDiv = document.createElement('div');
         notificationDiv.classList.add('notification-item', 'd-flex', 'align-items-start', 'p-2');
         notificationDiv.innerHTML = `
@@ -135,7 +147,8 @@ function mostrarNotificaciones() {
         notificationsList.appendChild(notificationDiv);
     });
 
-    container.style.display = 'block'; // Mostrar contenedor de notificaciones
+    // Mostrar el contenedor
+    container.style.display = 'block';
 }
 
 // Función para cerrar el contenedor de notificaciones
@@ -146,12 +159,29 @@ function cerrarNotificaciones() {
 
 // Función para marcar todas las notificaciones como leídas
 function marcarComoLeidas() {
-    notificaciones = []; // Vaciar el array de notificaciones
-    mostrarNotificaciones(); // Refrescar el contenedor
+    notificaciones = [];
+    actualizarContadorNotificaciones();
+    mostrarNotificaciones(6);
 }
 
-// Evento para cargar notificaciones dinámicamente al cargar la página
+// Función para ver todas las notificaciones
+window.verTodasNotificaciones = function () {
+    console.log("Mostrando todas las notificaciones.");
+    mostrarNotificaciones(10); // Mostrar hasta 10 notificaciones con scroll
+};
+
+// Evento para inicializar notificaciones
 document.addEventListener("DOMContentLoaded", () => {
-    cargarNotificacionesDinamicas();
+    const btnNotifications = document.getElementById('btnNotifications');
+    if (btnNotifications) {
+        btnNotifications.addEventListener("click", () => mostrarNotificaciones(6));
+    }
+
+    const btnVerTodas = document.querySelector(".btn-view-all");
+    if (btnVerTodas) {
+        btnVerTodas.addEventListener("click", verTodasNotificaciones);
+    }
+
+    cargarNotificacionesDinamicas(); // Cargar notificaciones al inicio sin mostrarlas
     window.cerrarNotificaciones = cerrarNotificaciones;
 });

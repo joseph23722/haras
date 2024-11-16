@@ -86,6 +86,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
 
 
         <!-- Navbar Notifications -->
+        <!-- Navbar Notifications -->
         <div class="ms-auto me-3 my-2 my-md-0">
             <!-- Botón único para todas las notificaciones -->
             <button class="btn btn-info position-relative" id="btnNotifications" type="button" onclick="mostrarNotificaciones()">
@@ -110,7 +111,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             </div>
             <!-- Ver todas las notificaciones -->
             <div class="text-center">
-                <button class="btn btn-outline-primary btn-view-all" onclick="verTodasNotificaciones()">Ver todas las notificaciones</button>
+                <button class="btn btn-outline-primary btn-view-all">Ver todas las notificaciones</button>
             </div>
         </div>
 
