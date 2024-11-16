@@ -12,18 +12,18 @@ class Herrero extends Conexion {
     // Método para insertar un nuevo trabajo en el historial del herrero
     public function insertarHistorialHerrero($params = []) {
         try {
+            // Verificar y manejar la sesión
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
     
             $idUsuario = $_SESSION['idUsuario'] ?? null;
-            error_log("ID de usuario en la sesión: " . json_encode($idUsuario));
-    
             if ($idUsuario === null) {
-                throw new Exception('Usuario no autenticado.');
+                error_log("Usuario no autenticado: idUsuario no definido en la sesión.");
+                return ['status' => 'error', 'message' => 'Usuario no autenticado.'];
             }
     
-            // Crear un array de campos obligatorios para verificar si alguno está vacío
+            // Validar los campos obligatorios
             $obligatorios = [
                 'idEquino' => $params['idEquino'] ?? null,
                 'fecha' => $params['fecha'] ?? null,
@@ -32,24 +32,14 @@ class Herrero extends Conexion {
                 'observaciones' => $params['observaciones'] ?? null
             ];
     
-            // Log de cada campo obligatorio y su valor
             foreach ($obligatorios as $campo => $valor) {
-                error_log("Campo obligatorio: $campo, Valor: " . json_encode($valor));
                 if (empty($valor)) {
+                    error_log("Campo obligatorio faltante: $campo.");
                     throw new Exception("Falta el campo obligatorio: $campo.");
                 }
             }
     
-            // Log de los datos completos preparados para insertar en la base de datos
-            error_log("Datos preparados para InsertarHistorialHerrero: " . json_encode([
-                $params['idEquino'],
-                $idUsuario,
-                $params['fecha'],
-                $params['trabajoRealizado'],
-                $params['herramientasUsadas'],
-                $params['observaciones']
-            ]));
-    
+            // Ejecutar el procedimiento almacenado
             $stmt = $this->pdo->prepare("CALL InsertarHistorialHerrero(?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $params['idEquino'],
@@ -60,17 +50,25 @@ class Herrero extends Conexion {
                 $params['observaciones']
             ]);
     
-            error_log("Inserción realizada correctamente en InsertarHistorialHerrero.");
-    
-            return ['status' => 'success', 'message' => 'Trabajo registrado en el historial correctamente.'];
+            // Verificar si se insertó correctamente
+            if ($stmt->rowCount() > 0) {
+                return ['status' => 'success', 'message' => 'Trabajo registrado en el historial correctamente.'];
+            } else {
+                error_log("No se afectaron filas al insertar historial del herrero.");
+                return ['status' => 'error', 'message' => 'No se pudo registrar el trabajo en el historial.'];
+            }
         } catch (PDOException $e) {
-            error_log("Error al insertar historial de herrero: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al registrar el trabajo en el historial.'];
+            // Manejar errores de base de datos
+            error_log("Error PDO al insertar historial del herrero: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error en la base de datos al registrar el historial.'];
         } catch (Exception $e) {
+            // Manejar otros errores
             error_log("Error en insertarHistorialHerrero: " . $e->getMessage());
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+    
+    
     
     // Método para insertar una herramienta usada en el historial
     public function insertarHerramientaUsada($params = []) {

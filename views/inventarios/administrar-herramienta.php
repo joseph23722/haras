@@ -210,6 +210,14 @@
     
     // Función para registrar un nuevo historial de herrero
 
+    document.getElementById('form-historial-herrero').addEventListener('submit', function (event) {
+    // Prevenir el comportamiento predeterminado de recargar la página
+        event.preventDefault();
+
+        // Llama a la función de registro de historial
+        registrarHistorialHerrero();
+    });
+
     function registrarHistorialHerrero() {
         const formData = new FormData(document.getElementById('form-historial-herrero'));
         formData.append('operation', 'insertarHistorialHerrero');
@@ -221,7 +229,6 @@
             console.log(`Campo ${key}:`, value);  // Log de cada campo y valor en el frontend
         });
 
-
         console.log("Datos a enviar para registrar historial:", datos);
 
         fetch('/haras/controllers/herrero.controller.php', {
@@ -229,22 +236,28 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         })
-        .then(response => {
-            console.log("Respuesta de la API recibida:", response);
-            return response.json();
-        })
-        .then(data => {
-            console.log("Datos procesados de la respuesta:", data);
-            if (data.status === 'success') {
-                Swal.fire('Registrado', data.message, 'success');
-                document.getElementById('form-historial-herrero').reset();
-                cargarHistorialHerrero();
-            } else {
-                Swal.fire('Error', data.message, 'error');
+        .then(response => response.text()) // Captura como texto para depurar
+        .then(text => {
+            console.log("Respuesta cruda:", text);
+            try {
+                const data = JSON.parse(text); // Intenta parsear a JSON
+                if (data.status === 'success') {
+                    Swal.fire('Registrado', data.message, 'success');
+                    document.getElementById('form-historial-herrero').reset();
+                    loadHistorialHerreroTable();
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            } catch (e) {
+                console.error("Error al parsear JSON:", e);
+                console.log("Contenido recibido:", text);
             }
         })
         .catch(error => console.error('Error al registrar historial:', error));
+
+
     }
+
 
 
     // Función para cargar el DataTable de historial de herrero

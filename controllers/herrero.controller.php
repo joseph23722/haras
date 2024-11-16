@@ -13,10 +13,20 @@ header('Content-Type: application/json');
 
 // Función para enviar una respuesta JSON al cliente
 function sendResponse($status, $message, $data = null) {
-    header('Content-Type: application/json'); // Asegura que la respuesta es JSON
-    echo json_encode(['status' => $status, 'message' => $message, 'data' => $data]);
+    // Asegurar encabezado JSON
+    header('Content-Type: application/json');
+
+    // Construir la respuesta
+    $response = ['status' => $status, 'message' => $message];
+    if ($data !== null) {
+        $response['data'] = $data;
+    }
+
+    // Imprimir y detener la ejecución
+    echo json_encode($response);
     exit();
 }
+
 
 
 // Obtener la operación
@@ -86,30 +96,32 @@ try {
         switch ($operation) {
             case 'insertarHistorialHerrero':
                 try {
+                    // Obtener y decodificar los datos JSON del cliente
                     $params = json_decode(file_get_contents('php://input'), true);
-            
-                    // Log de todos los datos recibidos en el controlador
                     error_log("Datos recibidos en el controlador insertarHistorialHerrero: " . json_encode($params));
             
-                    // Verificación de los parámetros obligatorios y log de cada uno
-                    $requiredFields = ['idEquino', 'idUsuario', 'fecha', 'trabajoRealizado', 'herramientasUsadas', 'observaciones'];
+                    // Verificar campos obligatorios en la entrada
+                    $requiredFields = ['idEquino', 'fecha', 'trabajoRealizado', 'herramientasUsadas', 'observaciones'];
                     foreach ($requiredFields as $field) {
                         if (!isset($params[$field]) || empty($params[$field])) {
-                            error_log("Campo faltante o vacío: $field con valor: " . json_encode($params[$field]));
-                            sendResponse('error', 'Datos incompletos para registrar el historial.');
+                            error_log("Campo faltante o vacío: $field.");
+                            sendResponse('error', "El campo '$field' es obligatorio para registrar el historial.");
                             return;
                         }
                     }
             
-                    // Llamar al método en el modelo para insertar el historial
+                    // Llamar al método del modelo para insertar el historial
                     $result = $herrero->insertarHistorialHerrero($params);
-                    error_log("Resultado de la inserción en modelo: " . json_encode($result));  // Log del resultado del modelo
+                    error_log("Resultado del modelo insertarHistorialHerrero: " . json_encode($result));
+            
+                    // Enviar la respuesta según el resultado
                     sendResponse($result['status'], $result['message']);
                 } catch (Exception $e) {
                     error_log("Excepción en insertarHistorialHerrero: " . $e->getMessage());
                     sendResponse('error', 'Excepción al intentar registrar el historial.');
                 }
                 break;
+            
             
     
             case 'insertarHerramientaUsada':
