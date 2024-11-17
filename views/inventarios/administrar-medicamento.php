@@ -5,32 +5,32 @@
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
         Gestionar Medicamentos
     </h1>
-    
+
 
     <!-- Sección del formulario para registrar un medicamento -->
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Medicamento</h5>
             <!-- Botón de Sugerencias integrado en el header -->
-            <button type="button" class="btn btn-info btn-sm" 
-                    style=" border: none; position: absolute; right: 1px; top: 2px; padding: 10px 12px; font-size: 1.2em;"
-                    id="btnSugerencias" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalSugerencias">
+            <button type="button" class="btn btn-info btn-sm"
+                style=" border: none; position: absolute; right: 1px; top: 2px; padding: 10px 12px; font-size: 1.2em;"
+                id="btnSugerencias"
+                data-bs-toggle="modal"
+                data-bs-target="#modalSugerencias">
                 <i class="fas fa-lightbulb"></i>
             </button>
             <!-- Botón de Agregar en el header -->
-            <button type="button" class="btn btn-success btn-sm" 
-                    style="background-color: #28a745; border: none; position: absolute; right: 50px; top: 1px; padding: 10px 12px; font-size: 1.2em;"
-                    id="btnAgregar" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalAgregarTipoPresentacion">
+            <button type="button" class="btn btn-success btn-sm"
+                style="background-color: #28a745; border: none; position: absolute; right: 50px; top: 1px; padding: 10px 12px; font-size: 1.2em;"
+                id="btnAgregar"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAgregarTipoPresentacion">
                 <i class="fas fa-plus"></i>
             </button>
 
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
-             
+
             <form action="" id="form-registrar-medicamento" autocomplete="off">
                 <div class="row g-3">
                     <!-- Nombre del Medicamento -->
@@ -63,7 +63,7 @@
                         </div>
                     </div>
 
-                    
+
 
                     <!-- Tipo de Medicamento -->
                     <div class="col-md-6">
@@ -80,7 +80,7 @@
                     <!-- Composición (Dosis y Unidad) -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="dosis" id="dosis" class="form-control" placeholder="" required 
+                            <input type="text" name="dosis" id="dosis" class="form-control" placeholder="" required
                                 pattern="^\d+(\.\d+)?\s?[a-zA-Z]+$"
                                 title="Ingrese la cantidad seguida de la unidad (por ejemplo: 500 mg, 10 ml)">
                             <label for="dosis">
@@ -103,7 +103,7 @@
 
 
 
-                    
+
 
                     <!-- Cantidad en Stock -->
                     <div class="col-md-6">
@@ -135,10 +135,10 @@
                         </div>
                     </div>
 
-                   <!-- Precio Unitario -->
+                    <!-- Precio Unitario -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" step="0.01" name="precioUnitario"  placeholder="" id="precioUnitario" class="form-control" required min="0">
+                            <input type="number" step="0.01" name="precioUnitario" placeholder="" id="precioUnitario" class="form-control" required min="0">
                             <label for="precioUnitario">
                                 <i class="fas fa-dollar-sign" style="color: #0077b6;"></i> Precio Unitario
                             </label>
@@ -230,7 +230,7 @@
 
 
     <!-- Modal para Registrar Entrada de Medicamento -->
-    <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel"data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -252,7 +252,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <!-- Lote -->
                         <div class="row mb-3">
                             <div class="col-md-12">
@@ -315,7 +315,7 @@
                                 <input type="number" name="cantidad" id="salidaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
                             </div>
 
-                            
+
                             <div class="col-md-6">
                                 <label for="idEquino" class="form-label fw-bold">Categoría de Equino</label> <!-- Etiqueta agregada para consistencia -->
                                 <select id="idEquino" name="idEquino" class="form-select form-control-lg" required>
@@ -487,16 +487,16 @@
                             <div class="table-responsive">
                                 <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
                                     <thead class="table-danger">
-                                    <tr class="text-center">
-                                        <th>ID Medicamento</th>
-                                        <th>Nombre Medicamento</th>
-                                        <th>Lote</th>
-                                        <th>Tipo de Equino</th>
-                                        <th>Cantidad de Equinos</th> <!-- Este es el conteo de equinos -->
-                                        <th>Cantidad de Salida</th>
-                                        <th>Motivo</th>
-                                        <th>Fecha de Movimiento</th>
-                                    </tr>
+                                        <tr class="text-center">
+                                            <th>ID Medicamento</th>
+                                            <th>Nombre Medicamento</th>
+                                            <th>Lote</th>
+                                            <th>Tipo de Equino</th>
+                                            <th>Cantidad de Equinos</th> <!-- Este es el conteo de equinos -->
+                                            <th>Cantidad de Salida</th>
+                                            <th>Motivo</th>
+                                            <th>Fecha de Movimiento</th>
+                                        </tr>
                                     </thead>
                                 </table>
                             </div>
@@ -511,9 +511,6 @@
             </div>
         </div>
     </div>
-
-
-
 
     <!-- Tabla de Medicamentos Registrados -->
     <div class="card mb-4 shadow-sm">
@@ -541,935 +538,17 @@
             </table>
         </div>
     </div>
-
-
-
-
-
 </div>
 
 <?php require_once '../footer.php'; ?>
 <script src="/haras/vendor/medicamento/historial-medicamento.js"></script>
 <script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
-
-
-
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
-
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-        let notificacionesMostradas = false;
-
-        const formRegistrarMedicamento = document.querySelector("#form-registrar-medicamento");
-        const formEntrada = document.querySelector("#formEntrada");
-        const formSalida = document.querySelector("#formSalida");
-        const medicamentosTable = document.querySelector("#medicamentos-table");
-        const tipoMedicamentoSelect = document.querySelector("#tipo");
-        const presentacionSelect = document.querySelector("#presentacion");
-
-
-        const messageArea = document.getElementById("message-area");
-        const btnSugerencias = document.getElementById("btnSugerencias");
-
-        
-
-        // Función para mostrar mensajes dinámicos para medicamentos
-        function mostrarMensaje(mensaje, tipo = 'INFO') {
-            const messageArea = document.getElementById("message-area"); // Asegúrate de tener un div con el id 'messageAreaMedicamento'
-
-            if (messageArea) {
-                // Definición de estilos para cada tipo de mensaje
-                const estilos = {
-                    'INFO': { color: '#3178c6', bgColor: '#e7f3ff', icon: 'ℹ️' },
-                    'SUCCESS': { color: '#3c763d', bgColor: '#dff0d8', icon: '✅' },
-                    'ERROR': { color: '#a94442', bgColor: '#f2dede', icon: '❌' },
-                    'WARNING': { color: '#8a6d3b', bgColor: '#fcf8e3', icon: '⚠️' }
-                };
-
-                // Obtener los estilos correspondientes al tipo de mensaje
-                const estilo = estilos[tipo] || estilos['INFO'];
-
-                // Aplicar estilos al contenedor del mensaje
-                messageArea.style.display = 'flex';
-                messageArea.style.alignItems = 'center';
-                messageArea.style.color = estilo.color;
-                messageArea.style.backgroundColor = estilo.bgColor;
-                messageArea.style.fontWeight = 'bold';
-                messageArea.style.padding = '15px';
-                messageArea.style.marginBottom = '15px';
-                messageArea.style.border = `1px solid ${estilo.color}`;
-                messageArea.style.borderRadius = '8px';
-                messageArea.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-
-                // Mostrar el mensaje con un icono
-                messageArea.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
-
-                // Ocultar el mensaje después de 5 segundos
-                setTimeout(() => {
-                    messageArea.style.display = 'none';
-                    messageArea.innerHTML = ''; // Limpiar contenido
-                    messageArea.style.border = 'none';
-                    messageArea.style.boxShadow = 'none';
-                    messageArea.style.backgroundColor = 'transparent';
-                }, 5000);
-            } else {
-                console.warn('El contenedor de mensajes para medicamentos no está presente en el DOM.');
-            }
-        }
-
-
-        // Función para validar el campo lote
-        async function validarLote(loteInput) {
-            const loteValue = loteInput.value.trim();
-            if (loteValue === 'LOTE-') {
-                await ask('El campo Lote está incompleto. Agrega algo después de "LOTE-".');
-                return false;
-            }
-            return true;
-        }
-
-
-        // Evento para el botón de sugerencias
-        async function cargarSugerencias() {
-            try {
-                // Hacer la solicitud al servidor para obtener todas las sugerencias usando GET
-                const response = await fetch(`../../controllers/admedi.controller.php?operation=listarSugerenciasMedicamentos`, {
-                    method: "GET",
-                });
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    // Limpiar el contenido anterior de la tabla
-                    const tableBody = document.getElementById('sugerenciasTableBody');
-                    tableBody.innerHTML = '';
-
-                    // Iterar sobre las sugerencias y agregarlas a la tabla con botón de edición
-                    result.data.forEach(sugerencia => {
-                        console.log(sugerencia);
-                        
-                        const row = `
-                            <tr>
-                                <td>${sugerencia.tipo}</td>
-                                <td>${sugerencia.presentaciones}</td>
-                                <td>${sugerencia.dosis}</td>
-                                <td>
-                                    <button onclick="editarSugerencia(${sugerencia.idCombinacion}, '${sugerencia.tipo}', '${sugerencia.presentaciones}', '${sugerencia.dosis}')" class="btn btn-warning btn-sm">
-                                        Editar
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                        tableBody.innerHTML += row;
-                    });
-
-                } else {
-                    alert("Error: " + result.message);
-                }
-            } catch (error) {
-                alert("Ocurrió un error al obtener las sugerencias: " + error.message);
-            }
-        }
-
-        // Llama a `cargarSugerencias` cuando el botón de sugerencias se haga clic
-        btnSugerencias.addEventListener("click", cargarSugerencias);
-
-
-        document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            // Obtener los valores de los campos del modal de edición
-            const idCombinacion = document.getElementById('editarId').value;
-            const tipo = document.getElementById('editarTipo').value;
-            const presentacion = document.getElementById('editarPresentacion').value;
-            const dosis = document.getElementById('editarDosis').value;
-
-            console.log("---- Valores obtenidos del formulario ----");
-            console.log("ID de la combinación:", idCombinacion);
-            console.log("Tipo de medicamento:", tipo);
-            console.log("Presentación:", presentacion);
-            console.log("Dosis:", dosis);
-            console.log("----------------------------------------");
-
-            // Verificar que los valores sean válidos antes de hacer la solicitud
-            if (!dosis || !idCombinacion) {
-                alert("El campo de dosis y el ID de la combinación son requeridos.");
-                return;
-            }
-
-            try {
-                console.log("Iniciando la solicitud POST para actualizar la sugerencia...");
-                
-                const response = await fetch(`../../controllers/admedi.controller.php?operation=editarSugerenciaMedicamento`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ operation: "editarSugerenciaMedicamento", idCombinacion, tipo, presentacion, unidad: dosis }) // Verifica el mapeo aquí
-                });
-
-                console.log("Solicitud enviada. Esperando respuesta...");
-
-                const result = await response.json();
-                
-                console.log("Respuesta recibida del servidor:");
-                console.log(result);
-
-                if (result.status === "success") {
-                    console.log("Actualización exitosa de la sugerencia.");
-                    alert("Sugerencia actualizada correctamente.");
-                    $('#modalEditarSugerencia').modal('hide');
-                    await cargarSugerencias();
-                    $('#modalSugerencias').modal('show');
-                } else {
-                    console.log("Error recibido en la respuesta del servidor:", result.message);
-                    alert("Error: " + result.message);
-                }
-            } catch (error) {
-                console.log("Excepción capturada durante la solicitud de actualización:", error.message);
-                alert("Ocurrió un error al actualizar la sugerencia: " + error.message);
-            }
-        });
-
-
-        window.editarSugerencia = function(idCombinacion, tipo, presentacion, dosis) {
-            console.log("Editar sugerencia con ID:", idCombinacion);
-            console.log("Tipo:", tipo);
-            console.log("Presentación:", presentacion);
-            console.log("Dosis:", dosis);
-        // Asignar los valores de la sugerencia a los campos del formulario de edición
-        document.getElementById('editarId').value = idCombinacion; // Asigna el ID de la combinación al campo oculto
-        document.getElementById('editarTipo').value = tipo;
-        document.getElementById('editarPresentacion').value = presentacion;
-        document.getElementById('editarDosis').value = dosis;
-
-        // Cerrar el modal de sugerencias y abrir el modal de edición
-        $('#modalSugerencias').modal('hide');
-        $('#modalEditarSugerencia').modal('show');
-    };
-
-
-
-        // Función para cargar las categorías de equinos
-        // Función para cargar las categorías de equinos con sus cantidades en el select del modal
-        const loadCategoriaEquinos = async () => {
-            try {
-                const response = await fetch('../../controllers/alimento.controller.php?operation=getTipoEquinos', {
-                    method: "GET"
-                });
-
-                const parsedResponse = await response.json();
-                console.log("Respuesta de la API para cargar categorías de equinos:", parsedResponse);
-
-                if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
-                    const categorias = parsedResponse.data;
-                    const idEquinoSelect = document.getElementById('idEquino');
-
-                    if (!idEquinoSelect) {
-                        console.error("El select con ID 'idEquino' no existe en el DOM.");
-                        return;
-                    }
-
-                    // Limpiar opciones previas
-                    idEquinoSelect.innerHTML = '<option value="">Seleccione Categoría de Equino</option>';
-
-                    // Agregar opciones y verificar que `idEquino` sea válido
-                    categorias.forEach(categoria => {
-                        console.log("Verificando categoría:", categoria);  // Añadir este log
-
-                        if (categoria.idEquino) {  // Asegurarse de que el idEquino existe y no está undefined
-                            const option = document.createElement('option');
-                            option.value = categoria.idEquino;  // Confirmar que `idEquino` se usa correctamente
-                            option.textContent = `${categoria.Categoria} (${categoria.Cantidad})`;
-                            idEquinoSelect.appendChild(option);
-                        } else {
-                            console.warn(`Categoría sin idEquino:`, categoria);  // Log en caso de un valor faltante
-                        }
-                    });
-                } else {
-                    console.warn('No se encontraron categorías de equinos.');
-                }
-            } catch (error) {
-                console.error("Error al cargar categorías de equinos:", error);
-            }
-        };
-
-        // Historial de movimientos de medicamentos
-        // Función para ajustar las fechas basadas en el filtro seleccionado
-        const setFechaFiltro = () => {
-            const filtroRango = document.getElementById('filtroRango').value;
-            const hoy = new Date();
-            let fechaInicio, fechaFin;
-
-            switch (filtroRango) {
-                case 'hoy':
-                    fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
-                    break;
-                case 'ultimaSemana':
-                    fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
-                    fechaFin = new Date().toISOString().split('T')[0];
-                    break;
-                case 'ultimoMes':
-                    fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
-                    fechaFin = new Date().toISOString().split('T')[0];
-                    break;
-                default:
-                    fechaInicio = '';
-                    fechaFin = '';
-            }
-
-            // Asigna las fechas como atributos del filtro para uso en AJAX
-            document.getElementById('filtroRango').setAttribute('data-fecha-inicio', fechaInicio);
-            document.getElementById('filtroRango').setAttribute('data-fecha-fin', fechaFin);
-        };
-
-        // Función para recargar las tablas de Entradas y Salidas
-        const reloadHistorialMovimientos = () => {
-            $('#tabla-entradas').DataTable().ajax.reload();
-            $('#tabla-salidas').DataTable().ajax.reload();
-        };
-
-        // Evento para actualizar el filtro de fecha y recargar las tablas cuando el usuario selecciona un nuevo rango
-        document.getElementById('filtroRango').addEventListener('change', () => {
-            setFechaFiltro();
-            reloadHistorialMovimientos();
-        });
-
-        // Llamar a las funciones de configuración cuando el DOM esté listo
-        $(document).ready(() => {
-            configurarDataTableEntradas();
-            configurarDataTableSalidas();
-        });
-
-
-        // Cargar los tipos de medicamentos desde el servidor
-        const loadTiposMedicamentos = async () => {
-            try {
-                console.log("Iniciando carga de tipos de medicamentos...");
-                const response = await fetch(`../../controllers/admedi.controller.php?operation=listarTiposMedicamentos`, {
-                    method: "GET",
-                });
-                console.log("Respuesta recibida de tipos de medicamentos:", response);
-
-                const result = await response.json();
-                console.log("Resultado parseado de tipos de medicamentos:", result);
-
-                // Limpiar el select y agregar opciones
-                tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
-
-                result.data.forEach(tipo => {
-                    console.log("Procesando tipo:", tipo);
-                    const option = document.createElement("option");
-                    option.value = tipo.idTipo; // Usar idTipo para identificar cada tipo
-                    option.textContent = tipo.tipo;
-                    tipoMedicamentoSelect.appendChild(option);
-                });
-
-                // Agregar un evento para cargar presentaciones al cambiar el tipo
-                tipoMedicamentoSelect.addEventListener('change', (event) => {
-                    const idTipo = event.target.value;
-                    console.log("Tipo seleccionado:", idTipo);
-                    if (idTipo) {
-                        loadPresentaciones(idTipo); // Llamar a loadPresentaciones con el idTipo seleccionado
-                    } else {
-                        presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error al cargar tipos de medicamentos:", error);
-                mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
-            }
-        };
-
-
-        // Registrar combinaciones 
-        // Registrar combinaciones 
-        document.querySelector("#formAgregarTipoPresentacion").addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const nuevoTipo = document.querySelector("#nuevoTipoMedicamento").value;
-            const nuevaPresentacion = document.querySelector("#nuevaPresentacion").value;
-            const nuevaUnidad = document.querySelector("#nuevaUnidadMedida").value;
-            const dosis = parseFloat(document.querySelector("#dosisMedicamento").value); // Siempre será 10
-
-            // Verificar que todos los campos visibles tengan un valor
-            if (!nuevoTipo || !nuevaPresentacion || !nuevaUnidad) {
-                alert("Todos los campos son obligatorios.");
-                return;
-            }
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({
-                        operation: 'agregarCombinacionMedicamento',
-                        tipo: nuevoTipo,
-                        presentacion: nuevaPresentacion,
-                        unidad: nuevaUnidad,
-                        dosis: dosis // Envía siempre 10
-                    })
-                });
-
-                const result = await response.json();
-                if (result.status === "success") {
-                    mostrarMensaje(result.message, 'success');
-                    showToast(result.message, 'SUCCESS');
-                    $('#modalAgregarTipoPresentacion').modal('hide'); // Cierra el modal
-                } else {
-                    mostrarMensaje(result.message, 'error');
-                    showToast(result.message, 'ERROR');
-                }
-            } catch (error) {
-                mostrarMensaje("Error al agregar la combinación: " + error.message, 'error');
-                showToast("Error al agregar la combinación", 'ERROR');
-            }
-        });
-
-
-
-        // Cargar presentaciones de medicamentos desde el servidor
-        // Cargar presentaciones de medicamentos desde el servidor según el tipo seleccionado
-        const loadPresentaciones = async (idTipo) => {
-            try {
-                // Verificar si idTipo está definido
-                if (!idTipo) {
-                    showToast("No se olvide ,Debe seleccionar un tipo de medicamento antes de cargar las presentaciones.",'INFO');
-                    return;
-                }
-
-                const response = await fetch(`../../controllers/admedi.controller.php`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({ operation: 'listarPresentacionesMedicamentos', idTipo: idTipo })
-                });
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    const presentaciones = result.data;
-
-                    // Limpiar las opciones previas y agregar el mensaje inicial
-                    presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
-                    presentaciones.forEach(presentacion => {
-                        const option = document.createElement("option");
-                        option.value = presentacion.idPresentacion; // Usar idPresentacion como valor
-                        option.textContent = presentacion.presentacion;
-                        presentacionSelect.appendChild(option);
-                    });
-                } else {
-                    mostrarMensaje("No se pudieron obtener las presentaciones.", 'error');
-                }
-            } catch (error) {
-                mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
-            }
-        };
-
-        
-
-        // Cargar medicamentos en los selectores de entrada y salida
-        const loadSelectMedicamentos = async () => {
-            try {
-                // Definir los parámetros en la URL para el método GET
-                const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
-                const response = await fetch(`../../controllers/admedi.controller.php?${params.toString()}`, {
-                    method: "GET"  // Cambiar el método a GET
-                });
-
-                const textResponse = await response.text();
-                const result = JSON.parse(textResponse);
-                const medicamentos = result.data;
-
-                // Crear un Set para almacenar nombres únicos de medicamentos
-                const medicamentosUnicos = new Set();
-
-                // Limpiar los selectores
-                document.querySelector("#entradaMedicamento").innerHTML = '<option value="">Seleccione un Medicamento</option>';
-                document.querySelector("#salidaMedicamento").innerHTML = '<option value="">Seleccione un Medicamento</option>';
-
-                // Recorrer los medicamentos y agregar solo los nombres únicos
-                medicamentos.forEach(med => {
-                    if (!medicamentosUnicos.has(med.nombreMedicamento)) {
-                        medicamentosUnicos.add(med.nombreMedicamento);
-
-                        // Crear las opciones para los selectores
-                        const optionEntrada = document.createElement("option");
-                        optionEntrada.value = med.nombreMedicamento;
-                        optionEntrada.textContent = med.nombreMedicamento;
-
-                        const optionSalida = document.createElement("option");
-                        optionSalida.value = med.nombreMedicamento;
-                        optionSalida.textContent = med.nombreMedicamento;
-
-                        // Añadir las opciones a los selectores
-                        document.querySelector("#entradaMedicamento").appendChild(optionEntrada);
-                        document.querySelector("#salidaMedicamento").appendChild(optionSalida);
-                    }
-                });
-
-                
-
-            } catch (error) {
-                mostrarMensaje("Error al cargar medicamentos: " + error.message, 'error');
-                showToast("Error al cargar medicamentos", 'ERROR');
-            }
-        };
-        
-        
-
-        // Cargar lista de medicamentos en la tabla
-        const loadMedicamentos = async () => {
-            try {
-                const params = new URLSearchParams({ operation: 'getAllMedicamentos' });
-                const response = await fetch(`../../controllers/admedi.controller.php?${params.toString()}`, {
-                    method: "GET"
-                });
-
-                const textResponse = await response.text();
-                if (textResponse.startsWith("<")) {
-                    mostrarMensaje("Error en la respuesta del servidor.", 'error');
-                    showToast("Error en la respuesta del servidor", 'ERROR');
-                    return;
-                }
-
-                const result = JSON.parse(textResponse);
-                const medicamentos = result.data;
-
-                if ($.fn.dataTable.isDataTable('#tabla-medicamentos')) {
-                    $('#tabla-medicamentos').DataTable().clear().rows.add(medicamentos).draw();
-                } else {
-                    configurarDataTableMedicamentos(); // Inicializa DataTable si no está inicializado
-                }
-
-            } catch (error) {
-                mostrarMensaje("Error al cargar medicamentos: " + error.message, 'error');
-                showToast("Error al cargar medicamentos", 'ERROR');
-            }
-        };
-
-
-        
-
-
-        // **Función para manejar la notificación de stock bajo/agotado para medicamentos**
-        const notificarStockBajo = async () => {
-            try {
-                // Realizar la solicitud GET al controlador de medicamentos
-                const response = await fetch('../../controllers/admedi.controller.php?operation=notificarStockBajo', {
-                    method: "GET"
-                });
-
-                // Leer la respuesta y parsear a JSON
-                const textResponse = await response.text();
-                const result = JSON.parse(textResponse);
-
-                // Verificar si hay datos y recorrer los resultados
-                if (result.status === 'success' && result.data) {
-                    const { agotados, bajoStock } = result.data;
-
-                    // Mostrar notificaciones de medicamentos agotados
-                    agotados.forEach(notificacion => {
-                        mostrarMensaje(
-                            `
-                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}  , 
-                            <span class="text-success">Lote:</span> ${notificacion.loteMedicamento}  , 
-                            <span class="text-info">Estado:</span> Agotado 
-                            `,
-                            'ERROR' // Puedes usar 'ERROR' para más énfasis
-                        );
-                    });
-
-                    // Mostrar notificaciones de medicamentos con stock bajo
-                    bajoStock.forEach(notificacion => {
-                        mostrarMensaje(
-                            `
-                            <span class="text-primary">Medicamento:</span> <strong>${notificacion.nombreMedicamento}   , 
-                            <span class="text-success">Lote:</span> ${notificacion.loteMedicamento} , 
-                            <span class="text-warning">Stock:</span> ${notificacion.stockActual}  ,
-                            <span class="text-danger">(Mínimo: ${notificacion.stockMinimo})  , 
-                            <span class="text-info">Estado:</span> Stock Bajo
-                            `,
-                            'WARNING'
-                        );
-                    });
-                } else if (result.status === 'info') {
-                    mostrarMensaje(result.message, 'INFO');
-                }
-            } catch (error) {
-                mostrarMensaje('Error al notificar stock bajo.', 'ERROR');
-            }
-        };
-
-
-
-        // Función para confirmar la eliminación del medicamento
-        // Función para confirmar la eliminación del medicamento
-        window.borrarMedicamento = async (idMedicamento, nombreMedicamento) => {
-            // Confirmación antes de proceder con la eliminación
-            const confirmacion = await ask(`¿Estás seguro de que deseas eliminar el medicamento "${nombreMedicamento}"?`);
-            if (confirmacion) {
-                try {
-                    // Enviar solicitud al backend
-                    const response = await fetch('../../controllers/admedi.controller.php', {
-                        method: "POST",
-                        body: new URLSearchParams({
-                            operation: 'deleteMedicamento',
-                            idMedicamento: idMedicamento
-                        })
-                    });
-
-                    const textResult = await response.text();
-
-                    let result;
-                    try {
-                        result = JSON.parse(textResult);
-                    } catch (jsonParseError) {
-                        showToast("Error al interpretar la respuesta del servidor. Respuesta no válida.", "ERROR");
-                        return;
-                    }
-
-                    // Verificar el estado de la operación
-                    if (result.status === 'success') {
-                        showToast("Medicamento eliminado correctamente.", "SUCCESS");
-
-                        // Actualizar los selectores y listas después de la eliminación
-                        await loadSelectMedicamentos();
-                        await cargarLotes();
-                        await loadMedicamentos();
-                    } else {
-                        showToast(result.message || "Error al eliminar el medicamento.", "ERROR");
-                    }
-                } catch (error) {
-                    showToast("Error al intentar eliminar el medicamento: " + error.message, "ERROR");
-                }
-            } else {
-                showToast("Eliminación cancelada por el usuario.", "INFO");
-            }
-        };
-
-       // **Nuevo - Validar combinaciones antes de registrar un medicamento**
-       const validarCombinacion = async (params) => {
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: new URLSearchParams({
-                        operation: 'validarRegistrarCombinacion',
-                        tipoMedicamento: params.tipo,        
-                        presentacionMedicamento: params.presentacion,  
-                        dosisMedicamento: params.dosis       
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    return true;  // La combinación es válida
-                } else {
-                    mostrarMensaje(result.message, 'error');
-                    return false;  // La combinación es inválida
-                }
-            } catch (error) {
-                mostrarMensaje("Error al validar combinación: " + error.message, 'error');
-                return false;
-            }
-        };
-
-    
-        // **Validar campos y mostrar mensajes específicos**
-        const validarCampos = (formData) => {
-            const errors = [];
-
-            if (!formData.get('nombreMedicamento')) {
-                errors.push('El nombre del medicamento es obligatorio.');
-            }
-
-            if (!formData.get('lote')) {
-                errors.push('El lote es obligatorio.');
-            }
-
-            if (!formData.get('tipo')) {
-                errors.push('El tipo de medicamento es obligatorio.');
-            }
-
-            if (!formData.get('presentacion')) {
-                errors.push('La presentación es obligatoria.');
-            }
-
-            if (!formData.get('fechaCaducidad')) {
-                errors.push('La fecha de caducidad es obligatoria.');
-            }
-
-            if (!formData.get('dosis')) {
-                errors.push('La dosis es obligatoria.');
-            }
-
-            if (!formData.get('cantidad_stock') || formData.get('cantidad_stock') <= 0) {
-                errors.push('La cantidad de stock debe ser mayor a 0.');
-            }
-
-            return errors;
-        };
-
-
-        // Registrar medicamento
-        // Registrar medicamento con confirmación
-        formRegistrarMedicamento.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            console.log("Iniciando registro de medicamento...");
-
-            // Confirmación antes de registrar el medicamento
-            if (await ask("¿Confirmar registro del nuevo medicamento?")) {
-                console.log("Confirmación del usuario recibida. Enviando datos...");
-
-                // Obtener el valor combinado de dosis y unidad
-                const dosisCompleta = document.querySelector("#dosis").value;
-                console.log("Dosis completa ingresada:", dosisCompleta);
-
-                // Usar una expresión regular para separar la cantidad de la unidad
-                const match = dosisCompleta.match(/^(\d+(\.\d+)?)(\s?[a-zA-Z]+)$/);
-                if (!match) {
-                    mostrarMensaje("Formato de dosis inválido. Use un número seguido de una unidad (ej. 500 mg)", "error");
-                    console.warn("Formato de dosis inválido:", dosisCompleta);
-                    return;
-                }
-
-                const dosis = parseFloat(match[1]);
-                const unidad = match[3].trim();
-                console.log("Dosis separada:", dosis, "Unidad:", unidad);
-
-                // Validar que ambos elementos estén presentes
-                if (!dosis || !unidad) {
-                    mostrarMensaje("Debe ingresar una dosis válida con su unidad", "error");
-                    console.warn("Datos de dosis incompletos:", { dosis, unidad });
-                    return;
-                }
-
-                // Crear los datos para enviar al backend
-                const formData = new FormData(formRegistrarMedicamento);
-                formData.append('dosis', dosis);
-                formData.append('unidad', unidad);
-                formData.append('operation', 'registrar');
-
-                console.log("Datos del formulario enviados:");
-                formData.forEach((value, key) => {
-                    console.log(`${key}: ${value}`);
-                });
-
-                try {
-                    const response = await fetch('../../controllers/admedi.controller.php', {
-                        method: "POST",
-                        body: formData
-                    });
-                    console.log("Respuesta del servidor:", response);
-
-                    const text = await response.text();
-                    console.log("Texto de respuesta del servidor:", text);
-
-                    let result;
-                    try {
-                        result = JSON.parse(text);
-                        console.log("Resultado parseado del servidor:", result);
-                    } catch (jsonError) {
-                        console.error("Error al interpretar la respuesta del servidor:", jsonError);
-                        mostrarMensaje("Error al interpretar la respuesta del servidor. Respuesta no válida.", 'error');
-                        return;
-                    }
-
-                    if (result.status === "success") {
-                        console.log("Medicamento registrado correctamente:", result);
-                        showToast("Medicamento registrado correctamente", "SUCCESS");
-                        formRegistrarMedicamento.reset();
-                        // Llamar a las funciones para recargar los selectores de medicamentos y lotes
-                        await loadSelectMedicamentos();
-                        await cargarLotes();
-                        await loadMedicamentos();
-                    } else {
-                        console.warn("Error en el registro:", result.message);
-                        mostrarMensaje("Error en el registro: " + result.message, 'error');
-                    }
-                } catch (error) {
-                    console.error("Error al registrar el medicamento:", error);
-                    mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
-                }
-            } else {
-                console.log("El usuario canceló la operación.");
-                mostrarMensaje("El registro del medicamento fue cancelado por el usuario.", "info");
-            }
-        });
-
-
-        // Implementar para la entrada de medicamentos
-        formEntrada.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            // Confirmar la operación
-            const confirmar = await ask("¿Estás seguro de que deseas registrar la entrada de este medicamento?", "Registrar Entrada de Medicamento");
-
-            if (!confirmar) {
-                showToast("Operación cancelada.", "INFO");
-                return;
-            }
-
-            const formData = new FormData(formEntrada);
-            const data = new URLSearchParams(formData);
-            data.append('operation', 'entrada');
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    showToast("Entrada registrada correctamente", "SUCCESS");
-                    formEntrada.reset();
-                    cargarLotes();
-                    loadMedicamentos();
-                } else {
-                    showToast("Error en el registro de entrada: " + result.message, 'error');
-                }
-            } catch (error) {
-                showToast("Error en la solicitud de registro de entrada: " + error.message, 'error');
-            }
-        });
-
-        // Función para cargar los lotes en los select de entrada y salida de medicamentos
-        const cargarLotes = async () => {
-            const entradaLoteSelect = document.querySelector("#entradaLote");  
-            const salidaLoteSelect = document.getElementById('salidaLote');
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php?operation=listarLotes', {
-                    method: 'GET',
-                });
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-                    salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-
-                    result.data.forEach(lote => {
-                        const optionEntrada = document.createElement("option");
-                        optionEntrada.value = lote.lote;
-                        optionEntrada.textContent = `${lote.lote} - ${lote.nombreMedicamento}`;
-                        entradaLoteSelect.appendChild(optionEntrada);
-
-                        const optionSalida = document.createElement("option");
-                        optionSalida.value = lote.lote;
-                        optionSalida.textContent = `${lote.lote} - ${lote.nombreMedicamento}`;
-                        salidaLoteSelect.appendChild(optionSalida);
-                    });
-                } else {
-                    mostrarMensaje("No se encontraron lotes registrados.", 'error');
-                }
-            } catch (error) {
-                mostrarMensaje("Error al cargar los lotes: " + error.message, 'error');
-            }
-        };
-
-
-        // Implementar para la salida de medicamentos
-        if (formSalida) {
-            formSalida.addEventListener("submit", async (event) => {
-                event.preventDefault();
-
-                const cantidadField = document.getElementById('salidaCantidad');
-                const cantidad = parseFloat(cantidadField.value) || 0;
-
-                // Validación de cantidad
-                if (cantidad <= 0) {
-                    showToast("La cantidad debe ser mayor a 0.", 'ERROR');
-                    return;
-                }
-
-                const motivoField = document.getElementById('motivoSalida');
-                const loteField = document.getElementById('salidaLote');
-                const medicamentoField = document.getElementById('salidaMedicamento');
-                const tipoEquinoField = document.getElementById('idEquino');
-
-
-                // Validación de motivo
-                const motivo = motivoField.value.trim();
-                if (!motivo) {
-                    showToast("Debe especificar un motivo para la salida del medicamento.", 'ERROR');
-                    return;
-                }
-
-                // Confirmación de la operación
-                const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
-                if (!confirmar) {
-                    showToast("Operación cancelada.", "INFO");
-                    return;
-                }
-
-                // Preparar datos para enviar
-                const formData = new FormData();
-                formData.append('operation', 'salida');
-                formData.append('nombreMedicamento', medicamentoField.value);
-                formData.append('cantidad', cantidad);
-                formData.append('idEquino', tipoEquinoField.value);
-                formData.append('motivo', motivo);
-
-                const lote = loteField.value.trim() || null;
-                if (lote !== null) {
-                    formData.append('lote', lote);
-                }
-
-                // Intento de envío de datos al servidor
-                try {
-                    const response = await fetch('../../controllers/admedi.controller.php', {
-                        method: "POST",
-                        body: formData
-                    });
-
-                    const result = await response.json();
-
-                    if (result.status === "success") {
-                        showToast("Salida registrada correctamente", "SUCCESS");
-                        formSalida.reset();
-                        await loadMedicamentos();
-                        await notificarStockBajo();
-                        await loadSelectMedicamentos();
-                        await cargarLotes();
-                    } else {
-                        showToast(result.message || "Error en el registro de salida", "ERROR");
-                    }
-                } catch (error) {
-                    showToast("Error en la solicitud de registro de salida", "ERROR");
-                }
-            });
-        }
-
-
-
-
-
-        // Cargar datos al iniciar la página
-        cargarLotes();
-        loadCategoriaEquinos();
-        notificarStockBajo();
-
-        loadSelectMedicamentos();
-        loadMedicamentos();
-        loadTiposMedicamentos();
-        loadPresentaciones();
-    });
-    
-</script>
-
+<script src="../../JS/administrar-medicamento.js"></script>
