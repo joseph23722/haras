@@ -270,16 +270,16 @@ DELIMITER ;
 
 
 -- --------- listar equinos en estado monta 
+-- --------- listar equinos en estado monta 
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
 CREATE PROCEDURE spu_contar_equinos_por_categoria()
 BEGIN
     SELECT 
-        e.idEquino,  -- Incluir idEquino en el SELECT
         CASE 
             WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
             WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
-            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'  -- Nueva condición para Yegua con Cria
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
             WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
             WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
             WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
@@ -295,16 +295,17 @@ BEGIN
     WHERE 
         (e.estado = 1)  -- Solo los equinos vivos
         AND (
-            (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))  -- Incluimos 'Con Cria' en el filtro
+            (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))
             OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
             OR te.tipoEquino IN ('Potranca', 'Potrillo')
         )
     GROUP BY 
-        e.idEquino, Categoria
+        Categoria
     ORDER BY 
         Categoria;
 END $$
 DELIMITER ;
+
 
 -- Editar Equinos
 DROP PROCEDURE IF EXISTS `spu_equino_editar`;
