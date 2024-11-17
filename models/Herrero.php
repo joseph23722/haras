@@ -75,16 +75,38 @@ class Herrero extends Conexion {
     
 
     // Método para consultar el historial completo de un equino
+    // Método para consultar el historial completo de un equino
     public function consultarHistorialEquino($idEquino) {
         try {
+            // Validar que el ID del equino no esté vacío
+            if (empty($idEquino)) {
+                throw new Exception("El ID del equino es obligatorio.");
+            }
+
+            // Preparar y ejecutar la llamada al procedimiento almacenado
             $stmt = $this->pdo->prepare("CALL ConsultarHistorialEquino(?)");
             $stmt->execute([$idEquino]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Recuperar los resultados
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($resultados)) {
+                return ['status' => 'info', 'message' => 'No se encontraron registros para el equino seleccionado.', 'data' => []];
+            }
+
+            // Retornar los resultados en formato esperado
+            return ['status' => 'success', 'data' => $resultados];
         } catch (PDOException $e) {
-            error_log("Error al consultar historial de equino: " . $e->getMessage());
-            return false;
+            // Manejar errores de la base de datos
+            error_log("Error al consultar historial de equino (PDO): " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al consultar el historial del equino.'];
+        } catch (Exception $e) {
+            // Manejar otros errores
+            error_log("Error en consultarHistorialEquino: " . $e->getMessage());
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
 
 
     // Método para obtener los tipos de equinos
