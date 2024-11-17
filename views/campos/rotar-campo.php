@@ -103,7 +103,8 @@
 </div>
 
 <!-- Modal para registrar un nuevo campo -->
-<div class="modal fade" id="registerFieldModal" tabindex="-1" aria-labelledby="registerFieldModalLabel" aria-hidden="true">
+<div class="modal fade" id="registerFieldModal" tabindex="-1" aria-labelledby="registerFieldModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
+>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -150,7 +151,8 @@
 </div>
 
 <!-- Modal para Editar Campo -->
-<div class="modal fade" id="editarCampoModal" tabindex="-1" role="dialog" aria-labelledby="editarCampoModalLabel" aria-hidden="true">
+<div class="modal fade" id="editarCampoModal" tabindex="-1" role="dialog" aria-labelledby="editarCampoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
+>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
