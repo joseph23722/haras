@@ -7,6 +7,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const medicamentoSelect = document.querySelector("#selectMedicamento");
     const fechaFinInput = document.querySelector("#fechaFin");
     const mensajeDiv = document.querySelector("#mensaje");
+    const selectViaAdministracion = document.getElementById("viaAdministracion");
+
+
+    // Verificar campos para Vías de Administración
+    const verificarCamposVia = () => {
+        const nombreVia = document.getElementById("inputNombreVia")?.value?.trim();
+        const descripcionVia = document.getElementById("inputDescripcionVia")?.value?.trim(); // Este campo es opcional
+        const mensajeModalVia = document.getElementById("mensajeModalVia");
+
+        mensajeModalVia.innerHTML = ""; // Limpiar mensajes previos
+
+        if (!nombreVia) {
+            console.log("Campo 'Nombre de la Vía' vacío");
+            mensajeModalVia.innerHTML = '<p class="text-danger">Por favor, complete el campo "Nombre de la Vía".</p>';
+            return false;
+        }
+
+        return { nombreVia, descripcionVia }; // Devolver ambos campos; 'descripcionVia' será null si está vacío
+    };
+
 
     // Función para mostrar notificaciones en el div `mensaje`
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
@@ -46,28 +66,155 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    // Guardar nueva vía de administración
+    // Guardar nueva vía de administración
+    const guardarViaAdministracion = async () => {
+        // Obtener valores de los campos
+        const inputNombreVia = document.getElementById("inputNombreVia");
+        const inputDescripcionVia = document.getElementById("inputDescripcionVia");
+        const mensajeModalVia = document.getElementById("mensajeModalVia");
+
+        const nombreVia = inputNombreVia.value.trim();
+        const descripcion = inputDescripcionVia.value.trim();
+
+        // Verificar que el campo obligatorio esté lleno
+        if (!nombreVia) {
+            mensajeModalVia.innerHTML = '<p class="text-danger">El nombre de la vía es obligatorio.</p>';
+            console.log("El campo 'Nombre de la Vía' está vacío.");
+            return;
+        }
+
+        try {
+            console.log("Preparando datos para enviar al backend...");
+            const datos = {
+                operation: "agregarVia",
+                nombreVia: nombreVia,
+                descripcion: descripcion || null // La descripción es opcional
+            };
+            console.log("Datos enviados al backend:", datos);
+
+            const response = await fetch("../../controllers/historialme.controller.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datos)
+            });
+
+            console.log("Respuesta del servidor recibida:", response);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log("Datos procesados como JSON:", result);
+
+            mensajeModalVia.innerHTML = result.status === "success"
+                ? '<p class="text-success">¡Vía de administración agregada correctamente!</p>'
+                : `<p class="text-danger">${result.message}</p>`;
+
+            if (result.status === "success") {
+                console.log("Vía agregada exitosamente, actualizando la lista de vías...");
+
+                setTimeout(() => {
+                    // Resetear el formulario
+                    document.getElementById("formNuevaViaAdministracion").reset();
+                    mensajeModalVia.innerHTML = "";
+
+                    // Cerrar el modal
+                    bootstrap.Modal.getInstance(document.getElementById("modalAgregarViaAdministracion")).hide();
+
+                    // Actualizar la lista de vías en el select
+                    cargarViasAdministracion();
+                }, 1500);
+            }
+        } catch (error) {
+            console.error("Error al enviar los datos al servidor:", error);
+            mensajeModalVia.innerHTML = '<p class="text-danger">Error al enviar los datos al servidor.</p>';
+        }
+    };
+
+    // Asignar evento al botón de guardar
+    const btnGuardarVia = document.getElementById("btnGuardarViaAdministracion");
+    if (btnGuardarVia) {
+        console.log("Botón 'Guardar' para vías de administración encontrado");
+        btnGuardarVia.addEventListener("click", guardarViaAdministracion);
+    } else {
+        console.error("El botón #btnGuardarViaAdministracion no se encontró.");
+    }
+
+
+
+        
+
+    // Función para cargar las vías de administración
+    async function cargarViasAdministracion() {
+        try {
+            console.log("Iniciando solicitud para listar vías de administración...");
+
+            // Solicitud al backend con método GET
+            const response = await fetch("../../controllers/historialme.controller.php?operation=listarVias", {
+                method: "GET", // Aseguramos el uso de GET
+                headers: {
+                    "Content-Type": "application/json", // Indicamos que esperamos JSON
+                },
+            });
+
+            console.log("Respuesta del servidor recibida:", response);
+
+            // Verificamos si la respuesta fue exitosa
+            if (!response.ok) {
+                throw new Error(`Error en la solicitud: ${response.statusText}`);
+            }
+
+            // Procesar la respuesta como JSON
+            const data = await response.json();
+
+            console.log("Datos procesados como JSON:", data);
+
+            if (data.status === "success") {
+                console.log("Vías de administración recibidas:", data.data);
+
+                // Limpiar el select (por si acaso ya tiene datos)
+                selectViaAdministracion.innerHTML = '<option value="">Seleccione Vía de Administración</option>';
+
+                // Agregar cada vía al select
+                data.data.forEach((via) => {
+                    const option = document.createElement("option");
+                    option.value = via.idViaAdministracion; // El valor será el ID
+                    option.textContent = `${via.nombreVia} - ${via.descripcion || "Sin descripción"}`;
+                    selectViaAdministracion.appendChild(option);
+                });
+
+                console.log("Select actualizado correctamente.");
+            } else {
+                console.error("Error al listar las vías de administración:", data.message || "Respuesta no exitosa.");
+            }
+        } catch (error) {
+            console.error("Error en la solicitud al backend:", error.message);
+        }
+    }
+
+        // Llamar a la función para cargar las vías
+        cargarViasAdministracion();
+
+
+
+    
+
     // Función para mostrar un mensaje de equinos notificaciones
     const notificarTratamientosVeterinarios = async () => {
         try {
             // Realizar la solicitud al backend usando GET
-            console.log('Iniciando solicitud al backend...'); // Log inicial
             const response = await fetch('../../controllers/historialme.controller.php?operation=notificarTratamientosVeterinarios', {
                 method: "GET",
             });
     
-            console.log('Respuesta del servidor recibida:', response); // Log de la respuesta inicial
-    
             const textResponse = await response.text();
-            console.log('Texto crudo de la respuesta:', textResponse); // Log del texto sin procesar
-    
             const result = JSON.parse(textResponse);
-            console.log('Respuesta procesada como JSON:', result); // Log del objeto JSON procesado
     
             // Verifica si 'data' es un array y contiene las notificaciones
             if (Array.isArray(result.data) && result.data.length > 0) {
-                console.log('Cantidad de notificaciones recibidas:', result.data.length); // Log del tamaño del array
                 result.data.forEach(notificacion => {
-                    console.log('Notificación actual:', notificacion); // Log de cada notificación
     
                     // Crear el mensaje dinámico con la información del tratamiento
                     const mensajeDinamico = `
@@ -77,15 +224,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span class="text-danger">Estado:</span> ${notificacion.TipoNotificacion} 
                     `.replace(/\s+/g, '  ').trim(); // Elimina espacios extra
     
-                    console.log('Mensaje dinámico generado:', mensajeDinamico); // Log del mensaje dinámico
                     mostrarMensajeDinamico(mensajeDinamico, notificacion.TipoNotificacion === 'PRONTO' ? 'WARNING' : 'INFO');
                 });
             } else {
-                console.log('No se encontraron notificaciones.'); // Log cuando no hay notificaciones
                 mostrarMensajeDinamico('No hay notificaciones de tratamientos veterinarios.', 'INFO');
             }
         } catch (error) {
-            console.error('Error al procesar las notificaciones:', error); // Log del error
             mostrarMensajeDinamico('Error al obtener notificaciones de tratamientos.', 'ERROR');
         }
     };

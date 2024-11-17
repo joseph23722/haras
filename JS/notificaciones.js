@@ -17,10 +17,6 @@ async function cargarNotificacionesDinamicas() {
         const medicamentosResult = await responseMedicamentos.json();
         const tratamientosResult = await responseTratamientos.json();
 
-        console.log("Alimentos Result:", alimentosResult);
-        console.log("Medicamentos Result:", medicamentosResult);
-        console.log("Tratamientos Result:", tratamientosResult);
-
         // Limpiar el array de notificaciones actual
         notificaciones = [];
 
@@ -95,7 +91,7 @@ async function cargarNotificacionesDinamicas() {
         actualizarContadorNotificaciones();
 
     } catch (error) {
-        console.error('Error al cargar notificaciones:', error);
+
     }
 }
 
@@ -166,7 +162,7 @@ function marcarComoLeidas() {
 
 // Función para ver todas las notificaciones
 window.verTodasNotificaciones = function () {
-    console.log("Mostrando todas las notificaciones.");
+
     mostrarNotificaciones(10); // Mostrar hasta 10 notificaciones con scroll
 };
 

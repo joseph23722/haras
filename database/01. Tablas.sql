@@ -307,7 +307,7 @@ CREATE TABLE DetalleMedicamentos (
     idEquino                INT NOT NULL,
     dosis                   VARCHAR(50) NOT NULL,
     frecuenciaAdministracion VARCHAR(50) NOT NULL,
-    viaAdministracion       VARCHAR(50) NOT NULL,
+    idViaAdministracion INT NOT NULL,
     fechaInicio             DATE NOT NULL,
     fechaFin                DATE NOT NULL,
     observaciones           TEXT NULL,
@@ -317,7 +317,15 @@ CREATE TABLE DetalleMedicamentos (
     estadoTratamiento       ENUM('Activo', 'Finalizado', 'En pausa') DEFAULT 'Activo',
     CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+    CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
+    CONSTRAINT fk_detallemed_via FOREIGN KEY (idViaAdministracion) REFERENCES ViasAdministracion(idViaAdministracion)
+) ENGINE = INNODB;
+
+-- ViasAdministracion - veterinario 
+CREATE TABLE ViasAdministracion (
+    idViaAdministracion INT PRIMARY KEY AUTO_INCREMENT,
+    nombreVia VARCHAR(50) NOT NULL UNIQUE,
+    descripcion TEXT NULL
 ) ENGINE = INNODB;
 
 

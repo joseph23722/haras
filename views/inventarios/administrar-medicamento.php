@@ -853,12 +853,6 @@
         });
 
 
-
-        
-
-
-        
-
         // Cargar los tipos de medicamentos desde el servidor
         const loadTiposMedicamentos = async () => {
             try {
@@ -945,9 +939,6 @@
 
 
 
-        
-
-
         // Cargar presentaciones de medicamentos desde el servidor
         // Cargar presentaciones de medicamentos desde el servidor según el tipo seleccionado
         const loadPresentaciones = async (idTipo) => {
@@ -986,10 +977,6 @@
                 mostrarMensaje("Error al cargar presentaciones: " + error.message, 'error');
             }
         };
-
-        
-
-
 
         
 
@@ -1043,7 +1030,6 @@
         
         
 
-        // Cargar lista de medicamentos en la tabla
         // Cargar lista de medicamentos en la tabla
         const loadMedicamentos = async () => {
             try {
@@ -1124,7 +1110,6 @@
                 }
             } catch (error) {
                 mostrarMensaje('Error al notificar stock bajo.', 'ERROR');
-                console.error("Error al cargar notificaciones de medicamentos:", error);
             }
         };
 

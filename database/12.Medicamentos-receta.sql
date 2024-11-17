@@ -134,7 +134,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 
+--  para el datatable
 DELIMITER $$
 CREATE PROCEDURE spu_consultar_historial_medicoMedi()
 BEGIN
@@ -144,7 +144,7 @@ BEGIN
     SET estadoTratamiento = 'Finalizado'
     WHERE fechaFin < CURDATE() AND estadoTratamiento = 'Activo';
 
-    -- Seleccionar la información detallada de todos los registros de historial médico, incluyendo el estado del tratamiento
+    -- Seleccionar la información detallada de todos los registros de historial médico, incluyendo el nombre de la vía de administración y el estado del tratamiento
     SELECT 
         DM.idDetalleMed AS idRegistro,
         DM.idEquino,
@@ -153,7 +153,7 @@ BEGIN
         M.nombreMedicamento,
         DM.dosis,
         DM.frecuenciaAdministracion,
-        DM.viaAdministracion,
+        VA.nombreVia AS viaAdministracion,  -- Obtener solo el nombre de la vía desde la tabla ViasAdministracion
         E.pesokg,
         DM.fechaInicio,
         DM.fechaFin,
@@ -171,6 +171,8 @@ BEGIN
         Equinos E ON DM.idEquino = E.idEquino
     INNER JOIN 
         Usuarios U ON DM.idUsuario = U.idUsuario
+    LEFT JOIN 
+        ViasAdministracion VA ON DM.idViaAdministracion = VA.idViaAdministracion  -- Vincular con la tabla ViasAdministracion
     ORDER BY 
         DM.fechaInicio DESC;
 END $$
@@ -290,21 +292,22 @@ END $$
 DELIMITER ;
 
 -- Procedimiento 1: Listar todas las vías de administración
-DELIMITER //
-
-CREATE PROCEDURE ListarViasAdministracion()
+DELIMITER $$
+CREATE PROCEDURE spu_Listar_ViasAdministracion()
 BEGIN
     SELECT idViaAdministracion, nombreVia, descripcion
     FROM ViasAdministracion;
-END //
-
+END $$
 DELIMITER ;
 
 
--- Procedimiento 2: Agregar una nueva vía de administración
-DELIMITER //
 
-CREATE PROCEDURE AgregarViaAdministracion(
+
+
+-- Procedimiento 2: Agregar una nueva vía de administración
+DELIMITER $$
+
+CREATE PROCEDURE spu_Agregar_Via_Administracion(
     IN p_nombreVia VARCHAR(50),
     IN p_descripcion TEXT
 )
@@ -318,7 +321,7 @@ BEGIN
         INSERT INTO ViasAdministracion (nombreVia, descripcion)
         VALUES (p_nombreVia, p_descripcion);
     END IF;
-END //
+END $$
 
 DELIMITER ;
 

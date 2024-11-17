@@ -42,19 +42,23 @@ try {
 
 
             case 'agregarVia':
-                // Verificar los parámetros recibidos
-                $nombreVia = $_POST['nombreVia'] ?? null;
-                $descripcion = $_POST['descripcion'] ?? null;
-        
+                // Verificar los parámetros recibidos desde el frontend
+                $data = json_decode(file_get_contents('php://input'), true); // Decodificar JSON enviado por el frontend
+                $nombreVia = $data['nombreVia'] ?? null;
+                $descripcion = $data['descripcion'] ?? null;
+            
+                // Validar que el nombre de la vía no esté vacío
                 if ($nombreVia) {
-                    // Llamada al método para agregar una nueva vía de administración
-                    $result = $model->agregarViaAdministracion($nombreVia, $descripcion);
+                    // Llamar al modelo para agregar la nueva vía
+                    $result = $historialme->agregarViaAdministracion($nombreVia, $descripcion);
                     echo json_encode(['status' => $result['status'], 'message' => $result['message']]);
                 } else {
-                    // Manejo de error si faltan datos
+                    // Responder con un error si no se envió el nombre
                     echo json_encode(['status' => 'error', 'message' => 'El nombre de la vía es obligatorio.']);
                 }
                 break;
+            
+            
 
             
             case 'registrarHistorialMedico':
@@ -143,12 +147,7 @@ try {
 
         switch ($operation) {
 
-            case 'listarVias':
-                // Llamada al método para listar las vías de administración
-                $result = $model->listarViasAdministracion();
-                echo json_encode(['status' => 'success', 'data' => $result]);
-                break;
-
+           
             case 'notificarTratamientosVeterinarios':
                 try {
                     $result = $historialme->notificarTratamientosVeterinarios();
@@ -159,6 +158,24 @@ try {
                     }
                 } catch (Exception $e) {
                     sendResponse('error', 'Error al procesar la solicitud.');
+                }
+                break;
+
+
+            case 'listarVias':
+                try {
+                    // Llamada al método para listar las vías de administración
+                    $result = $historialme->listarViasAdministracion();
+            
+                    // Verificar si se obtuvieron datos
+                    if (!empty($result)) {
+                        echo json_encode(['status' => 'success', 'data' => $result]);
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'No se encontraron vías de administración.']);
+                    }
+                } catch (Exception $e) {
+                    error_log("Error en listarVias: " . $e->getMessage());
+                    echo json_encode(['status' => 'error', 'message' => 'Ocurrió un error al listar las vías de administración.']);
                 }
                 break;
 

@@ -7,6 +7,15 @@
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial Médico</h5>
+            <!-- Botón para abrir el modal de agregar vías de administración -->
+            <button type="button" class="btn btn-success btn-sm"
+                    style="background-color: #28a745; border: none; position: absolute; right: 5px; top: 5px; padding: 10px 15px; font-size: 1.2em;"
+                    id="btnAgregarVia" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalAgregarViaAdministracion">
+                <i class="fas fa-plus"></i>
+            </button>
+
         </div>
 
         <!-- Formulario -->
@@ -95,16 +104,14 @@
                         <div class="form-floating">
                             <select name="viaAdministracion" id="viaAdministracion" class="form-select" required>
                                 <option value="">Seleccione Vía de Administración</option>
-                                <option value="Oral">Oral - Administración por la boca</option>
-                                <option value="Intramuscular">Intramuscular - Inyección en el músculo</option>
-                                <option value="Intravenosa">Intravenosa - Inyección en la vena</option>
-                                <option value="Subcutánea">Subcutánea - Inyección debajo de la piel</option>
-                                <option value="Intranasal">Intranasal - Administración en las fosas nasales</option>
-                                <option value="Tópica">Tópica - Aplicación en la piel o mucosa</option>
+                                <!-- Las opciones se cargarán dinámicamente -->
                             </select>
-                            <label for="viaAdministracion"><i class="fas fa-route" style="color: #00b4d8;"></i> Vía de Administración</label>
+                            <label for="viaAdministracion">
+                                <i class="fas fa-route" style="color: #00b4d8;"></i> Vía de Administración
+                            </label>
                         </div>
                     </div>
+
 
 
                     <!-- Observaciones -->
@@ -139,7 +146,39 @@
         </div>
     </div>
 
-    <!-- Tabla para DataTable -->
+    <!-- Modal para agregar vías de administración -->
+    <div class="modal fade" id="modalAgregarViaAdministracion" tabindex="-1" aria-labelledby="labelAgregarViaAdministracion" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #28a745; color: white;">
+                    <h5 class="modal-title" id="labelAgregarViaAdministracion">
+                        <i class="fas fa-plus-circle"></i> Agregar Nueva Vía de Administración
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formNuevaViaAdministracion" autocomplete="off">
+                        <div class="mb-3">
+                            <label for="inputNombreVia" class="form-label fw-bold">Nombre de la Vía</label>
+                            <input type="text" class="form-control" id="inputNombreVia" name="inputNombreVia" placeholder="Ejemplo: Oral, Intramuscular" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputDescripcionVia" class="form-label fw-bold">Descripción (Opcional)</label>
+                            <textarea class="form-control" id="inputDescripcionVia" name="inputDescripcionVia" placeholder="Breve descripción de la vía (opcional)"></textarea>
+                        </div>
+                        <div id="mensajeModalVia" class="text-center mt-3"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="btnGuardarViaAdministracion">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <!-- Tabla para DataTable de Historiales Médicos -->
     <div class="card mt-4">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">

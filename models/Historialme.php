@@ -168,32 +168,29 @@ class Historialme extends Conexion
     {
         try {
             // Preparar y ejecutar el procedimiento almacenado
-            $query = $this->pdo->prepare("CALL ListarViasAdministracion()");
+            $query = $this->pdo->prepare("CALL spu_Listar_ViasAdministracion()");
             $query->execute();
-
-            // Obtener resultados
-            $vias = [];
-            do {
-                $result = $query->fetchAll(PDO::FETCH_ASSOC);
-                if ($result) {
-                    $vias = array_merge($vias, $result);
-                }
-            } while ($query->nextRowset());
-
-            return ['status' => 'success', 'data' => $vias];
+        
+            $vias = $query->fetchAll(PDO::FETCH_ASSOC); // Obtener todas las filas directamente
+            error_log("Vías de administración obtenidas: " . json_encode($vias));
+        
+            return $vias; // Devolver las filas obtenidas
         } catch (Exception $e) {
             error_log("Error en listarViasAdministracion: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al listar vías de administración.'];
+            return [];
         }
+        
     }
 
 
+
+    // Método 2: Agregar una nueva vía de administración
     // Método 2: Agregar una nueva vía de administración
     public function agregarViaAdministracion($nombreVia, $descripcion = null)
     {
         try {
             // Preparar el procedimiento almacenado con parámetros
-            $query = $this->pdo->prepare("CALL AgregarViaAdministracion(:nombreVia, :descripcion)");
+            $query = $this->pdo->prepare("CALL spu_Agregar_Via_Administracion(:nombreVia, :descripcion)");
             $query->bindParam(':nombreVia', $nombreVia, PDO::PARAM_STR);
             $query->bindParam(':descripcion', $descripcion, PDO::PARAM_STR);
 
@@ -202,10 +199,18 @@ class Historialme extends Conexion
 
             return ['status' => 'success', 'message' => 'Vía de administración agregada correctamente.'];
         } catch (Exception $e) {
+            // Registrar errores en los logs
             error_log("Error en agregarViaAdministracion: " . $e->getMessage());
+            
+            // Manejo de error en caso de duplicado o cualquier otro fallo
+            if ($e->getCode() == '45000') {
+                return ['status' => 'error', 'message' => 'Ya existe una vía de administración con este nombre.'];
+            }
+            
             return ['status' => 'error', 'message' => 'Error al agregar vía de administración.'];
         }
     }
+
 
 
 
