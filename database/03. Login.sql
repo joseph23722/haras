@@ -1,4 +1,3 @@
--- login ------------------------------------------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_usuarios_login`;
 DELIMITER //
 CREATE PROCEDURE `spu_usuarios_login`(IN _correo VARCHAR(100))

@@ -1,4 +1,4 @@
--- Procedimiento para registrar un nuevo historial médico de un equino-------------------------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `spu_historial_medico_registrarMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _idEquino INT,
@@ -119,9 +119,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
--- listar equinos propios para medicamentos;
+DROP PROCEDURE IF EXISTS `spu_listar_equinos_propiosMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_propiosMedi()
 BEGIN
@@ -140,7 +138,7 @@ BEGIN
 END $$
 DELIMITER ;
 
---  para el datatable
+DROP PROCEDURE IF EXISTS `spu_consultar_historial_medicoMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_consultar_historial_medicoMedi()
 BEGIN
@@ -184,8 +182,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ------------
--- complementarios y acciones adversas 
+DROP PROCEDURE IF EXISTS `spu_gestionar_tratamiento`;
 DELIMITER $$
 CREATE PROCEDURE spu_gestionar_tratamiento(
     IN _idDetalleMed INT,         -- ID del tratamiento a gestionar
@@ -239,9 +236,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- notificar veterianrio
--- 1.Notificar tratamientos próximos a finalizar (dentro de 3 días).
--- 2.Notificar tratamientos ya finalizados.
+DROP PROCEDURE IF EXISTS `spu_notificar_tratamientos_veterinarios`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_tratamientos_veterinarios()
 BEGIN
@@ -297,7 +292,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento 1: Listar todas las vías de administración
+DROP PROCEDURE IF EXISTS `spu_Listar_ViasAdministracion`;
 DELIMITER $$
 CREATE PROCEDURE spu_Listar_ViasAdministracion()
 BEGIN
@@ -306,13 +301,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
--- Procedimiento 2: Agregar una nueva vía de administración
+DROP PROCEDURE IF EXISTS `spu_Agregar_Via_Administracion`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_Agregar_Via_Administracion(
     IN p_nombreVia VARCHAR(50),
     IN p_descripcion TEXT
@@ -328,9 +318,4 @@ BEGIN
         VALUES (p_nombreVia, p_descripcion);
     END IF;
 END $$
-
 DELIMITER ;
-
-
-
-

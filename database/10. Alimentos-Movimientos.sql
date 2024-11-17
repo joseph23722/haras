@@ -1,4 +1,3 @@
--- Procedimiento para registrar los alimentos  
 DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
@@ -77,7 +76,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- -------
 DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
@@ -126,7 +124,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento Entrada de Alimentos -----------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
@@ -190,7 +187,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento Salida de Alimentos 
 DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_salida(
@@ -273,7 +269,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_alimentos()
@@ -304,7 +299,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para notificar Stock Bajo-----------------------------------------
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
@@ -332,8 +326,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
--- Procedimiento para historial Alimentos -----------------------------------------
 DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
 CREATE PROCEDURE spu_historial_completo(
@@ -457,9 +449,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- separado  
-
--- Procedimiento para obtener la lista de tipos de alimentos
 DROP PROCEDURE IF EXISTS `spu_obtenerTiposAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerTiposAlimento()
@@ -470,7 +459,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para obtener las unidades de medida asociadas a un tipo de alimento
 DROP PROCEDURE IF EXISTS `spu_obtenerUnidadesPorTipoAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerUnidadesPorTipoAlimento(IN _idTipoAlimento INT)
@@ -489,7 +477,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- agregar tipo y unidad 
 DROP PROCEDURE IF EXISTS `spu_agregarTipoUnidadMedidaNuevo`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregarTipoUnidadMedidaNuevo (
@@ -542,4 +529,3 @@ BEGIN
 END $$
 DELIMITER ;
 */
--- -------------------------------------------------------------------------------

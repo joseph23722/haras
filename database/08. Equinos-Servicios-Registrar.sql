@@ -1,4 +1,3 @@
--- Registrar Equino
 DROP PROCEDURE IF EXISTS `spu_equino_registrar`;
 DELIMITER $$
 CREATE PROCEDURE `spu_equino_registrar`(
@@ -268,9 +267,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
--- --------- listar equinos en estado monta 
--- --------- listar equinos en estado monta 
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
 CREATE PROCEDURE spu_contar_equinos_por_categoria()
@@ -306,8 +302,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
--- Editar Equinos
 DROP PROCEDURE IF EXISTS `spu_equino_editar`;
 DELIMITER $$
 CREATE PROCEDURE `spu_equino_editar`(

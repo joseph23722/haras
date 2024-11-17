@@ -121,7 +121,6 @@ VALUES
 ('Médico'),
 ('Herrero');
 
--- 4. Insertar Datos en Usuario
 -- Las contraseñas de los 6 usuarios es "haras", cabe mencionar que estan ordenadas conforme se encuentran los roles
 INSERT INTO Usuarios (idPersonal, correo, clave, idRol) 
 VALUES 
@@ -131,8 +130,6 @@ VALUES
 (4, 'superC', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 4),
 (5, 'medico', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 5),
 (6, 'herrero', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 6);
-
--- AGREGADOS:
 
 -- 5. Insertar Datos en Propietarios
 INSERT INTO Propietarios (nombreHaras) 
@@ -151,7 +148,6 @@ INSERT INTO TipoRotaciones (nombreRotacion)
         ('Potranca'),('Yeguas Preñadas'),
         ('Yeguas con Crías'), ('Yeguas Vacías'),
         ('Destetados');
--- Riego, Deshierve, Arado, Gradeado, Rufiado, Potrillo, Potranca, Yeguas Preñadas, Yeguas con Crías, Yeguas vacías, Destetados
 
 -- 3. Insertar Datos en TipoEquinos
 INSERT INTO TipoEquinos (tipoEquino) VALUES 

@@ -1,4 +1,3 @@
--- Procedimiento para listar 'Usuarios'------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_usuarios_listar`;
 DELIMITER $$
 CREATE PROCEDURE spu_usuarios_listar()
@@ -40,7 +39,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para listar 'Personal'------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_personal_listar`;
 DELIMITER $$
 CREATE PROCEDURE `spu_personal_listar`()

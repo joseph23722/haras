@@ -1,4 +1,3 @@
--- Procedimiento para registrar persdonal -------------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
 DELIMITER $$
 CREATE PROCEDURE spu_personal_registrar
@@ -17,13 +16,11 @@ BEGIN
     -- Declaración de variables
     DECLARE existe_error INT DEFAULT 0;
     
-    -- Manejador de errores
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
         SET existe_error = 1;
     END;
     
-    -- Intentar insertar los datos en la tabla Personal
     INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
     VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _numeroHijos, _fechaIngreso, _tipoContrato);
     
@@ -36,7 +33,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para registrar usuarios ------------------------------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_usuarios_registrar`;
 DELIMITER $$
 CREATE PROCEDURE spu_usuarios_registrar
@@ -48,10 +44,7 @@ CREATE PROCEDURE spu_usuarios_registrar
     IN _idRol           INT
 )
 BEGIN
-    -- Declaración de variables
     DECLARE existe_error INT DEFAULT 0;
-    
-    -- Manejador de errores
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
         SET existe_error = 1;
@@ -68,7 +61,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Actualizar contraseñalterDELIMITER $$
 DROP PROCEDURE IF EXISTS `spu_actualizar_contraseña`;
 DELIMITER $$
 CREATE PROCEDURE spu_actualizar_contraseña(

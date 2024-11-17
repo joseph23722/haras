@@ -1,4 +1,3 @@
--- Agregados:
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_propios`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_propios()
@@ -17,7 +16,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Listar Medicamentos
 DROP PROCEDURE IF EXISTS `listarMedicamentos`;
 DELIMITER $$
 CREATE PROCEDURE listarMedicamentos()
@@ -27,7 +25,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Listar Haras
 DROP PROCEDURE IF EXISTS `spu_listar_haras`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_haras()
@@ -39,7 +36,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Listar por propietarios
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_por_propietario`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_por_propietario (
@@ -61,12 +57,10 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Listar tipo equino
 DROP PROCEDURE IF EXISTS `spu_listar_tipoequinos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipoequinos()
 BEGIN
-    -- Listar todos los tipos de equinos disponibles
     SELECT idTipoEquino, tipoEquino
     FROM TipoEquinos;
 END $$

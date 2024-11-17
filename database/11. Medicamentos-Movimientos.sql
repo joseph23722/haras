@@ -1,9 +1,7 @@
--- -------------------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_listar_medicamentosMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentosMedi()
 BEGIN
-    -- Actualizar el estado de los registros en la tabla Medicamentos
     UPDATE Medicamentos 
     SET estado = 'Agotado'
     WHERE cantidad_stock = 0;
@@ -48,7 +46,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento para registrar medicamentos con verificación de lote en LotesMedicamento
 DROP PROCEDURE IF EXISTS `spu_medicamentos_registrar`;
 DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_registrar(
@@ -136,7 +133,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento Entrada de Medicamentos -----------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_medicamentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_entrada(
@@ -203,7 +199,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Procedimiento Salida de Medicamentos-----------------------------------------------------------------------------------
 DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
 DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_salida(
@@ -295,10 +290,6 @@ BEGIN
 END $$
 DELIMITER ;
 
---  Mejortar los otros  ----------------------------------------------------------------------------
--- 1.Procedimiento para agregar un nuevo tipo
--- 2.Procedimiento para agregar una nueva presentacion
--- 3.Procedimiento para agregar una nueva dosis (composicion)
 DROP PROCEDURE IF EXISTS `spu_agregar_nueva_combinacion_medicamento`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_nueva_combinacion_medicamento(
@@ -370,9 +361,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- apartes - combinaciones validas para el registrar 
--- 1. Procedimiento para validar presentación tipo y dosis:
--- Validar y registrar combinación
 DROP PROCEDURE IF EXISTS `spu_validar_registrar_combinacion`;
 DELIMITER $$
 CREATE PROCEDURE spu_validar_registrar_combinacion(
@@ -432,14 +420,13 @@ BEGIN
 END $$
 DELIMITER ;
 
--- sugerencias
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_presentaciones_dosis`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
 BEGIN
     -- Selecciona los tipos de medicamentos junto con la presentación y la dosis (cantidad y unidad), agrupados
     SELECT 
-        c.idCombinacion,  -- Incluye el ID de combinación para poder identificar cada sugerencia de combinación de manera única
+        c.idCombinacion,
         t.tipo, 
         GROUP_CONCAT(DISTINCT p.presentacion ORDER BY p.presentacion ASC SEPARATOR ', ') AS presentaciones,
         GROUP_CONCAT(DISTINCT u.unidad ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
@@ -458,8 +445,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- todo lo que es listar :
--- listar tipo
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_unicos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_unicos()
@@ -471,7 +456,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- ---- listar presentaciones por tipo
 DROP PROCEDURE IF EXISTS `spu_listar_presentaciones_por_tipo`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_presentaciones_por_tipo(IN _idTipo INT)
@@ -484,7 +468,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 1. Notificación de Stock Bajo
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_medicamentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_medicamentos()
@@ -511,7 +494,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 2. Procedimiento para registrar historial de medicamentos 
 DROP PROCEDURE IF EXISTS `spu_historial_completo_medicamentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_historial_completo_medicamentos(
@@ -611,7 +593,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- --------------------- listar lotes
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_medicamentos()
@@ -632,8 +613,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Insertar Tipos de Medicamentos
--- Insertar Tipos de Medicamentos
 INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antibiótico'),
 ('Analgésico'),
@@ -648,7 +627,6 @@ INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antiparasitario'),
 ('Vitaminas');
 
--- Insertar Presentaciones de Medicamentos
 INSERT INTO PresentacionesMedicamentos (presentacion) VALUES
 ('tabletas'),
 ('jarabes'),
@@ -668,7 +646,6 @@ INSERT INTO PresentacionesMedicamentos (presentacion) VALUES
 ('aerosoles'),
 ('spray');
 
--- Insertar Unidades de Medida
 INSERT INTO UnidadesMedida (unidad) VALUES
 ('mg'),
 ('ml'),
@@ -693,7 +670,6 @@ INSERT INTO UnidadesMedida (unidad) VALUES
 ('UI'),
 ('U');
 
--- Insertar Combinaciones de Medicamentos
 INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis, idUnidad) VALUES
 (1, 1, 500, (SELECT idUnidad FROM UnidadesMedida WHERE unidad = 'mg')),       -- Antibiótico, tabletas, 500 mg
 (2, 2, 10, (SELECT idUnidad FROM UnidadesMedida WHERE unidad = 'ml')),        -- Analgésico, jarabes, 10 ml

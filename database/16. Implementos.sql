@@ -183,7 +183,7 @@ BEGIN
     FROM 
         Implementos
     WHERE
-        idTipoinventario = p_idTipoinventario  -- Filtra por idTipoinventario
+        idTipoinventario = p_idTipoinventario
     ORDER BY 
         nombreProducto;  -- Ordena por nombre, puedes cambiar el orden si lo necesitas
 END $$

@@ -13,7 +13,7 @@ BEGIN
         E.pesokg,
         N.nacionalidad AS nacionalidad,
         E.estado,
-        E.fotografia,  -- Aquí seleccionamos la columna 'fotografia'
+        E.fotografia,
         CASE 
             WHEN E.estado = 1 THEN 'Vivo'
             WHEN E.estado = 0 THEN 'Muerto'
@@ -28,7 +28,7 @@ BEGIN
     LEFT JOIN TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
     LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstadoMonta
     LEFT JOIN nacionalidades N ON E.idNacionalidad = N.idNacionalidad
-    LEFT JOIN HistorialEquinos HE ON E.idEquino = HE.idEquino  -- Relación con historial
+    LEFT JOIN HistorialEquinos HE ON E.idEquino = HE.idEquino
     WHERE
         E.idPropietario IS NULL
     ORDER BY 

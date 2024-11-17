@@ -1,7 +1,5 @@
--- 1. Procedimiento para Insertar un Nuevo Trabajo en HistorialHerrero
--- Inserta un registro en el historial de trabajos del herrero, sin incluir estado de herramienta
-DELIMITER //
-
+DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
+DELIMITER $$
 CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_idEquino INT,
     IN p_idUsuario INT,
@@ -48,14 +46,10 @@ BEGIN
     -- Confirmar la transacción
     COMMIT;
 END //
-
 DELIMITER ;
 
-
--- 2. Procedimiento para Consultar el Historial Completo de un Equino
--- Retorna el historial de trabajos de herrería para un equino específico, con detalles generales del trabajo
-DELIMITER //
-
+DROP PROCEDURE IF EXISTS `ConsultarHistorialEquino`;
+DELIMITER $$
 CREATE PROCEDURE ConsultarHistorialEquino (
     IN p_idEquino INT
 )
@@ -92,13 +86,9 @@ BEGIN
     ORDER BY 
         HH.fecha DESC;
 END //
-
 DELIMITER ;
 
-
-
-
--- 1. Procedimiento para listar tipos de trabajos (TiposTrabajos)
+DROP PROCEDURE IF EXISTS `spu_listar_tipos_trabajos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_trabajos()
 BEGIN
@@ -107,7 +97,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 2. Procedimiento para listar herramientas (Herramientas)
+DROP PROCEDURE IF EXISTS `spu_listar_herramientas`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_herramientas()
 BEGIN
@@ -116,7 +106,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 3.  Procedimiento para agregar un nuevo tipo de trabajo
+DROP PROCEDURE IF EXISTS `spu_agregar_tipo_trabajo`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_tipo_trabajo(
     IN _nombreTrabajo VARCHAR(100),
@@ -135,7 +125,7 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 4. Procedimiento para agregar una nueva herramienta
+DROP PROCEDURE IF EXISTS `spu_agregar_herramienta`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_herramienta(
     IN _nombreHerramienta VARCHAR(100),
@@ -153,5 +143,3 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-
-

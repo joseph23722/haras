@@ -167,7 +167,7 @@ CREATE PROCEDURE `spu_editar_campo`(
     IN `p_idCampo` INT,
     IN `p_numeroCampo` INT,
     IN `p_tamanoCampo` DECIMAL(10,2),
-    IN `p_idTipoSuelo` INT,  -- Cambiado a idTipoSuelo
+    IN `p_idTipoSuelo` INT,
     IN `p_estado` ENUM('Activo', 'Inactivo')
 )
 BEGIN
