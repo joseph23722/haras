@@ -1270,31 +1270,35 @@
 
 
     // Función para eliminar un alimento
+    // Función para eliminar un alimento
     window.eliminarAlimento = async (idAlimento) => {
-      if (await ask('¿Estás seguro de que deseas eliminar este alimento?')) {
-        const data = new URLSearchParams();
-        data.append('operation', 'eliminar');
-        data.append('idAlimento', idAlimento);
+        if (await ask('¿Estás seguro de que deseas eliminar este alimento?')) {
+            const data = new URLSearchParams();
+            data.append('operation', 'eliminar');
+            data.append('idAlimento', idAlimento);
 
-        try {
-          const response = await fetch('../../controllers/alimento.controller.php', {
-            method: "POST",
-            body: data
-          });
+            try {
+                // Realizar la solicitud al backend
+                const response = await fetch('../../controllers/alimento.controller.php', {
+                    method: "POST",
+                    body: data
+                });
 
-          const result = JSON.parse(await response.text());
+                const result = JSON.parse(await response.text());
 
-          if (result.status === "success" && result.data && result.data.status === "success") {
-            mostrarMensajeDinamico(result.data.message, 'SUCCESS');
-            loadAlimentos();
-          } else {
-            mostrarMensajeDinamico(result.data?.message || result.message || "Error en la operación.", 'ERROR');
-          }
-        } catch (error) {
-          mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+                // Validar y mostrar el resultado de la operación
+                if (result.status === "success" && result.data && result.data.status === "success") {
+                    mostrarMensajeDinamico(result.data.message, 'SUCCESS');
+                    loadAlimentos(); // Recargar la lista de alimentos
+                } else {
+                    mostrarMensajeDinamico(result.data?.message || result.message || "Error en la operación.", 'ERROR');
+                }
+            } catch (error) {
+                mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
+            }
         }
-      }
     };
+
 
     // Cargar todos los datos al inicio
     cargarLotes();
