@@ -76,6 +76,16 @@ DELIMITER ;
 CALL ConsultarHistorialEquino(1); -- Cambia "1" por un ID de prueba
 
 
+-- 1. Procedimiento para listar tipos de trabajos (TiposTrabajos)
+DELIMITER $$
+CREATE PROCEDURE spu_listar_tipos_trabajos()
+BEGIN
+    SELECT idTipoTrabajo, nombreTrabajo, descripcion 
+    FROM TiposTrabajos;
+END $$
+DELIMITER ;
+
+
 
 
 
