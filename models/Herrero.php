@@ -70,20 +70,7 @@ class Herrero extends Conexion {
     
     
     
-    // Método para insertar una herramienta usada en el historial
-    public function insertarHerramientaUsada($params = []) {
-        try {
-            $stmt = $this->pdo->prepare("CALL InsertarHerramientaUsada(?, ?)");
-            $stmt->execute([
-                $params['idHistorialHerrero'],
-                $params['idHerramienta']
-            ]);
-            return ['status' => 'success', 'message' => 'Herramienta registrada correctamente en el historial.'];
-        } catch (PDOException $e) {
-            error_log("Error al insertar herramienta usada: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al registrar la herramienta en el historial.'];
-        }
-    }
+    
 
     // Método para consultar el historial completo de un equino
     public function consultarHistorialEquino($idEquino) {
@@ -97,30 +84,6 @@ class Herrero extends Conexion {
         }
     }
 
-    // Método para consultar el estado actual de todas las herramientas
-    public function consultarEstadoActualHerramientas() {
-        try {
-            $stmt = $this->pdo->prepare("CALL ConsultarEstadoActualHerramientas()");
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error al consultar estado actual de herramientas: " . $e->getMessage());
-            return false;
-        }
-    }
-
-
-    // Método para insertar un nuevo estado de herramienta en EstadoHerramienta
-    public function insertarEstadoHerramienta($descripcionEstado) {
-        try {
-            $stmt = $this->pdo->prepare("CALL InsertarEstadoHerramienta(?)");
-            $stmt->execute([$descripcionEstado]);
-            return ['status' => 'success', 'message' => 'Nuevo estado de herramienta insertado correctamente.'];
-        } catch (PDOException $e) {
-            error_log("Error al insertar estado de herramienta: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al insertar el estado de la herramienta.'];
-        }
-    }
 
     // Método para obtener los tipos de equinos
     // Método para listar equinos propios (sin propietario) para medicamentos

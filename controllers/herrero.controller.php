@@ -48,8 +48,6 @@ try {
     if ($method === 'GET') {
         switch ($operation) {
             
-
-            
             case 'consultarHistorialEquino':
                 $idEquino = intval($_GET['idEquino'] ?? 0);
                 $historial = $herrero->consultarHistorialEquino($idEquino);
@@ -72,16 +70,6 @@ try {
                 }
                 break;
             
-
-            case 'consultarEstadoActualHerramientas':
-                $estadoActual = $herrero->consultarEstadoActualHerramientas();
-                if ($estadoActual) {
-                    sendResponse('success', 'Estado actual de herramientas consultado correctamente.', $estadoActual);
-                } else {
-                    sendResponse('error', 'No se pudo consultar el estado actual de las herramientas.');
-                }
-                break;
-
             case 'listarEquinosPorTipo':
                 // Llamada al método para listar equinos sin propietario para medicamentos
                 $result = $historialme->listarEquinosPorTipo();
@@ -123,22 +111,6 @@ try {
                 break;
             
             
-    
-            case 'insertarHerramientaUsada':
-                $params = [
-                    'idHistorialHerrero' => $_POST['idHistorialHerrero'],
-                    'idHerramienta' => $_POST['idHerramienta']
-                ];
-                $result = $herrero->insertarHerramientaUsada($params);
-                sendResponse($result['status'], $result['message']);
-                break;
-
-            case 'insertarEstadoHerramienta':
-                $descripcionEstado = $_POST['descripcionEstado'];
-                $result = $herrero->insertarEstadoHerramienta($descripcionEstado);
-                sendResponse($result['status'], $result['message']);
-                break;
-
             default:
                 sendResponse('error', 'Operación no válida para POST.');
         }
