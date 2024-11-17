@@ -192,8 +192,11 @@ CREATE TABLE LotesAlimento (
     idLote INT PRIMARY KEY AUTO_INCREMENT,
     lote VARCHAR(50) NOT NULL,
     fechaCaducidad DATE DEFAULT NULL,
-    fechaIngreso DATETIME DEFAULT NOW()
+    fechaIngreso DATETIME DEFAULT NOW(),
+    estadoLote ENUM('No Vencido', 'Vencido') DEFAULT 'No Vencido'
 ) ENGINE = INNODB;
+
+
 
 -- 16. Tabla Intermedia para la Relación entre Tipos de Alimento y Unidades de Medida
 CREATE TABLE TipoAlimento_UnidadMedida (
