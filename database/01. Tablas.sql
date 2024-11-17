@@ -382,12 +382,13 @@ CREATE TABLE Entrenamientos (
 
 
 
--- 26
+-- 26 tipos de trabajo (herreo)
 CREATE TABLE TiposTrabajos (
     idTipoTrabajo INT PRIMARY KEY AUTO_INCREMENT,
     nombreTrabajo VARCHAR(255) NOT NULL UNIQUE
 );
 
+-- herramientas
 CREATE TABLE Herramientas (
     idHerramienta INT PRIMARY KEY AUTO_INCREMENT,
     nombreHerramienta VARCHAR(255) NOT NULL UNIQUE
