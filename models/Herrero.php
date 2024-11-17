@@ -121,10 +121,20 @@ class Herrero extends Conexion {
     public function listarTiposTrabajos() {
         try {
             $result = $this->pdo->query("CALL spu_listar_tipos_trabajos()");
-            return ['status' => 'success', 'data' => $result->fetchAll(PDO::FETCH_ASSOC)];
+            $data = $result->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'status' => 'success',
+                'message' => 'Tipos de trabajo listados correctamente.',
+                'data' => $data
+            ];
         } catch (PDOException $e) {
             error_log("Error al listar tipos de trabajos: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al listar los tipos de trabajos.'];
+            return [
+                'status' => 'error',
+                'message' => 'Error al listar los tipos de trabajos.',
+                'data' => []
+            ];
         }
     }
 
@@ -132,10 +142,20 @@ class Herrero extends Conexion {
     public function listarHerramientas() {
         try {
             $result = $this->pdo->query("CALL spu_listar_herramientas()");
-            return ['status' => 'success', 'data' => $result->fetchAll(PDO::FETCH_ASSOC)];
+            $data = $result->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'status' => 'success',
+                'message' => 'Herramientas listadas correctamente.',
+                'data' => $data
+            ];
         } catch (PDOException $e) {
             error_log("Error al listar herramientas: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al listar las herramientas.'];
+            return [
+                'status' => 'error',
+                'message' => 'Error al listar las herramientas.',
+                'data' => []
+            ];
         }
     }
 

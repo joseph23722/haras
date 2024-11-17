@@ -22,6 +22,7 @@ function sendResponse($status, $message, $data = null) {
     exit();
 }
 
+
 // Obtener la operación
 $operation = '';
 if ($method === 'GET') {
@@ -68,13 +69,20 @@ try {
 
             case 'listarTiposTrabajos':
                 $result = $herrero->listarTiposTrabajos();
-                sendResponse($result['status'], $result['message'], $result['data']);
+                $status = $result['status'] ?? 'error';
+                $message = $result['message'] ?? 'Operación fallida.';
+                $data = $result['data'] ?? [];
+                sendResponse($status, $message, $data);
                 break;
-
+            
             case 'listarHerramientas':
                 $result = $herrero->listarHerramientas();
-                sendResponse($result['status'], $result['message'], $result['data']);
+                $status = $result['status'] ?? 'error';
+                $message = $result['message'] ?? 'Operación fallida.';
+                $data = $result['data'] ?? [];
+                sendResponse($status, $message, $data);
                 break;
+            
 
             default:
                 sendResponse('error', 'Operación no válida para GET.');

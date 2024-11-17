@@ -15,6 +15,49 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+// Cargar tipos de trabajo dinámicamente
+async function cargarTiposTrabajos() {
+    try {
+        const response = await fetch('../../controllers/herrero.controller.php?operation=listarTiposTrabajos');
+        
+        // Manejo de respuesta como texto para depuración
+        const textResponse = await response.text();
+        console.log('Respuesta en texto (tipos de trabajo):', textResponse);
+        
+        // Intentar convertir a JSON
+        let data;
+        try {
+            data = JSON.parse(textResponse);
+            console.log('Respuesta parseada como JSON (tipos de trabajo):', data);
+        } catch (error) {
+            console.error('Error al parsear JSON para tipos de trabajo:', error);
+            return; // Salir si la respuesta no es JSON válido
+        }
+
+        if (data.status === 'success') {
+            const trabajoSelect = document.getElementById('trabajoRealizado');
+            data.data.forEach(trabajo => {
+                const option = document.createElement('option');
+                option.value = trabajo.idTipoTrabajo;
+                option.textContent = trabajo.nombreTrabajo;
+                trabajoSelect.appendChild(option);
+            });
+        } else {
+            console.error('Error al cargar tipos de trabajo:', data.message);
+        }
+    } catch (error) {
+        console.error('Error en la solicitud para tipos de trabajo:', error);
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 // Función para cargar los equinos según el tipo seleccionado
@@ -129,4 +172,6 @@ const loadHistorialHerreroTable = (idEquino) => {
 $(document).ready(function () {
     const idEquino = 1; // Cambia esto a un ID real o dinámico
     loadHistorialHerreroTable(idEquino);
+    cargarTiposTrabajos();
+    cargarHerramientas();
 });
