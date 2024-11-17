@@ -123,17 +123,5 @@ class Herrero extends Conexion {
         }
     }
 
-    /*
-    // Método para obtener los equinos por tipo
-    public function obtenerEquinosPorTipo($idTipoEquino) {
-        try {
-            $stmt = $this->pdo->prepare("SELECT * FROM equinos WHERE idTipoEquino = ?");
-            $stmt->execute([$idTipoEquino]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error al obtener equinos por tipo: " . $e->getMessage());
-            return [];
-        }
-    }
-        */
+    
 }
