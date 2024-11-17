@@ -136,7 +136,19 @@ class Herrero extends Conexion {
     }
 
     //Listar Herramientas
+    public function listarHerramientas() {
+        try {
+            $stmt = $this->pdo->prepare("CALL spu_listar_herramientas()");
+            $stmt->execute();
+            return ['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        } catch (PDOException $e) {
+            error_log("Error al listar herramientas: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al listar las herramientas.'];
+        }
+    }
+
     
+    //Agregar un Nuevo Tipo de Trabajo
     
 
 
