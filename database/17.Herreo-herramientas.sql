@@ -85,6 +85,14 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- 2. Procedimiento para listar herramientas (Herramientas)
+DELIMITER $$
+CREATE PROCEDURE spu_listar_herramientas()
+BEGIN
+    SELECT idHerramienta, nombreHerramienta, descripcion 
+    FROM Herramientas;
+END $$
+DELIMITER ;
 
 
 
