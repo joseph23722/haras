@@ -52,9 +52,6 @@ END //
 DELIMITER ;
 
 
-
-
-
 -- 2. Procedimiento para Consultar el Historial Completo de un Equino
 -- Retorna el historial de trabajos de herrería para un equino específico, con detalles generales del trabajo
 DELIMITER //
