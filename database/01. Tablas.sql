@@ -395,7 +395,7 @@ CREATE TABLE Herramientas (
 
 
 -- Tabla para el Historial del Trabajo de Herrería
-drop TABLE HistorialHerrero (
+CREATE TABLE HistorialHerrero (
     idHistorialHerrero INT PRIMARY KEY AUTO_INCREMENT,
     idEquino INT NOT NULL,
     idUsuario INT NOT NULL,
@@ -409,7 +409,7 @@ drop TABLE HistorialHerrero (
 
 
 -- Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados)
-drop TABLE HerramientasUsadasHistorial (
+CREATE TABLE HerramientasUsadasHistorial (
     idHerramientasUsadas INT PRIMARY KEY AUTO_INCREMENT,
     idHistorialHerrero INT NOT NULL,
     idHerramienta INT NOT NULL,
