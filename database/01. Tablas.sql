@@ -383,27 +383,38 @@ CREATE TABLE Entrenamientos (
 
 
 -- 26
+CREATE TABLE TiposTrabajos (
+    idTipoTrabajo INT PRIMARY KEY AUTO_INCREMENT,
+    nombreTrabajo VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE Herramientas (
+    idHerramienta INT PRIMARY KEY AUTO_INCREMENT,
+    nombreHerramienta VARCHAR(255) NOT NULL UNIQUE
+);
 
 
 -- Tabla para el Historial del Trabajo de Herrería
-CREATE TABLE HistorialHerrero (
+drop TABLE HistorialHerrero (
     idHistorialHerrero INT PRIMARY KEY AUTO_INCREMENT,
     idEquino INT NOT NULL,
     idUsuario INT NOT NULL,
     fecha DATE NOT NULL,
-    trabajoRealizado TEXT NOT NULL,
-    herramientasUsadas TEXT,
+    idTrabajo INT NOT NULL, -- Referencia a TiposTrabajos
     observaciones TEXT,
     CONSTRAINT fk_historialherrero_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+    CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
+    CONSTRAINT fk_historialherrero_trabajo FOREIGN KEY (idTrabajo) REFERENCES TiposTrabajos(idTipoTrabajo)
 );
 
+
 -- Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados)
-CREATE TABLE HerramientasUsadasHistorial (
+drop TABLE HerramientasUsadasHistorial (
     idHerramientasUsadas INT PRIMARY KEY AUTO_INCREMENT,
     idHistorialHerrero INT NOT NULL,
     idHerramienta INT NOT NULL,
-    CONSTRAINT fk_herramienta_historial FOREIGN KEY (idHistorialHerrero) REFERENCES HistorialHerrero(idHistorialHerrero)
+    CONSTRAINT fk_herramienta_historial FOREIGN KEY (idHistorialHerrero) REFERENCES HistorialHerrero(idHistorialHerrero),
+    CONSTRAINT fk_herramienta FOREIGN KEY (idHerramienta) REFERENCES Herramientas(idHerramienta)
 );
 
 
