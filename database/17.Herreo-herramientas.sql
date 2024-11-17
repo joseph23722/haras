@@ -113,6 +113,23 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+-- 4. Procedimiento para agregar una nueva herramienta
+DELIMITER $$
+CREATE PROCEDURE spu_agregar_herramienta(
+    IN _nombreHerramienta VARCHAR(100),
+    IN _descripcion TEXT
+)
+BEGIN
+    -- Verificar que no exista una herramienta con el mismo nombre
+    IF EXISTS (SELECT 1 FROM Herramientas WHERE nombreHerramienta = _nombreHerramienta) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La herramienta ya existe.';
+    ELSE
+        -- Insertar la nueva herramienta
+        INSERT INTO Herramientas (nombreHerramienta, descripcion)
+        VALUES (_nombreHerramienta, _descripcion);
+    END IF;
+END $$
+DELIMITER ;
 
 
