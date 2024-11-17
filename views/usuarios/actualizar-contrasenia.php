@@ -92,5 +92,10 @@
         console.error('Error:', error);
         mostrarAlerta('Hubo un problema con la conexión. Intenta más tarde.', 'error');
       });
+
+      /* Actualizar interfaz, testear todo el sistema, verificar estados y que se pueda subir mas de 1 fotografia por equino */
+      /* Validaciones */
+      /* Accesibilidad */
+      /* Agregado nuevo permiso para todos los usuarios, para que puedan modificar su contraseña */
   });
 </script>
