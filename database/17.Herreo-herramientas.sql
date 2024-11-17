@@ -91,26 +91,28 @@ END //
 DELIMITER ;
 
 
-
+-- Procedimiento para listar tipos de trabajos
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_trabajos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_trabajos()
 BEGIN
-    SELECT idTipoTrabajo, nombreTrabajo, descripcion 
+    SELECT idTipoTrabajo, nombreTrabajo
     FROM TiposTrabajos;
 END $$
 DELIMITER ;
 
 
 
+-- Procedimiento para listar herramientas
 DROP PROCEDURE IF EXISTS `spu_listar_herramientas`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_herramientas()
 BEGIN
-    SELECT idHerramienta, nombreHerramienta, descripcion 
+    SELECT idHerramienta, nombreHerramienta
     FROM Herramientas;
 END $$
 DELIMITER ;
+
 
 
 -- Procedimiento para agregar un nuevo tipo de trabajo
