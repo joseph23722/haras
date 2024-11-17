@@ -43,30 +43,21 @@
                         <div class="form-floating">
                             <select id="trabajoRealizado" class="form-select" name="trabajoRealizado" required>
                                 <option value="">Seleccione Trabajo Realizado</option>
-                                <option value="recorte">Recorte de casco</option>
-                                <option value="colocacion">Colocación de herraduras nuevas</option>
-                                <option value="cambio">Cambio de herraduras</option>
-                                <option value="ajuste">Ajuste o corrección de herraduras</option>
-                                <option value="reparacion">Reparación de cascos dañados</option>
                             </select>
                             <label for="trabajoRealizado"><i class="fas fa-tools" style="color: #ff8c00;"></i> Trabajo Realizado</label>
                         </div>
                     </div>
 
-                    <!-- Herramienta Usada como un selector simple -->
+                    <!-- Selector para Herramienta Usada -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select id="herramientaUsada" class="form-select" name="herramientaUsada" required>
                                 <option value="">Seleccione Herramienta Usada</option>
-                                <option value="herradura_acero">Herradura de acero</option>
-                                <option value="herradura_aluminio">Herradura de aluminio</option>
-                                <option value="lima_casco">Lima de cascos</option>
-                                <option value="cuchillo_casco">Cuchillo para casco</option>
-                                <option value="martillo_herrado">Martillo de herrado</option>
                             </select>
                             <label for="herramientaUsada"><i class="fas fa-wrench" style="color: #00b4d8;"></i> Herramienta Usada</label>
                         </div>
                     </div>
+
 
                     <!-- Campo de fecha -->
                     <div class="col-md-6">

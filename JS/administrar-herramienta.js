@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     fechaInput.setAttribute('min', minDate);
 });
 
+
+
+
 // Función para cargar los equinos según el tipo seleccionado
 async function loadEquinosPorTipo(tipoEquino) {
     const equinoSelect = document.getElementById("equinoSelect");
