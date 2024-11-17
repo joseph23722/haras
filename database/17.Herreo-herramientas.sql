@@ -48,6 +48,8 @@ BEGIN
 END //
 DELIMITER ;
 
+
+
 DROP PROCEDURE IF EXISTS `ConsultarHistorialEquino`;
 DELIMITER $$
 CREATE PROCEDURE ConsultarHistorialEquino (
@@ -88,6 +90,8 @@ BEGIN
 END //
 DELIMITER ;
 
+
+
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_trabajos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_trabajos()
@@ -97,6 +101,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 DROP PROCEDURE IF EXISTS `spu_listar_herramientas`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_herramientas()
@@ -105,6 +111,8 @@ BEGIN
     FROM Herramientas;
 END $$
 DELIMITER ;
+
+
 
 DROP PROCEDURE IF EXISTS `spu_agregar_tipo_trabajo`;
 DELIMITER $$
@@ -125,6 +133,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 DROP PROCEDURE IF EXISTS `spu_agregar_herramienta`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_herramienta(
@@ -143,3 +153,12 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+
+-- pruebas 
+CALL spu_agregar_tipo_trabajo('Recorte de cascos', 'Trabajo que implica recortar los cascos del equino para mejorar su movilidad y salud.');
+
+
+CALL spu_agregar_herramienta('Lima para cascos', 'Herramienta utilizada para alisar y dar forma a los cascos del equino.');
+
+
