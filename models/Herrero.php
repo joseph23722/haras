@@ -149,6 +149,27 @@ class Herrero extends Conexion {
 
     
     //Agregar un Nuevo Tipo de Trabajo
+    public function agregarTipoTrabajo($nombreTrabajo, $descripcion) {
+        try {
+            // Verificar que los parámetros no estén vacíos
+            if (empty($nombreTrabajo)) {
+                throw new Exception("El nombre del trabajo es obligatorio.");
+            }
+    
+            $stmt = $this->pdo->prepare("CALL spu_agregar_tipo_trabajo(?, ?)");
+            $stmt->execute([$nombreTrabajo, $descripcion]);
+    
+            return ['status' => 'success', 'message' => 'Tipo de trabajo agregado exitosamente.'];
+        } catch (PDOException $e) {
+            error_log("Error al agregar tipo de trabajo: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al agregar el tipo de trabajo.'];
+        } catch (Exception $e) {
+            error_log("Error en agregarTipoTrabajo: " . $e->getMessage());
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    //Agregar una Nueva Herramienta
     
 
 
