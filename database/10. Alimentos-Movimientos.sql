@@ -530,6 +530,7 @@ END $$
 DELIMITER ;
 
 -- esto no va es prueba 
+/*
 -- tipo de equino - alimento ------ 
 DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
 DELIMITER $$
@@ -540,5 +541,5 @@ BEGIN
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
 END $$
 DELIMITER ;
-
+*/
 -- -------------------------------------------------------------------------------
