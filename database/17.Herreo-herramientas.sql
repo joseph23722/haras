@@ -94,6 +94,25 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- 3.  Procedimiento para agregar un nuevo tipo de trabajo
+DELIMITER $$
+CREATE PROCEDURE spu_agregar_tipo_trabajo(
+    IN _nombreTrabajo VARCHAR(100),
+    IN _descripcion TEXT
+)
+BEGIN
+    -- Verificar que no exista un tipo de trabajo con el mismo nombre
+    IF EXISTS (SELECT 1 FROM TiposTrabajos WHERE nombreTrabajo = _nombreTrabajo) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El tipo de trabajo ya existe.';
+    ELSE
+        -- Insertar el nuevo tipo de trabajo
+        INSERT INTO TiposTrabajos (nombreTrabajo, descripcion)
+        VALUES (_nombreTrabajo, _descripcion);
+    END IF;
+END $$
+DELIMITER ;
+
 
 
 
