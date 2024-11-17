@@ -50,6 +50,42 @@ async function cargarTiposTrabajos() {
     }
 }
 
+// Cargar herramientas dinámicamente
+async function cargarHerramientas() {
+    try {
+        const response = await fetch('../../controllers/herrero.controller.php?operation=listarHerramientas');
+        
+        // Manejo de respuesta como texto para depuración
+        const textResponse = await response.text();
+        console.log('Respuesta en texto (herramientas):', textResponse);
+        
+        // Intentar convertir a JSON
+        let data;
+        try {
+            data = JSON.parse(textResponse);
+            console.log('Respuesta parseada como JSON (herramientas):', data);
+        } catch (error) {
+            console.error('Error al parsear JSON para herramientas:', error);
+            return; // Salir si la respuesta no es JSON válido
+        }
+
+        if (data.status === 'success') {
+            const herramientaSelect = document.getElementById('herramientaUsada');
+            data.data.forEach(herramienta => {
+                const option = document.createElement('option');
+                option.value = herramienta.idHerramienta;
+                option.textContent = herramienta.nombreHerramienta;
+                herramientaSelect.appendChild(option);
+            });
+        } else {
+            console.error('Error al cargar herramientas:', data.message);
+        }
+    } catch (error) {
+        console.error('Error en la solicitud para herramientas:', error);
+    }
+}
+
+
 
 
 
