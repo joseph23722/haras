@@ -155,9 +155,7 @@ DELIMITER ;
 
 
 -- pruebas 
-CALL spu_agregar_tipo_trabajo('Recorte de cascos', 'Trabajo que implica recortar los cascos del equino para mejorar su movilidad y salud.');
+CALL spu_agregar_tipo_trabajo('Recorte de cascos');
 
-
-CALL spu_agregar_herramienta('Lima para cascos', 'Herramienta utilizada para alisar y dar forma a los cascos del equino.');
-
+CALL spu_agregar_herramienta('Lima para cascos');
 
