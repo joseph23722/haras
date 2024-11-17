@@ -170,6 +170,25 @@ class Herrero extends Conexion {
     }
 
     //Agregar una Nueva Herramienta
+    public function agregarHerramienta($nombreHerramienta, $descripcion) {
+        try {
+            // Verificar que los parámetros no estén vacíos
+            if (empty($nombreHerramienta)) {
+                throw new Exception("El nombre de la herramienta es obligatorio.");
+            }
+    
+            $stmt = $this->pdo->prepare("CALL spu_agregar_herramienta(?, ?)");
+            $stmt->execute([$nombreHerramienta, $descripcion]);
+    
+            return ['status' => 'success', 'message' => 'Herramienta agregada exitosamente.'];
+        } catch (PDOException $e) {
+            error_log("Error al agregar herramienta: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al agregar la herramienta.'];
+        } catch (Exception $e) {
+            error_log("Error en agregarHerramienta: " . $e->getMessage());
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
     
 
 
