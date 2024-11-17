@@ -97,8 +97,7 @@ try {
                     sendResponse('error', 'El nombre del trabajo es obligatorio.');
                 }
 
-                $descripcion = $params['descripcion'] ?? '';
-                $result = $herrero->agregarTipoTrabajo($params['nombreTrabajo'], $descripcion);
+                $result = $herrero->agregarTipoTrabajo($params['nombreTrabajo']);
                 sendResponse($result['status'], $result['message']);
                 break;
 
@@ -108,8 +107,7 @@ try {
                     sendResponse('error', 'El nombre de la herramienta es obligatorio.');
                 }
 
-                $descripcion = $params['descripcion'] ?? '';
-                $result = $herrero->agregarHerramienta($params['nombreHerramienta'], $descripcion);
+                $result = $herrero->agregarHerramienta($params['nombreHerramienta']);
                 sendResponse($result['status'], $result['message']);
                 break;
 
