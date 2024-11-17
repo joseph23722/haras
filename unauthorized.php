@@ -8,26 +8,41 @@
         /* Estilo general de la página */
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
             color: #fff;
-            text-align: center;
-            overflow: hidden;
         }
 
-        /* Efecto de parpadeo para el fondo */
-        @keyframes blink {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; }
-            100% { opacity: 0.8; }
+        /* Fondo animado para dar un toque más moderno */
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://media.giphy.com/media/xT1XGslzS3UoCaydoI/giphy.gif') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(10px);
+            z-index: -1;
+            animation: pulse 4s infinite ease-in-out;
         }
 
-        body {
-            animation: blink 3s infinite;
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         /* Caja de mensaje */
@@ -125,14 +140,10 @@
             margin-top: 20px;
         }
 
-        /* Sombra sutil para el botón */
-        .btn-back {
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        }
-
     </style>
 </head>
 <body>
+    <div class="background-animation"></div> <!-- Fondo animado con gif y efecto de pulsado -->
     <div class="message-box">
         <h1>Acceso Denegado</h1>
         <p>Lo sentimos, no tienes los permisos necesarios para acceder a esta función. Si crees que esto es un error, por favor contacta con el administrador.</p>
