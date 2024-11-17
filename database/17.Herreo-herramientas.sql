@@ -6,8 +6,8 @@ CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_idEquino INT,
     IN p_idUsuario INT,
     IN p_fecha DATE,
-    IN p_trabajoRealizado TEXT,
-    IN p_herramientasUsadas TEXT,
+    IN p_idTrabajo INT,      -- ID del trabajo realizado
+    IN p_idHerramienta INT,  -- ID de la herramienta utilizada
     IN p_observaciones TEXT
 )
 BEGIN
@@ -20,7 +20,7 @@ BEGIN
     END;
 
     -- Validación de entrada
-    IF p_idEquino IS NULL OR p_idUsuario IS NULL OR p_fecha IS NULL OR p_trabajoRealizado IS NULL THEN
+    IF p_idEquino IS NULL OR p_idUsuario IS NULL OR p_fecha IS NULL OR p_idTrabajo IS NULL OR p_idHerramienta IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Campos obligatorios faltantes para la inserción.';
     END IF;
@@ -30,9 +30,19 @@ BEGIN
 
     -- Inserción en la tabla HistorialHerrero
     INSERT INTO HistorialHerrero (
-        idEquino, idUsuario, fecha, trabajoRealizado, herramientasUsadas, observaciones
+        idEquino, idUsuario, fecha, idTrabajo, observaciones
     ) VALUES (
-        p_idEquino, p_idUsuario, p_fecha, p_trabajoRealizado, p_herramientasUsadas, p_observaciones
+        p_idEquino, p_idUsuario, p_fecha, p_idTrabajo, p_observaciones
+    );
+
+    -- Obtener el ID generado para HistorialHerrero
+    SET @idHistorialHerrero = LAST_INSERT_ID();
+
+    -- Inserción en la tabla HerramientasUsadasHistorial
+    INSERT INTO HerramientasUsadasHistorial (
+        idHistorialHerrero, idHerramienta
+    ) VALUES (
+        @idHistorialHerrero, p_idHerramienta
     );
 
     -- Confirmar la transacción
@@ -40,6 +50,7 @@ BEGIN
 END //
 
 DELIMITER ;
+
 
 
 
@@ -72,8 +83,6 @@ BEGIN
 END //
 DELIMITER ;
 
-
-CALL ConsultarHistorialEquino(1); -- Cambia "1" por un ID de prueba
 
 
 -- 1. Procedimiento para listar tipos de trabajos (TiposTrabajos)
