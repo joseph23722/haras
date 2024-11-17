@@ -10,46 +10,47 @@ class Herrero extends Conexion {
     }
 
     // Método para insertar un nuevo trabajo en el historial del herrero
+    // Método para insertar un nuevo trabajo en el historial del herrero
     public function insertarHistorialHerrero($params = []) {
         try {
             // Verificar y manejar la sesión
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
-    
+
             $idUsuario = $_SESSION['idUsuario'] ?? null;
             if ($idUsuario === null) {
                 error_log("Usuario no autenticado: idUsuario no definido en la sesión.");
                 return ['status' => 'error', 'message' => 'Usuario no autenticado.'];
             }
-    
+
             // Validar los campos obligatorios
             $obligatorios = [
                 'idEquino' => $params['idEquino'] ?? null,
                 'fecha' => $params['fecha'] ?? null,
-                'trabajoRealizado' => $params['trabajoRealizado'] ?? null,
-                'herramientasUsadas' => $params['herramientasUsadas'] ?? null,
+                'idTrabajo' => $params['idTrabajo'] ?? null,  // Cambiado a ID del trabajo
+                'idHerramienta' => $params['idHerramienta'] ?? null, // Cambiado a ID de la herramienta
                 'observaciones' => $params['observaciones'] ?? null
             ];
-    
+
             foreach ($obligatorios as $campo => $valor) {
                 if (empty($valor)) {
                     error_log("Campo obligatorio faltante: $campo.");
                     throw new Exception("Falta el campo obligatorio: $campo.");
                 }
             }
-    
+
             // Ejecutar el procedimiento almacenado
             $stmt = $this->pdo->prepare("CALL InsertarHistorialHerrero(?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $params['idEquino'],
                 $idUsuario,
                 $params['fecha'],
-                $params['trabajoRealizado'],
-                $params['herramientasUsadas'],
+                $params['idTrabajo'], // Pasar el ID del trabajo
+                $params['idHerramienta'], // Pasar el ID de la herramienta
                 $params['observaciones']
             ]);
-    
+
             // Verificar si se insertó correctamente
             if ($stmt->rowCount() > 0) {
                 return ['status' => 'success', 'message' => 'Trabajo registrado en el historial correctamente.'];
@@ -67,6 +68,7 @@ class Herrero extends Conexion {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
     
     
     
