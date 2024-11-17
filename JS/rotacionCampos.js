@@ -158,105 +158,142 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error obteniendo datos del campo:', error));
     }
 
-    document.getElementById('guardarCampoEditar').addEventListener('click', function () {
-        const formData = new FormData(document.getElementById('form-editar-campo'));
-        formData.append('operation', 'editarCampo');
-
-        fetch('../../controllers/campos.controller.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
+    // editar campo
+    document.getElementById('guardarCampoEditar').addEventListener('click', async function () {
+        if (await ask('¿Está seguro de que desea editar este campo?')) {
+            const formData = new FormData(document.getElementById('form-editar-campo'));
+            formData.append('operation', 'editarCampo');
+    
+            try {
+                const response = await fetch('../../controllers/campos.controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                const data = await response.json();
+    
                 if (data.status !== "error") {
-                    alert("Campo editado exitosamente.");
-                    $('#editarCampoModal').modal('hide');
-                    inicializarDataTable();
+                    console.log("Campo editado exitosamente.");
+                    $('#editarCampoModal').modal('hide'); // Ocultar el modal
+                    inicializarDataTable(); // Actualizar la tabla de datos
                 } else {
-                    alert(data.message);
+                    console.error("Error al editar el campo:", data.message);
                 }
-            })
-            .catch(error => console.error('Error editando campo:', error));
+            } catch (error) {
+                console.error("Error editando el campo:", error);
+            }
+        } else {
+            console.log("El usuario canceló la edición del campo.");
+        }
     });
+    
 
     // Función para eliminar un campo
-    function eliminarCampo(idCampo) {
-        if (confirm('¿Estás seguro de que deseas eliminar este campo?')) {
+    async function eliminarCampo(idCampo) {
+        if (await ask('¿Está seguro de que desea eliminar este campo?')) {
             const formData = new FormData();
             formData.append('operation', 'eliminarCampo');
             formData.append('idCampo', idCampo);
-
-            fetch('../../controllers/campos.controller.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status !== "error") {
-                        alert('Campo eliminado exitosamente.');
-                        inicializarDataTable();
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => console.error('Error eliminando campo:', error));
+    
+            try {
+                const response = await fetch('../../controllers/campos.controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                const data = await response.json();
+    
+                if (data.status !== "error") {
+                    console.log('Campo eliminado exitosamente.');
+                    inicializarDataTable(); // Actualizar la tabla de datos
+                } else {
+                    console.error('Error al eliminar el campo:', data.message);
+                }
+            } catch (error) {
+                console.error('Error eliminando el campo:', error);
+            }
+        } else {
+            console.log('El usuario canceló la operación de eliminación.');
         }
     }
+    
 
     // Registrar nuevo campo
-    document.getElementById('guardarCampo').addEventListener('click', function () {
+    // Registrar nuevo campo
+    document.getElementById('guardarCampo').addEventListener('click', async function () {
         const nuevoCampoForm = document.getElementById('form-nuevo-campo');
         const numeroCampo = parseInt(document.getElementById('numeroCampo').value);
 
         if (numeroCampo < 1) {
-            alert("El número del campo debe ser mayor que 0.");
+            console.error("El número del campo debe ser mayor que 0.");
             return;
         }
 
-        const formData = new FormData(nuevoCampoForm);
-        formData.append('operation', 'registrarCampo');
+        if (await ask('¿Está seguro de que desea registrar este nuevo campo?')) {
+            const formData = new FormData(nuevoCampoForm);
+            formData.append('operation', 'registrarCampo');
 
-        fetch('../../controllers/campos.controller.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('../../controllers/campos.controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
                 if (data.status !== "error") {
+                    console.log("Campo registrado exitosamente.");
                     $('#registerFieldModal').modal('hide');
-                    alert("Campo registrado exitosamente.");
-                    obtenerCampos();
-                    inicializarDataTable();
+                    obtenerCampos(); // Recargar los campos
+                    inicializarDataTable(); // Actualizar la tabla de datos
                 } else {
-                    alert(data.message);
+                    console.error("Error al registrar el campo:", data.message);
                 }
-            })
-            .catch(error => console.error('Error registrando campo:', error));
+            } catch (error) {
+                console.error("Error registrando el campo:", error);
+            }
+        } else {
+            console.log("Operación de registro cancelada por el usuario.");
+        }
     });
+
 
     // Registrar rotación
-    document.getElementById('form-rotacion-campos').addEventListener('submit', function (event) {
+    document.getElementById('form-rotacion-campos').addEventListener('submit', async function (event) {
         event.preventDefault();
-        const formData = new FormData(this);
-        formData.append('operation', 'rotacionCampos');
-
-        fetch('../../controllers/campos.controller.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
+    
+        // Confirmar la acción con el usuario
+        if (await ask('¿Está seguro de que desea registrar esta rotación de campos?')) {
+            // Crear los datos del formulario
+            const formData = new FormData(this);
+            formData.append('operation', 'rotacionCampos');
+    
+            try {
+                // Enviar la solicitud al servidor
+                const response = await fetch('../../controllers/campos.controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                // Procesar la respuesta del servidor
+                const data = await response.json();
+    
+                // Manejar la respuesta según el estado
                 if (data.status !== "error" && data.idRotacion) {
-                    alert('Rotación registrada con éxito. ID Rotación: ' + data.idRotacion);
-                    inicializarDataTable();
-                    this.reset();
+                    console.log('Rotación registrada con éxito. ID Rotación:', data.idRotacion);
+                    inicializarDataTable(); // Actualizar la tabla de datos
+                    this.reset(); // Reiniciar el formulario
                 } else {
-                    alert('Error registrando rotación: ' + (data.message || 'Respuesta inesperada'));
+                    console.error('Error registrando rotación:', data.message || 'Respuesta inesperada');
                 }
-            })
-            .catch(error => console.error('Error registrando rotación:', error));
+            } catch (error) {
+                console.error("Error en la solicitud:", error.message);
+            }
+        } else {
+            console.log('La operación fue cancelada por el usuario.');
+        }
     });
+    
 
     obtenerCampos();
     obtenerTiposRotaciones();

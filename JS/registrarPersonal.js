@@ -118,30 +118,30 @@ document.addEventListener("DOMContentLoaded", () => {
         parametros.append("numeroHijos", $("#numeroHijos").val());
         parametros.append("fechaIngreso", $("#fechaIngreso").val());
         parametros.append("tipoContrato", $("#tipoContrato").val());
-
+    
         try {
             const response = await fetch(`../../controllers/persona.controller.php`, {
                 method: 'POST',
                 body: parametros
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 if (data['idPersonal'] > 0) {
-                    alert('Personal registrado exitosamente');
+                    showToast("Personal registrado exitosamente", "SUCCESS");
                     $("#formulario-personal")[0].reset();
                 } else {
-                    alert('Error al registrar personal');
+                    showToast("Error al registrar personal", "ERROR");
                 }
             } else {
-                alert('Error en la respuesta del servidor');
+                showToast("Error en la respuesta del servidor", "ERROR");
             }
         } catch (error) {
-            console.error('Error en la solicitud:', error);
-            alert('Hubo un error en la solicitud');
+            console.error("Error en la solicitud:", error);
+            showToast("Hubo un error en la solicitud: " + error.message, "ERROR");
         }
     }
+    
 
     // Registrar Usuario
     async function registrarUsuario(event) {

@@ -85,6 +85,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../swalcustom.js"></script>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
 
@@ -152,49 +155,40 @@
 
     // Función para registrar un usuario
     async function registrarUsuario() {
-      const idPersonalVal = $("#idPersonal").val();
-      console.log("Valor de idPersonal antes de enviar al servidor:", idPersonalVal);  // Log para depuración
-      
-      if (idPersonalVal === "" || idPersonalVal == null) {
-        alert("Por favor, selecciona un personal válido antes de registrar un usuario.");
-        return;
-      }
+        const idPersonalVal = $("#idPersonal").val();
 
-      const parametros = new FormData();
-      parametros.append("operation", "add");
-      parametros.append("idPersonal", idPersonalVal);
-      parametros.append("correo", $("#correo").val());
-      parametros.append("clave", $("#clave").val());
-      parametros.append("idRol", $("#idRol").val());
-
-      // Log para verificar los datos que se envían al servidor
-      console.log("Datos enviados al servidor:", {
-        idPersonal: idPersonalVal,
-        correo: $("#correo").val(),
-        clave: $("#clave").val(),
-        idRol: $("#idRol").val()
-      });
-
-      try {
-        const response = await fetch(`../../controllers/usuario.controller.php`, {
-          method: 'POST',
-          body: parametros
-        });
-
-        const data = await response.json();
-
-        console.log("Respuesta del servidor:", data);
-
-        if (data.status === 'success') {
-          alert('Usuario registrado correctamente');
-          $('#modalRegistrarUsuario').modal('hide');
-        } else if (data.status === 'error') {
-          alert(data.message);
+        if (idPersonalVal === "" || idPersonalVal == null) {
+            showToast("Por favor, selecciona un personal válido antes de registrar un usuario.", "WARNING");
+            return;
         }
-      } catch (error) {
-        console.error("Error al registrar usuario:", error);
-      }
+
+        const parametros = new FormData();
+        parametros.append("operation", "add");
+        parametros.append("idPersonal", idPersonalVal);
+        parametros.append("correo", $("#correo").val());
+        parametros.append("clave", $("#clave").val());
+        parametros.append("idRol", $("#idRol").val());
+
+        try {
+            const response = await fetch(`../../controllers/usuario.controller.php`, {
+                method: 'POST',
+                body: parametros
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                showToast("Usuario registrado correctamente", "SUCCESS");
+                $('#modalRegistrarUsuario').modal('hide');
+            } else if (data.status === 'error') {
+                showToast(data.message, "ERROR");
+            }
+        } catch (error) {
+            showToast("Error al registrar usuario: " + error.message, "ERROR");
+            console.error("Error al registrar usuario:", error);
+        }
     }
+
 
     // Enviar el formulario de registro
     $("#formulario-usuario").on("submit", async (event) => {
