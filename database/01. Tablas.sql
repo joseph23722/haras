@@ -175,7 +175,7 @@ CREATE TABLE HistorialImplemento (
     CONSTRAINT fk_historial_tipoinventario FOREIGN KEY (idTipoinventario) REFERENCES TipoInventarios(idTipoinventario)
 ) ENGINE = INNODB;
 
--- 13. Tabla Unidades de Medida
+-- 13. Tabla Unidades de Medida - alimento
 CREATE TABLE UnidadesMedidaAlimento (
     idUnidadMedida INT PRIMARY KEY AUTO_INCREMENT,
     nombreUnidad VARCHAR(10) NOT NULL UNIQUE      -- Ejemplo: 'Kg', 'L'
@@ -239,7 +239,7 @@ CREATE TABLE MermasAlimento (
     CONSTRAINT fk_merma_alimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento) ON DELETE CASCADE
 ) ENGINE = INNODB;
 
--- 19. Tabla HistorialMovimientos
+-- 19. Tabla HistorialMovimientos - alimento
 CREATE TABLE HistorialMovimientos (
     idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
     idAlimento INT NOT NULL,
