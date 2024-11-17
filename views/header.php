@@ -115,16 +115,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             </div>
         </div>
 
-
-
-
-
-
-
-
-
-
-
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
             <li class="nav-item dropdown">
@@ -132,12 +122,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
                     <i class="fas fa-user fa-fw"></i><?= $_SESSION['login']['nombres'] ?>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Configuración</a></li>
-                    <li><a class="dropdown-item" href="#!">Cambiar Contraseña</a></li>
-                    <li><a class="dropdown-item" href="#!">Historial</a></li>
-                    <li>
-                        <hr class="dropdown-divider" />
-                    </li>
                     <li><a class="dropdown-item" href="http://localhost/haras/controllers/usuario.controller.php?operation=destroy">Cerrar Sesión</a></li>
                 </ul>
             </li>
@@ -171,5 +155,3 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             </nav>
         </div>
         <div id="layoutSidenav_content">
-        
-

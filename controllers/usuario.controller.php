@@ -198,13 +198,24 @@ if (isset($_POST['operation'])) {
             break;
 
         case 'actualizarcontrasenia':
-            $claveEncriptada = password_hash($_POST["clave"], PASSWORD_BCRYPT);
-            $datos = [
-                "correo" => $_POST["correo"],
-                "clave" => $claveEncriptada
-            ];
-            $resultado = $usuario->ActualizarContrasenia($datos);
-            echo json_encode($resultado);
+            // Verifica que se reciban todos los datos necesarios
+            if (isset($_POST['clave'], $_POST['correo'], $_POST['claveActual'])) {
+                $claveEncriptada = password_hash($_POST["clave"], PASSWORD_BCRYPT); // Contraseña nueva
+                $datos = [
+                    "correo" => $_POST["correo"],
+                    "clave" => $claveEncriptada
+                ];
+
+                // Compara la clave actual antes de actualizar
+                $usuario = new Usuario(); // Instancia del modelo Usuario (ajustar según tu estructura)
+                $resultado = $usuario->ActualizarContrasenia($datos);
+
+                if ($resultado > 0) {
+                    echo json_encode(true);  // Contraseña actualizada correctamente
+                } else {
+                    echo json_encode(false); // Error al actualizar
+                }
+            }
             break;
     }
 }

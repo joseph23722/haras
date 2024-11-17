@@ -217,16 +217,23 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet');
 
+
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(6, 'actualizar-contrasenia', 'N', NULL, NULL);
+    
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
-    (1, 17);
+    (1, 17),
+    (1, 19); -- Actualizar contrasenia
+    
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
-    (2, 17);
+    (2, 17),
+    (2, 19);
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
@@ -241,25 +248,31 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 15),
     (3, 16),
     (3, 17),
-    (3, 18);
+    (3, 18),
+    (3, 19);
+    
+    select * from vistas;
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
-	(4, 1),
+	(4, 19),
 	(4, 2),
     (4, 3),
     (4, 6),
     (4, 7),
-    (4, 13);
+    (4, 13),
+    (4, 19);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
 	(5, 1),
-	(5, 9);
+	(5, 9),
+    (5, 19);
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
 	(6, 4),
-    (6, 14);
+    (6, 14),
+    (6, 19);
 
 INSERT INTO Nacionalidades (nacionalidad) VALUES 
 ('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),
