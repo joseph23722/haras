@@ -110,7 +110,6 @@ class Herrero extends Conexion {
 
 
     // Método para obtener los tipos de equinos
-    // Método para listar equinos propios (sin propietario) para medicamentos
     public function listarEquinosPorTipo()
     {
         try {
@@ -123,42 +122,37 @@ class Herrero extends Conexion {
         }
     }
 
-    //Listar Tipos de Trabajos
+    // Listar Tipos de Trabajos
     public function listarTiposTrabajos() {
         try {
-            $stmt = $this->pdo->prepare("CALL spu_listar_tipos_trabajos()");
-            $stmt->execute();
-            return ['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+            $result = $this->pdo->query("CALL spu_listar_tipos_trabajos()");
+            return ['status' => 'success', 'data' => $result->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
             error_log("Error al listar tipos de trabajos: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error al listar los tipos de trabajos.'];
         }
     }
 
-    //Listar Herramientas
+    // Listar Herramientas
     public function listarHerramientas() {
         try {
-            $stmt = $this->pdo->prepare("CALL spu_listar_herramientas()");
-            $stmt->execute();
-            return ['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+            $result = $this->pdo->query("CALL spu_listar_herramientas()");
+            return ['status' => 'success', 'data' => $result->fetchAll(PDO::FETCH_ASSOC)];
         } catch (PDOException $e) {
             error_log("Error al listar herramientas: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error al listar las herramientas.'];
         }
     }
 
-    
-    //Agregar un Nuevo Tipo de Trabajo
-    public function agregarTipoTrabajo($nombreTrabajo, $descripcion) {
+    // Agregar un Nuevo Tipo de Trabajo
+    public function agregarTipoTrabajo($nombreTrabajo) {
         try {
-            // Verificar que los parámetros no estén vacíos
+            // Verificar que el parámetro no esté vacío
             if (empty($nombreTrabajo)) {
                 throw new Exception("El nombre del trabajo es obligatorio.");
             }
-    
-            $stmt = $this->pdo->prepare("CALL spu_agregar_tipo_trabajo(?, ?)");
-            $stmt->execute([$nombreTrabajo, $descripcion]);
-    
+
+            $this->pdo->query("CALL spu_agregar_tipo_trabajo('$nombreTrabajo')");
             return ['status' => 'success', 'message' => 'Tipo de trabajo agregado exitosamente.'];
         } catch (PDOException $e) {
             error_log("Error al agregar tipo de trabajo: " . $e->getMessage());
@@ -169,17 +163,15 @@ class Herrero extends Conexion {
         }
     }
 
-    //Agregar una Nueva Herramienta
-    public function agregarHerramienta($nombreHerramienta, $descripcion) {
+    // Agregar una Nueva Herramienta
+    public function agregarHerramienta($nombreHerramienta) {
         try {
-            // Verificar que los parámetros no estén vacíos
+            // Verificar que el parámetro no esté vacío
             if (empty($nombreHerramienta)) {
                 throw new Exception("El nombre de la herramienta es obligatorio.");
             }
-    
-            $stmt = $this->pdo->prepare("CALL spu_agregar_herramienta(?, ?)");
-            $stmt->execute([$nombreHerramienta, $descripcion]);
-    
+
+            $this->pdo->query("CALL spu_agregar_herramienta('$nombreHerramienta')");
             return ['status' => 'success', 'message' => 'Herramienta agregada exitosamente.'];
         } catch (PDOException $e) {
             error_log("Error al agregar herramienta: " . $e->getMessage());
