@@ -1,3 +1,4 @@
+-- agregar historial
 DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
 DELIMITER $$
 CREATE PROCEDURE InsertarHistorialHerrero (
@@ -49,12 +50,11 @@ END //
 DELIMITER ;
 
 
-
+-- listar historial herrero
 DROP PROCEDURE IF EXISTS `ConsultarHistorialEquino`;
 DELIMITER $$
-CREATE PROCEDURE ConsultarHistorialEquino (
-    IN p_idEquino INT
-)
+
+CREATE PROCEDURE ConsultarHistorialEquino()
 BEGIN
     SELECT 
         HH.idHistorialHerrero, 
@@ -76,8 +76,6 @@ BEGIN
         HerramientasUsadasHistorial HUH ON HH.idHistorialHerrero = HUH.idHistorialHerrero
     LEFT JOIN 
         Herramientas H ON HUH.idHerramienta = H.idHerramienta
-    WHERE 
-        HH.idEquino = p_idEquino
     GROUP BY 
         HH.idHistorialHerrero, 
         HH.fecha, 
@@ -87,8 +85,10 @@ BEGIN
         TE.tipoEquino
     ORDER BY 
         HH.fecha DESC;
-END //
+END $$
+
 DELIMITER ;
+
 
 
 -- Procedimiento para listar tipos de trabajos
@@ -163,4 +163,4 @@ CALL spu_agregar_herramienta('Lima para cascos');
 
 CALL spu_listar_tipos_trabajos();
 
-CALL spu_listar_herramientas();
+CALL ConsultarHistorialEquino(null);
