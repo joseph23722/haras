@@ -9,7 +9,7 @@
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial Médico</h5>
             <!-- Botón para abrir el modal de agregar vías de administración -->
             <button type="button" class="btn btn-success btn-sm"
-                    style="background-color: #28a745; border: none; position: absolute; right: 5px; top: 5px; padding: 10px 15px; font-size: 1.2em;"
+                    style="background-color: #28a745; border: none; position: absolute; right: 2px; top: 2px; padding: 10px 15px; font-size: 1.2em;"
                     id="btnAgregarVia" 
                     data-bs-toggle="modal" 
                     data-bs-target="#modalAgregarViaAdministracion">

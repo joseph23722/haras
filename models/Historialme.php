@@ -12,9 +12,13 @@ class Historialme extends Conexion
 
 
     // Método para registrar el historial médico
+    // Método para registrar el historial médico
     public function registrarHistorial($params = [])
     {
         try {
+            // Log para verificar los parámetros enviados al modelo
+            error_log("Parámetros enviados al modelo: " . json_encode($params));
+
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
@@ -31,19 +35,17 @@ class Historialme extends Conexion
                 'idMedicamento' => $params['idMedicamento'] ?? null,
                 'dosis' => $params['dosis'] ?? null,
                 'frecuenciaAdministracion' => $params['frecuenciaAdministracion'] ?? null,
-                'viaAdministracion' => $params['viaAdministracion'] ?? null,
+                'idViaAdministracion' => $params['idViaAdministracion'] ?? null,
                 'fechaFin' => $params['fechaFin'] ?? null,
-                'tipoTratamiento' => $params['tipoTratamiento'] ?? null // Nuevo campo obligatorio
+                'tipoTratamiento' => $params['tipoTratamiento'] ?? null
             ];
 
-            // Verificar si falta algún campo obligatorio
             foreach ($obligatorios as $campo => $valor) {
                 if (empty($valor)) {
                     throw new Exception("Falta el campo obligatorio: $campo.");
                 }
             }
 
-            // Ejecutar el procedimiento almacenado, incluyendo el nuevo parámetro `tipoTratamiento`
             $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['idEquino'],
@@ -51,11 +53,11 @@ class Historialme extends Conexion
                 $params['idMedicamento'],
                 $params['dosis'],
                 $params['frecuenciaAdministracion'],
-                $params['viaAdministracion'],
+                $params['idViaAdministracion'],
                 $params['fechaFin'],
                 $params['observaciones'] ?? null,
                 $params['reaccionesAdversas'] ?? null,
-                $params['tipoTratamiento'] // Agregar el tipo de tratamiento
+                $params['tipoTratamiento']
             ]);
 
             if ($query->rowCount() > 0) {
@@ -64,17 +66,12 @@ class Historialme extends Conexion
                 return ['status' => 'error', 'message' => 'No se pudo registrar el historial médico'];
             }
         } catch (Exception $e) {
-
-            // Remover el prefijo de error SQLSTATE si está presente en el mensaje
-            $errorMessage = $e->getMessage();
-            if (strpos($errorMessage, 'SQLSTATE[45000]') !== false) {
-                $errorMessage = preg_replace('/SQLSTATE\[45000\]: <<Unknown error>>: \d+ /', '', $errorMessage);
-            }
-
-            error_log("Error en registrarHistorial: " . $errorMessage);
-            return ['status' => 'error', 'message' => $errorMessage];
+            error_log("Error en registrarHistorial: " . $e->getMessage());
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
+
 
     // Método para listar equinos propios (sin propietario) para medicamentos
     public function listarEquinosPorTipo()

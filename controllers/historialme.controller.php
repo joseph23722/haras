@@ -62,29 +62,31 @@ try {
 
             
             case 'registrarHistorialMedico':
-
                 // Decodificar los datos JSON desde el cuerpo de la solicitud
                 $inputData = json_decode(file_get_contents('php://input'), true);
-
+            
+                // Log detallado para revisar lo que recibe el servidor
+                error_log("Datos JSON recibidos en el servidor: " . json_encode($inputData));
+            
                 if ($inputData === null) {
                     echo json_encode(['status' => 'error', 'message' => 'Datos JSON inválidos o mal formateados']);
                     break;
                 }
-
+            
                 // Llamada al método para registrar el historial médico con los datos JSON decodificados
                 $result = $historialme->registrarHistorial([
                     'idEquino' => $inputData['idEquino'] ?? null,
                     'idMedicamento' => $inputData['idMedicamento'] ?? null,
                     'dosis' => $inputData['dosis'] ?? null,
                     'frecuenciaAdministracion' => $inputData['frecuenciaAdministracion'] ?? null,
-                    'viaAdministracion' => $inputData['viaAdministracion'] ?? null,
+                    'idViaAdministracion' => $inputData['viaAdministracion'] ?? null, // Cambiado a ID
                     'fechaInicio' => $inputData['fechaInicio'] ?? null,
                     'fechaFin' => $inputData['fechaFin'] ?? null,
                     'observaciones' => $inputData['observaciones'] ?? null,
                     'reaccionesAdversas' => $inputData['reaccionesAdversas'] ?? null,
                     'tipoTratamiento' => $inputData['tipoTratamiento'] ?? null
                 ]);
-
+            
                 // Enviar la respuesta según el resultado del método
                 if ($result['status'] === 'success') {
                     echo json_encode([
@@ -98,6 +100,9 @@ try {
                     ]);
                 }
                 break;
+            
+                
+                
 
             case 'gestionarTratamiento':
                 // Decodificar los datos JSON recibidos desde php://input

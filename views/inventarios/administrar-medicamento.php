@@ -1116,10 +1116,13 @@
 
 
         // Función para confirmar la eliminación del medicamento
+        // Función para confirmar la eliminación del medicamento
         window.borrarMedicamento = async (idMedicamento, nombreMedicamento) => {
+            // Confirmación antes de proceder con la eliminación
             const confirmacion = await ask(`¿Estás seguro de que deseas eliminar el medicamento "${nombreMedicamento}"?`);
             if (confirmacion) {
                 try {
+                    // Enviar solicitud al backend
                     const response = await fetch('../../controllers/admedi.controller.php', {
                         method: "POST",
                         body: new URLSearchParams({
@@ -1127,18 +1130,33 @@
                             idMedicamento: idMedicamento
                         })
                     });
-                    const result = await response.json();
+
+                    const textResult = await response.text();
+
+                    let result;
+                    try {
+                        result = JSON.parse(textResult);
+                    } catch (jsonParseError) {
+                        showToast("Error al interpretar la respuesta del servidor. Respuesta no válida.", "ERROR");
+                        return;
+                    }
+
+                    // Verificar el estado de la operación
                     if (result.status === 'success') {
                         showToast("Medicamento eliminado correctamente.", "SUCCESS");
+
+                        // Actualizar los selectores y listas después de la eliminación
                         await loadSelectMedicamentos();
                         await cargarLotes();
-                        await loadMedicamentos();  // Recargar los medicamentos después de eliminar
+                        await loadMedicamentos();
                     } else {
-                        showToast(result.message, "ERROR");
+                        showToast(result.message || "Error al eliminar el medicamento.", "ERROR");
                     }
                 } catch (error) {
                     showToast("Error al intentar eliminar el medicamento: " + error.message, "ERROR");
                 }
+            } else {
+                showToast("Eliminación cancelada por el usuario.", "INFO");
             }
         };
 
@@ -1207,82 +1225,92 @@
 
 
         // Registrar medicamento
+        // Registrar medicamento con confirmación
         formRegistrarMedicamento.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             console.log("Iniciando registro de medicamento...");
 
-            // Obtener el valor combinado de dosis y unidad
-            const dosisCompleta = document.querySelector("#dosis").value;
-            console.log("Dosis completa ingresada:", dosisCompleta);
+            // Confirmación antes de registrar el medicamento
+            if (await ask("¿Confirmar registro del nuevo medicamento?")) {
+                console.log("Confirmación del usuario recibida. Enviando datos...");
 
-            // Usar una expresión regular para separar la cantidad de la unidad
-            const match = dosisCompleta.match(/^(\d+(\.\d+)?)(\s?[a-zA-Z]+)$/);
-            if (!match) {
-                mostrarMensaje("Formato de dosis inválido. Use un número seguido de una unidad (ej. 500 mg)", "error");
-                console.warn("Formato de dosis inválido:", dosisCompleta);
-                return;
-            }
+                // Obtener el valor combinado de dosis y unidad
+                const dosisCompleta = document.querySelector("#dosis").value;
+                console.log("Dosis completa ingresada:", dosisCompleta);
 
-            const dosis = parseFloat(match[1]);
-            const unidad = match[3].trim();
-            console.log("Dosis separada:", dosis, "Unidad:", unidad);
-
-            // Validar que ambos elementos estén presentes
-            if (!dosis || !unidad) {
-                mostrarMensaje("Debe ingresar una dosis válida con su unidad", "error");
-                console.warn("Datos de dosis incompletos:", { dosis, unidad });
-                return;
-            }
-
-            // Crear los datos para enviar al backend
-            const formData = new FormData(formRegistrarMedicamento);
-            formData.append('dosis', dosis);
-            formData.append('unidad', unidad);
-            formData.append('operation', 'registrar');
-
-            console.log("Datos del formulario enviados:");
-            formData.forEach((value, key) => {
-                console.log(`${key}: ${value}`);
-            });
-
-            try {
-                const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: formData
-                });
-                console.log("Respuesta del servidor:", response);
-
-                const text = await response.text();
-                console.log("Texto de respuesta del servidor:", text);
-
-                let result;
-                try {
-                    result = JSON.parse(text);
-                    console.log("Resultado parseado del servidor:", result);
-                } catch (jsonError) {
-                    console.error("Error al interpretar la respuesta del servidor:", jsonError);
-                    mostrarMensaje("Error al interpretar la respuesta del servidor. Respuesta no válida.", 'error');
+                // Usar una expresión regular para separar la cantidad de la unidad
+                const match = dosisCompleta.match(/^(\d+(\.\d+)?)(\s?[a-zA-Z]+)$/);
+                if (!match) {
+                    mostrarMensaje("Formato de dosis inválido. Use un número seguido de una unidad (ej. 500 mg)", "error");
+                    console.warn("Formato de dosis inválido:", dosisCompleta);
                     return;
                 }
 
-                if (result.status === "success") {
-                    console.log("Medicamento registrado correctamente:", result);
-                    showToast("Medicamento registrado correctamente", "SUCCESS");
-                    formRegistrarMedicamento.reset();
-                    // Llamar a las funciones para recargar los selectores de medicamentos y lotes
-                    await loadSelectMedicamentos();
-                    await cargarLotes();
-                    await loadMedicamentos();
-                } else {
-                    console.warn("Error en el registro:", result.message);
-                    mostrarMensaje("Error en el registro: " + result.message, 'error');
+                const dosis = parseFloat(match[1]);
+                const unidad = match[3].trim();
+                console.log("Dosis separada:", dosis, "Unidad:", unidad);
+
+                // Validar que ambos elementos estén presentes
+                if (!dosis || !unidad) {
+                    mostrarMensaje("Debe ingresar una dosis válida con su unidad", "error");
+                    console.warn("Datos de dosis incompletos:", { dosis, unidad });
+                    return;
                 }
-            } catch (error) {
-                console.error("Error al registrar el medicamento:", error);
-                mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
+
+                // Crear los datos para enviar al backend
+                const formData = new FormData(formRegistrarMedicamento);
+                formData.append('dosis', dosis);
+                formData.append('unidad', unidad);
+                formData.append('operation', 'registrar');
+
+                console.log("Datos del formulario enviados:");
+                formData.forEach((value, key) => {
+                    console.log(`${key}: ${value}`);
+                });
+
+                try {
+                    const response = await fetch('../../controllers/admedi.controller.php', {
+                        method: "POST",
+                        body: formData
+                    });
+                    console.log("Respuesta del servidor:", response);
+
+                    const text = await response.text();
+                    console.log("Texto de respuesta del servidor:", text);
+
+                    let result;
+                    try {
+                        result = JSON.parse(text);
+                        console.log("Resultado parseado del servidor:", result);
+                    } catch (jsonError) {
+                        console.error("Error al interpretar la respuesta del servidor:", jsonError);
+                        mostrarMensaje("Error al interpretar la respuesta del servidor. Respuesta no válida.", 'error');
+                        return;
+                    }
+
+                    if (result.status === "success") {
+                        console.log("Medicamento registrado correctamente:", result);
+                        showToast("Medicamento registrado correctamente", "SUCCESS");
+                        formRegistrarMedicamento.reset();
+                        // Llamar a las funciones para recargar los selectores de medicamentos y lotes
+                        await loadSelectMedicamentos();
+                        await cargarLotes();
+                        await loadMedicamentos();
+                    } else {
+                        console.warn("Error en el registro:", result.message);
+                        mostrarMensaje("Error en el registro: " + result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error("Error al registrar el medicamento:", error);
+                    mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
+                }
+            } else {
+                console.log("El usuario canceló la operación.");
+                mostrarMensaje("El registro del medicamento fue cancelado por el usuario.", "info");
             }
         });
+
 
         // Implementar para la entrada de medicamentos
         formEntrada.addEventListener("submit", async (event) => {

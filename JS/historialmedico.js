@@ -397,40 +397,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("equinoSelect").addEventListener("change", mostrarPesoEquinoSeleccionado);
 
+
+    //registrar historial medico
     document.querySelector("#form-historial-medico").addEventListener("submit", async (event) => {
         event.preventDefault();
-
+    
         if (await ask("¿Está seguro de que desea registrar este historial médico?")) {
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
             data.operation = "registrarHistorialMedico";
-
-            console.log("Datos enviados al servidor:", JSON.stringify(data, null, 2));
-
+    
+            // Log detallado para verificar los datos que se envían
+            console.log("Datos enviados al servidor (detallado):", data);
+    
             try {
                 const response = await fetch('../../controllers/historialme.controller.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-
+    
+                // Revisar si el servidor responde correctamente
+                console.log("Respuesta del servidor recibida:", response);
+    
                 const result = await response.json();
                 console.log("Respuesta JSON parseada:", result);
-
+    
                 if (result.status === "success") {
                     showToast(result.message || "Historial médico registrado correctamente", "SUCCESS");
                     mostrarMensajeDinamico(result.message || "Historial médico registrado correctamente", "SUCCESS");
                     event.target.reset();
                     $('#historialTable').DataTable().ajax.reload();
                 } else {
+                    // Si el servidor devuelve error, mostramos los detalles
+                    console.error("Error al registrar historial médico:", result.message);
                     mostrarMensajeDinamico("Error al registrar el historial: " + (result.message || "Desconocido"), "ERROR");
                 }
             } catch (error) {
-                console.error("Error al registrar el historial médico:", error);
+                // Manejo de errores del lado del cliente
+                console.error("Error al registrar el historial médico (Error de conexión):", error);
                 mostrarMensajeDinamico("Error al registrar el historial médico: Error de conexión o error inesperado", "ERROR");
             }
         }
     });
+    
 
     function clearSelect(selectElement) {
         selectElement.innerHTML = `<option value="">Seleccione ${selectElement.id.replace('select', '')}</option>`;

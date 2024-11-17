@@ -6,11 +6,11 @@ CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _idMedicamento INT,
     IN _dosis VARCHAR(50),
     IN _frecuenciaAdministracion VARCHAR(50),
-    IN _viaAdministracion VARCHAR(50),
+    IN _idViaAdministracion INT, -- Ahora usamos el ID de la vía
     IN _fechaFin DATE,
     IN _observaciones TEXT,
     IN _reaccionesAdversas TEXT, -- Permitir NULL
-    IN _tipoTratamiento VARCHAR(20) -- Cambiado a VARCHAR para evitar el error
+    IN _tipoTratamiento VARCHAR(20) -- Cambiado a VARCHAR para evitar errores
 )
 BEGIN
     DECLARE _errorMensaje VARCHAR(255);
@@ -42,6 +42,12 @@ BEGIN
     -- Verificar que el medicamento existe
     IF NOT EXISTS (SELECT 1 FROM Medicamentos WHERE idMedicamento = _idMedicamento) THEN
         SET _errorMensaje = 'El medicamento especificado no existe en la base de datos.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Verificar que la vía de administración existe
+    IF NOT EXISTS (SELECT 1 FROM ViasAdministracion WHERE idViaAdministracion = _idViaAdministracion) THEN
+        SET _errorMensaje = 'La vía de administración especificada no existe en la base de datos.';
         SIGNAL SQLSTATE '45000';
     END IF;
 
@@ -84,7 +90,7 @@ BEGIN
         idEquino,
         dosis,
         frecuenciaAdministracion,
-        viaAdministracion,
+        idViaAdministracion, -- Usar el ID en lugar del texto plano
         fechaInicio,
         fechaFin,
         observaciones,
@@ -97,7 +103,7 @@ BEGIN
         _idEquino,
         _dosis,
         _frecuenciaAdministracion,
-        _viaAdministracion,
+        _idViaAdministracion,    -- Insertar el ID de la vía
         NOW(),                   -- Fecha de inicio se asigna a la fecha y hora actual
         _fechaFin,
         _observaciones,
@@ -179,7 +185,7 @@ END $$
 DELIMITER ;
 
 -- ------------
-
+-- complementarios y acciones adversas 
 DELIMITER $$
 CREATE PROCEDURE spu_gestionar_tratamiento(
     IN _idDetalleMed INT,         -- ID del tratamiento a gestionar
