@@ -57,7 +57,7 @@
 
         /* Título */
         .message-box h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: bold;
             margin-bottom: 20px;
             text-transform: uppercase;
@@ -123,6 +123,11 @@
         /* Contenedor del botón para mejorar la posición */
         .button-container {
             margin-top: 20px;
+        }
+
+        /* Sombra sutil para el botón */
+        .btn-back {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
         }
 
     </style>
