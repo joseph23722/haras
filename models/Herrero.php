@@ -123,5 +123,23 @@ class Herrero extends Conexion {
         }
     }
 
+    //Listar Tipos de Trabajos
+    public function listarTiposTrabajos() {
+        try {
+            $stmt = $this->pdo->prepare("CALL spu_listar_tipos_trabajos()");
+            $stmt->execute();
+            return ['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        } catch (PDOException $e) {
+            error_log("Error al listar tipos de trabajos: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al listar los tipos de trabajos.'];
+        }
+    }
+
+    //Listar Herramientas
+    
+    
+
+
+
     
 }
