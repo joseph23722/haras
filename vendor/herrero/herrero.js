@@ -4,43 +4,43 @@ const direccionEmpresa = "Calle 10 #123, Colonia San Pedro, Ciudad de Peru, Cód
 const modulo = "Historial Herrero";
 
 // Configuración del DataTable para el historial de herrero
-const configurarDataTableHerrero = (idEquino) => {
+const configurarDataTableHerrero = (idEquino = null) => {  // idEquino opcional
     const fechaActual = new Date().toLocaleString();
 
     return {
-        ajax: {
-            url: '/haras/table-ssp/historial_herrero.ssp.php',
-            type: 'GET',
-            data: { idEquino },
-            dataSrc: 'data',
-            complete: function () {
-                console.log("Datos cargados exitosamente en DataTable de historial de herrero.");
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": '/haras/table-ssp/historial_herrero.ssp.php',
+            "type": 'GET',
+            // No enviamos el idEquino en el DataTable si no es necesario
+            "data": {},
+            "dataSrc": 'data',
+            "complete": function (xhr) {
+                console.log("Datos cargados:", xhr.responseJSON);
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            "error": function (jqXHR, textStatus, errorThrown) {
+                // Mostrar más información útil para depurar el error
+                console.log("Response Text:", jqXHR.responseText);  // Respuesta completa del servidor
+                console.log("Text Status:", textStatus);  // Estado del texto
+                console.log("Error Thrown:", errorThrown);  // Error arrojado
+
                 console.error("Error en DataTable AJAX:", textStatus, errorThrown);
             }
         },
-        columns: [
-            { data: 'nombreEquino', title: 'Nombre del Equino' },
-            { data: 'tipoEquino', title: 'Tipo de Equino' },
-            { data: 'fecha', title: 'Fecha' },
-            { data: 'trabajoRealizado', title: 'Trabajo Realizado' },
-            { data: 'herramientasUsadas', title: 'Herramienta Usada' },
-            { data: 'observaciones', title: 'Observaciones' },
-            { 
-                data: null, 
-                title: 'Acciones', 
-                orderable: false,
-                render: function(data, type, row) {
-                    return `<button class='btn btn-warning btn-sm' onclick='actualizarEstadoFinal(${row.idHistorialHerrero})'>Actualizar Estado</button>`;
-                }
-            }
+        "columns": [
+            { "data": 'nombreEquino'},
+            { "data": 'tipoEquino'},
+            { "data": 'fecha'},
+            { "data": 'trabajoRealizado'},
+            { "data": 'herramientasUsadas'},
+            { "data": 'observaciones'},
         ],
-        language: {
-            url: '/haras/data/es_es.json'
+        "language": {
+            "url": '/haras/data/es_es.json' // Archivo de idioma en español local
         },
-        dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
-        buttons: [
+        "dom": '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
+        "buttons": [
             {
                 extend: 'csvHtml5',
                 text: 'Exportar CSV',
@@ -143,10 +143,28 @@ const configurarDataTableHerrero = (idEquino) => {
                 }
             }
         ],
-        pageLength: 10,
-        paging: true,
-        searching: true,
-        ordering: true,
-        order: [[2, 'asc']] // Ordenar inicialmente por la columna 'Fecha'
+        "pageLength": 10,
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "order": [[2, 'asc']] // Ordenar inicialmente por la columna 'Fecha'
     };
 };
+
+// Función para cargar el DataTable de historial de herrero
+const loadHistorialHerreroTable = () => {
+    // Si la tabla ya está inicializada, destrúyela
+    if ($.fn.DataTable.isDataTable('#historialHerreroTable')) {
+        $('#historialHerreroTable').DataTable().clear().destroy();  // Destruir y limpiar la tabla antes de reinicializarla
+    }
+
+    // Inicializa la tabla con la nueva configuración
+    $('#historialHerreroTable').DataTable(configurarDataTableHerrero());  // Llamamos la función sin pasar idEquino
+};
+
+// Inicializar la tabla al cargar la página
+$(document).ready(function () {
+    loadHistorialHerreroTable();  // Llamamos la función sin idEquino para obtener todos los registros
+    cargarTiposTrabajos();
+    cargarHerramientas();
+});

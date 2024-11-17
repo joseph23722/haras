@@ -1,10 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);  // Desactivar la visualización de errores en producción
+ini_set('log_errors', 1);  // Activar el registro de errores
+ini_set('error_log', '/var/log/php_errors.log');  // Definir archivo de log
 
 header('Content-Type: application/json');
 
+// Detalles de la conexión a la base de datos
 $sql_details = array(
     'user' => 'root',
     'pass' => '',
@@ -13,48 +14,49 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-$idEquino = isset($_GET['idEquino']) ? $_GET['idEquino'] : 0;
+try {
+    // Conectar a la base de datos
+    $pdo = new PDO(
+        "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
+        $sql_details['user'],
+        $sql_details['pass'],
+        array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+    );
 
-if ($idEquino > 0) {
-    try {
-        $pdo = new PDO(
-            "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
-            $sql_details['user'],
-            $sql_details['pass'],
-            array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-        );
+    // Llamar al procedimiento sin parámetros
+    $stmt = $pdo->prepare("CALL ConsultarHistorialEquino()");
+    $stmt->execute();
 
-        // Preparar y ejecutar el procedimiento almacenado
-        $stmt = $pdo->prepare("CALL ConsultarHistorialEquino(?)");
-        $stmt->execute([$idEquino]);
+    // Obtener los datos
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $recordsTotal = count($data);
+    $recordsFiltered = $recordsTotal; // Si no hay filtros, los totales son iguales
 
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $recordsTotal = count($data);
-        $recordsFiltered = $recordsTotal;
+    // Crear el array de salida para el DataTable
+    $output = array(
+        "draw" => isset($_GET['draw']) ? intval($_GET['draw']) : 0,
+        "recordsTotal" => $recordsTotal,
+        "recordsFiltered" => $recordsFiltered,
+        "data" => array_map(function ($row) {
+            return [
+                "nombreEquino" => $row['nombreEquino'],
+                "tipoEquino" => $row['tipoEquino'],
+                "fecha" => $row['fecha'],
+                "trabajoRealizado" => $row['TrabajoRealizado'],  // Correcto con el alias del procedimiento
+                "herramientasUsadas" => $row['HerramientasUsadas'],  // Correcto con el alias del procedimiento
+                "observaciones" => $row['observaciones']
+            ];
+        }, $data)
+    );
 
-        $output = array(
-            "draw" => isset($_GET['draw']) ? intval($_GET['draw']) : 0,
-            "recordsTotal" => $recordsTotal,
-            "recordsFiltered" => $recordsFiltered,
-            "data" => array_map(function ($row) {
-                return [
-                    "nombreEquino" => $row['nombreEquino'],
-                    "tipoEquino" => $row['tipoEquino'],
-                    "fecha" => $row['fecha'],
-                    "trabajoRealizado" => $row['trabajoRealizado'],
-                    "herramientasUsadas" => $row['herramientasUsadas'],
-                    "observaciones" => $row['observaciones'],
-                    "acciones" => "<button class='btn btn-warning btn-sm' onclick='actualizarEstadoFinal({$row['idHistorialHerrero']})'>Actualizar Estado</button>"
-                ];
-            }, $data)
-        );
-        
+    // Enviar el resultado como JSON
+    echo json_encode($output);
 
-        echo json_encode($output);
-    } catch (PDOException $e) {
-        echo json_encode(array("error" => "Error en la conexión a la base de datos: " . $e->getMessage()));
-    }
-} else {
-    echo json_encode(array("error" => "ID del equino no proporcionado."));
+} catch (PDOException $e) {
+    // Manejar errores de conexión a la base de datos
+    echo json_encode(array("error" => "Error en la conexión a la base de datos: " . $e->getMessage()));
+} catch (Exception $e) {
+    // Manejar otros errores
+    echo json_encode(array("error" => "Error: " . $e->getMessage()));
 }
 

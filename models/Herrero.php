@@ -71,26 +71,26 @@ class Herrero extends Conexion {
 
     
     // Método para consultar el historial completo de un equino
-    public function consultarHistorialEquino($idEquino) {
+    // Método para consultar el historial completo de un equino
+    public function consultarHistorialEquino() {
         try {
-            // Validar que el ID del equino no esté vacío
-            if (empty($idEquino)) {
-                throw new Exception("El ID del equino es obligatorio.");
-            }
-
-            // Preparar y ejecutar la llamada al procedimiento almacenado
-            $stmt = $this->pdo->prepare("CALL ConsultarHistorialEquino(?)");
-            $stmt->execute([$idEquino]);
-
+            // Preparar la llamada al procedimiento almacenado sin parámetros
+            $stmt = $this->pdo->prepare("CALL ConsultarHistorialEquino()");
+    
+            // Ejecutar la consulta
+            $stmt->execute();
+    
             // Recuperar los resultados
             $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
+            // Si no hay resultados, retornar mensaje informativo
             if (empty($resultados)) {
-                return ['status' => 'info', 'message' => 'No se encontraron registros para el equino seleccionado.', 'data' => []];
+                return ['status' => 'info', 'message' => 'No se encontraron registros.', 'data' => []];
             }
-
+    
             // Retornar los resultados en formato esperado
             return ['status' => 'success', 'data' => $resultados];
+    
         } catch (PDOException $e) {
             // Manejar errores de la base de datos
             error_log("Error al consultar historial de equino (PDO): " . $e->getMessage());
@@ -101,6 +101,8 @@ class Herrero extends Conexion {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+    
+
 
 
 

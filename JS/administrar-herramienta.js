@@ -1,18 +1,80 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Inicializar la fecha mínima para el input de fecha
     const fechaInput = document.getElementById('fecha');
-    const tipoEquinoSelect = document.getElementById("tipoEquino");
-    const equinoSelect = document.getElementById("equino");
-
-    // Obtener la fecha actual en formato YYYY-MM-DD
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0'); // Mes con dos dígitos
     const day = String(today.getDate()).padStart(2, '0'); // Día con dos dígitos
     const minDate = `${year}-${month}-${day}`;
-
-    // Establecer la fecha mínima
     fechaInput.setAttribute('min', minDate);
+
+    // Cargar los tipos de trabajo y herramientas al cargar la página
+    cargarTiposTrabajos();
+    cargarHerramientas();
 });
+
+// Función para mostrar notificaciones dinámicas en el div `mensaje`
+const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
+    const mensajeDiv = document.getElementById('mensaje');
+
+    if (mensajeDiv) {
+        const estilos = {
+            'INFO': { color: '#3178c6', bgColor: '#e7f3ff', icon: 'ℹ️' },
+            'SUCCESS': { color: '#3c763d', bgColor: '#dff0d8', icon: '✅' },
+            'ERROR': { color: '#a94442', bgColor: '#f2dede', icon: '❌' },
+            'WARNING': { color: '#8a6d3b', bgColor: '#fcf8e3', icon: '⚠️' }
+        };
+
+        const estilo = estilos[tipo] || estilos['INFO'];
+
+        mensajeDiv.style.color = estilo.color;
+        mensajeDiv.style.backgroundColor = estilo.bgColor;
+        mensajeDiv.style.fontWeight = 'bold';
+        mensajeDiv.style.padding = '15px';
+        mensajeDiv.style.marginBottom = '15px';
+        mensajeDiv.style.border = `1px solid ${estilo.color}`;
+        mensajeDiv.style.borderRadius = '8px';
+        mensajeDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+        mensajeDiv.style.display = 'flex';
+        mensajeDiv.style.alignItems = 'center';
+
+        mensajeDiv.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
+
+        setTimeout(() => {
+            mensajeDiv.innerHTML = '';
+            mensajeDiv.style.border = 'none';
+            mensajeDiv.style.boxShadow = 'none';
+            mensajeDiv.style.backgroundColor = 'transparent';
+        }, 5000);
+    } else {
+        console.warn('El contenedor de mensajes no está presente en el DOM.');
+    }
+};
+
+// Verificar campos para Trabajo o Herramienta
+const verificarCamposTrabajoHerramienta = () => {
+    const nombre = document.getElementById("inputNombre")?.value?.trim();
+    const tipo = document.getElementById("selectTipo")?.value;
+    const trabajoSeleccionado = document.getElementById("selectTrabajo")?.value;
+    const herramientaSeleccionada = document.getElementById("selectHerramienta")?.value;
+    const mensajeModal = document.getElementById("mensajeModal");
+
+    mensajeModal.innerHTML = ""; // Limpiar mensajes previos
+
+    if (!nombre) {
+        mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete el campo "Nombre".</p>';
+        return false;
+    }
+
+    if (!tipo) {
+        mensajeModal.innerHTML = '<p class="text-danger">Por favor, seleccione un tipo.</p>';
+        return false;
+    }
+
+    return { nombre, tipo, trabajoSeleccionado, herramientaSeleccionada }; // Retorna los campos
+};
+
+
 
 
 // Cargar tipos de trabajo dinámicamente
@@ -22,20 +84,18 @@ async function cargarTiposTrabajos() {
         
         // Manejo de respuesta como texto para depuración
         const textResponse = await response.text();
-        console.log('Respuesta en texto (tipos de trabajo):', textResponse);
         
         // Intentar convertir a JSON
         let data;
         try {
             data = JSON.parse(textResponse);
-            console.log('Respuesta parseada como JSON (tipos de trabajo):', data);
         } catch (error) {
-            console.error('Error al parsear JSON para tipos de trabajo:', error);
             return; // Salir si la respuesta no es JSON válido
         }
 
         if (data.status === 'success') {
             const trabajoSelect = document.getElementById('trabajoRealizado');
+            trabajoSelect.innerHTML = '<option value="">Seleccione un trabajo</option>'; // Limpiar opciones previas
             data.data.forEach(trabajo => {
                 const option = document.createElement('option');
                 option.value = trabajo.idTipoTrabajo;
@@ -57,20 +117,18 @@ async function cargarHerramientas() {
         
         // Manejo de respuesta como texto para depuración
         const textResponse = await response.text();
-        console.log('Respuesta en texto (herramientas):', textResponse);
         
         // Intentar convertir a JSON
         let data;
         try {
             data = JSON.parse(textResponse);
-            console.log('Respuesta parseada como JSON (herramientas):', data);
         } catch (error) {
-            console.error('Error al parsear JSON para herramientas:', error);
             return; // Salir si la respuesta no es JSON válido
         }
 
         if (data.status === 'success') {
             const herramientaSelect = document.getElementById('herramientaUsada');
+            herramientaSelect.innerHTML = '<option value="">Seleccione una herramienta</option>'; // Limpiar opciones previas
             data.data.forEach(herramienta => {
                 const option = document.createElement('option');
                 option.value = herramienta.idHerramienta;
@@ -84,16 +142,6 @@ async function cargarHerramientas() {
         console.error('Error en la solicitud para herramientas:', error);
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 // Función para cargar los equinos según el tipo seleccionado
@@ -129,7 +177,6 @@ async function loadEquinosPorTipo(tipoEquino) {
         }
     } catch (error) {
         mostrarMensajeDinamico("Error al cargar los equinos", "ERROR");
-        console.error("Error:", error);
     }
 }
 
@@ -144,9 +191,7 @@ document.getElementById("tipoEquinoSelect").addEventListener("change", function 
     }
 });
 
-
 // Función para registrar un nuevo historial de herrero
-
 document.getElementById('form-historial-herrero').addEventListener('submit', function (event) {
     // Prevenir el comportamiento predeterminado de recargar la página
     event.preventDefault();
@@ -163,10 +208,8 @@ function registrarHistorialHerrero() {
     formData.forEach((value, key) => {
         if (key === 'herramientaUsada') key = 'herramientasUsadas'; // Asegura la clave correcta
         datos[key] = value;
-        console.log(`Campo ${key}:`, value); // Log de cada campo y valor en el frontend
     });
 
-    console.log("Datos a enviar para registrar historial:", datos);
 
     fetch('/haras/controllers/herrero.controller.php', {
         method: 'POST',
@@ -177,7 +220,6 @@ function registrarHistorialHerrero() {
     })
         .then(response => response.text()) // Captura como texto para depurar
         .then(text => {
-            console.log("Respuesta cruda:", text);
             try {
                 const data = JSON.parse(text); // Intenta parsear a JSON
                 if (data.status === 'success') {
@@ -195,19 +237,75 @@ function registrarHistorialHerrero() {
         .catch(error => console.error('Error al registrar historial:', error));
 }
 
-// Función para cargar el DataTable de historial de herrero
-const loadHistorialHerreroTable = (idEquino) => {
-    if (!$.fn.DataTable.isDataTable('#historialHerreroTable')) {
-        $('#historialHerreroTable').DataTable(configurarDataTableHerrero(idEquino));
-    } else {
-        $('#historialHerreroTable').DataTable().ajax.reload();
+
+
+// Guardar nuevo Trabajo o Herramienta
+const guardarTrabajoHerramienta = async () => {
+    const inputNombre = document.getElementById("inputNombre");
+    const selectTipo = document.getElementById("selectTipo");
+    const selectTrabajo = document.getElementById("selectTrabajo");
+    const selectHerramienta = document.getElementById("selectHerramienta");
+    const mensajeModal = document.getElementById("mensajeModal");
+
+    const nombre = inputNombre.value.trim();
+    const tipo = selectTipo.value;
+    const trabajoSeleccionado = selectTrabajo.value;
+    const herramientaSeleccionada = selectHerramienta.value;
+
+    // Verificar que el campo obligatorio esté lleno
+    if (!nombre || !tipo) {
+        mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete los campos obligatorios.</p>';
+        return;
+    }
+
+    const datos = {
+        operation: tipo === 'trabajo' ? "agregarTipoTrabajo" : "agregarHerramienta", // Cambia dependiendo del tipo
+        nombre: nombre,
+        tipo: tipo,
+        trabajo: trabajoSeleccionado || null, // Si es tipo trabajo
+        herramienta: herramientaSeleccionada || null // Si es tipo herramienta
+    };
+
+    try {
+        const response = await fetch("../../controllers/herrero.controller.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        mensajeModal.innerHTML = result.status === "success"
+            ? '<p class="text-success">¡Trabajo/Herramienta agregado correctamente!</p>'
+            : `<p class="text-danger">${result.message}</p>`;
+
+        if (result.status === "success") {
+            setTimeout(() => {
+                // Resetear el formulario
+                document.getElementById("formNuevoTrabajoHerramienta").reset();
+                mensajeModal.innerHTML = "";
+
+                // Cerrar el modal
+                bootstrap.Modal.getInstance(document.getElementById("modalAgregarTrabajoHerramienta")).hide();
+
+                // Actualizar la lista de trabajos y herramientas
+                cargarTiposTrabajos();
+                cargarHerramientas();
+            }, 1500);
+        }
+    } catch (error) {
+        mensajeModal.innerHTML = '<p class="text-danger">Error al enviar los datos al servidor.</p>';
     }
 };
 
-// Inicializar la tabla al cargar la página
-$(document).ready(function () {
-    const idEquino = 1; // Cambia esto a un ID real o dinámico
-    loadHistorialHerreroTable(idEquino);
-    cargarTiposTrabajos();
-    cargarHerramientas();
-});
+// Asignar evento al botón de guardar
+const btnGuardarTrabajoHerramienta = document.getElementById("btnGuardarTrabajoHerramienta");
+if (btnGuardarTrabajoHerramienta) {
+    btnGuardarTrabajoHerramienta.addEventListener("click", guardarTrabajoHerramienta);
+} else {
+    console.error("El botón #btnGuardarTrabajoHerramienta no se encontró.");
+}
+

@@ -42,20 +42,26 @@ try {
     if ($method === 'GET') {
         switch ($operation) {
             case 'consultarHistorialEquino':
-                $idEquino = intval($_GET['idEquino'] ?? 0);
-                $historial = $herrero->consultarHistorialEquino($idEquino);
-
+                // No obtener ni pasar 'idEquino', ya que el procedimiento no acepta parámetros.
+                // Llamamos al método que consulta el historial sin ningún parámetro
+                $historial = $herrero->consultarHistorialEquino();
+            
+                // Verificar el estado de la respuesta
                 if ($historial['status'] === 'success') {
                     echo json_encode([
-                        "draw" => intval($_GET['draw'] ?? 1),
-                        "recordsTotal" => count($historial['data']),
-                        "recordsFiltered" => count($historial['data']),
-                        "data" => $historial['data']
+                        "draw" => intval($_GET['draw'] ?? 1), // Si se está usando DataTables, para la paginación
+                        "recordsTotal" => count($historial['data']), // Total de registros encontrados
+                        "recordsFiltered" => count($historial['data']), // Registros filtrados (en este caso es lo mismo que total)
+                        "data" => $historial['data'] // Los datos del historial
                     ]);
                 } else {
+                    // Si hay error en la consulta, devolver un error
                     sendResponse('error', $historial['message']);
                 }
                 break;
+            
+            
+            
 
             case 'listarEquinosPorTipo':
                 // Llamada al método para listar equinos por tipo
@@ -101,21 +107,19 @@ try {
 
             case 'agregarTipoTrabajo':
                 $params = json_decode(file_get_contents('php://input'), true);
-                if (!isset($params['nombreTrabajo']) || empty($params['nombreTrabajo'])) {
+                if (!isset($params['nombre']) || empty($params['nombre'])) {
                     sendResponse('error', 'El nombre del trabajo es obligatorio.');
                 }
-
-                $result = $herrero->agregarTipoTrabajo($params['nombreTrabajo']);
+                $result = $herrero->agregarTipoTrabajo($params['nombre']);
                 sendResponse($result['status'], $result['message']);
                 break;
-
+        
             case 'agregarHerramienta':
                 $params = json_decode(file_get_contents('php://input'), true);
-                if (!isset($params['nombreHerramienta']) || empty($params['nombreHerramienta'])) {
+                if (!isset($params['nombre']) || empty($params['nombre'])) {
                     sendResponse('error', 'El nombre de la herramienta es obligatorio.');
                 }
-
-                $result = $herrero->agregarHerramienta($params['nombreHerramienta']);
+                $result = $herrero->agregarHerramienta($params['nombre']);
                 sendResponse($result['status'], $result['message']);
                 break;
 
