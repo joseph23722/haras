@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página no encontrada</title>
+    <link href="/haras/css/404.css" rel="stylesheet" />
 
 </head>
 <body>

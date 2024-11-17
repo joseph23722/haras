@@ -4,147 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Denegado</title>
-    <link href="/haras/css/styles.css" rel="stylesheet" />
-    <style>
-        /* Estilo general de la página */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-        }
-
-        /* Fondo animado para dar un toque más moderno */
-        .background-animation {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://media.giphy.com/media/xT1XGslzS3UoCaydoI/giphy.gif') no-repeat center center fixed;
-            background-size: cover;
-            filter: blur(10px);
-            z-index: -1;
-            animation: pulse 4s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* Caja de mensaje */
-        .message-box {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 50px;
-            border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            transform: translateY(-100px);
-            animation: slideIn 1s forwards;
-        }
-
-        /* Animación de entrada de la caja */
-        @keyframes slideIn {
-            0% {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Título */
-        .message-box h1 {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #ffcc00;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Subtítulo */
-        .message-box p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            line-height: 1.8;
-            color: #f8f9fa;
-        }
-
-        /* Botón de regreso */
-        .btn-back {
-            background-color: #ffcc00;
-            color: #333;
-            border: none;
-            padding: 15px 35px;
-            font-size: 1.2rem;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-back:hover {
-            background-color: #e6b800;
-            transform: scale(1.1);
-            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-back:active {
-            transform: scale(1);
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Efecto de onda de fondo */
-        .wave {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 60px;
-            background: rgba(0, 0, 0, 0.3);
-            animation: wave 4s infinite;
-        }
-
-        @keyframes wave {
-            0% {
-                transform: translateX(100%);
-            }
-            50% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        /* Contenedor del botón para mejorar la posición */
-        .button-container {
-            margin-top: 20px;
-        }
-
-    </style>
+    <link href="/haras/css/Acceso-denegado.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="background-animation"></div> <!-- Fondo animado con gif y efecto de pulsado -->
+    <div class="background-animation"></div> 
     <div class="message-box">
         <h1>Acceso Denegado</h1>
         <p>Lo sentimos, no tienes los permisos necesarios para acceder a esta función. Si crees que esto es un error, por favor contacta con el administrador.</p>
@@ -153,6 +16,6 @@
         </div>
     </div>
 
-    <div class="wave"></div> <!-- Onda animada para darle más dinamismo a la página -->
+    <div class="wave"></div> 
 </body>
 </html>
