@@ -400,7 +400,7 @@ CREATE TABLE HistorialHerrero (
     idEquino INT NOT NULL,
     idUsuario INT NOT NULL,
     fecha DATE NOT NULL,
-    idTrabajo INT NOT NULL, -- Referencia a TiposTrabajos
+    idTrabajo INT NOT NULL, 
     observaciones TEXT,
     CONSTRAINT fk_historialherrero_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
