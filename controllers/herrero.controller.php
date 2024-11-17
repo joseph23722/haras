@@ -13,21 +13,14 @@ header('Content-Type: application/json');
 
 // Función para enviar una respuesta JSON al cliente
 function sendResponse($status, $message, $data = null) {
-    // Asegurar encabezado JSON
     header('Content-Type: application/json');
-
-    // Construir la respuesta
     $response = ['status' => $status, 'message' => $message];
     if ($data !== null) {
         $response['data'] = $data;
     }
-
-    // Imprimir y detener la ejecución
     echo json_encode($response);
     exit();
 }
-
-
 
 // Obtener la operación
 $operation = '';
@@ -47,35 +40,41 @@ if ($method === 'GET') {
 try {
     if ($method === 'GET') {
         switch ($operation) {
-            
             case 'consultarHistorialEquino':
                 $idEquino = intval($_GET['idEquino'] ?? 0);
                 $historial = $herrero->consultarHistorialEquino($idEquino);
-                
-                if ($historial) {
-                    $response = array(
+
+                if ($historial['status'] === 'success') {
+                    echo json_encode([
                         "draw" => intval($_GET['draw'] ?? 1),
-                        "recordsTotal" => count($historial),
-                        "recordsFiltered" => count($historial),
-                        "data" => $historial
-                    );
-                    echo json_encode($response);
+                        "recordsTotal" => count($historial['data']),
+                        "recordsFiltered" => count($historial['data']),
+                        "data" => $historial['data']
+                    ]);
                 } else {
-                    echo json_encode(array(
-                        "draw" => intval($_GET['draw'] ?? 1),
-                        "recordsTotal" => 0,
-                        "recordsFiltered" => 0,
-                        "data" => []
-                    ));
+                    sendResponse('error', $historial['message']);
                 }
                 break;
-            
+
             case 'listarEquinosPorTipo':
-                // Llamada al método para listar equinos sin propietario para medicamentos
-                $result = $historialme->listarEquinosPorTipo();
-                echo json_encode(['data' => $result]);
+                // Llamada al método para listar equinos por tipo
+                $result = $herrero->listarEquinosPorTipo();
+                if (!empty($result)) {
+                    sendResponse('success', 'Equinos listados correctamente.', $result);
+                } else {
+                    sendResponse('info', 'No se encontraron equinos para listar.', []);
+                }
                 break;
 
+            case 'listarTiposTrabajos':
+                $result = $herrero->listarTiposTrabajos();
+                sendResponse($result['status'], $result['message'], $result['data']);
+                break;
+
+            case 'listarHerramientas':
+                $result = $herrero->listarHerramientas();
+                sendResponse($result['status'], $result['message'], $result['data']);
+                break;
 
             default:
                 sendResponse('error', 'Operación no válida para GET.');
@@ -83,34 +82,37 @@ try {
     } elseif ($method === 'POST') {
         switch ($operation) {
             case 'insertarHistorialHerrero':
-                try {
-                    // Obtener y decodificar los datos JSON del cliente
-                    $params = json_decode(file_get_contents('php://input'), true);
-                    error_log("Datos recibidos en el controlador insertarHistorialHerrero: " . json_encode($params));
-            
-                    // Verificar campos obligatorios en la entrada
-                    $requiredFields = ['idEquino', 'fecha', 'trabajoRealizado', 'herramientasUsadas', 'observaciones'];
-                    foreach ($requiredFields as $field) {
-                        if (!isset($params[$field]) || empty($params[$field])) {
-                            error_log("Campo faltante o vacío: $field.");
-                            sendResponse('error', "El campo '$field' es obligatorio para registrar el historial.");
-                            return;
-                        }
-                    }
-            
-                    // Llamar al método del modelo para insertar el historial
-                    $result = $herrero->insertarHistorialHerrero($params);
-                    error_log("Resultado del modelo insertarHistorialHerrero: " . json_encode($result));
-            
-                    // Enviar la respuesta según el resultado
-                    sendResponse($result['status'], $result['message']);
-                } catch (Exception $e) {
-                    error_log("Excepción en insertarHistorialHerrero: " . $e->getMessage());
-                    sendResponse('error', 'Excepción al intentar registrar el historial.');
+                $params = json_decode(file_get_contents('php://input'), true);
+                if (empty($params)) {
+                    sendResponse('error', 'Datos JSON inválidos o faltantes.');
                 }
+
+                $result = $herrero->insertarHistorialHerrero($params);
+                sendResponse($result['status'], $result['message']);
                 break;
-            
-            
+
+            case 'agregarTipoTrabajo':
+                $params = json_decode(file_get_contents('php://input'), true);
+                if (!isset($params['nombreTrabajo']) || empty($params['nombreTrabajo'])) {
+                    sendResponse('error', 'El nombre del trabajo es obligatorio.');
+                }
+
+                $descripcion = $params['descripcion'] ?? '';
+                $result = $herrero->agregarTipoTrabajo($params['nombreTrabajo'], $descripcion);
+                sendResponse($result['status'], $result['message']);
+                break;
+
+            case 'agregarHerramienta':
+                $params = json_decode(file_get_contents('php://input'), true);
+                if (!isset($params['nombreHerramienta']) || empty($params['nombreHerramienta'])) {
+                    sendResponse('error', 'El nombre de la herramienta es obligatorio.');
+                }
+
+                $descripcion = $params['descripcion'] ?? '';
+                $result = $herrero->agregarHerramienta($params['nombreHerramienta'], $descripcion);
+                sendResponse($result['status'], $result['message']);
+                break;
+
             default:
                 sendResponse('error', 'Operación no válida para POST.');
         }
