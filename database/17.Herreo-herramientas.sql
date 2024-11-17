@@ -161,3 +161,6 @@ CALL spu_agregar_tipo_trabajo('Recorte de cascos');
 
 CALL spu_agregar_herramienta('Lima para cascos');
 
+CALL spu_listar_tipos_trabajos();
+
+CALL spu_listar_herramientas();
