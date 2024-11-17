@@ -58,30 +58,46 @@ DELIMITER ;
 -- 2. Procedimiento para Consultar el Historial Completo de un Equino
 -- Retorna el historial de trabajos de herrería para un equino específico, con detalles generales del trabajo
 DELIMITER //
+
 CREATE PROCEDURE ConsultarHistorialEquino (
     IN p_idEquino INT
 )
 BEGIN
     SELECT 
-        H.idHistorialHerrero, 
-        H.fecha, 
-        H.trabajoRealizado, 
-        H.herramientasUsadas, 
-        H.observaciones,
-        E.nombreEquino,              -- Agrega el nombre del equino
-        T.tipoEquino                 -- Agrega el tipo de equino
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo AS TrabajoRealizado, 
+        GROUP_CONCAT(H.nombreHerramienta SEPARATOR ', ') AS HerramientasUsadas, 
+        HH.observaciones,
+        E.nombreEquino,              
+        TE.tipoEquino                 
     FROM 
-        HistorialHerrero H
+        HistorialHerrero HH
     INNER JOIN 
-        Equinos E ON H.idEquino = E.idEquino
+        Equinos E ON HH.idEquino = E.idEquino
     INNER JOIN 
-        TipoEquinos T ON E.idTipoEquino = T.idTipoEquino
+        TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
+    INNER JOIN 
+        TiposTrabajos TT ON HH.idTrabajo = TT.idTipoTrabajo
+    LEFT JOIN 
+        HerramientasUsadasHistorial HUH ON HH.idHistorialHerrero = HUH.idHistorialHerrero
+    LEFT JOIN 
+        Herramientas H ON HUH.idHerramienta = H.idHerramienta
     WHERE 
-        H.idEquino = p_idEquino
+        HH.idEquino = p_idEquino
+    GROUP BY 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo, 
+        HH.observaciones, 
+        E.nombreEquino, 
+        TE.tipoEquino
     ORDER BY 
-        H.fecha DESC;
+        HH.fecha DESC;
 END //
+
 DELIMITER ;
+
 
 
 
