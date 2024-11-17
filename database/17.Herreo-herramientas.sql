@@ -113,12 +113,11 @@ END $$
 DELIMITER ;
 
 
-
+-- Procedimiento para agregar un nuevo tipo de trabajo
 DROP PROCEDURE IF EXISTS `spu_agregar_tipo_trabajo`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_tipo_trabajo(
-    IN _nombreTrabajo VARCHAR(100),
-    IN _descripcion TEXT
+    IN _nombreTrabajo VARCHAR(100)
 )
 BEGIN
     -- Verificar que no exista un tipo de trabajo con el mismo nombre
@@ -127,19 +126,19 @@ BEGIN
         SET MESSAGE_TEXT = 'El tipo de trabajo ya existe.';
     ELSE
         -- Insertar el nuevo tipo de trabajo
-        INSERT INTO TiposTrabajos (nombreTrabajo, descripcion)
-        VALUES (_nombreTrabajo, _descripcion);
+        INSERT INTO TiposTrabajos (nombreTrabajo)
+        VALUES (_nombreTrabajo);
     END IF;
 END $$
 DELIMITER ;
 
 
 
+-- Procedimiento para agregar una nueva herramienta
 DROP PROCEDURE IF EXISTS `spu_agregar_herramienta`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_herramienta(
-    IN _nombreHerramienta VARCHAR(100),
-    IN _descripcion TEXT
+    IN _nombreHerramienta VARCHAR(100)
 )
 BEGIN
     -- Verificar que no exista una herramienta con el mismo nombre
@@ -148,8 +147,8 @@ BEGIN
         SET MESSAGE_TEXT = 'La herramienta ya existe.';
     ELSE
         -- Insertar la nueva herramienta
-        INSERT INTO Herramientas (nombreHerramienta, descripcion)
-        VALUES (_nombreHerramienta, _descripcion);
+        INSERT INTO Herramientas (nombreHerramienta)
+        VALUES (_nombreHerramienta);
     END IF;
 END $$
 DELIMITER ;
