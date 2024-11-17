@@ -395,6 +395,9 @@ CREATE TABLE Entrenamientos (
     CONSTRAINT fk_entrenamiento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
+
+
+
 -- 31. tipos de trabajo (herreo)
 CREATE TABLE TiposTrabajos (
     idTipoTrabajo INT PRIMARY KEY AUTO_INCREMENT,
