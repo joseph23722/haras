@@ -97,5 +97,6 @@
       /* Validaciones */
       /* Accesibilidad */
       /* Agregado nuevo permiso para todos los usuarios, para que puedan modificar su contraseña */
+      /* Cada usuario al presionar se obtendrá su usuario, nombre usuario o correo automáticamente al loguearse */
   });
 </script>
