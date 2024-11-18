@@ -21,7 +21,6 @@ document.getElementById('form-historial-equino').onsubmit = function () {
     document.getElementById('descripcion').value = descripcion;
 };
 
-// Buscar el equino por nombre
 document.querySelector("#buscar-equino").addEventListener("click", async function () {
     const nombreEquino = document.getElementById("buscarEquino").value;
     const response = await fetch('../../controllers/registrarequino.controller.php', {
@@ -46,7 +45,10 @@ document.querySelector("#buscar-equino").addEventListener("click", async functio
         document.getElementById("tipoEquino").value = '';
         document.getElementById("idEstadoMonta").value = '';
         document.getElementById("pesokg").value = '';
-        document.getElementById("fotografia").value = '';
+        const equinoImage = document.querySelector(".equino-image");
+        if (equinoImage) {
+            equinoImage.src = 'https://via.placeholder.com/400x365?text=Imagen+No+Disponible';
+        }
     } else {
         const equino = data[0];
         document.getElementById("fechaNacimiento").value = equino.fechaNacimiento || '';
@@ -56,8 +58,18 @@ document.querySelector("#buscar-equino").addEventListener("click", async functio
         document.getElementById("tipoEquino").value = equino.tipoEquino || '';
         document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
         document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
-        document.getElementById("fotografia").value = equino.fotografia || '';
-        document.getElementById("idEquino").value = equino.idEquino;
+
+        const fotografiaField = document.getElementById("fotografia");
+        if (fotografiaField) {
+            fotografiaField.value = equino.fotografia || '';
+        }
+
+        const equinoImage = document.querySelector(".equino-image");
+        if (equinoImage) {
+            equinoImage.src = equino.fotografia
+                ? `https://res.cloudinary.com/dtbhq7drd/image/upload/${equino.fotografia}`
+                : 'https://via.placeholder.com/400x365?text=Imagen+No+Disponible';
+        }
     }
 });
 
