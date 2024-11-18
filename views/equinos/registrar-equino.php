@@ -91,7 +91,7 @@
                         <div class="form-check" id="checkboxEstadiaWrapper" style="display: none;">
                             <input type="checkbox" id="requiereEstadia" class="form-check-input">
                             <label class="form-check-label" for="requiereEstadia">
-                                <i class="fas fa-weight" style="color: #2d6a4f;"></i> ¿Requiere estadía?
+                                <i class="fas fa-home" style="color: #2d6a4f;"></i> ¿Requiere estadía?
                             </label>
                         </div>
 

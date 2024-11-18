@@ -134,7 +134,6 @@ CREATE TABLE Equinos (
     pesokg				DECIMAL (5,1)				NULL,
     fotografia			VARCHAR(255)				NULL,
     estado				BIT							NOT NULL, -- Vivo o muerto
-    estadia				BIT							NULL,
     fechaentrada		DATE						NULL,
     fechasalida			DATE						NULL,
     created_at 			TIMESTAMP DEFAULT NOW()		NOT NULL,  -- Fecha y hora de creación
