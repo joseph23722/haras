@@ -87,6 +87,12 @@
                     </div>
                 </div>
 
+                <h4 class="m-0" style="font-weight: bold;">
+                    <i class="fas fa-info-circle" style="color: #3498db;"></i> 
+                    Nota:
+                    <h6>En este apartado se registrará toda información como Padre, Madre, carreras ganadas y otra información adicional relevante del Equino.</h6>
+                </h4>
+
                 <!-- Cuarta fila: Información adicional -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-12">
