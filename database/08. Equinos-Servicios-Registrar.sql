@@ -267,10 +267,13 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
 CREATE PROCEDURE spu_contar_equinos_por_categoria()
 BEGIN
+    -- Consulta directa para obtener el representante único y la cantidad de equinos por categoría
     SELECT 
         CASE 
             WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
@@ -281,7 +284,9 @@ BEGIN
             WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
             WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
         END AS Categoria,
-        COUNT(e.idEquino) AS Cantidad
+        COUNT(DISTINCT e.idEquino) AS Cantidad,
+        -- Selección de un representante único para la categoría (primer equino encontrado)
+        MIN(e.idEquino) AS idEquino
     FROM 
         Equinos e
     JOIN 
@@ -289,18 +294,23 @@ BEGIN
     LEFT JOIN 
         EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
     WHERE 
-        (e.estado = 1)  -- Solo los equinos vivos
-        AND (
-            (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))
-            OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
-            OR te.tipoEquino IN ('Potranca', 'Potrillo')
-        )
+        e.estado = 1  -- Solo los equinos vivos
+    AND (
+        (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))
+        OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
+        OR te.tipoEquino IN ('Potranca', 'Potrillo')
+    )
     GROUP BY 
         Categoria
     ORDER BY 
         Categoria;
+
 END $$
 DELIMITER ;
+
+
+
+
 
 DROP PROCEDURE IF EXISTS `spu_equino_editar`;
 DELIMITER $$

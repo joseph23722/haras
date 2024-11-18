@@ -1,5 +1,6 @@
 DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
+
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -15,6 +16,9 @@ BEGIN
     DECLARE _exists INT DEFAULT 0;
     DECLARE _idLote INT;
     DECLARE _estado ENUM('Disponible', 'Por agotarse', 'Agotado');
+    DECLARE _fechaCaducidadLote DATE;
+    DECLARE _estadoLote ENUM('Vencido', 'No vencido');
+    DECLARE _mensajeLote VARCHAR(255); -- Variable para el mensaje
 
     -- Determinar el estado inicial del alimento
     IF _stockActual = 0 THEN
@@ -39,7 +43,7 @@ BEGIN
     END IF;
 
     -- Verificar si el lote ya está registrado en la tabla LotesAlimento
-    SELECT idLote INTO _idLote 
+    SELECT idLote, fechaCaducidad INTO _idLote, _fechaCaducidadLote 
     FROM LotesAlimento
     WHERE lote = _lote
     LIMIT 1;
@@ -49,6 +53,15 @@ BEGIN
         INSERT INTO LotesAlimento (lote, fechaCaducidad, fechaIngreso) 
         VALUES (_lote, IFNULL(_fechaCaducidad, NULL), NOW());
         SET _idLote = LAST_INSERT_ID();
+    END IF;
+
+    -- Verificar si el lote está vencido
+    IF _fechaCaducidadLote IS NOT NULL AND _fechaCaducidadLote < CURDATE() THEN
+        SET _estadoLote = 'Vencido';
+        SET _mensajeLote = CONCAT('El lote "', _lote, '" está vencido. La fecha de caducidad de este lote puede ser actualizada en el próximo registro.');
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _mensajeLote;
+    ELSE
+        SET _estadoLote = 'No vencido';
     END IF;
 
     -- Verificar si el alimento ya está registrado con ese nombre, lote, tipo y unidad de medida
@@ -73,27 +86,48 @@ BEGIN
     ELSE
         ROLLBACK;
     END IF;
+
 END $$
+
 DELIMITER ;
+
+
 
 DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
-	-- Actualizar el estado de los registros en la tabla Alimentos
-		UPDATE Alimentos 
-		SET estado = 'Agotado'
-		WHERE stockActual = 0;
+    DECLARE _idLote INT;
+    DECLARE _fechaCaducidadLote DATE;
+    
+    -- Primero, actualizamos el estado de los alimentos según su stock
+    UPDATE Alimentos 
+    SET estado = 'Agotado'
+    WHERE stockActual = 0;
 
-		UPDATE Alimentos 
-		SET estado = 'Por agotarse'
-		WHERE stockActual > 0 AND stockActual <= stockMinimo;
+    UPDATE Alimentos 
+    SET estado = 'Por agotarse'
+    WHERE stockActual > 0 AND stockActual <= stockMinimo;
 
-		UPDATE Alimentos 
-		SET estado = 'Disponible'
-		WHERE stockActual > stockMinimo;
-        
-		SELECT 
+    UPDATE Alimentos 
+    SET estado = 'Disponible'
+    WHERE stockActual > stockMinimo;
+
+    -- Obtener el idLote y fechaCaducidad del lote asociado al alimento
+    SELECT idLote, fechaCaducidad INTO _idLote, _fechaCaducidadLote 
+    FROM LotesAlimento
+    WHERE lote = (SELECT lote FROM Alimentos WHERE idAlimento = _idAlimento LIMIT 1);
+
+    -- Verificar si el lote está vencido (si la fecha de caducidad es menor a la fecha actual)
+    IF _fechaCaducidadLote IS NOT NULL AND _fechaCaducidadLote < CURDATE() THEN
+        -- El lote está vencido, actualizar el estado del lote a 'Vencido'
+        UPDATE LotesAlimento
+        SET estado = 'Vencido'
+        WHERE idLote = _idLote;
+    END IF;
+
+    -- Realizar la consulta de los alimentos
+    SELECT 
         A.idAlimento,
         A.idUsuario,
         A.nombreAlimento,
@@ -123,6 +157,7 @@ BEGIN
         (_idAlimento IS NULL OR A.idAlimento = _idAlimento);           -- Filtro por idAlimento si se proporciona
 END $$
 DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$

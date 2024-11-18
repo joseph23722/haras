@@ -56,7 +56,7 @@ try {
                 break;
 
             case 'getTipoEquinos':
-                $result = $alimento->getEquinosPorCategoria();
+                $result = $admi->getEquinosPorCategoria();
         
                 header('Content-Type: application/json');
                 echo json_encode($result);  // Directamente devolver $result
