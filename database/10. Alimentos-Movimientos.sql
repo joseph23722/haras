@@ -52,7 +52,7 @@ BEGIN
     IF _idLote IS NULL THEN
         INSERT INTO LotesAlimento (lote, fechaCaducidad, fechaIngreso) 
         VALUES (_lote, IFNULL(_fechaCaducidad, NULL), NOW());
-        SET _idLote = LAST_INSERT_ID();
+        SET _idLote = LAST_INSERT_ID(); -- Reutilizamos el idLote recién generado
     END IF;
 
     -- Verificar si el lote está vencido
@@ -64,7 +64,7 @@ BEGIN
         SET _estadoLote = 'No vencido';
     END IF;
 
-    -- Verificar si el alimento ya está registrado con ese nombre, lote, tipo y unidad de medida
+    -- Si el alimento ya está registrado con ese nombre, lote, tipo y unidad de medida
     SELECT COUNT(*) INTO _exists 
     FROM Alimentos
     WHERE nombreAlimento = _nombreAlimento 
@@ -87,6 +87,20 @@ BEGIN
         ROLLBACK;
     END IF;
 
+    -- Ahora verificamos si todos los alimentos de ese lote están agotados y vencidos,
+    -- y si es así, actualizamos el estado del lote a 'Agotado'
+    IF EXISTS (
+        SELECT 1
+        FROM Alimentos
+        WHERE idLote = _idLote
+          AND estado = 'Agotado'
+          AND _fechaCaducidadLote < CURDATE()  -- Verificar si todos los alimentos están agotados y vencidos
+    ) THEN
+        UPDATE LotesAlimento
+        SET estadoLote = 'Agotado', fechaCaducidad = NOW() -- Se actualiza la fecha de caducidad solo cuando el lote está agotado
+        WHERE idLote = _idLote;
+    END IF;
+
 END $$
 
 DELIMITER ;
@@ -99,7 +113,10 @@ CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
     DECLARE _idLote INT;
     DECLARE _fechaCaducidadLote DATE;
-    
+    DECLARE _estado ENUM('Disponible', 'Por agotarse', 'Agotado');
+    DECLARE _estadoLote ENUM('Vencido', 'No vencido');
+    DECLARE _mensajeLote VARCHAR(255); -- Variable para el mensaje
+
     -- Primero, actualizamos el estado de los alimentos según su stock
     UPDATE Alimentos 
     SET estado = 'Agotado'
@@ -122,11 +139,41 @@ BEGIN
     IF _fechaCaducidadLote IS NOT NULL AND _fechaCaducidadLote < CURDATE() THEN
         -- El lote está vencido, actualizar el estado del lote a 'Vencido'
         UPDATE LotesAlimento
+        SET estadoLote = 'Vencido'
+        WHERE idLote = _idLote;
+
+        -- Ahora insertamos el alimento vencido en la tabla AlimentosVencidos solo si el lote está vencido
+        INSERT INTO AlimentosVencidos (
+            idAlimento, idUsuario, nombreAlimento, idTipoAlimento, idUnidadMedida, 
+            idLote, costo, stockActual, stockMinimo, estado, fechaMovimiento, 
+            fechaCaducidad, motivoVencimiento
+        )
+        SELECT 
+            A.idAlimento, A.idUsuario, A.nombreAlimento, A.idTipoAlimento, A.idUnidadMedida, 
+            A.idLote, A.costo, A.stockActual, A.stockMinimo, 'Vencido', NOW(), 
+            A.fechaCaducidad, 'Vencido debido a fecha de caducidad pasada'
+        FROM Alimentos A
+        WHERE A.idLote = _idLote AND A.estado = 'Agotado';
+
+        -- Actualizar el estado del alimento en la tabla Alimentos a 'Vencido'
+        UPDATE Alimentos
         SET estado = 'Vencido'
+        WHERE idLote = _idLote AND estado = 'Agotado';
+    ELSE
+        -- Si el lote no está vencido, asegurarse que su estado sea 'No Vencido'
+        UPDATE LotesAlimento
+        SET estadoLote = 'No Vencido'
         WHERE idLote = _idLote;
     END IF;
 
-    -- Realizar la consulta de los alimentos
+    -- Si algún alimento tiene stock 0 (es decir, está agotado), actualizar el estado del lote a 'Agotado'
+    IF EXISTS (SELECT 1 FROM Alimentos WHERE idLote = _idLote AND estado = 'Agotado') THEN
+        UPDATE LotesAlimento
+        SET estadoLote = 'Agotado'
+        WHERE idLote = _idLote;
+    END IF;
+
+    -- Realizar la consulta de los alimentos (excluyendo los vencidos)
     SELECT 
         A.idAlimento,
         A.idUsuario,
@@ -144,7 +191,8 @@ BEGIN
         L.idLote AS loteId,
         L.lote,
         L.fechaCaducidad,
-        L.fechaIngreso
+        L.fechaIngreso,
+        L.estadoLote  -- Mostrar el estado del lote (Vencido, No Vencido, Agotado)
     FROM 
         Alimentos A
     INNER JOIN 
@@ -154,9 +202,14 @@ BEGIN
     INNER JOIN 
         UnidadesMedidaAlimento U ON A.idUnidadMedida = U.idUnidadMedida -- Relación con UnidadesMedidaAlimento
     WHERE 
-        (_idAlimento IS NULL OR A.idAlimento = _idAlimento);           -- Filtro por idAlimento si se proporciona
+        (_idAlimento IS NULL OR A.idAlimento = _idAlimento)           -- Filtro por idAlimento si se proporciona
+        AND A.estado != 'Vencido';  -- Excluir alimentos con estado 'Vencido'
+
 END $$
 DELIMITER ;
+
+
+
 
 
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
