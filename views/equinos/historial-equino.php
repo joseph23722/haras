@@ -92,7 +92,7 @@
                     <div class="col-md-4 text-center">
                         <div class="card bg-gradient equinos-card">
                             <h5 class="card-title fancy-title text-center">
-                                <strong><u>Foto del Equino</u></strong>
+                                <strong><u>Fotografía del Equino</u></strong>
                             </h5>
                             <div class="text-center">
                                 <img src="https://via.placeholder.com/400x365?text=Imagen+No+Disponible"
