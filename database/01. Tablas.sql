@@ -333,7 +333,14 @@ CREATE TABLE Medicamentos (
     CONSTRAINT fk_medicamento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
--- 26. DetalleMedicamentos -- veterinario
+-- 26. ViasAdministracion - veterinario 
+CREATE TABLE ViasAdministracion (
+    idViaAdministracion INT PRIMARY KEY AUTO_INCREMENT,
+    nombreVia VARCHAR(50) NOT NULL UNIQUE,
+    descripcion TEXT NULL
+) ENGINE = INNODB;
+
+-- 27. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
     idDetalleMed            INT PRIMARY KEY AUTO_INCREMENT,
     idMedicamento           INT NOT NULL,
@@ -353,14 +360,6 @@ CREATE TABLE DetalleMedicamentos (
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
     CONSTRAINT fk_detallemed_via FOREIGN KEY (idViaAdministracion) REFERENCES ViasAdministracion(idViaAdministracion)
 ) ENGINE = INNODB;
-
--- 27. ViasAdministracion - veterinario 
-CREATE TABLE ViasAdministracion (
-    idViaAdministracion INT PRIMARY KEY AUTO_INCREMENT,
-    nombreVia VARCHAR(50) NOT NULL UNIQUE,
-    descripcion TEXT NULL
-) ENGINE = INNODB;
-
 
 -- 28. HistorialMedicamentosMedi ---- admedi..
 CREATE TABLE HistorialMovimientosMedicamentos (
