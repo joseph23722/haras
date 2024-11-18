@@ -86,6 +86,28 @@
                         </div>
                     </div>
 
+                    <div class="col-md-6">
+                        <!-- Checkbox para seleccionar si requiere estadía -->
+                        <div class="form-check" id="checkboxEstadiaWrapper" style="display: none;">
+                            <input type="checkbox" id="requiereEstadia" class="form-check-input">
+                            <label class="form-check-label" for="requiereEstadia">
+                                <i class="fas fa-weight" style="color: #2d6a4f;"></i> ¿Requiere estadía?
+                            </label>
+                        </div>
+
+                        <!-- Campos adicionales para fecha de entrada y salida -->
+                        <div id="fechasEstadia" class="mt-3" style="display: none;">
+                            <div class="form-floating mb-2">
+                                <input type="date" name="fechaInicio" id="fechaInicio" placeholder="Fecha de Inicio" class="form-control">
+                                <label for="fechaInicio"><i class="fas fa-calendar-alt"></i> Fecha de Entrada</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="date" name="fechaFin" id="fechaFin" placeholder="Fecha de Fin" class="form-control">
+                                <label for="fechaFin"><i class="fas fa-calendar-alt"></i> Fecha de Salida</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-md-12 text-end mt-3">
                         <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-equino" style="background-color: #0077b6; border: none;">
                             <i class="fas fa-save"></i> Registrar Equino

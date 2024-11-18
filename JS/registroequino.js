@@ -9,6 +9,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const sugerenciasNacionalidad = document.querySelector("#sugerenciasNacionalidad");
     const idNacionalidadInput = document.querySelector("#idNacionalidad");
 
+    /* CHECKBOX DE ESTADIA */
+    /* Contenedor Checkbox */
+    const estadiaWrapper = document.querySelector("#checkboxEstadiaWrapper");
+    /* Contenedor fechas */
+    const fechaEstadia = document.querySelector("#fechasEstadia");
+
+    if (estadiaWrapper) {
+        estadiaWrapper.style.display = 'none';
+    }
+    if (fechaEstadia) {
+        fechaEstadia.style.display = 'none';
+    }
+
+    idPropietarioSelect.addEventListener("change", () => {
+        if (idPropietarioSelect.value) {
+            if (estadiaWrapper) {
+                estadiaWrapper.style.display = 'block';
+            }
+        } else {
+            if (estadiaWrapper) {
+                estadiaWrapper.style.display = 'none';
+            }
+            if (fechaEstadia) {
+                fechaEstadia.style.display = 'none';
+            }
+        }
+    });
+
+    const requiereEstadiaCheckbox = document.querySelector("#requiereEstadia");
+    if (requiereEstadiaCheckbox) {
+        requiereEstadiaCheckbox.addEventListener("change", () => {
+            if (requiereEstadiaCheckbox.checked) {
+                if (fechaEstadia) {
+                    fechaEstadia.style.display = 'block';
+                }
+            } else {
+                if (fechaEstadia) {
+                    fechaEstadia.style.display = 'none';
+                }
+            }
+        });
+    }
+
     // Buscar nacionalidades cuando el usuario escribe en el campo
     nacionalidadInput.addEventListener("input", async () => {
         const query = nacionalidadInput.value;
