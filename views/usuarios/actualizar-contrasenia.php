@@ -12,11 +12,11 @@
         <form id="formActualizarContrasenia">
           <div class="mb-3">
             <label for="correo" class="form-label">Correo o Nombre de Usuario</label>
-            <input type="email" class="form-control" id="correo" placeholder="Ingresa tu correo o nombre de usuario" required>
+            <input type="text" class="form-control" id="correo" placeholder="Ingresa tu correo o nombre de usuario" required>
           </div>
           <div class="mb-3">
-            <label for="nuevaContrasenia" class="form-label">Nueva Contraseña</label>
-            <input type="password" class="form-control" id="nuevaContrasenia" placeholder="Ingresa nueva contraseña" required>
+            <label for="clave" class="form-label">Nueva Contraseña</label>
+            <input type="password" class="form-control" id="clave" placeholder="Ingresa nueva contraseña" required minlength="8">
           </div>
           <div class="mb-3">
             <label for="confirmarContrasenia" class="form-label">Confirmar Contraseña</label>
@@ -38,14 +38,19 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 
-<!-- JS para la funcionalidad -->
 <script>
-  // Capturar el formulario y los elementos
   const formActualizarContrasenia = document.getElementById('formActualizarContrasenia');
   const correoInput = document.getElementById('correo');
-  const nuevaContraseniaInput = document.getElementById('nuevaContrasenia');
+  const nuevaContraseniaInput = document.getElementById('clave');
   const confirmarContraseniaInput = document.getElementById('confirmarContrasenia');
   const btnGuardar = document.getElementById('btnActualizarContrasenia');
+
+  const mensajeValidacion = document.createElement('small');
+  mensajeValidacion.style.display = 'block';
+  mensajeValidacion.style.marginTop = '5px';
+
+  // Insertar el mensaje debajo del campo confirmar contraseña
+  confirmarContraseniaInput.parentElement.appendChild(mensajeValidacion);
 
   // Función para mostrar mensaje con SweetAlert
   const mostrarAlerta = (mensaje, tipo) => {
@@ -56,47 +61,69 @@
     });
   };
 
-  // Función para manejar el envío del formulario
+  // Función para verificar si las contraseñas coinciden
+  const validarContrasenias = () => {
+    const clave = nuevaContraseniaInput.value;
+    const confirmarClave = confirmarContraseniaInput.value;
+
+    if (clave === confirmarClave && clave.length > 0) {
+      mensajeValidacion.textContent = 'Las contraseñas coinciden.';
+      mensajeValidacion.style.color = 'green';
+      btnGuardar.disabled = false;
+    } else if (confirmarClave.length > 0) {
+      mensajeValidacion.textContent = 'Las contraseñas no coinciden.';
+      mensajeValidacion.style.color = 'red';
+      btnGuardar.disabled = true;
+    } else {
+      mensajeValidacion.textContent = '';
+      btnGuardar.disabled = true;
+    }
+  };
+
+  // Escuchar cambios en los campos de contraseña
+  nuevaContraseniaInput.addEventListener('input', validarContrasenias);
+  confirmarContraseniaInput.addEventListener('input', validarContrasenias);
+
+  // Manejar el envío del formulario
   formActualizarContrasenia.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    // Validar si las contraseñas coinciden
+    // Validar si las contraseñas coinciden antes de enviar
     if (nuevaContraseniaInput.value !== confirmarContraseniaInput.value) {
       mostrarAlerta('Las contraseñas no coinciden. Por favor, verifica.', 'error');
       return;
     }
 
-    // Datos del formulario
-    const datos = {
-      correo: correoInput.value,
-      nuevaContrasenia: nuevaContraseniaInput.value
-    };
-
-    // Usar fetch para enviar los datos al servidor
-    fetch('../../controllers/usuario.controller.php?operation=actualizarcontrasenia', {
+    fetch('../../controllers/usuario.controller.php', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(datos)
+        body: new URLSearchParams({
+          operation: 'actualizarcontrasenia',
+          correo: correoInput.value,
+          clave: nuevaContraseniaInput.value,
+        }),
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
-        if (data === 1) {
+        if (data.status === 'success') {
           mostrarAlerta('Contraseña actualizada con éxito.', 'success');
+          formActualizarContrasenia.reset();
+          mensajeValidacion.textContent = '';
+          btnGuardar.disabled = true;
         } else {
-          mostrarAlerta('Hubo un problema al actualizar la contraseña. Intenta nuevamente.', 'error');
+          mostrarAlerta(data.message || 'Error desconocido.', 'error');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        mostrarAlerta('Hubo un problema con la conexión. Intenta más tarde.', 'error');
+        mostrarAlerta('Error en la conexión. Intenta nuevamente.', 'error');
       });
-
-      /* Actualizar interfaz, testear todo el sistema, verificar estados y que se pueda subir mas de 1 fotografia por equino */
-      /* Validaciones */
-      /* Accesibilidad */
-      /* Agregado nuevo permiso para todos los usuarios, para que puedan modificar su contraseña */
-      /* Cada usuario al presionar se obtendrá su usuario, nombre usuario o correo automáticamente al loguearse */
   });
 </script>

@@ -5,54 +5,6 @@ header('Content-Type: application/json');
 
 session_start();
 
-
-header('Content-Type: application/json');
-
-/* $accesos = [
-    "1"             => ["dashboard", "listadoServicios"],
-    "2"             => ["dashboard", "listadoServicios", "usuarios"],
-    "3"             => ["dashboard", "registroEquinos", "servicioMixto", "servicioPropio", "usuarios", "inventarioAlimentos", "inventarioMedicamentos", "listadoServicios"],
-    "4"             => ["dashboard", "rotacionCampos", "programacionCalendario"],
-    "5"             => ["dashboard", "historialMedico"],
-    "6"             => ["dashboard", "listadoServicios"]
-];
-
-$accesosV2 = [
-    1 => [ // Gerente
-        ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "listadoServicios", "texto" => "Listado de Servicios", "icono" => "fa-solid fa-list-ol"],
-    ],
-    2 => [ // Administrador
-        ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "listadoServicios", "texto" => "Listado de Servicios", "icono" => "fa-solid fa-list-ol"],
-        ["ruta" => "usuarios", "texto" => "Usuarios", "icono" => "fas fa-users"]
-    ],
-    3 => [ // Supervisor Equino
-        ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "registroEquinos", "texto" => "Registro de Equinos", "icono" => "fas fa-clipboard-list"],
-        ["ruta" => "servicioMixto", "texto" => "Servicio Mixto", "icono" => "fas fa-exchange-alt"],
-        ["ruta" => "servicioPropio", "texto" => "Servicio Propio", "icono" => "fas fa-cog"],
-        ["ruta" => "usuarios", "texto" => "Usuarios", "icono" => "fas fa-users"],
-        ["ruta" => "inventarioAlimentos", "texto" => "Inventario de Alimentos", "icono" => "fas fa-apple-alt"],
-        ["ruta" => "inventarioMedicamentos", "texto" => "Inventario de Medicamentos", "icono" => "fas fa-notes-medical"],
-        ["ruta" => "listadoServicios", "texto" => "Listado de Servicios", "icono" => "fa-solid fa-list-ol"]
-    ],
-    4 => [ // Supervisor Campo
-        ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "rotacionCampos", "texto" => "Rotación de Campos", "icono" => "fas fa-solid fa-group-arrows-rotate"],
-        ["ruta" => "programacionCalendario", "texto" => "Programación Campos", "icono" => "fas fa-solid fa-group-arrows-rotate"]
-    ],
-    5 => [ // Médico
-        ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "historialMedico", "texto" => "Historial Médico", "icono" => "fas fa-notes-medical"],
-    ],
-    6 => [ // Herrero
-        ["ruta" => "dashboard", "texto" => "Inicio", "icono" => "fas fa-tachometer-alt"],
-        ["ruta" => "listadoServicios", "texto" => "Listado de Servicios", "icono" => "fa-solid fa-list-ol"]
-    ]
-]; */
-
-
 if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     $sesion = [
         "estado"        => false,
@@ -68,8 +20,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
 }
 
 require_once '../models/Usuario.php';
-
-
 
 $usuario = new Usuario();
 
@@ -198,13 +148,29 @@ if (isset($_POST['operation'])) {
             break;
 
         case 'actualizarcontrasenia':
-            $claveEncriptada = password_hash($_POST["clave"], PASSWORD_BCRYPT);
-            $datos = [
-                "correo" => $_POST["correo"],
-                "clave" => $claveEncriptada
-            ];
-            $resultado = $usuario->ActualizarContrasenia($datos);
-            echo json_encode($resultado);
+            try {
+                /* Validando que los parámetros necesarios se encuentren presente */
+                if (empty($_POST["correo"]) || empty($_POST["clave"])) {
+                    throw new Exception("Faltan parámetros obligatorios (correo o clave).");
+                }
+                /* Encriptamos la contraseña ingresada por el usuario */
+                $claveEncriptada = password_hash($_POST["clave"], PASSWORD_BCRYPT);
+                /* Reparamos los datos */
+                $datos = [
+                    "correo" => $_POST["correo"],
+                    "clave" => $claveEncriptada
+                ];
+                /* Hacemos un llamado al modelo que se actualizará */
+                $resultado = $usuario->ActualizarContrasenia($datos);
+
+                if ($resultado) {
+                    echo json_encode(["status" => "success", "message" => "Contraseña actualizada correctamente."]);
+                } else {
+                    throw new Exception("No se pudo actualizar la contraseña.");
+                }
+            } catch (Exception $e) {
+                echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+            }
             break;
     }
 }
