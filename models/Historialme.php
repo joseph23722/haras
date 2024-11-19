@@ -10,8 +10,6 @@ class Historialme extends Conexion
         $this->pdo = parent::getConexion();
     }
 
-
-    // Método para registrar el historial médico
     // Método para registrar el historial médico
     public function registrarHistorial($params = [])
     {
@@ -71,8 +69,6 @@ class Historialme extends Conexion
         }
     }
 
-
-
     // Método para listar equinos propios (sin propietario) para medicamentos
     public function listarEquinosPorTipo()
     {
@@ -94,7 +90,6 @@ class Historialme extends Conexion
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
     // Obtener todos los medicamentos
     public function getAllMedicamentos()
     {
@@ -111,7 +106,6 @@ class Historialme extends Conexion
         }
     }
 
-    // Método para pausar o eliminar un tratamiento por ID en la tabla DetalleMedicamentos
     // Método para gestionar el estado de un tratamiento por ID en la tabla DetalleMedicamentos
     public function gestionarTratamiento($idDetalleMed, $accion)
     {
@@ -179,9 +173,6 @@ class Historialme extends Conexion
         
     }
 
-
-
-    // Método 2: Agregar una nueva vía de administración
     // Método 2: Agregar una nueva vía de administración
     public function agregarViaAdministracion($nombreVia, $descripcion = null)
     {
@@ -207,8 +198,4 @@ class Historialme extends Conexion
             return ['status' => 'error', 'message' => 'Error al agregar vía de administración.'];
         }
     }
-
-
-
-
 }
