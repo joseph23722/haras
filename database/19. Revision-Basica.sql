@@ -31,6 +31,11 @@ BEGIN
     IF v_serviciosCount = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La yegua no tiene servicios registrados';
     END IF;
+    
+     -- Verificar si la fecha de la revisión no es posterior a la fecha actual
+    IF p_fecharevision > CURDATE() THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede registrar una revisión con una fecha futura';
+    END IF;
 
     -- Insertar la nueva revisión en la tabla revisionequinos
     INSERT INTO revisionequinos (
