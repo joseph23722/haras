@@ -12,7 +12,7 @@
         <form id="formActualizarContrasenia">
           <div class="mb-3">
             <label for="correo" class="form-label">Correo o Nombre de Usuario</label>
-            <input type="text" class="form-control" id="correo" placeholder="Ingresa tu correo o nombre de usuario" required>
+            <input type="text" class="form-control" id="correo" value="<?= htmlspecialchars($_SESSION['login']['correo'], ENT_QUOTES, 'UTF-8') ?>" readonly>
           </div>
           <div class="mb-3">
             <label for="clave" class="form-label">Nueva Contraseña</label>
