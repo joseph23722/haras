@@ -17,6 +17,13 @@
             </button>
 
         </div>
+        <div class="card-body p-1" style="background-color: #f9f9f9;">
+            <div class="d-flex justify-content-start mt-1">
+                <a href="./revisar-equino" class="btn btn-primary btn-lg mx-3" style="font-size: 1.1em; padding: 12px 30px;">
+                    Revisión Básica
+                </a>
+            </div>
+        </div>
 
         <!-- Formulario -->
         <div class="card-body p-2" style="background-color: #f9f9f9;">
