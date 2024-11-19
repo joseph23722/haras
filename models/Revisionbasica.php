@@ -54,10 +54,10 @@ class RevisionBasica extends Conexion
         }
     }
 
-    public function listarYeguasPorPropietario($idPropietario)
+    public function listarYeguasPorPropietario($idPropietario = null)
     {
         try {
-            $stmt = $this->pdo->prepare("CALL spu_listaryeguas_porpropietarios(:idPropietario)");
+            $stmt = $this->pdo->prepare("CALL spu_listar_equinos_por_propietario(:idPropietario)");
             $stmt->bindParam(':idPropietario', $idPropietario, PDO::PARAM_INT);
             $stmt->execute();
             $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -65,7 +65,7 @@ class RevisionBasica extends Conexion
             return $resultados;
         } catch (PDOException $e) {
             echo "Error al ejecutar el procedimiento: " . $e->getMessage();
-            return [];
+            return ['status' => 'error', 'message' => 'Hubo un error al obtener las yeguas.'];
         }
     }
 }

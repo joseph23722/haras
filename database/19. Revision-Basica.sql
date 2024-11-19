@@ -55,21 +55,35 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `spu_listaryeguas_porpropietarios`;
+DROP PROCEDURE IF EXISTS `spu_listar_equinos_por_propietario`;
 DELIMITER $$
-CREATE PROCEDURE spu_listaryeguas_porpropietarios(
+CREATE PROCEDURE spu_listar_equinos_por_propietario(
     IN p_idPropietario INT
 )
 BEGIN
-    -- Consultar el id y nombre de las yeguas con un mismo idPropietario
-    SELECT 
-        idEquino, 
-        nombreEquino
-    FROM 
-        Equinos
-    WHERE 
-        sexo = 'Hembra' 
-        AND idPropietario = p_idPropietario
-        AND estado = 1;
+    -- Si se pasa un idPropietario, listar las yeguas de ese propietario específico
+    IF p_idPropietario IS NOT NULL THEN
+        SELECT 
+            idEquino, 
+            nombreEquino
+        FROM 
+            Equinos
+        WHERE 
+            sexo = 'Hembra'
+            AND idPropietario = p_idPropietario
+            AND estado = 1;
+
+    -- Si no se pasa un idPropietario (NULL), listar las yeguas sin propietario
+    ELSE
+        SELECT 
+            idEquino, 
+            nombreEquino
+        FROM 
+            Equinos
+        WHERE 
+            sexo = 'Hembra'
+            AND idPropietario IS NULL
+            AND estado = 1;
+    END IF;
 END $$
 DELIMITER ;

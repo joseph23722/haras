@@ -33,7 +33,6 @@
                     </div>
 
                     <!-- Selector para el Tipo de Equino -->
-                    <!-- Selector para el Tipo de Equino -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select class="form-select" id="idEquino" name="idEquino" required>
@@ -42,7 +41,6 @@
                             <label for="idEquino"><i class="fas fa-horse" style="color: #00b4d8;"></i> Seleccione un Equino</label>
                         </div>
                     </div>
-
 
                     <!-- Tipo de Revisión -->
                     <div class="col-md-6">
@@ -140,9 +138,13 @@
         }
 
         // Cargar los equinos del propietario seleccionado
-        async function loadEquinos(idPropietario) {
+        async function loadEquinos(idPropietario = null) {
+            const url = idPropietario ?
+                '../../controllers/revisionbasica.controller.php' :
+                '../../controllers/revisionbasica.controller.php'; // Si es null, lo mismo, pero ajusta la consulta.
+
             try {
-                const response = await fetch('../../controllers/revisionbasica.controller.php', {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -154,6 +156,8 @@
                 });
 
                 const data = await response.json();
+                console.log('Datos de las yeguas:', data);
+
                 idEquinoSelect.innerHTML = '<option value="">Seleccione un Equino</option>';
 
                 if (Array.isArray(data) && data.length > 0) {
@@ -167,7 +171,7 @@
                         idEquinoSelect.appendChild(option);
                     });
                 } else {
-                    console.log('No se encontraron yeguas disponibles para este propietario.');
+                    console.log('No se encontraron yeguas disponibles.');
                 }
             } catch (error) {
                 console.error('Error al cargar los equinos:', error);
@@ -181,10 +185,11 @@
                 loadEquinos(idPropietario);
             } else {
                 idEquinoSelect.innerHTML = '<option value="">Seleccione un Equino</option>';
+                loadEquinos();
             }
         });
 
-        // Inicializar la carga de propietarios al cargar la página
         loadPropietarios();
+        loadEquinos();
     });
 </script>

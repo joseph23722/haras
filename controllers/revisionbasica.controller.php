@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 if (isset($_GET['idPropietario'])) {
                     echo json_encode($controller->listarYeguasPorPropietario($_GET['idPropietario']));
                 } else {
-                    echo json_encode(["status" => "error", "message" => "ID de propietario no especificado."]);
+                    echo json_encode($controller->listarYeguasPorPropietario(null));
                 }
                 break;
 
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             if (isset($requestBody['idPropietario'])) {
                 echo json_encode($controller->listarYeguasPorPropietario($requestBody['idPropietario']));
             } else {
-                echo json_encode(["status" => "error", "message" => "ID de propietario no especificado."]);
+                echo json_encode($controller->listarYeguasPorPropietario(null));
             }
             break;
 
