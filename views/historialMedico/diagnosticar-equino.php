@@ -9,17 +9,28 @@
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial Médico</h5>
             <!-- Botón para abrir el modal de agregar vías de administración -->
             <button type="button" class="btn btn-success btn-sm"
-                    style="background-color: #28a745; border: none; position: absolute; right: 2px; top: 2px; padding: 10px 15px; font-size: 1.2em;"
-                    id="btnAgregarVia" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalAgregarViaAdministracion">
+                style="background-color: #28a745; border: none; position: absolute; right: 2px; top: 2px; padding: 10px 15px; font-size: 1.2em;"
+                id="btnAgregarVia"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAgregarViaAdministracion">
                 <i class="fas fa-plus"></i>
             </button>
 
         </div>
 
+        <div class="card-body p-1" style="background-color: #f9f9f9;">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <select id="tipodiagnostico" class="form-select" name="tipodiagnostico">
+                        <option value="">Seleccione Tipo de Diagnóstico</option>
+                    </select>
+                    <label for="tipodiagnostico"><i class="fas fa-warning" style="color: #00b4d8;"></i> Tipo de Diagnóstico</label>
+                </div>
+            </div>
+        </div>
+
         <!-- Formulario -->
-        <div class="card-body p-4" style="background-color: #f9f9f9;">
+        <div class="card-body p-2" style="background-color: #f9f9f9;">
             <form action="" id="form-historial-medico" autocomplete="off">
                 <div class="row g-3">
                     <!-- Selector para el Tipo de Equino -->
