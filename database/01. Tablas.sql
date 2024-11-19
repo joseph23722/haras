@@ -342,6 +342,16 @@ CREATE TABLE ViasAdministracion (
     descripcion TEXT NULL
 ) ENGINE = INNODB;
 
+/*
+	una tabla para almacenar los datos de la yegua y/o equino que el doctor revisa
+    las revisiones son:
+    1. Ecografía
+    2. Ovulaciones
+    3. Abortos
+    4. Reabsorvos
+    5. Muertes, etc.
+*/
+
 -- 27. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
     idDetalleMed            INT PRIMARY KEY AUTO_INCREMENT,
