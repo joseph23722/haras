@@ -14,7 +14,7 @@ class Registrarequino extends Conexion
     public function registrarEquino($data)
     {
         try {
-            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?,?,?)";
+            $sql = "CALL spu_equino_registrar(?,?,?,?,?,?,?,?,?,?,?)";
             $stmt = $this->pdo->prepare($sql);
 
             $nombreEquino = ($data['nombreEquino']);
@@ -26,6 +26,13 @@ class Registrarequino extends Conexion
             $detalles = !empty($data['detalles']) ? $data['detalles'] : null;
             $pesokg = !empty($data['pesokg']) ? $data['pesokg'] : null;
             $fotografia = ($data['fotografia']); // Recibe el public_id de la imagen guardada en CLOUDINARY
+            $fechaentrada = !empty($data['fechaentrada']) ? $data['fechaentrada'] : null;
+            $fechasalida = !empty($data['fechasalida']) ? $data['fechasalida'] : null;
+
+            // Validación adicional: la fecha de entrada no puede ser mayor a la de salida
+            if (!empty($fechaentrada) && !empty($fechasalida) && $fechaentrada > $fechasalida) {
+                return ["status" => "error", "message" => "La fecha de entrada no puede ser mayor que la fecha de salida."];
+            }
 
             if (!empty($idPropietario)) {
                 $fechaNacimiento = null;
@@ -41,6 +48,8 @@ class Registrarequino extends Conexion
             $stmt->bindParam(7, $pesokg);
             $stmt->bindParam(8, $idNacionalidad);
             $stmt->bindParam(9, $fotografia);
+            $stmt->bindParam(10, $fechaentrada);
+            $stmt->bindParam(11, $fechasalida);
 
             $stmt->execute();
 

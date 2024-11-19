@@ -98,12 +98,12 @@
                         <!-- Campos adicionales para fecha de entrada y salida -->
                         <div id="fechasEstadia" class="mt-3" style="display: none;">
                             <div class="form-floating mb-2">
-                                <input type="date" name="fechaInicio" id="fechaInicio" placeholder="Fecha de Inicio" class="form-control">
-                                <label for="fechaInicio"><i class="fas fa-calendar-alt"></i> Fecha de Entrada</label>
+                                <input type="date" name="fechaentrada" id="fechaentrada" placeholder="Fecha de Inicio" class="form-control">
+                                <label for="fechaentrada"><i class="fas fa-calendar-alt"></i> Fecha de Entrada</label>
                             </div>
                             <div class="form-floating">
-                                <input type="date" name="fechaFin" id="fechaFin" placeholder="Fecha de Fin" class="form-control">
-                                <label for="fechaFin"><i class="fas fa-calendar-alt"></i> Fecha de Salida</label>
+                                <input type="date" name="fechasalida" id="fechasalida" placeholder="Fecha de Fin" class="form-control">
+                                <label for="fechasalida"><i class="fas fa-calendar-alt"></i> Fecha de Salida</label>
                             </div>
                         </div>
                     </div>

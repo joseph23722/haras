@@ -9,7 +9,9 @@ CREATE PROCEDURE `spu_equino_registrar`(
     IN _idPropietario INT,
     IN _pesokg DECIMAL(5,1),
     IN _idNacionalidad INT,
-    IN _public_id VARCHAR(255)  -- Añadir el public_id de la imagen
+    IN _public_id VARCHAR(255),  -- Añadir el public_id de la imagen
+    IN _fechaentrada DATE,      -- Fecha de entrada: Estadía
+    IN _fechasalida DATE        -- Fecha de salida: Estadía
 )
 BEGIN
     DECLARE _errorMsg VARCHAR(255);
@@ -66,10 +68,18 @@ BEGIN
             END IF;
         END IF;
     END IF;
-
+    
     IF NOT EXISTS (SELECT 1 FROM nacionalidades WHERE idNacionalidad = _idNacionalidad) THEN
         SET _errorMsg = 'Error: La nacionalidad seleccionada no existe.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+    
+    -- Validar fechas de entrada y salida si no son NULL
+    IF _fechaEntrada IS NOT NULL AND _fechaSalida IS NOT NULL THEN
+        IF _fechaEntrada > _fechaSalida THEN
+            SET _errorMsg = 'Error: La fecha de entrada no puede ser mayor a la fecha de salida.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+        END IF;
     END IF;
 
     SET _idEstadoMonta = CASE 
@@ -90,7 +100,9 @@ BEGIN
         idNacionalidad,
         idEstadoMonta,
         fotografia,       -- Aquí guardaremos el public_id
-        estado
+        estado,
+        fechaentrada,
+        fechasalida
     ) 
     VALUES (
         _nombreEquino, 
@@ -103,7 +115,9 @@ BEGIN
         _idNacionalidad,
         _idEstadoMonta,
         _public_id,       -- Guardar el public_id en la columna fotografia
-        1  -- Estado "Vivo" (1)
+        1,  -- Estado "Vivo" (1)
+        _fechaentrada,
+        _fechasalida
     );
 
     -- Obtener el ID del equino recién insertado

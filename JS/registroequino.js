@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const sugerenciasNacionalidad = document.querySelector("#sugerenciasNacionalidad");
     const idNacionalidadInput = document.querySelector("#idNacionalidad");
 
+    const fechaEntradaInput = document.querySelector("#fechaEntrada");
+    const fechaSalidaInput = document.querySelector("#fechaSalida");
+
     /* CHECKBOX DE ESTADIA */
     /* Contenedor Checkbox */
     const estadiaWrapper = document.querySelector("#checkboxEstadiaWrapper");
@@ -287,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombreEquino = document.querySelector("#nombreEquino").value;
         const sexo = sexoSelect.value;
         const idTipoEquino = tipoEquinoSelect.value;
-        const idNacionalidad = nacionalidadInput.value;
+        const idNacionalidad = idNacionalidadInput.value;
 
         // Validación de campos obligatorios
         if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!idNacionalidad || !fechaNacimientoInput.value))) {
@@ -301,6 +304,10 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast('Debe cargar una fotografía del equino', 'ERROR');
             return;
         }
+
+        // Obtener los valores de las fechas, y si están vacíos, asignarles null
+        const fechaEntrada = fechaEntradaInput.value || null;
+        const fechaSalida = fechaSalidaInput.value || null;
 
         // Confirmar si el usuario quiere registrar el equino
         const confirm = await ask("¿Está seguro de que desea registrar el equino?", "Registro de Equinos");
@@ -335,6 +342,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
 
             if (result.status === "success") {
+                /* Vuelve a ocultar los campos del checkbox: fechaentrada y fechasalida */
+                document.getElementById('checkboxEstadiaWrapper').style.display = 'none';
+                document.getElementById('fechasEstadia').style.display = 'none';
                 showToast('Equino registrado exitosamente.', 'SUCCESS');
                 formEquino.reset();
             } else {
