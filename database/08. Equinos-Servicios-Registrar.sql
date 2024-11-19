@@ -281,8 +281,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
 CREATE PROCEDURE spu_contar_equinos_por_categoria()
@@ -321,10 +319,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
-
-
-
 
 DROP PROCEDURE IF EXISTS `spu_equino_editar`;
 DELIMITER $$
