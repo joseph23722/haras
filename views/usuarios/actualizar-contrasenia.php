@@ -16,7 +16,7 @@
           </div>
           <div class="mb-3">
             <label for="clave" class="form-label">Nueva Contraseña</label>
-            <input type="password" class="form-control" id="clave" placeholder="Ingresa nueva contraseña" required minlength="8">
+            <input type="password" class="form-control" id="clave" placeholder="Ingresa nueva contraseña" required minlength="8" maxlength="20">
           </div>
           <div class="mb-3">
             <label for="confirmarContrasenia" class="form-label">Confirmar Contraseña</label>
@@ -85,12 +85,17 @@
   confirmarContraseniaInput.addEventListener('input', validarContrasenias);
 
   // Manejar el envío del formulario
-  formActualizarContrasenia.addEventListener('submit', function(e) {
+  formActualizarContrasenia.addEventListener('submit', async function(e) {
     e.preventDefault();
 
     // Validar si las contraseñas coinciden antes de enviar
     if (nuevaContraseniaInput.value !== confirmarContraseniaInput.value) {
-      mostrarAlerta('Las contraseñas no coinciden. Por favor, verifica.', 'error');
+      showToast('Las contraseñas no coinciden. Por favor, verifica.', 'ERROR');
+      return;
+    }
+
+    // Confirmar actualización de contraseña
+    if (!(await ask('¿Estás seguro de actualizar tu contraseña?'))) {
       return;
     }
 
@@ -113,17 +118,17 @@
       })
       .then(data => {
         if (data.status === 'success') {
-          mostrarAlerta('Contraseña actualizada con éxito.', 'success');
+          showToast('Contraseña actualizada con éxito.', 'SUCCESS');
           formActualizarContrasenia.reset();
           mensajeValidacion.textContent = '';
           btnGuardar.disabled = true;
         } else {
-          mostrarAlerta(data.message || 'Error desconocido.', 'error');
+          showToast(data.message || 'Error desconocido.', 'ERROR');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        mostrarAlerta('Error en la conexión. Intenta nuevamente.', 'error');
+        showToast('Error en la conexión. Intenta nuevamente.', 'ERROR');
       });
   });
 </script>
