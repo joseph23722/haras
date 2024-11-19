@@ -583,6 +583,7 @@ CREATE TABLE revisionequinos (
 	fecharevision 		DATE NOT NULL,
 	observaciones 		TEXT NOT NULL,
 	costorevision 		DECIMAL (10,2) NULL,
+    create_at			DATETIME DEFAULT NOW() NOT NULL,
 	CONSTRAINT fk_idEquino_revision FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_idPropietario_revision FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario)
 )ENGINE = INNODB;

@@ -25,7 +25,7 @@
                     <!-- Selector para el ID del Propietario -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select class="form-select" id="idPropietario" name="idPropietario" required>
+                            <select class="form-select" id="idPropietario" name="idPropietario">
                                 <option value="">Haras Rancho Sur</option>
                             </select>
                             <label for="idPropietario" class="form-label">Seleccione Propietario</label>
@@ -68,7 +68,7 @@
                     <!-- Observaciones -->
                     <div class="col-md-6    ">
                         <div class="form-floating">
-                            <textarea class="form-control" id="observaciones" name="observaciones" rows="3" required></textarea>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="3" placeholder="" required></textarea>
                             <label for="observaciones"><i class="fas fa-notes-medical" style="color: #007bff;"></i> Observaciones</label>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                     <!-- Costo de la Revisión -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="number" class="form-control" id="costorevision" name="costorevision" step="0.01">
+                            <input type="number" class="form-control" id="costorevision" name="costorevision" step="0.01" placeholder="">
                             <label for="costorevision"><i class="fas fa-dollar-sign" style="color: #28a745;"></i> Costo de la Revisión (USD)</label>
                         </div>
                     </div>
@@ -97,6 +97,9 @@
 </div>
 
 <?php require_once '../footer.php'; ?>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
+<script src="../../swalcustom.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -139,12 +142,8 @@
 
         // Cargar los equinos del propietario seleccionado
         async function loadEquinos(idPropietario = null) {
-            const url = idPropietario ?
-                '../../controllers/revisionbasica.controller.php' :
-                '../../controllers/revisionbasica.controller.php'; // Si es null, lo mismo, pero ajusta la consulta.
-
             try {
-                const response = await fetch(url, {
+                const response = await fetch('../../controllers/revisionbasica.controller.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -156,8 +155,6 @@
                 });
 
                 const data = await response.json();
-                console.log('Datos de las yeguas:', data);
-
                 idEquinoSelect.innerHTML = '<option value="">Seleccione un Equino</option>';
 
                 if (Array.isArray(data) && data.length > 0) {
@@ -186,6 +183,56 @@
             } else {
                 idEquinoSelect.innerHTML = '<option value="">Seleccione un Equino</option>';
                 loadEquinos();
+            }
+        });
+
+        // Enviar los datos del formulario para registrar la revisión del equino
+        document.querySelector('#formRevisionBasica').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = {
+                operation: 'registrarRevisionEquino',
+                idEquino: document.querySelector("#idEquino").value,
+                idPropietario: document.querySelector("#idPropietario").value || null,
+                tiporevision: document.querySelector("#tiporevision").value,
+                fecharevision: document.querySelector("#fecharevision").value,
+                observaciones: document.querySelector("#observaciones").value,
+                costorevision: document.querySelector("#costorevision").value || null
+            };
+
+            // Validación de campos obligatorios
+            if (!formData.idEquino || !formData.tiporevision || !formData.fecharevision || !formData.observaciones) {
+                showToast('Por favor, complete todos los campos obligatorios.', 'WARNING', 4500);
+                return;
+            }
+
+            const confirmation = await ask("¿Estás seguro de que deseas registrar la revisión del equino?", "Haras Rancho Sur");
+
+            if (!confirmation) {
+                showToast('La acción fue cancelada.', 'INFO', 4500);
+                return;
+            }
+
+            try {
+                const response = await fetch('../../controllers/revisionbasica.controller.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    showToast(result.message || 'Revisión registrada correctamente.', 'SUCCESS', 4500);
+                    document.querySelector('#formRevisionBasica').reset();
+                } else {
+                    showToast(result.message || 'Hubo un error al registrar la revisión.', 'ERROR', 4500);
+                }
+            } catch (error) {
+                console.error('Error al registrar la revisión:', error);
+                showToast('Hubo un error al registrar la revisión.', 'ERROR', 4500);
             }
         });
 
