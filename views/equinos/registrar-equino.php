@@ -202,16 +202,6 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="fotografia">
-                                    <label for="fotografia"><i class="fas fa-camera" style="color: #3498db;"></i> Fotografía</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quinta fila: Estado -->
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-6">
-                                <div class="form-floating">
                                     <input type="text" class="form-control bg-light" id="estado">
                                     <label for="estado"><i class="fas fa-horse" style="color: #3498db;"></i> Estado</label>
                                 </div>
@@ -226,8 +216,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
@@ -239,4 +227,5 @@
     type="text/javascript">
 </script>
 
-<script src="../../JS/registroequino.js"></script>
+<script src="../../JS/registro-equino.js"></script>
+<script src="../../JS/editar-equino.js"></script>

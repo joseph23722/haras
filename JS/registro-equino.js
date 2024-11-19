@@ -357,52 +357,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Modal para editar Equinos, que tiene que realizar una busqueda, y todos los datos lo muestre
-    document.querySelector("#buscar-equino").addEventListener("click", function () {
-        const nombreEquino = document.getElementById("buscarEquino").value;
-
-        fetch('../../controllers/registrarequino.controller.php', {
-            method: 'POST',
-            body: JSON.stringify({
-                operation: 'buscarEquinoPorNombre',
-                nombreEquino: nombreEquino
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-
-                if (data.length === 0) {
-                    showToast("No se encontró ningún equino con ese nombre.", 'WARNING');
-                    document.getElementById("fechaNacimiento").value = '';
-                    document.getElementById("nacionalidad").value = '';
-                    document.getElementById("idPropietario").value = '';
-                    document.getElementById("sexo").value = '';
-                    document.getElementById("tipoEquino").value = '';
-                    document.getElementById("idEstadoMonta").value = '';
-                    document.getElementById("pesokg").value = '';
-                    document.getElementById("fotografia").value = '';
-                    document.getElementById("estado").value = '';
-                } else {
-                    const equino = data[0];
-                    document.getElementById("fechanacimiento").value = equino.fechaNacimiento || '';
-                    document.getElementById("nacionalidades").value = equino.nacionalidad || '';
-                    document.getElementById("propietario").value = equino.idPropietario || 'Haras Rancho Sur';
-                    document.getElementById("genero").value = equino.sexo || '';
-                    document.getElementById("tipoEquino").value = equino.tipoEquino || '';
-                    document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
-                    document.getElementById("peso").value = equino.pesokg || 'Por pesar';
-                    document.getElementById("fotografia").value = equino.fotografia || '';
-                    document.getElementById("estado").value = equino.estado || 'Desconocido';
-                    document.getElementById("idEquino").value = equino.idEquino;
-                }
-            })
-            .catch(error => console.error("Error al buscar el equino:", error));
-    });
-
     loadPropietarios();
     loadTipoEquinos();
 });
