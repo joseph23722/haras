@@ -200,7 +200,10 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     (2, 'historial-equino', 'S', 'Historial Equinos', 'fas fa-history');
 -- historialMedico
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(3, 'diagnosticar-equino', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform');
+	(3, 'seleccionar-diagnostico', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform'),
+	(3, 'diagnosticar-equino', 'N', NULL, NULL),
+	(3, 'revisar-equino', 'N', NULL, NULL);
+
 -- Inventarios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
@@ -217,20 +220,23 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
 	(6, 'actualizar-contrasenia', 'S', 'Actualizar Contraseña', 'fas fa-key');
-    
+
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
+    (1, 7),
     (1, 17),
-    (1, 19); -- Actualizar contrasenia
+    (1, 21); -- Actualizar contrasenia
     
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
+    (2, 7),
     (2, 17),
-    (2, 19);
+    (2, 21);
+    
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
@@ -241,12 +247,14 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 10),
     (3, 11),
     (3, 12),
+    (3, 13),
     (3, 14),
-    (3, 15),
     (3, 16),
     (3, 17),
     (3, 18),
-    (3, 19);
+    (3, 19),
+    (3, 20),
+    (3, 21);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -255,20 +263,23 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (4, 3),
     (4, 6),
     (4, 7),
-    (4, 13),
-    (4, 19);
+    (4, 15),
+    (4, 21);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
 	(5, 1),
 	(5, 9),
-    (5, 19);
+    (5, 10),
+    (5, 11),
+    (5, 21);
+    
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
 	(6, 4),
-    (6, 14),
-    (6, 19);
+    (6, 16),
+    (6, 21);
 
 INSERT INTO Nacionalidades (nacionalidad) VALUES 
 ('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),

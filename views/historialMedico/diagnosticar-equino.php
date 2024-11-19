@@ -18,17 +18,6 @@
 
         </div>
 
-        <div class="card-body p-1" style="background-color: #f9f9f9;">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <select id="tipodiagnostico" class="form-select" name="tipodiagnostico">
-                        <option value="">Seleccione Tipo de Diagnóstico</option>
-                    </select>
-                    <label for="tipodiagnostico"><i class="fas fa-warning" style="color: #00b4d8;"></i> Tipo de Diagnóstico</label>
-                </div>
-            </div>
-        </div>
-
         <!-- Formulario -->
         <div class="card-body p-2" style="background-color: #f9f9f9;">
             <form action="" id="form-historial-medico" autocomplete="off">
