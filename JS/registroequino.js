@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nacionalidadInput.addEventListener("input", async () => {
         const query = nacionalidadInput.value;
 
-        if (query.length > 3) {
+        if (query.length > 1) {
             try {
                 const response = await fetch('../../controllers/registrarequino.controller.php', {
                     method: 'POST',
