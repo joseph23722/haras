@@ -40,7 +40,6 @@ try {
         $operation = $inputData['operation'] ?? '';
         switch ($operation) {
 
-
             case 'agregarVia':
                 // Verificar los parámetros recibidos desde el frontend
                 $data = json_decode(file_get_contents('php://input'), true); // Decodificar JSON enviado por el frontend

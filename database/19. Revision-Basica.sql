@@ -54,3 +54,22 @@ BEGIN
     SELECT 'Revisión registrada correctamente' AS mensaje;
 END$$
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_listaryeguas_porpropietarios`;
+DELIMITER $$
+CREATE PROCEDURE spu_listaryeguas_porpropietarios(
+    IN p_idPropietario INT
+)
+BEGIN
+    -- Consultar el id y nombre de las yeguas con un mismo idPropietario
+    SELECT 
+        idEquino, 
+        nombreEquino
+    FROM 
+        Equinos
+    WHERE 
+        sexo = 'Hembra' 
+        AND idPropietario = p_idPropietario
+        AND estado = 1;
+END $$
+DELIMITER ;

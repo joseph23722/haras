@@ -161,16 +161,15 @@ class Historialme extends Conexion
             // Preparar y ejecutar el procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_Listar_ViasAdministracion()");
             $query->execute();
-        
+
             $vias = $query->fetchAll(PDO::FETCH_ASSOC); // Obtener todas las filas directamente
             error_log("Vías de administración obtenidas: " . json_encode($vias));
-        
+
             return $vias; // Devolver las filas obtenidas
         } catch (Exception $e) {
             error_log("Error en listarViasAdministracion: " . $e->getMessage());
             return [];
         }
-        
     }
 
     // Método 2: Agregar una nueva vía de administración
@@ -189,12 +188,12 @@ class Historialme extends Conexion
         } catch (Exception $e) {
             // Registrar errores en los logs
             error_log("Error en agregarViaAdministracion: " . $e->getMessage());
-            
+
             // Manejo de error en caso de duplicado o cualquier otro fallo
             if ($e->getCode() == '45000') {
                 return ['status' => 'error', 'message' => 'Ya existe una vía de administración con este nombre.'];
             }
-            
+
             return ['status' => 'error', 'message' => 'Error al agregar vía de administración.'];
         }
     }
