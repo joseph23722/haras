@@ -573,3 +573,16 @@ CREATE TABLE bostas
     peso_mensual		DECIMAL(12,2)   NULL,
     numero_semana		INT NULL
 ) ENGINE = INNODB;
+
+-- 45. revision equinos, PARA UNA REVISION INTERDIARIA
+CREATE TABLE revisionequinos (
+	idRevision 			INT PRIMARY KEY AUTO_INCREMENT,
+	idEquino 			INT NOT NULL,					-- FILTRAR SOLO YEGUAS PROPIAS O AJENAS QUE CUENTEN CON ALMENOS 1 SERVICIO
+    idPropietario		INT NULL,
+	tiporevision 		ENUM('Ecografía', 'Examen ginecológico', 'Citología', 'Cultivo bacteriológico', 'Biopsia endometrial'),
+	fecharevision 		DATE NOT NULL,
+	observaciones 		TEXT NOT NULL,
+	costorevision 		DECIMAL (10,2) NULL,
+	CONSTRAINT fk_idEquino_revision FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_idPropietario_revision FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario)
+)ENGINE = INNODB;
