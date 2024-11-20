@@ -182,14 +182,9 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
     </div>
   </div>
 
-
   <!-- JavaScript para Chart.js y Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-
-  </script>
-  <script src="http://localhost/haras/JS/notificaciones.js"></script>
+  <script src="../../JS/notificaciones.js"></script>
   <script src="../../JS/dashboard.js"></script>
 
 </body>
