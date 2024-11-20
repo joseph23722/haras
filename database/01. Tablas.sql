@@ -445,13 +445,13 @@ CREATE TABLE TiposTrabajos (
     nombreTrabajo VARCHAR(255) NOT NULL UNIQUE
 );
 
--- 32. herramientas
+-- 32. herramientas (herreo)
 CREATE TABLE Herramientas (
     idHerramienta INT PRIMARY KEY AUTO_INCREMENT,
     nombreHerramienta VARCHAR(255) NOT NULL UNIQUE
 );
 
--- 33. Tabla para el Historial del Trabajo de Herrería
+-- 33. Tabla para el Historial del Trabajo de Herrería (herreo)
 CREATE TABLE HistorialHerrero (
     idHistorialHerrero INT PRIMARY KEY AUTO_INCREMENT,
     idEquino INT NOT NULL,
@@ -464,7 +464,7 @@ CREATE TABLE HistorialHerrero (
     CONSTRAINT fk_historialherrero_trabajo FOREIGN KEY (idTrabajo) REFERENCES TiposTrabajos(idTipoTrabajo)
 );
 
--- 34. Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados)
+-- 34. Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados) - (herreo)
 CREATE TABLE HerramientasUsadasHistorial (
     idHerramientasUsadas INT PRIMARY KEY AUTO_INCREMENT,
     idHistorialHerrero INT NOT NULL,

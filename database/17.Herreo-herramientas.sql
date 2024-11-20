@@ -161,6 +161,21 @@ CALL spu_agregar_tipo_trabajo('Recorte de cascos');
 
 CALL spu_agregar_herramienta('Lima para cascos');
 
-CALL spu_listar_tipos_trabajos();
 
-CALL ConsultarHistorialEquino(null);
+-- sugerencias herrero
+DELIMITER $$
+DROP PROCEDURE IF EXISTS ListarTiposYHerramientas $$
+CREATE PROCEDURE ListarTiposYHerramientas()
+BEGIN
+    -- Combina los resultados de TiposTrabajos y Herramientas en una sola tabla con una columna adicional para identificar el tipo de dato
+    SELECT idTipoTrabajo AS id, nombreTrabajo AS nombre, 'Tipo de Trabajo' AS tipo
+    FROM TiposTrabajos
+    UNION ALL
+    SELECT idHerramienta AS id, nombreHerramienta AS nombre, 'Herramienta' AS tipo
+    FROM Herramientas;
+END $$
+
+DELIMITER ;
+
+
+CALL ListarTiposYHerramientas();
