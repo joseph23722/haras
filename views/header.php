@@ -129,6 +129,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     </nav>
 
     <!-- Contenido de la página -->
+
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -139,12 +140,13 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
                         <?php
                         foreach ($listaAcceso as $acceso) {
                             if ($acceso['sidebaroption'] == 'S') {
+                                // Añadir una clase personalizada "custom-icon" para los iconos
                                 echo "
                                     <a class='nav-link' href='http://localhost/haras/views/{$acceso['modulo']}/{$acceso['ruta']}'>
-                                    <div class='sb-nav-link-icon'><i class='{$acceso['icono']}'></i></div>
+                                    <div class='sb-nav-link-icon custom-icon'><i class='{$acceso['icono']}'></i></div>
                                     {$acceso['texto']}
                                     </a>
-                            ";
+                                ";
                             }
                         }
                         ?>
