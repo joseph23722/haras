@@ -37,4 +37,20 @@
 </div> <!-- Cierre de layoutSidenav -->
 </body>
 <script src="http://localhost/haras/JS/notificaciones.js" defer></script>
+
+<script>
+    // Obtener el botón y el sidebar
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidenav = document.getElementById("layoutSidenav_nav");
+
+    // Función para alternar la visibilidad del sidebar
+    sidebarToggle.addEventListener("click", function (event) {
+        // Prevenir la acción predeterminada del enlace, ya que no es necesario
+        event.preventDefault();
+
+        // Alternar una clase 'sb-sidenav-toggled' en el sidebar
+        sidenav.classList.toggle("sb-sidenav-toggled");
+    });
+</script>
+
 </html>

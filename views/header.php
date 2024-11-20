@@ -80,6 +80,8 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
         <a class="navbar-brand ps-3" href="<?= $host ?>/dashboard.php">
             <i class="fas fa-hat-cowboy"></i> Haras Rancho Sur
         </a>
+
+        
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     
@@ -125,6 +127,8 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             </li>
         </ul>
     </nav>
+
+    <!-- Contenido de la página -->
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
