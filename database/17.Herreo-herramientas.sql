@@ -164,8 +164,8 @@ CALL spu_agregar_herramienta('Lima para cascos');
 
 -- sugerencias herrero
 DELIMITER $$
-DROP PROCEDURE IF EXISTS ListarTiposYHerramientas $$
-CREATE PROCEDURE ListarTiposYHerramientas()
+DROP PROCEDURE IF EXISTS spu_ListarTiposYHerramientas $$
+CREATE PROCEDURE spu_ListarTiposYHerramientas()
 BEGIN
     -- Combina los resultados de TiposTrabajos y Herramientas en una sola tabla con una columna adicional para identificar el tipo de dato
     SELECT idTipoTrabajo AS id, nombreTrabajo AS nombre, 'Tipo de Trabajo' AS tipo
@@ -178,4 +178,5 @@ END $$
 DELIMITER ;
 
 
-CALL ListarTiposYHerramientas();
+CALL spu_ListarTiposYHerramientas();
+
