@@ -18,11 +18,11 @@
 
             <!-- Botón para abrir el modal de ver vías de administración -->
             <button type="button" class="btn btn-info btn-sm"
-                style="background-color: #17a2b8; border: none; position: absolute; right: 50px; top: 2px; padding: 10px 15px; font-size: 1.2em; color: white; font-weight: bold;"
+                style="background-color: #17a2b8; border: none; position: absolute; right: 60px; top: 2px; padding: 10px 15px; font-size: 1.2em; color: white; font-weight: bold;"
                 id="btnVerViasAdministracion"
                 data-bs-toggle="modal"
                 data-bs-target="#modalVerViasAdministracion">
-                <i class="fas fa-eye"></i> Ver Vías
+                <i class="fas fa-eye"></i>
             </button>
 
 
