@@ -198,6 +198,7 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
    	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop'),
 	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list'),
     (2, 'historial-equino', 'S', 'Historial Equinos', 'fas fa-history');
+    
 -- historialMedico
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(3, 'seleccionar-diagnostico', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform'),

@@ -143,20 +143,18 @@ CREATE TABLE Equinos (
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta),
 	CONSTRAINT fk_equino_nacionalidad FOREIGN KEY (idNacionalidad) REFERENCES nacionalidades(idNacionalidad)
 ) ENGINE = INNODB;
-
-/* 
+ 
 -- POR VERIFICAR E IMPLEMENTAR:
 CREATE TABLE fotografiaequinos 
 (
 	idfotografia	INT PRIMARY KEY AUTO_INCREMENT,
     idEquino		INT NOT NULL,
-    foto_public_id	VARCHAR(255) NOT NULL,
+    public_id	VARCHAR(255) NOT NULL,
     created_at		TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at		TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_foto_public_id_ft FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino) ON DELETE CASCADE
+    CONSTRAINT fk_public_id_ft FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino) ON DELETE CASCADE
 -- ON DELETE CASCADE evita que queden datos huerfanos en la tabla
 )ENGINE = INNODB;
-*/
 
 -- 11. Implementos
 CREATE TABLE Implementos (

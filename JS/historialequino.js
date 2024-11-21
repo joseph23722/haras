@@ -21,6 +21,7 @@ document.getElementById('form-historial-equino').onsubmit = function () {
     document.getElementById('descripcion').value = descripcion;
 };
 
+// Evento de clic para buscar equino
 document.querySelector("#buscar-equino").addEventListener("click", async function () {
     const nombreEquino = document.getElementById("buscarEquino").value;
     const response = await fetch('../../controllers/registrarequino.controller.php', {
@@ -59,7 +60,7 @@ document.querySelector("#buscar-equino").addEventListener("click", async functio
         document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
         document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
 
-        const fotografiaField = document.getElementById("fotografia");
+        const fotografiaField = document.getElementById("fotografia-buscada");
         if (fotografiaField) {
             fotografiaField.value = equino.fotografia || '';
         }
@@ -71,6 +72,10 @@ document.querySelector("#buscar-equino").addEventListener("click", async functio
                 : 'https://via.placeholder.com/400x365?text=Imagen+No+Disponible';
         }
     }
+});
+
+// Manejo de la carga de fotografía y no se envíe el formulario para que no muestre alerta
+document.getElementById('upload_button').addEventListener('click', function () {
 });
 
 // Al enviar el formulario de historial

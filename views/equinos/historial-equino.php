@@ -85,19 +85,27 @@
                                     <label for="pesokg"><i class="fas fa-weight" style="color: #3498db;"></i> Peso (kg)</label>
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <button type="button" id="upload_button" class="form-control justify-content-center align-items-center" style="text-align: center; padding: 10px; background-color: #e0f2ff; color: #007bff; border: 1px solid #007bff;">
+                                        <span><i class="fas fa-camera" style="color: #007bff;"></i> Añadir Fotografía</span>
+                                    </button>
+                                    <input type="file" id="fotografia" name="fotografia" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Terca COLUMNA: Fotografía del equino -->
                     <div class="col-md-4 text-center">
-                        <div class="card bg-gradient equinos-card">
+                        <div class="card bg-gradient equino-card">
                             <h5 class="card-title fancy-title text-center">
                                 <strong><u>Fotografía del Equino</u></strong>
                             </h5>
                             <div class="text-center">
                                 <img src="https://via.placeholder.com/400x365?text=Imagen+No+Disponible"
                                     class="img-fluid equino-image"
-                                    id="fotografia"
+                                    id="fotografia-buscada"
                                     alt="Foto del Equino"
                                     style="width: 100%; height: auto; max-width: 300px; object-fit: cover;">
                             </div>
@@ -137,10 +145,14 @@
 </div>
 
 <?php require_once '../footer.php'; ?>
-
+<script
+    src="https://widget.cloudinary.com/v2.0/global/all.js"
+    type="text/javascript">
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 <!-- Incluir las dependencias de Quill -->
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script src="../../JS/historialequino.js"></script>
+<script src="../../JS/registro-equino.js"></script>
