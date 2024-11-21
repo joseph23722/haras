@@ -319,3 +319,15 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+
+INSERT INTO ViasAdministracion (nombreVia, descripcion)
+VALUES 
+('Oral', 'Por la boca.'),
+('Intravenosa', 'En una vena.'),
+('Intramuscular', 'En un músculo.'),
+('Sublingual', 'Bajo la lengua.'),
+('Tópica', 'Sobre la piel.'),
+('Rectal', 'Por el recto.'),
+('Inhalatoria', 'Por las vías respiratorias.');
+

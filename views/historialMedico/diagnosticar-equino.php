@@ -16,6 +16,16 @@
                 <i class="fas fa-plus"></i>
             </button>
 
+            <!-- Botón para abrir el modal de ver vías de administración -->
+            <button type="button" class="btn btn-info btn-sm"
+                style="background-color: #17a2b8; border: none; position: absolute; right: 50px; top: 2px; padding: 10px 15px; font-size: 1.2em; color: white; font-weight: bold;"
+                id="btnVerViasAdministracion"
+                data-bs-toggle="modal"
+                data-bs-target="#modalVerViasAdministracion">
+                <i class="fas fa-eye"></i> Ver Vías
+            </button>
+
+
         </div>
         <div class="card-body p-1" style="background-color: #f9f9f9;">
             <div class="d-flex justify-content-start mt-1">
@@ -213,6 +223,62 @@
             </table>
         </div>
     </div>
+
+    <!-- Modal para mostrar la lista de Vías de Administración -->
+    <div class="modal fade" id="modalVerViasAdministracion" tabindex="-1" aria-labelledby="modalVerViasAdministracionLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalVerViasAdministracionLabel">Listado de Vías de Administración</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="tablaViasAdministracion" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar una vía de administración -->
+    <div class="modal fade" id="modalEditarViaAdministracion" tabindex="-1" aria-labelledby="modalEditarViaAdministracionLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="modalEditarViaAdministracionLabel">Editar Vía de Administración</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarViaAdministracion">
+                        <input type="hidden" id="editarIdVia">
+                        <div class="mb-3">
+                            <label for="editarNombreVia" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editarNombreVia" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarDescripcionVia" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editarDescripcionVia" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
 </div>

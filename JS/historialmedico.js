@@ -446,6 +446,125 @@ document.addEventListener("DOMContentLoaded", () => {
         selectElement.innerHTML = `<option value="">Seleccione ${selectElement.id.replace('select', '')}</option>`;
     }
 
+
+    // Configurar el DataTable para listar las vías de administración
+    document.getElementById("btnVerViasAdministracion").addEventListener("click", function () {
+        if (!$.fn.DataTable.isDataTable('#tablaViasAdministracion')) {
+            $('#tablaViasAdministracion').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/haras/table-ssp/viasadministracion_datatable.php',
+                    type: 'GET',
+                    dataSrc: function (json) {
+                        if (!json || json.error) {
+                            console.error("Error en la respuesta del servidor:", json.error || "Respuesta vacía.");
+                            return [];
+                        }
+                        return json.data;
+                    },
+                    error: function (xhr, error, thrown) {
+                        console.error("Error AJAX:", {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText
+                        });
+                    }
+                },
+                columns: [
+                    { data: 'idViaAdministracion', title: 'ID' },
+                    { data: 'nombreVia', title: 'Nombre' },
+                    { data: 'descripcion', title: 'Descripción' },
+                    {
+                        data: null,
+                        title: 'Acciones',
+                        render: function (data, type, row) {
+                            return `<button onclick="window.editarViaAdministracion(${row.idViaAdministracion}, '${row.nombreVia}', '${row.descripcion}')" class="btn btn-warning btn-sm">Editar</button>`;
+                        }
+                    }
+                ],
+                language: {
+                    url: '/haras/data/es_es.json'
+                },
+                dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
+                initComplete: function () {
+                    $('#tablaViasAdministracion_wrapper .dataTables_filter').css({
+                        'margin-top': '15px'
+                    });
+
+                    $('#tablaViasAdministracion_wrapper').css({
+                        'padding': '10px'
+                    });
+
+                    console.log("Tabla de Vías de Administración inicializada correctamente.");
+                }
+            });
+        }
+    });
+
+    // Función global para abrir el modal de edición
+    window.editarViaAdministracion = function (id, nombre, descripcion) {
+        // Obtener la instancia del modal de listado y cerrarlo
+        const modalListado = bootstrap.Modal.getInstance(document.getElementById('modalVerViasAdministracion'));
+        if (modalListado) {
+            modalListado.hide();
+        }
+
+        // Rellenar los campos del formulario
+        document.getElementById('editarIdVia').value = id;
+        document.getElementById('editarNombreVia').value = nombre;
+        document.getElementById('editarDescripcionVia').value = descripcion;
+
+        // Abrir el modal de edición
+        const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarViaAdministracion'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        modalEditar.show();
+    };
+
+    // Manejar el formulario de edición
+    document.getElementById('formEditarViaAdministracion').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const id = document.getElementById('editarIdVia').value;
+        const nombre = document.getElementById('editarNombreVia').value.trim();
+        const descripcion = document.getElementById('editarDescripcionVia').value.trim();
+
+        try {
+            const response = await fetch(`../../controllers/historialme.controller.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ operation: 'editarViaAdministracion', id, nombre, descripcion })
+            });
+
+            const result = await response.json();
+            if (result.status === 'success') {
+                showToast('Vía de Administración actualizada con éxito.', 'SUCCESS');
+
+                // Recargar el DataTable
+                $('#tablaViasAdministracion').DataTable().ajax.reload();
+
+                // Cerrar el modal de edición y reabrir el modal listado
+                const modalEditar = bootstrap.Modal.getInstance(document.getElementById('modalEditarViaAdministracion'));
+                if (modalEditar) {
+                    modalEditar.hide();
+                }
+
+                const modalListado = new bootstrap.Modal(document.getElementById('modalVerViasAdministracion'));
+                modalListado.show();
+            } else {
+                showToast('Error al actualizar: ' + result.message, 'ERROR');
+            }
+        } catch (error) {
+            console.error('Error al guardar los cambios:', error);
+            showToast('Ocurrió un error al guardar los cambios.', 'ERROR');
+        }
+    });
+
+
+
+
     loadMedicamentos();
     notificarTratamientosVeterinarios();
 

@@ -197,4 +197,19 @@ class Historialme extends Conexion
             return ['status' => 'error', 'message' => 'Error al agregar vía de administración.'];
         }
     }
+
+
+    // Editar una vía de administración
+    public function editarViaAdministracion($id, $nombre, $descripcion) {
+        try {
+            $query = $this->pdo->prepare("UPDATE ViasAdministracion SET nombreVia = ?, descripcion = ? WHERE idViaAdministracion = ?");
+            $query->execute([$nombre, $descripcion, $id]);
+
+            // Verificar si se actualizó correctamente
+            return $query->rowCount() > 0;
+        } catch (Exception $e) {
+            error_log("Error al editar la vía de administración: " . $e->getMessage());
+            return false;
+        }
+    }
 }

@@ -40,6 +40,27 @@ try {
         $operation = $inputData['operation'] ?? '';
         switch ($operation) {
 
+
+            case 'editarViaAdministracion':
+                $data = json_decode(file_get_contents('php://input'), true);
+    
+                $id = $data['id'] ?? null;
+                $nombre = $data['nombre'] ?? null;
+                $descripcion = $data['descripcion'] ?? null;
+    
+                if (!$id || !$nombre) {
+                    sendResponse('error', 'ID y nombre son obligatorios.');
+                }
+    
+                $success = $historialme->editarViaAdministracion($id, $nombre, $descripcion);
+    
+                if ($success) {
+                    sendResponse('success', 'Vía actualizada correctamente.');
+                } else {
+                    sendResponse('error', 'No se pudo actualizar la vía.');
+                }
+                break;
+
             case 'agregarVia':
                 // Verificar los parámetros recibidos desde el frontend
                 $data = json_decode(file_get_contents('php://input'), true); // Decodificar JSON enviado por el frontend
