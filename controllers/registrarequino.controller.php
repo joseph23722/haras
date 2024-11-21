@@ -81,14 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode(["status" => "error", "message" => "Nacionalidad no especificada."]);
             }
             break;
-
-        case 'registrarHistorialEquino':
-            if (isset($requestBody['idEquino']) && isset($requestBody['descripcion'])) {
-                echo json_encode($controller->registrarHistorialEquino($requestBody));
-            } else {
-                echo json_encode(["status" => "error", "message" => "Faltan parámetros para registrar la campaña."]);
-            }
-            break;
     }
 } else {
     echo json_encode(["status" => "error", "message" => "Método no permitido."]);

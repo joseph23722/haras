@@ -190,7 +190,7 @@ async function registrarHistorialEquino(idEquino, descripcion) {
         descripcion: descripcion
     };
 
-    const response = await fetch('../../controllers/registrarequino.controller.php', {
+    const response = await fetch('../../controllers/historialequino.controller.php', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
