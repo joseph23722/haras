@@ -34,4 +34,33 @@ class Nuevafoto extends Conexion
             return ["status" => "error", "message" => "Error al registrar la fotografía: " . $e->getMessage()];
         }
     }
+
+    // Obtener todas las fotografías de un equino por su idEquino
+    public function ObtenerFotografiasEquino($idEquino)
+    {
+        try {
+            // Llamar al procedimiento almacenado para obtener las fotografías del equino
+            $sql = "CALL spu_listar_fotografias_equinos(?)";
+            $stmt = $this->pdo->prepare($sql);
+
+            // Vincular el parámetro (idEquino) con el procedimiento almacenado
+            $stmt->bindParam(1, $idEquino, PDO::PARAM_INT);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            // Recuperar todas las filas (fotografías) asociadas al idEquino
+            $fotografias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Verificar si se encontraron resultados
+            if ($fotografias) {
+                return ["status" => "success", "fotografias" => $fotografias];
+            } else {
+                return ["status" => "error", "message" => "No se encontraron fotografías para este equino."];
+            }
+        } catch (PDOException $e) {
+            // En caso de error, devolver el mensaje
+            return ["status" => "error", "message" => "Error al obtener las fotografías: " . $e->getMessage()];
+        }
+    }
 }

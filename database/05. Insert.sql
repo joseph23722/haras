@@ -221,6 +221,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
 	(6, 'actualizar-contrasenia', 'S', 'Actualizar Contraseña', 'fas fa-key');
+    
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(2, 'mostrar-foto', 'S', 'Colección de Fotos', 'fa-solid fa-image');
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -255,7 +258,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 18),
     (3, 19),
     (3, 20),
-    (3, 21);
+    (3, 21),
+    (3, 22);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES

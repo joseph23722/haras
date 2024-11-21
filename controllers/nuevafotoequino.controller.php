@@ -5,19 +5,19 @@ $controller = new Nuevafoto();
 
 header("Content-type: application/json; charset=utf-8");
 
-// Verifica si la solicitud es GET o POST
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Caso de operación GET
     if (isset($_GET['operation'])) {
         switch ($_GET['operation']) {
-                /* case 'getAll':
+            case 'listarFotografias':
+                // Verifica si se ha pasado el idEquino como parámetro
                 if (isset($_GET['idEquino'])) {
-                    // Obtener todas las fotografías de un equino
-                    echo json_encode($controller->obtenerFotografiasEquino($_GET['idEquino']));
+                    $idEquino = $_GET['idEquino'];
+                    echo json_encode($controller->ObtenerFotografiasEquino($idEquino)); // Llamada al método para listar las fotos
                 } else {
-                    echo json_encode(["status" => "error", "message" => "ID del equino no especificado."]);
+                    echo json_encode(["status" => "error", "message" => "Falta el parámetro idEquino."]);
                 }
-                break; */
+                break;
 
             default:
                 echo json_encode(["status" => "error", "message" => "Operación no válida."]);
@@ -51,11 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode(["status" => "error", "message" => "Faltan parámetros para registrar la fotografía."]);
             }
             break;
-
-            /*  case 'getAll':
-            echo json_encode($controller->obtenerFotografiasEquino($requestBody['idEquino']));
-            break; */
-
         default:
             echo json_encode(["status" => "error", "message" => "Operación no válida."]);
             break;
