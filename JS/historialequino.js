@@ -60,6 +60,9 @@ document.querySelector("#buscar-equino").addEventListener("click", async functio
         document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
         document.getElementById("pesokg").value = equino.pesokg || 'Por pesar';
 
+        /* Para capturar el idEquino */
+        document.getElementById('idEquino').value = equino.idEquino || '';
+
         const fotografiaField = document.getElementById("fotografia-buscada");
         if (fotografiaField) {
             fotografiaField.value = equino.fotografia || '';

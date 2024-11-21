@@ -143,7 +143,7 @@ CREATE TABLE Equinos (
     CONSTRAINT fk_equino_estado_monta FOREIGN KEY (idEstadoMonta) REFERENCES EstadoMonta(idEstadoMonta),
 	CONSTRAINT fk_equino_nacionalidad FOREIGN KEY (idNacionalidad) REFERENCES nacionalidades(idNacionalidad)
 ) ENGINE = INNODB;
- 
+
 -- POR VERIFICAR E IMPLEMENTAR:
 CREATE TABLE fotografiaequinos 
 (
@@ -510,7 +510,7 @@ CREATE TABLE HistorialEquinos (
     idHistorial				INT PRIMARY KEY AUTO_INCREMENT,
     idEquino 				INT NOT NULL,
     descripcion				TEXT NOT NULL,
-    CONSTRAINT fk_campanapotrillos_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
+    CONSTRAINT fk_idEquino_historial FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
 -- 40. AsistenciaPersonal

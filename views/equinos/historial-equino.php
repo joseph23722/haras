@@ -155,4 +155,3 @@
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script src="../../JS/historialequino.js"></script>
-<script src="../../JS/registro-equino.js"></script>
