@@ -821,6 +821,177 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+
+    // Configurar el DataTable para listar los Tipos de Alimentos y Unidades de Medida
+    document.getElementById("btnListarAlimentos").addEventListener("click", function () {
+        if (!$.fn.DataTable.isDataTable('#tablaAlimentos')) {
+            const dataTable = $('#tablaAlimentos').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/haras/table-ssp/alimentos_datatable.php', // Ruta al archivo PHP con SSP
+                    type: 'GET',
+                    data: function (d) {
+                        console.log("Parámetros enviados al servidor:", d); // Depuración
+                        return d; // DataTables enviará automáticamente los parámetros `start` y `length`
+                    },
+                    dataSrc: function (json) {
+                        if (!json || json.error) {
+                            console.error("Error en la respuesta del servidor:", json.error || "Respuesta vacía.");
+                            return [];
+                        }
+                        return json.data; // DataTables necesita un array en `data`
+                    },
+                    error: function (xhr, error, thrown) {
+                        console.error("Error AJAX:", {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText
+                        });
+                    }
+                },
+                columns: [
+                    { data: 'idTipoAlimento', title: 'ID' },
+                    { data: 'tipoAlimento', title: 'Tipo de Alimento' },
+                    { data: 'unidadMedida', title: 'Unidad de Medida', render: function (data) { return data || 'No especificada'; } },
+                    {
+                        data: null,
+                        title: 'Acciones',
+                        render: function (data, type, row) {
+                            return `<button onclick="editarAlimento(${row.idTipoAlimento}, '${row.tipoAlimento}', '${row.nombreUnidad || ''}')" 
+                                    class="btn btn-warning btn-sm">Editar</button>`;
+                        }
+                    }
+                ],
+                
+                pageLength: 10, // Mostrar 10 registros por página de manera predeterminada
+                lengthMenu: [10, 25], // Opciones para el selector de cantidad
+                order: [[0, 'desc']], // Ordenar por la primera columna (ID) de manera descendente
+                language: {
+                    url: '/haras/data/es_es.json' // Traducción al español
+                },
+                dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
+                initComplete: function () {
+                    // Ajustar espaciado para el cuadro de búsqueda
+                    $('#tablaAlimentos_wrapper .dataTables_filter').css({
+                        'margin-top': '15px'
+                    });
+                    $('#tablaAlimentos_wrapper .dataTables_length').css({
+                        'margin-bottom': '10px'
+                    });
+                    $('#tablaAlimentos_wrapper').css({
+                        'padding': '10px'
+                    });
+                    console.log("Tabla de Alimentos inicializada correctamente con espaciado ajustado.");
+                }
+            });
+        }
+    });
+    
+    
+    
+    // Función para abrir el modal y preparar los datos
+    window.editarAlimento = async function (idTipoAlimentoUnidad, tipoAlimento, idUnidadMedida) {
+        console.log("Datos para edición:", { idTipoAlimentoUnidad, tipoAlimento, idUnidadMedida });
+
+        // Llenar campos del modal
+        document.getElementById("editarIdTipoAlimentoUnidad").value = idTipoAlimentoUnidad;
+        document.getElementById("editarTipoAlimento").value = tipoAlimento;
+
+        const unidadMedidaSelect = document.getElementById("editarUnidadMedida");
+        if (!unidadMedidaSelect) {
+            console.error("El elemento editarUnidadMedida no se encontró en el DOM.");
+            return;
+        }
+
+        try {
+            // Vaciar el select antes de llenarlo
+            unidadMedidaSelect.innerHTML = "";
+
+            // Llamar a la API para cargar las unidades de medida
+            const unidades = await fetch(`../../controllers/alimento.controller.php?operation=obtenerUnidadesMedida&idTipoAlimento=${idTipoAlimentoUnidad}`)
+                .then(response => response.json())
+                .then(data => data.data);
+
+            if (unidades && unidades.length > 0) {
+                unidades.forEach(u => {
+                    const option = document.createElement("option");
+                    option.value = u.idUnidadMedida;
+                    option.text = u.nombreUnidad;
+                    option.selected = u.idUnidadMedida == idUnidadMedida; // Marcar como seleccionado si coincide
+                    unidadMedidaSelect.appendChild(option);
+                });
+            } else {
+                console.warn("No se encontraron unidades de medida.");
+                const defaultOption = document.createElement("option");
+                defaultOption.value = "";
+                defaultOption.text = "No hay unidades disponibles";
+                unidadMedidaSelect.appendChild(defaultOption);
+            }
+        } catch (error) {
+            console.error("Error al cargar las unidades de medida:", error);
+            showToast("Ocurrió un error al cargar las unidades de medida.", "ERROR");
+        }
+
+        // Mostrar el modal
+        const modalEditar = new bootstrap.Modal(document.getElementById("modalEditarAlimento"), {
+            backdrop: "static",
+            keyboard: false,
+        });
+        modalEditar.show();
+    };
+
+    // Manejo del formulario de edición
+    document.getElementById("formEditarAlimento").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const idTipoAlimentoUnidad = document.getElementById("editarIdTipoAlimentoUnidad").value.trim();
+        const tipoAlimento = document.getElementById("editarTipoAlimento").value.trim();
+        const idUnidadMedida = document.getElementById("editarUnidadMedida").value.trim();
+
+        if (!idTipoAlimentoUnidad || !tipoAlimento || !idUnidadMedida) {
+            showToast("Todos los campos son obligatorios.", "ERROR");
+            return;
+        }
+
+        const payload = {
+            operation: "editarTipoYUnidad",
+            idTipoAlimentoUnidad,
+            tipoAlimento,
+            idUnidadMedida,
+        };
+
+        console.log("Datos enviados al servidor:", payload);
+
+        try {
+            const response = await fetch("../../controllers/alimento.controller.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+            if (result.status === "success") {
+                showToast("Registro actualizado con éxito.", "SUCCESS");
+                $("#tablaAlimentos").DataTable().ajax.reload();
+
+                // Cerrar el modal
+                const modalEditar = bootstrap.Modal.getInstance(document.getElementById("modalEditarAlimento"));
+                modalEditar.hide();
+            } else {
+                showToast("Error al actualizar: " + result.message, "ERROR");
+            }
+        } catch (error) {
+            console.error("Error al guardar los cambios:", error);
+            showToast("Ocurrió un error al guardar los cambios.", "ERROR");
+        }
+    });
+
+    
+    
+    
+
+
     cargarLotes();
     cargarTiposAlimento();
     loadAlimentos();

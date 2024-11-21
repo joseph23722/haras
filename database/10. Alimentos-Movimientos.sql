@@ -604,8 +604,53 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- sugerencias 
+DROP PROCEDURE IF EXISTS spu_Listar_TiposYUnidadesAlimentos;
+DELIMITER $$
+CREATE PROCEDURE spu_Listar_TiposYUnidadesAlimentos(
+    IN searchValue VARCHAR(255),
+    IN start INT,
+    IN length INT
+)
+BEGIN
+    -- Obtener los registros paginados
+    SELECT 
+        ta.idTipoAlimento,
+        ta.tipoAlimento,
+        uma.nombreUnidad AS unidadMedida
+    FROM TipoAlimentos ta
+    LEFT JOIN UnidadesMedidaAlimento uma
+        ON 1 = 1 -- Relación manual, muestra todas las unidades
+    WHERE 
+        (searchValue IS NULL OR searchValue = '' OR 
+         ta.tipoAlimento LIKE CONCAT('%', searchValue, '%') OR
+         uma.nombreUnidad LIKE CONCAT('%', searchValue, '%'))
+    ORDER BY ta.idTipoAlimento DESC
+    LIMIT start, length;
+
+    -- Obtener el total de registros filtrados
+    SELECT COUNT(*) AS totalFiltered
+    FROM TipoAlimentos ta
+    LEFT JOIN UnidadesMedidaAlimento uma
+        ON 1 = 1 -- Relación manual
+    WHERE 
+        (searchValue IS NULL OR searchValue = '' OR 
+         ta.tipoAlimento LIKE CONCAT('%', searchValue, '%') OR
+         uma.nombreUnidad LIKE CONCAT('%', searchValue, '%'));
+
+    -- Obtener el total general de registros sin filtros
+    SELECT COUNT(*) AS totalRecords FROM TipoAlimentos;
+END $$
+DELIMITER ;
+
+
+
+
+
+
 -- esto no va es prueba 
 /*
+CALL spu_Listar_TiposYUnidadesAlimentos('', 0, 10);
 -- tipo de equino - alimento ------ 
 DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
 DELIMITER $$

@@ -578,5 +578,68 @@ class Alimento extends Conexion {
 
     //original
 
+    public function listarTiposYUnidadesAlimentos() {
+        try {
+            // Preparar y ejecutar el procedimiento almacenado
+            $query = $this->pdo->prepare("CALL spu_Listar_TiposYUnidadesAlimentos()");
+            $query->execute();
+    
+            // Obtener todas las filas en formato asociativo
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Log para verificar los datos obtenidos
+            error_log("Tipos y Unidades de Alimentos obtenidos: " . json_encode($result));
+    
+            return $result;
+        } catch (PDOException $e) {
+            // Manejo de errores
+            error_log("Error al listar Tipos y Unidades de Alimentos: " . $e->getMessage());
+            return [];
+        }
+    }
+
+
+    public function editarTipoYUnidadEspecifica($idTipoAlimentoUnidad, $tipoAlimento, $idUnidadMedida, $nombreUnidad) {
+        try {
+            // Inicia una transacción
+            $this->pdo->beginTransaction();
+    
+            // Actualiza el tipo de alimento
+            $queryTipo = $this->pdo->prepare("
+                UPDATE TipoAlimentos 
+                SET tipoAlimento = :tipoAlimento 
+                WHERE idTipoAlimento = (
+                    SELECT idTipoAlimento FROM TipoAlimento_UnidadMedida WHERE idTipoAlimentoUnidad = :idTipoAlimentoUnidad
+                )
+            ");
+            $queryTipo->bindParam(':tipoAlimento', $tipoAlimento, PDO::PARAM_STR);
+            $queryTipo->bindParam(':idTipoAlimentoUnidad', $idTipoAlimentoUnidad, PDO::PARAM_INT);
+            $queryTipo->execute();
+    
+            // Actualiza la unidad de medida específica
+            $queryUnidad = $this->pdo->prepare("
+                UPDATE UnidadesMedidaAlimento 
+                SET nombreUnidad = :nombreUnidad 
+                WHERE idUnidadMedida = :idUnidadMedida
+            ");
+            $queryUnidad->bindParam(':nombreUnidad', $nombreUnidad, PDO::PARAM_STR);
+            $queryUnidad->bindParam(':idUnidadMedida', $idUnidadMedida, PDO::PARAM_INT);
+            $queryUnidad->execute();
+    
+            // Confirma la transacción
+            $this->pdo->commit();
+    
+            return ['status' => 'success', 'message' => 'Tipo de alimento y unidad de medida actualizados correctamente.'];
+        } catch (PDOException $e) {
+            $this->pdo->rollBack(); // Revierte la transacción si ocurre un error
+            error_log("Error al actualizar Tipo y Unidad: " . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Error al actualizar Tipo y Unidad.'];
+        }
+    }
+    
+    
+    
+    
+
 
 }

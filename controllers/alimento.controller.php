@@ -22,6 +22,11 @@ try {
 
         switch ($operation) {
 
+            case 'listarTiposYUnidades':
+                $result = $model->listarTiposYUnidadesAlimentos();
+                echo json_encode(['status' => 'success', 'data' => $result]);
+                break;
+
             case 'obtenerTiposAlimento':
                 // Obtener todos los tipos de alimento
                 $result = $alimento->obtenerTiposAlimento();
@@ -120,6 +125,55 @@ try {
         }
 
         switch ($operation) {
+
+
+            case 'editarTipoYUnidad':
+                // Registrar todos los parámetros recibidos
+                error_log("Parámetros recibidos: " . json_encode($_POST));
+            
+                // Verifica si todos los parámetros necesarios están presentes
+                if (
+                    isset($_POST['idTipoAlimentoUnidad']) &&
+                    isset($_POST['tipoAlimento']) &&
+                    isset($_POST['idUnidadMedida']) &&
+                    isset($_POST['nombreUnidad'])
+                ) {
+                    // Recuperar los parámetros
+                    $idTipoAlimentoUnidad = $_POST['idTipoAlimentoUnidad'];
+                    $tipoAlimento = $_POST['tipoAlimento'];
+                    $idUnidadMedida = $_POST['idUnidadMedida'];
+                    $nombreUnidad = $_POST['nombreUnidad'];
+            
+                    // Llama al modelo para realizar la actualización
+                    try {
+                        $result = $alimento->editarTipoYUnidadEspecifica($idTipoAlimentoUnidad, $tipoAlimento, $idUnidadMedida, $nombreUnidad);
+                        echo json_encode($result); // Retorna un JSON válido
+                        exit; // Finaliza la ejecución para evitar múltiples respuestas
+                    } catch (Exception $e) {
+                        error_log("Error al editar Tipo y Unidad: " . $e->getMessage());
+                        echo json_encode(['status' => 'error', 'message' => 'Error interno al procesar la solicitud.']);
+                        exit;
+                    }
+                } else {
+                    // Si faltan parámetros, registra cuáles faltan
+                    $faltantes = [];
+                    if (!isset($_POST['idTipoAlimentoUnidad'])) $faltantes[] = 'idTipoAlimentoUnidad';
+                    if (!isset($_POST['tipoAlimento'])) $faltantes[] = 'tipoAlimento';
+                    if (!isset($_POST['idUnidadMedida'])) $faltantes[] = 'idUnidadMedida';
+                    if (!isset($_POST['nombreUnidad'])) $faltantes[] = 'nombreUnidad';
+            
+                    error_log("Faltan los siguientes parámetros: " . implode(', ', $faltantes));
+            
+                    // Si faltan parámetros, retorna un mensaje de error
+                    echo json_encode(['status' => 'error', 'message' => 'Parámetros incompletos: ' . implode(', ', $faltantes)]);
+                    exit;
+                }
+                break;
+            
+            
+            
+            
+            
 
             case 'agregarTipoUnidadMedidaNuevo':
                 // Verificar que se envíen los parámetros necesarios
