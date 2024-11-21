@@ -77,9 +77,60 @@ document.querySelector("#buscar-equino").addEventListener("click", async functio
     }
 });
 
+// SE CONECTA CON EL CLOUDINARY Y LA FUNCION ESPERA PARA PODER ENVIAR EL public_id
+const myWidget = cloudinary.createUploadWidget({
+    // Credenciales propias
+    cloudName: "dtbhq7drd",
+    uploadPreset: "upload-image-test",
+}, async (error, result) => {
+    if (!error && result && result.event === "success") {
+        const public_id = result.info.public_id;
+        console.log("Public ID de la imagen:", public_id); /* Muestra en consola el public_id almacenado */
+
+        // Guardar el public_id en el campo hidden
+        $('#foto-nueva').val(public_id);
+    }
+});
+
+document.getElementById("upload_button").addEventListener(
+    "click",
+    function () {
+        myWidget.open();
+    },
+    false
+);
+
 // Manejo de la carga de fotografía y no se envíe el formulario para que no muestre alerta
 document.getElementById('upload_button').addEventListener('click', function () {
 });
+
+// Función para registrar la nueva foto
+async function registrarNuevaFoto(public_id, idEquino) {
+    try {
+        const response = await fetch('../../controllers/nuevafotoequino.controller.php', {
+            method: 'POST',
+            body: JSON.stringify({
+                operation: 'registrarNuevasFotos',
+                public_id: public_id,
+                idEquino: idEquino
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            showToast("Foto registrada correctamente.", 'SUCCESS');
+        } else {
+            showToast("Error al registrar la foto.", 'ERROR');
+        }
+    } catch (error) {
+        console.error("Error en la función registrarNuevaFoto:", error);
+        showToast("Hubo un problema al registrar la foto.", 'ERROR');
+    }
+}
+
 
 // Al enviar el formulario de historial
 document.querySelector("#form-historial-equino").addEventListener("submit", async function (event) {
@@ -94,6 +145,13 @@ document.querySelector("#form-historial-equino").addEventListener("submit", asyn
     if (!descripcionSinEspacios) {
         showToast("La descripción es obligatoria y no puede estar vacía.", 'ERROR');
         return;
+    }
+
+    const public_id = document.getElementById('foto-nueva').value;
+
+    // Si hay una foto seleccionada, registrar la foto primero
+    if (public_id) {
+        await registrarNuevaFoto(public_id, idEquino);
     }
 
     // Confirmación de registro
