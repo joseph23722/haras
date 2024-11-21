@@ -24,9 +24,16 @@ class HistorialEquino extends Conexion
 
             $stmt->execute();
 
+            // Si todo fue bien
             return ["status" => "success", "message" => "Historial registrado exitosamente."];
         } catch (PDOException $e) {
-            return ["status" => "error", "message" => "Error al registrar el historial: " . $e->getMessage()];
+            // Verificamos si el error es el lanzado por MySQL con SQLSTATE 45000
+            if ($e->getCode() == '45000') {
+                // Captura el mensaje lanzado por el procedimiento almacenado
+                return ["status" => "error", "message" => $e->getMessage()];
+            } else {
+                return ["status" => "error", "message" => "Error al registrar el historial: " . $e->getMessage()];
+            }
         }
     }
 }
