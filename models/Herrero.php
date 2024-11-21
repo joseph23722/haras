@@ -198,6 +198,56 @@ class Herrero extends Conexion {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
+    // Función para listar tipos y herramientas
+    public function listarTiposYHerramientas() {
+        try {
+            $query = $this->pdo->prepare("CALL spu_ListarTiposYHerramientas()");
+            $query->execute();
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Log para verificar los datos obtenidos de la base de datos
+            error_log("Datos obtenidos de la base de datos: " . json_encode($result));
+    
+            return $result;
+        } catch (Exception $e) {
+            error_log("Error al listar tipos y herramientas: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    
+
+    // Función para editar tipo o herramienta
+    public function editarTipoOHerramienta($id, $nombre, $tipo) {
+        try {
+            if ($tipo === 'Tipo de Trabajo') {
+                $query = $this->pdo->prepare("UPDATE TiposTrabajos SET nombreTrabajo = ? WHERE idTipoTrabajo = ?");
+            } else if ($tipo === 'Herramienta') {
+                $query = $this->pdo->prepare("UPDATE Herramientas SET nombreHerramienta = ? WHERE idHerramienta = ?");
+            } else {
+                throw new Exception("Tipo no válido.");
+            }
+    
+            $query->execute([$nombre, $id]);
+    
+            if ($query->rowCount() === 0) {
+                error_log("No se actualizaron filas: id=$id, nombre=$nombre, tipo=$tipo");
+            }
+    
+            return $query->rowCount() > 0;
+        } catch (Exception $e) {
+            error_log("Error en editarTipoOHerramienta: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    
+    
+
+
+    
+
     
 
 

@@ -60,9 +60,24 @@ try {
                 }
                 break;
             
+            case 'listarTiposYHerramientas':
+                try {
+                    $tiposYHerramientas = $herrero->listarTiposYHerramientas(); // Llamada al método de la clase `herrero`
+                    if ($tiposYHerramientas) {
+                        // Log para verificar los datos enviados al cliente
+                        error_log("Datos enviados al cliente: " . json_encode($tiposYHerramientas));
+                        sendResponse('success', 'Datos listados correctamente (Tipos y Herramientas).', $tiposYHerramientas);
+                    } else {
+                        sendResponse('error', 'No se pudieron obtener los datos.');
+                    }
+                } catch (PDOException $e) {
+                    sendResponse('error', 'Error al obtener los datos: ' . $e->getMessage());
+                }
+                break;
+                
+                
             
-            
-
+        
             case 'listarEquinosPorTipo':
                 // Llamada al método para listar equinos por tipo
                 $result = $herrero->listarEquinosPorTipo();
@@ -95,6 +110,42 @@ try {
         }
     } elseif ($method === 'POST') {
         switch ($operation) {
+
+            case 'editarTipoOHerramienta':
+                error_log("Operación: editarTipoOHerramienta iniciada.");
+            
+                $data = json_decode(file_get_contents('php://input'), true);
+                $id = $data['id'] ?? null;
+                $nombre = $data['nombre'] ?? '';
+                $tipo = $data['tipo'] ?? '';
+            
+                // Validar los datos
+                if (!$id || !$nombre || !$tipo) {
+                    error_log("Datos faltantes: id=$id, nombre=$nombre, tipo=$tipo");
+                    sendResponse('error', 'Todos los campos son requeridos para la actualización.');
+                    exit;
+                }
+            
+                try {
+                    $result = $herrero->editarTipoOHerramienta($id, $nombre, $tipo);
+            
+                    if ($result) {
+                        error_log("Registro actualizado correctamente.");
+                        sendResponse('success', 'El registro fue actualizado correctamente.');
+                    } else {
+                        error_log("No se pudo actualizar el registro. Verifica los datos.");
+                        sendResponse('error', 'No se pudo actualizar el registro. Verifica los datos.');
+                    }
+                } catch (Exception $e) {
+                    error_log("Error al procesar la solicitud: " . $e->getMessage());
+                    sendResponse('error', 'Error al procesar la solicitud: ' . $e->getMessage());
+                }
+                break;
+            
+            
+            
+
+            
             case 'insertarHistorialHerrero':
                 $params = json_decode(file_get_contents('php://input'), true);
                 if (empty($params)) {

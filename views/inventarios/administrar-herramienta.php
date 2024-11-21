@@ -8,14 +8,24 @@
         <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial de Herrero</h5>
             <!-- Botón para abrir el modal de agregar trabajo o herramienta -->
-            <!-- Botón para abrir el modal de agregar trabajo o herramienta -->
             <button type="button" class="btn btn-success btn-sm" 
-                    style="background-color: #28a745; border: none; position: absolute; right: 1px; top: 1px; padding: 6px 1px; font-size: 1.2em;"
+                    style="background-color: #28a745; border: none; position: absolute; right: 58px; top: 1px; padding: 11px 15px; font-size: 1.2em;"
                     id="btnAgregarTrabajoHerramienta" 
                     data-bs-toggle="modal" 
                     data-bs-target="#modalAgregarTrabajoHerramienta">
-                <i class="fas fa-plus"></i> Agregar Trabajo o Herramienta
+                <i class="fas fa-plus"></i>
             </button>
+
+            <!-- Botón para abrir el modal de Tipos y Herramientas -->
+            <button type="button" class="btn btn-info btn-sm" 
+                    style="background-color: #17a2b8; border: none; position: absolute; right: 0.5px; top: 1px; padding: 11px 15px; font-size: 1.2em; color: #fff;"
+                    id="btnTiposYHerramientas" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#modalTiposYHerramientas">
+                <i class="fas fa-tools"></i>
+            </button>
+
+
 
         </div>
 
@@ -158,6 +168,87 @@
     </div>
 
 
+
+    <!-- Modal para mostrar la lista de Tipos y Herramientas -->
+    <div class="modal fade" id="modalTiposYHerramientas" tabindex="-1" aria-labelledby="modalTiposYHerramientasLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background: #f9fafb; border-radius: 15px; color: #333;">
+                <div class="modal-header" style="border-bottom: 3px solid #00b894;">
+                    <h5 class="modal-title fw-bold" id="modalTiposYHerramientasLabel" style="color: #0984e3;">
+                        <i class="fas fa-tools me-2" style="color: #0984e3;"></i> Tipos y Herramientas
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" style="padding: 20px;">
+                    <!-- Tabla manejada por DataTables -->
+                    <div class="table-responsive">
+                        <table id="tablaHerrero" class="table table-hover table-bordered text-center" style="width:100%; border: 1px solid #dfe6e9;">
+                            <thead style="background: linear-gradient(to right, #74b9ff, #55efc4); color: white;">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 3px solid #00b894;">
+                    <button type="button" class="btn btn-secondary" style="background: #dfe6e9; border: none; color: #2d3436;" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar un registro -->
+    <div class="modal fade" id="modalEditarTipoHerramienta" tabindex="-1" aria-labelledby="modalEditarTipoHerramientaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" style="background: #ffffff; border-radius: 15px; color: #333;">
+                <div class="modal-header" style="border-bottom: 3px solid #fdcb6e;">
+                    <h5 class="modal-title fw-bold" id="modalEditarTipoHerramientaLabel" style="color: #fd9644;">
+                        <i class="fas fa-edit me-2"></i> Editar Tipo o Herramienta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" style="padding: 20px;">
+                    <form id="formEditarTipoHerramienta" class="needs-validation" novalidate>
+                        <input type="hidden" id="editarId"> <!-- Campo oculto para el ID -->
+                        <div class="mb-3">
+                            <label for="editarNombre" class="form-label" style="color: #2d3436;">
+                                <i class="fas fa-font me-1"></i> Nombre
+                            </label>
+                            <input type="text" class="form-control shadow-sm" id="editarNombre" style="border: 2px solid #55efc4;" required>
+                            <div class="invalid-feedback" style="color: #d63031;">Por favor, ingrese el nombre.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarTipo" class="form-label" style="color: #2d3436;">
+                                <i class="fas fa-tags me-1"></i> Tipo
+                            </label>
+                            <input type="text" class="form-control shadow-sm" id="editarTipo" style="border: 2px solid #74b9ff;" readonly>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary" style="background: #6c5ce7; border: none; color: white;">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
     <!-- Tabla para DataTable -->
     <div class="card mt-4">
         <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
@@ -201,4 +292,3 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
 <script src="../../swalcustom.js"></script>
 <script src="../../JS/administrar-herramienta.js"></script>
-

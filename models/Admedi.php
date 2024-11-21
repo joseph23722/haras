@@ -309,7 +309,6 @@ class Admi extends Conexion {
 
 
     // Método para agregar una nueva combinación de medicamento
-    // Método para agregar una nueva combinación de medicamento
     public function agregarCombinacionMedicamento($tipo, $presentacion, $unidad, $dosis)
     {
         try {
@@ -331,10 +330,6 @@ class Admi extends Conexion {
     }
 
 
-
-
-    
- 
     // editar segurencia de medicamento
     public function editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad) {
         try {
@@ -418,11 +413,6 @@ class Admi extends Conexion {
     
     
     
-    
-    
-    
-    
-
 
 
     // Validar presentación y dosis del medicamento

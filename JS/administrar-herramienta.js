@@ -238,7 +238,6 @@ function registrarHistorialHerrero() {
 }
 
 
-
 // Guardar nuevo Trabajo o Herramienta
 const guardarTrabajoHerramienta = async () => {
     const inputNombre = document.getElementById("inputNombre");
@@ -300,6 +299,135 @@ const guardarTrabajoHerramienta = async () => {
         mensajeModal.innerHTML = '<p class="text-danger">Error al enviar los datos al servidor.</p>';
     }
 };
+
+
+
+document.getElementById("btnTiposYHerramientas").addEventListener("click", function () {
+    console.log("Clic en el botón para abrir la tabla de Tipos y Herramientas.");
+
+    if (!$.fn.DataTable.isDataTable('#tablaHerrero')) {
+        console.log("Inicializando DataTables...");
+
+        $('#tablaHerrero').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/haras/table-ssp/herrero_datatable.php',
+                type: 'GET',
+                beforeSend: function () {
+                    console.log("Enviando solicitud AJAX...");
+                },
+                dataSrc: function (json) {
+                    console.log("Respuesta JSON del servidor:", json);
+
+                    if (!json || json.error) {
+                        console.error("Error en la respuesta del servidor:", json.error || "Respuesta vacía.");
+                        return [];
+                    }
+
+                    return json.data;
+                },
+                error: function (xhr, error, thrown) {
+                    console.error("Error AJAX:", {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText
+                    });
+                }
+            },
+            columns: [
+                { data: 'id', title: 'ID' },
+                { data: 'nombre', title: 'Nombre' },
+                { data: 'tipo', title: 'Tipo' },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    render: function (data, type, row) {
+                        return `<button onclick="editarTipoOHerramienta(${row.id}, '${row.nombre}', '${row.tipo}')" class="btn btn-warning btn-sm">Editar</button>`;
+                    }
+                }
+            ],
+            language: {
+                url: '/haras/data/es_es.json'
+            },
+            dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
+            initComplete: function () {
+                console.log("Tabla inicializada correctamente.");
+            }
+        });
+    }
+});
+
+
+
+// Función para abrir el modal de edición y cerrar el de listado
+function editarTipoOHerramienta(id, nombre, tipo) {
+    console.log("Editar registro:", { id, nombre, tipo });
+
+    // Llenar los campos del formulario en el modal de edición
+    document.getElementById('editarId').value = id;
+    document.getElementById('editarNombre').value = nombre;
+    document.getElementById('editarTipo').value = tipo;
+
+    // Cerrar el modal de listado (si está abierto)
+    const modalListado = bootstrap.Modal.getInstance(document.getElementById('modalTiposYHerramientas'));
+    if (modalListado) {
+        modalListado.hide();
+    }
+
+    // Abrir el modal de edición
+    const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarTipoHerramienta'));
+    modalEditar.show();
+}
+
+// Editar Tipo o Herramienta
+document.getElementById('formEditarTipoHerramienta').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const id = document.getElementById('editarId').value;
+    const nombre = document.getElementById('editarNombre').value;
+    const tipo = document.getElementById('editarTipo').value;
+
+    try {
+        console.log("Datos que se enviarán al servidor:");
+        console.log({ operation: 'editarTipoOHerramienta', id, nombre, tipo });
+
+        console.log("Enviando datos al servidor para guardar cambios...");
+        const response = await fetch(`../../controllers/herrero.controller.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ operation: 'editarTipoOHerramienta', id, nombre, tipo })
+        });
+
+        const responseText = await response.text();
+        console.log("Respuesta como texto:", responseText);
+
+        const result = JSON.parse(responseText);
+        console.log("Resultado del guardado (JSON):", result);
+
+        if (result.status === 'success') {
+            // Mostrar mensaje de éxito con showToast
+            showToast('Registro actualizado correctamente.', 'SUCCESS');
+
+            // Cerrar el modal de edición
+            const modalEditar = bootstrap.Modal.getInstance(document.getElementById('modalEditarTipoHerramienta'));
+            if (modalEditar) {
+                modalEditar.hide();
+            }
+
+            // Recargar la tabla del listado sin recargar toda la página
+            $('#tablaHerrero').DataTable().ajax.reload();
+        } else {
+            showToast(`Error: ${result.message}`, 'ERROR');
+        }
+    } catch (error) {
+        console.error("Error al guardar los cambios:", error);
+        showToast(`Ocurrió un error al guardar los cambios: ${error.message}`, 'ERROR');
+    }
+});
+
+
+
 
 // Asignar evento al botón de guardar
 const btnGuardarTrabajoHerramienta = document.getElementById("btnGuardarTrabajoHerramienta");

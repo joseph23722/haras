@@ -420,6 +420,8 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- sugerencias
+call spu_listar_tipos_presentaciones_dosis() ;
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_presentaciones_dosis`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
@@ -444,6 +446,7 @@ BEGIN
         t.tipo ASC;  -- Ordena por tipo de medicamento
 END $$
 DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_unicos`;
 DELIMITER $$
