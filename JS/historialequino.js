@@ -132,38 +132,90 @@ async function registrarNuevaFoto(public_id, idEquino) {
 }
 
 
-// Al enviar el formulario de historial
+/* Formulario de Historial */
 document.querySelector("#form-historial-equino").addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const idEquino = document.getElementById('idEquino').value;
     const descripcion = quill.root.innerHTML;
+    const fotoNueva = document.getElementById('foto-nueva').value;
 
-    // Verificar si el campo Quill está vacío o solo tiene espacios
+    // Verificar si la descripción está vacía o solo tiene espacios
     const descripcionSinEspacios = descripcion.replace(/<[^>]+>/g, '').trim();
 
-    if (!descripcionSinEspacios) {
-        showToast("La descripción es obligatoria y no puede estar vacía.", 'ERROR');
+    if (!descripcionSinEspacios && !fotoNueva) {
+        showToast("Porfavor inserte datos", 'ERROR');
         return;
     }
 
-    const public_id = document.getElementById('foto-nueva').value;
+    // Si la descripción está vacía y hay foto, solo enviar la foto
+    if (!descripcionSinEspacios && fotoNueva) {
+        const confirmarFoto = await ask('¿Está seguro de que desea registrar la foto?');
 
-    // Si hay una foto seleccionada, registrar la foto primero
-    if (public_id) {
-        await registrarNuevaFoto(public_id, idEquino);
+        if (confirmarFoto) {
+            await registrarNuevaFoto(idEquino, fotoNueva);
+            showToast("Fotografía registrada correctamente.", 'SUCCESS');
+        }
+        return;
     }
 
-    // Confirmación de registro
-    const confirmar = await ask("¿Está seguro de que desea registrar el historial?");
-    if (confirmar) {
-        const data = {
-            operation: 'registrarHistorialEquino',
-            idEquino: idEquino,
-            descripcion: descripcion
-        };
+    // Si la foto está vacía y hay descripción, solo registrar el historial
+    if (descripcionSinEspacios && !fotoNueva) {
+        const confirmarHistorial = await ask('¿Está seguro de que desea registrar el historial?');
 
-        const response = await fetch('../../controllers/registrarequino.controller.php', {
+        if (confirmarHistorial) {
+            await registrarHistorialEquino(idEquino, descripcion);
+            showToast("Historial registrado correctamente.", 'SUCCESS');
+        }
+        return;
+    }
+
+    // Si ambos tienen datos, registrar ambos con confirmación
+    if (descripcionSinEspacios && fotoNueva) {
+        const confirmarAmbos = await ask('¿Está seguro de que desea registrar el historial y la foto?');
+
+        if (confirmarAmbos) {
+            await registrarHistorialEquino(idEquino, descripcion);
+            await registrarNuevaFoto(idEquino, fotoNueva);
+            showToast("Historial y fotografía registrados correctamente.", 'SUCCESS');
+        }
+    }
+});
+
+// Función para registrar el historial
+async function registrarHistorialEquino(idEquino, descripcion) {
+    const data = {
+        operation: 'registrarHistorialEquino',
+        idEquino: idEquino,
+        descripcion: descripcion
+    };
+
+    const response = await fetch('../../controllers/registrarequino.controller.php', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    const result = await response.json();
+    if (result.status === 'success') {
+        showToast("Historial registrado correctamente.", 'SUCCESS');
+    } else {
+        showToast("Error al registrar el historial.", 'ERROR');
+    }
+}
+
+// Función para registrar la foto
+async function registrarNuevaFoto(idEquino, public_id) {
+    const data = {
+        operation: 'registrarNuevasFotos',
+        idEquino: idEquino,
+        public_id: public_id
+    };
+
+    try {
+        const response = await fetch('../../controllers/nuevafotoequino.controller.php', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -172,11 +224,13 @@ document.querySelector("#form-historial-equino").addEventListener("submit", asyn
         });
 
         const result = await response.json();
-
         if (result.status === 'success') {
-            showToast("Historial registrado correctamente.", 'SUCCESS');
+            showToast("Fotografía registrada correctamente.", 'SUCCESS');
         } else {
-            showToast("Error al registrar el historial.", 'ERROR');
+            showToast("Error al registrar la fotografía.", 'ERROR');
         }
+    } catch (error) {
+        console.error("Error en la función registrarNuevaFoto:", error);
+        showToast("Error al registrar la fotografía.", 'ERROR');
     }
-});
+}
