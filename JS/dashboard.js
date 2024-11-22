@@ -13,21 +13,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function cargarDatosDashboard() {
     // Servicios Realizados este Mes
+    // Realiza la solicitud fetch para obtener los datos del backend
     fetch('../../controllers/dashboard.controller.php?action=servicios_mensual&meta=100')
-        .then(response => validarRespuestaJSON(response))
+        .then(response => response.json())  // Asegúrate de que la respuesta sea JSON
         .then(data => {
+            console.log('Respuesta del servidor:', data);  // Verifica la respuesta completa
+            
             if (data) {
+                // Actualiza el total de servicios realizados
                 const totalServiciosMesElement = document.querySelector(".text-accent");
                 if (totalServiciosMesElement) {
                     totalServiciosMesElement.textContent = data.totalServiciosRealizados || 0;
                 }
+
+                // Actualiza el porcentaje de progreso
                 const progressBar = document.querySelector(".progress-bar");
                 if (progressBar) {
                     progressBar.style.width = `${data.porcentajeProgreso || 0}%`;
                     progressBar.textContent = `${data.porcentajeProgreso || 0}%`;
                     progressBar.setAttribute('aria-valuenow', data.porcentajeProgreso || 0);
                 }
-                actualizarGraficoLineal(data.seriesMensual || []);
+
+                // Si no hay datos para seriesMensual, generamos un gráfico con el total de servicios realizados
+                let dataSeries = [data.totalServiciosRealizados, 0, 0, 0, 0, 0, 0];  // Usamos el total de servicios realizados, y el resto con 0
+
+                // Actualizamos el gráfico
+                actualizarGraficoLineal(dataSeries);
             }
         })
         .catch(error => console.error("Error fetching servicios_mensual:", error));
@@ -225,40 +236,62 @@ function validarRespuestaJSON(response) {
     });
 }
 
+
 // Función para actualizar el gráfico de línea de Servicios Realizados Mensualmente
 function actualizarGraficoLineal(dataSeries) {
+    // Verifica si los datos de la serie están vacíos
+    if (dataSeries.length === 0) {
+        console.error('No hay datos para el gráfico.');
+        return;  // Si no hay datos, no intentamos renderizar el gráfico
+    }
+
     const salesCtx = document.getElementById('salesLineChart').getContext('2d');
+    
+    // Etiquetas para semanas del mes
+    const semanasDelMes = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5'];
+
     new Chart(salesCtx, {
-        type: 'line',
+        type: 'line',  // Tipo de gráfico: línea
         data: {
-            labels: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+            labels: semanasDelMes,  // Semanas del mes
             datasets: [{
-                data: dataSeries,
-                borderColor: '#34c38f',
-                backgroundColor: 'rgba(52, 195, 143, 0.1)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true,
+                data: dataSeries,  // Los datos reales pasados desde PHP
+                borderColor: '#34c38f',  // Color de la línea
+                backgroundColor: 'rgba(52, 195, 143, 0.1)',  // Color de fondo debajo de la línea
+                borderWidth: 2,  // Ancho de la línea
+                tension: 0.4,  // Curvatura de la línea
+                fill: true,  // Llenado debajo de la línea
             }]
         },
         options: {
             plugins: {
                 legend: {
-                    display: false
+                    display: false  // Ocultar la leyenda
                 }
             },
             scales: {
                 x: {
-                    display: false
+                    display: true,  // Mostrar el eje X
+                    ticks: {
+                        maxRotation: 90,  // Rota las etiquetas del eje X si es necesario
+                        minRotation: 45,
+                    }
                 },
                 y: {
-                    display: false
+                    display: true,  // Mostrar el eje Y
+                    ticks: {
+                        beginAtZero: true  // Comenzar desde cero en el eje Y
+                    }
                 }
             },
-            animation: animationOptions
+            animation: { 
+                duration: 1000,  // Duración de la animación
+                easing: 'easeOutQuart'  // Efecto de animación de la línea
+            }
         }
     });
 }
+
 
 // Función para actualizar el gráfico de barras de Servicios PROPIOS Y MIXTOS
 function actualizarGraficoBarra(serviciosPropios, serviciosMixtos) {
@@ -287,12 +320,28 @@ function actualizarGraficoBarra(serviciosPropios, serviciosMixtos) {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false // Desactivar leyenda
+                    display: false
+                }
+            },
+            barPercentage: 0.5, // Establecer el porcentaje de la barra
+            borderRadius: 8, // Bordes redondeados
+
+            // Configuración de la animación y transición
+            animation: {
+                duration: 1500,  // Duración de la animación en milisegundos
+                easing: 'easeOutBounce', // Tipo de animación (rebote al final)
+                onComplete: function() {
+                    // Llamar a cualquier función adicional al completar la animación (opcional)
+                    console.log('Animación completada');
                 }
             }
         }
     });
 }
+
+
+
+// Función para actualizar el gráfico de barras de Alimentos
 // Función para actualizar el gráfico de barras de Alimentos
 function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnStockList, alimentosBajaCantidadList) {
     const ctx = document.getElementById("earningsBarChart").getContext("2d");
@@ -340,12 +389,27 @@ function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnSt
                 y: {
                     beginAtZero: true
                 }
-            }
+            },
+            animation: {
+                duration: 1500,  // Duración de la animación en milisegundos (1.5 segundos)
+                easing: 'easeOutBounce', // Efecto de rebote en la animación
+                onComplete: function() {
+                    // Llamada de función opcional cuando la animación se completa
+                    console.log('Animación completada');
+                }
+            },
+            barPercentage: 0.5, // Porcentaje de la barra
+            borderRadius: 8, // Bordes redondeados de las barras
         }
     };
-    new Chart(ctx, config);
+
+    new Chart(ctx, config);  // Crear y renderizar el gráfico
 }
 
+
+
+
+// Función para actualizar el gráfico circular de Medicamentos
 // Función para actualizar el gráfico circular de Medicamentos
 function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentosEnStockList, medicamentosCriticosList) {
     const ctx = document.getElementById("supportDonutChart").getContext("2d");
@@ -361,7 +425,7 @@ function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentos
     };
 
     const config = {
-        type: 'doughnut',
+        type: 'doughnut',  // Tipo de gráfico: donut (circular)
         data: data,
         options: {
             responsive: true,
@@ -386,8 +450,13 @@ function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentos
             },
             cutout: '80%', // Ajustar el tamaño del agujero central del gráfico donut
             animation: {
-                animateRotate: true,
-                animateScale: true
+                animateRotate: true, // Habilitar animación de rotación
+                animateScale: true,  // Habilitar animación de escala (expandir/contraer)
+                duration: 1500,  // Duración de la animación (1.5 segundos)
+                easing: 'easeOutBounce',  // Efecto de rebote al final de la animación
+                onComplete: function() {
+                    console.log('Animación completada'); // Acción cuando la animación termina
+                }
             }
         }
     };
