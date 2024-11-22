@@ -8,7 +8,7 @@ INSERT INTO UnidadesMedidaAlimento (nombreUnidad) VALUES
     ('paca'),      -- Pacas, ID 6
     ('cubeta'),    -- Cubetas, ID 7
     ('fardo'),     -- Fardos, ID 8
-    ('saco'),      -- Sacos, ID 9
+    ('sacos'),      -- Sacos, ID 9
     ('bloque'),    -- Bloques, ID 10
     ('mg'),        -- Miligramos, ID 11
     ('cc'),        -- Centímetros cúbicos, ID 12
@@ -16,7 +16,7 @@ INSERT INTO UnidadesMedidaAlimento (nombreUnidad) VALUES
     ('cápsula'),   -- Cápsulas, ID 14
     ('ración'),    -- Raciones, ID 15
     ('dosificador'); -- Dosificador, ID 16
-
+    
 -- Tipos de Alimentos
 INSERT INTO TipoAlimentos (tipoAlimento) VALUES 
     ('Forrajes'),                            -- ID 1

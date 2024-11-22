@@ -421,8 +421,6 @@ CREATE TABLE Entrenamientos (
 ) ENGINE = INNODB;
 
 
-
-
 -- 31. tipos de trabajo (herreo)
 CREATE TABLE TiposTrabajos (
     idTipoTrabajo INT PRIMARY KEY AUTO_INCREMENT,
@@ -487,6 +485,7 @@ CREATE TABLE RotacionCampos (
     fechaRotacion 			DATETIME NULL,
     estadoRotacion 			VARCHAR(50) NOT NULL,
     detalleRotacion 		TEXT,
+	fotografia				VARCHAR(255) NULL,
     CONSTRAINT fk_rotacioncampo_campo FOREIGN KEY (idCampo) REFERENCES Campos(idCampo),
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
 ) ENGINE = INNODB;
