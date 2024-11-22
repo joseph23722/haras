@@ -35,8 +35,22 @@ CREATE PROCEDURE spu_registrar_historial_equinos(
     IN p_descripcion TEXT
 )
 BEGIN
-    INSERT INTO HistorialEquinos (idEquino, descripcion)
-    VALUES (p_idEquino, p_descripcion);
+    DECLARE historial_existe INT;
+
+    -- Verificamos si ya existe un historial para el equino
+    SELECT COUNT(*) 
+    INTO historial_existe
+    FROM HistorialEquinos
+    WHERE idEquino = p_idEquino;
+
+    -- Si ya existe un historial, enviamos un mensaje de error
+    IF historial_existe > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un historial para este equino';
+    ELSE
+        -- Si no existe un historial, procedemos con la inserción
+        INSERT INTO HistorialEquinos (idEquino, descripcion)
+        VALUES (p_idEquino, p_descripcion);
+    END IF;
 END $$
 DELIMITER ;
 

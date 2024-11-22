@@ -91,6 +91,7 @@
                                         <span><i class="fas fa-camera" style="color: #007bff;"></i> Añadir Fotografía</span>
                                     </button>
                                     <input type="file" id="fotografia" name="fotografia" accept="image/*" style="display: none;">
+                                    <input type="hidden" id="foto-nueva" name="foto-nueva">
                                 </div>
                             </div>
                         </div>
@@ -155,4 +156,3 @@
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script src="../../JS/historialequino.js"></script>
-<script src="../../JS/registro-equino.js"></script>
