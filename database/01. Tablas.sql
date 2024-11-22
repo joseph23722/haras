@@ -61,7 +61,6 @@ CREATE TABLE Personal (
     direccion 			VARCHAR(255) NOT NULL,
     tipodoc 			VARCHAR(20) NOT NULL,
     nrodocumento 		VARCHAR(50) NOT NULL UNIQUE,
-    numeroHijos 		INT NOT NULL,
     fechaIngreso 		DATE  NOT NULL,
     fechaSalida			DATE NULL,
 	tipoContrato 		ENUM('Parcial', 'Completo', 'Por Prácticas', 'Otro') NOT NULL

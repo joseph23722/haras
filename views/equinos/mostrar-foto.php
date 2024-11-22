@@ -7,10 +7,10 @@
     </h1>
 
     <div class="card mb-4 shadow-lg border-0">
-        <div class="card-header text-center" style="background: linear-gradient(90deg, #a0ffb8, #9be8e4); color: #003366;">
-            <h5 class="m-0" style="font-weight: bold;">
-                <i class="fas fa-info-circle" style="color: #3498db;"></i> Información del Equino
-            </h5>
+        <div class="card-header text-start" style="background: linear-gradient(90deg, #a0ffb8, #9be8e4); color: #003366;">
+            <h6 class="m-0" style="font-weight: bold;">
+                <i class="fas fa-info-circle" style="color: #3498db;"></i> NOTA: Busque a un Equino por su Nombre para cargar las imágenes respectivas
+            </h6>
         </div>
 
         <div class="card-body" style="background-color: #f7f9fc;">
