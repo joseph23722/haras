@@ -369,7 +369,8 @@
 
                 <!-- Cuerpo del Modal -->
                 <div class="modal-body">
-                    <table class="table table-hover table-bordered mt-3">
+                    <!-- Tabla para DataTables -->
+                    <table id="tablaSugerencias" class="table table-hover table-bordered mt-3" style="width: 100%;">
                         <thead class="table-light">
                             <tr class="text-center">
                                 <th>Tipo de Medicamento</th>
@@ -378,9 +379,6 @@
                                 <th>Acciones</th> <!-- Nueva columna para acciones -->
                             </tr>
                         </thead>
-                        <tbody id="sugerenciasTableBody">
-                            <!-- Aquí se insertarán las sugerencias dinámicamente -->
-                        </tbody>
                     </table>
                 </div>
 
@@ -391,6 +389,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Modal para Editar Sugerencia de Medicamento -->
     <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel" data-bs-backdrop="static" data-bs-keyboard="false">

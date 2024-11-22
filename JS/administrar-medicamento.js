@@ -83,128 +83,126 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // Evento para el botón de sugerencias
-    async function cargarSugerencias() {
-        try {
-            // Hacer la solicitud al servidor para obtener todas las sugerencias usando GET
-            const response = await fetch(`../../controllers/admedi.controller.php?operation=listarSugerenciasMedicamentos`, {
-                method: "GET",
-            });
-
-            const result = await response.json();
-
-            if (result.status === "success") {
-                // Limpiar el contenido anterior de la tabla
-                const tableBody = document.getElementById('sugerenciasTableBody');
-                tableBody.innerHTML = '';
-
-                // Iterar sobre las sugerencias y agregarlas a la tabla con botón de edición
-                result.data.forEach(sugerencia => {
-                    console.log(sugerencia);
-
-                    const row = `
-                        <tr>
-                            <td>${sugerencia.tipo}</td>
-                            <td>${sugerencia.presentaciones}</td>
-                            <td>${sugerencia.dosis}</td>
-                            <td>
-                                <button onclick="editarSugerencia(${sugerencia.idCombinacion}, '${sugerencia.tipo}', '${sugerencia.presentaciones}', '${sugerencia.dosis}')" class="btn btn-warning btn-sm">
-                                    Editar
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-
-            } else {
-                alert("Error: " + result.message);
+    $(document).ready(function () {
+        // Configurar DataTable para sugerencias de medicamentos
+        const tablaSugerencias = $('#tablaSugerencias').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/haras/table-ssp/medicamento_datatable.php',
+                type: "GET",
+                error: function (xhr, error, thrown) {
+                    console.error("Error al cargar las sugerencias:", {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText
+                    });
+                }
+            },
+            columns: [
+                { data: 'tipo', title: 'Tipo de Medicamento' },
+                { data: 'presentaciones', title: 'Presentaciones' },
+                { data: 'dosis', title: 'Dosis' },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    render: function (data, type, row) {
+                        return `
+                            <button onclick="editarSugerencia(${row.idCombinacion}, '${row.tipo}', '${row.presentaciones}', '${row.dosis}')" 
+                                    class="btn btn-warning btn-sm">Editar</button>`;
+                    }
+                }
+            ],
+            pageLength: 10, // Mostrar 10 registros por página
+            lengthMenu: [10, 25, 50], // Opciones de cantidad de registros
+            order: [[0, 'asc']], // Ordenar por tipo de medicamento
+            language: {
+                url: '/haras/data/es_es.json' // Traducción al español
+            },
+            dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
+            initComplete: function () {
+                console.log("Tabla de sugerencias inicializada correctamente.");
             }
-        } catch (error) {
-            alert("Ocurrió un error al obtener las sugerencias: " + error.message);
-        }
-    }
-
-    // Llama a `cargarSugerencias` cuando el botón de sugerencias se haga clic
-    btnSugerencias.addEventListener("click", cargarSugerencias);
+        });
+    
+        // Recargar tabla al abrir el modal de sugerencias
+        $('#btnSugerencias').on('click', function () {
+            tablaSugerencias.ajax.reload(); // Recargar datos desde el servidor
+        });
+    });
+    
+    
+    
+    
 
     document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
         event.preventDefault();
-
-        // Obtener los valores de los campos del modal de edición
-        const idCombinacion = document.getElementById('editarId').value;
-        const tipo = document.getElementById('editarTipo').value;
-        const presentacion = document.getElementById('editarPresentacion').value;
-        const dosis = document.getElementById('editarDosis').value;
-
-        console.log("---- Valores obtenidos del formulario ----");
-        console.log("ID de la combinación:", idCombinacion);
-        console.log("Tipo de medicamento:", tipo);
-        console.log("Presentación:", presentacion);
-        console.log("Dosis:", dosis);
-        console.log("----------------------------------------");
-
-        // Verificar que los valores sean válidos antes de hacer la solicitud
-        if (!dosis || !idCombinacion) {
-            alert("El campo de dosis y el ID de la combinación son requeridos.");
+    
+        // Obtener los valores del formulario
+        const idCombinacion = document.getElementById('editarId').value.trim();
+        const tipo = document.getElementById('editarTipo').value.trim();
+        const presentacion = document.getElementById('editarPresentacion').value.trim();
+        const dosis = document.getElementById('editarDosis').value.trim();
+    
+        // Validar datos
+        if (!idCombinacion || !tipo || !presentacion || !dosis) {
+            showToast("Todos los campos son obligatorios.", "ERROR");
             return;
         }
-
+    
         try {
-            console.log("Iniciando la solicitud POST para actualizar la sugerencia...");
-
-            const response = await fetch(`../../controllers/admedi.controller.php?operation=editarSugerenciaMedicamento`, {
+            console.log("Enviando datos al servidor para actualizar...");
+    
+            // Realizar la solicitud POST al controlador
+            const response = await fetch(`../../controllers/admedi.controller.php`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    operation: "editarSugerenciaMedicamento",
-                    idCombinacion,
-                    tipo,
-                    presentacion,
-                    unidad: dosis
-                }) // Verifica el mapeo aquí
+                    operation: "editarSugerenciaMedicamento", // Asegúrate de que este valor coincida con el caso en el controlador
+                    idCombinacion, // ID de la combinación
+                    tipo,          // Nuevo tipo de medicamento
+                    presentacion,  // Nueva presentación
+                    unidad: dosis  // Nueva unidad de medida
+                })
             });
-
-            console.log("Solicitud enviada. Esperando respuesta...");
-
+    
             const result = await response.json();
-
-            console.log("Respuesta recibida del servidor:");
-            console.log(result);
-
+    
             if (result.status === "success") {
-                console.log("Actualización exitosa de la sugerencia.");
-                alert("Sugerencia actualizada correctamente.");
-                $('#modalEditarSugerencia').modal('hide');
-                await cargarSugerencias();
-                $('#modalSugerencias').modal('show');
+                console.log("Actualización exitosa.");
+                showToast("Sugerencia actualizada correctamente.", "SUCCESS");
+                $('#modalEditarSugerencia').modal('hide'); // Cerrar el modal de edición
+                $('#tablaSugerencias').DataTable().ajax.reload(); // Recargar la tabla
             } else {
-                console.log("Error recibido en la respuesta del servidor:", result.message);
-                alert("Error: " + result.message);
+                console.error("Error en la respuesta del servidor:", result.message);
+                showToast("Error: " + result.message, "ERROR");
             }
         } catch (error) {
-            console.log("Excepción capturada durante la solicitud de actualización:", error.message);
-            alert("Ocurrió un error al actualizar la sugerencia: " + error.message);
+            console.error("Error al actualizar la sugerencia:", error.message);
+            showToast("Ocurrió un error al actualizar la sugerencia.", "ERROR");
         }
     });
+    
+    
+    
 
 
     window.editarSugerencia = function (idCombinacion, tipo, presentacion, dosis) {
         console.log("Editar sugerencia con ID:", idCombinacion);
-        console.log("Tipo:", tipo);
-        console.log("Presentación:", presentacion);
-        console.log("Dosis:", dosis);
+    
         // Asignar los valores de la sugerencia a los campos del formulario de edición
-        document.getElementById('editarId').value = idCombinacion; // Asigna el ID de la combinación al campo oculto
+        document.getElementById('editarId').value = idCombinacion; // Asigna el ID al campo oculto
         document.getElementById('editarTipo').value = tipo;
         document.getElementById('editarPresentacion').value = presentacion;
         document.getElementById('editarDosis').value = dosis;
-
+    
         // Cerrar el modal de sugerencias y abrir el modal de edición
         $('#modalSugerencias').modal('hide');
         $('#modalEditarSugerencia').modal('show');
     };
+    
+
+
 
     // Función para cargar las categorías de equinos con sus cantidades en el select del modal
     const loadCategoriaEquinos = async () => {

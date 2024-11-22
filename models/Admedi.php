@@ -510,11 +510,8 @@ class Admi extends Conexion {
             error_log("Error al listar sugerencias de medicamentos: " . $e->getMessage());
             return false;
         }
-
-    
     }
 
-    // Función pública para eliminar un medicamento por ID
     // Función pública para eliminar un medicamento por ID
     public function borrarMedicamento($idMedicamento) {
         try {

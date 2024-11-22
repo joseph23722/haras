@@ -302,6 +302,7 @@ const guardarTrabajoHerramienta = async () => {
 
 
 
+// Evento para el botón de sugerencias
 document.getElementById("btnTiposYHerramientas").addEventListener("click", function () {
     console.log("Clic en el botón para abrir la tabla de Tipos y Herramientas.");
 
@@ -325,7 +326,7 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
                         return [];
                     }
 
-                    return json.data;
+                    return json.data; // Regresar los datos para renderizar en la tabla
                 },
                 error: function (xhr, error, thrown) {
                     console.error("Error AJAX:", {
@@ -343,7 +344,8 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
                     data: null,
                     title: 'Acciones',
                     render: function (data, type, row) {
-                        return `<button onclick="editarTipoOHerramienta(${row.id}, '${row.nombre}', '${row.tipo}')" class="btn btn-warning btn-sm">Editar</button>`;
+                        return `<button onclick="editarTipoOHerramienta('${row.id}', '${row.nombre}', '${row.tipo}')" class="btn btn-warning btn-sm">Editar</button>`;
+
                     }
                 }
             ],
@@ -358,14 +360,15 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
     }
 });
 
-
-
 // Función para abrir el modal de edición y cerrar el de listado
 function editarTipoOHerramienta(id, nombre, tipo) {
     console.log("Editar registro:", { id, nombre, tipo });
 
+    // Limpiar el ID para eliminar cualquier prefijo como 'H-' o 'T-'
+    const cleanId = id.replace(/^[A-Za-z]-/, ''); // Remueve prefijos como 'H-', 'T-' o similares.
+
     // Llenar los campos del formulario en el modal de edición
-    document.getElementById('editarId').value = id;
+    document.getElementById('editarId').value = cleanId; // Usar el ID limpio
     document.getElementById('editarNombre').value = nombre;
     document.getElementById('editarTipo').value = tipo;
 
@@ -380,13 +383,22 @@ function editarTipoOHerramienta(id, nombre, tipo) {
     modalEditar.show();
 }
 
+
+// Editar Tipo o Herramienta
 // Editar Tipo o Herramienta
 document.getElementById('formEditarTipoHerramienta').addEventListener('submit', async function (event) {
     event.preventDefault();
 
-    const id = document.getElementById('editarId').value;
-    const nombre = document.getElementById('editarNombre').value;
-    const tipo = document.getElementById('editarTipo').value;
+    // Obtener los valores del formulario
+    const id = document.getElementById('editarId').value.trim(); // ID limpio
+    const nombre = document.getElementById('editarNombre').value.trim();
+    const tipo = document.getElementById('editarTipo').value.trim();
+
+    // Validar que los campos no estén vacíos
+    if (!id || !nombre || !tipo) {
+        showToast("Todos los campos son obligatorios.", "ERROR");
+        return;
+    }
 
     try {
         console.log("Datos que se enviarán al servidor:");
@@ -425,6 +437,8 @@ document.getElementById('formEditarTipoHerramienta').addEventListener('submit', 
         showToast(`Ocurrió un error al guardar los cambios: ${error.message}`, 'ERROR');
     }
 });
+
+
 
 
 

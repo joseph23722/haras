@@ -113,13 +113,14 @@ try {
 
             case 'editarTipoOHerramienta':
                 error_log("Operación: editarTipoOHerramienta iniciada.");
-            
+                
                 $data = json_decode(file_get_contents('php://input'), true);
+            
+                // Validar datos recibidos
                 $id = $data['id'] ?? null;
                 $nombre = $data['nombre'] ?? '';
                 $tipo = $data['tipo'] ?? '';
             
-                // Validar los datos
                 if (!$id || !$nombre || !$tipo) {
                     error_log("Datos faltantes: id=$id, nombre=$nombre, tipo=$tipo");
                     sendResponse('error', 'Todos los campos son requeridos para la actualización.');
@@ -127,13 +128,14 @@ try {
                 }
             
                 try {
+                    // Llamar al modelo para realizar la actualización
                     $result = $herrero->editarTipoOHerramienta($id, $nombre, $tipo);
             
                     if ($result) {
                         error_log("Registro actualizado correctamente.");
                         sendResponse('success', 'El registro fue actualizado correctamente.');
                     } else {
-                        error_log("No se pudo actualizar el registro. Verifica los datos.");
+                        error_log("No se pudo actualizar el registro: id=$id, nombre=$nombre, tipo=$tipo.");
                         sendResponse('error', 'No se pudo actualizar el registro. Verifica los datos.');
                     }
                 } catch (Exception $e) {
@@ -141,6 +143,7 @@ try {
                     sendResponse('error', 'Error al procesar la solicitud: ' . $e->getMessage());
                 }
                 break;
+            
             
             
             

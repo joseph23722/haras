@@ -219,28 +219,35 @@ class Herrero extends Conexion {
     
 
     // Función para editar tipo o herramienta
+    // Función para editar tipo o herramienta
     public function editarTipoOHerramienta($id, $nombre, $tipo) {
         try {
+            // Determinar la tabla a actualizar según el tipo
             if ($tipo === 'Tipo de Trabajo') {
-                $query = $this->pdo->prepare("UPDATE TiposTrabajos SET nombreTrabajo = ? WHERE idTipoTrabajo = ?");
+                $query = $this->pdo->prepare("UPDATE TiposTrabajos SET nombreTrabajo = :nombre WHERE idTipoTrabajo = :id");
             } else if ($tipo === 'Herramienta') {
-                $query = $this->pdo->prepare("UPDATE Herramientas SET nombreHerramienta = ? WHERE idHerramienta = ?");
+                $query = $this->pdo->prepare("UPDATE Herramientas SET nombreHerramienta = :nombre WHERE idHerramienta = :id");
             } else {
                 throw new Exception("Tipo no válido.");
             }
-    
-            $query->execute([$nombre, $id]);
-    
+
+            // Ejecutar la consulta
+            $query->bindParam(':nombre', $nombre, PDO::PARAM_STR);
+            $query->bindParam(':id', $id, PDO::PARAM_STR);
+            $query->execute();
+
+            // Verificar si se actualizó alguna fila
             if ($query->rowCount() === 0) {
                 error_log("No se actualizaron filas: id=$id, nombre=$nombre, tipo=$tipo");
             }
-    
+
             return $query->rowCount() > 0;
         } catch (Exception $e) {
             error_log("Error en editarTipoOHerramienta: " . $e->getMessage());
             return false;
         }
     }
+
     
     
     

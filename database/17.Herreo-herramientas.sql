@@ -167,15 +167,25 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS spu_ListarTiposYHerramientas $$
 CREATE PROCEDURE spu_ListarTiposYHerramientas()
 BEGIN
-    -- Combina los resultados de TiposTrabajos y Herramientas en una sola tabla con una columna adicional para identificar el tipo de dato
-    SELECT idTipoTrabajo AS id, nombreTrabajo AS nombre, 'Tipo de Trabajo' AS tipo
-    FROM TiposTrabajos
+    -- Combinar TiposTrabajos y Herramientas en un solo resultado con IDs únicos
+    SELECT 
+        CONCAT('T-', idTipoTrabajo) AS id, -- Prefijo 'T-' para TiposTrabajos
+        nombreTrabajo AS nombre,
+        'Tipo de Trabajo' AS tipo
+    FROM 
+        TiposTrabajos
     UNION ALL
-    SELECT idHerramienta AS id, nombreHerramienta AS nombre, 'Herramienta' AS tipo
-    FROM Herramientas;
+    SELECT 
+        CONCAT('H-', idHerramienta) AS id, -- Prefijo 'H-' para Herramientas
+        nombreHerramienta AS nombre,
+        'Herramienta' AS tipo
+    FROM 
+        Herramientas
+    ORDER BY 
+        nombre ASC; -- Ordena por nombre de forma ascendente
 END $$
-
 DELIMITER ;
+
 
 
 CALL spu_ListarTiposYHerramientas();

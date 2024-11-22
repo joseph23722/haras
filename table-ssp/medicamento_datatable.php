@@ -5,7 +5,6 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-// Configuración de conexión a la base de datos
 $sql_details = array(
     'user' => 'root',
     'pass' => '',
@@ -32,23 +31,21 @@ try {
     $orderDir = isset($_GET['order'][0]['dir']) && in_array($_GET['order'][0]['dir'], ['asc', 'desc']) ? $_GET['order'][0]['dir'] : 'asc';
 
     // Mapear columnas para ordenar
-    $columns = ['id', 'nombre', 'tipo'];
-    $orderBy = $columns[$orderColumn] ?? 'nombre';
+    $columns = ['tipo', 'presentaciones', 'dosis'];
+    $orderBy = $columns[$orderColumn] ?? 'tipo';
 
-    // Ejecutar el procedimiento almacenado
-    $stmt = $pdo->prepare("CALL spu_ListarTiposYHerramientas()");
+    // Ejecutar el procedimiento almacenado sin parámetros
+    $stmt = $pdo->prepare("CALL spu_listar_tipos_presentaciones_dosis()");
     $stmt->execute();
-
-    // Obtener todos los datos
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $stmt->closeCursor();
 
     // Filtrar los datos si hay un valor de búsqueda
     if (!empty($searchValue)) {
         $data = array_filter($data, function ($row) use ($searchValue) {
-            return stripos($row['id'], $searchValue) !== false ||
-                   stripos($row['nombre'], $searchValue) !== false ||
-                   stripos($row['tipo'], $searchValue) !== false;
+            return stripos($row['tipo'], $searchValue) !== false ||
+                   stripos($row['presentaciones'], $searchValue) !== false ||
+                   stripos($row['dosis'], $searchValue) !== false;
         });
     }
 
@@ -78,7 +75,6 @@ try {
         "data" => $pagedData
     ));
 } catch (PDOException $e) {
-    // Manejo de errores
     echo json_encode(array(
         "error" => "Error en la conexión a la base de datos: " . $e->getMessage()
     ));
