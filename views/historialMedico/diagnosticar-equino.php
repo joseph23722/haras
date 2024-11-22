@@ -2,7 +2,16 @@
 
 <div class="container-fluid px-4">
     <!-- Título principal -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Historial Médico</h1>
+    <div class="card-body p-1" style="background-color: #f9f9f9;">
+        <div class="d-flex justify-content-center align-items-center mt-1" style="position: relative; width: 100%;">
+            <h1 class="text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3; margin: 0; flex-grow: 1; text-align: center; margin-left: 170px;">
+                Registro de Historial Médico
+            </h1>
+            <a href="./revisar-equino" class="btn btn-warning btn-lg" style="font-size: 1.1em; padding: 6px 20px;">
+                Revisión Básica
+            </a>
+        </div>
+    </div>
 
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
@@ -26,13 +35,6 @@
             </button>
 
 
-        </div>
-        <div class="card-body p-1" style="background-color: #f9f9f9;">
-            <div class="d-flex justify-content-start mt-1">
-                <a href="./revisar-equino" class="btn btn-primary btn-lg mx-3" style="font-size: 1.1em; padding: 12px 30px;">
-                    Revisión Básica
-                </a>
-            </div>
         </div>
 
         <!-- Formulario -->
