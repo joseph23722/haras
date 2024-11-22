@@ -49,11 +49,9 @@ BEGIN
 END //
 DELIMITER ;
 
-
 -- listar historial herrero
 DROP PROCEDURE IF EXISTS `ConsultarHistorialEquino`;
 DELIMITER $$
-
 CREATE PROCEDURE ConsultarHistorialEquino()
 BEGIN
     SELECT 
@@ -86,10 +84,7 @@ BEGIN
     ORDER BY 
         HH.fecha DESC;
 END $$
-
 DELIMITER ;
-
-
 
 -- Procedimiento para listar tipos de trabajos
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_trabajos`;
@@ -101,8 +96,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 -- Procedimiento para listar herramientas
 DROP PROCEDURE IF EXISTS `spu_listar_herramientas`;
 DELIMITER $$
@@ -112,8 +105,6 @@ BEGIN
     FROM Herramientas;
 END $$
 DELIMITER ;
-
-
 
 -- Procedimiento para agregar un nuevo tipo de trabajo
 DROP PROCEDURE IF EXISTS `spu_agregar_tipo_trabajo`;
@@ -134,8 +125,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 -- Procedimiento para agregar una nueva herramienta
 DROP PROCEDURE IF EXISTS `spu_agregar_herramienta`;
 DELIMITER $$
@@ -154,13 +143,6 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
-
-
--- pruebas 
-CALL spu_agregar_tipo_trabajo('Recorte de cascos');
-
-CALL spu_agregar_herramienta('Lima para cascos');
-
 
 -- sugerencias herrero
 DELIMITER $$
@@ -185,8 +167,3 @@ BEGIN
         nombre ASC; -- Ordena por nombre de forma ascendente
 END $$
 DELIMITER ;
-
-
-
-CALL spu_ListarTiposYHerramientas();
-

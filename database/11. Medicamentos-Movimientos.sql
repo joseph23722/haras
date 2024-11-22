@@ -421,7 +421,6 @@ END $$
 DELIMITER ;
 
 -- sugerencias
-call spu_listar_tipos_presentaciones_dosis() ;
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_presentaciones_dosis`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
