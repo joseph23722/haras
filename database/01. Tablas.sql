@@ -230,7 +230,7 @@ CREATE TABLE Alimentos (
     idTipoAlimento       INT NOT NULL,
     stockActual          DECIMAL(10,2) NOT NULL,
     stockMinimo          DECIMAL(10,2) DEFAULT 0,
-    estado               ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',
+    estado               ENUM('Disponible', 'Por agotarse', 'Agotado', 'Vencido') DEFAULT 'Disponible',
     idUnidadMedida       INT NOT NULL,
     costo                DECIMAL(10,2) NOT NULL,
     idLote               INT NOT NULL,
@@ -255,19 +255,6 @@ CREATE TABLE MermasAlimento (
     -- Clave foránea para relacionar con la tabla Alimentos
     CONSTRAINT fk_merma_alimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento) ON DELETE CASCADE
 ) ENGINE = INNODB;
-
--- . Tabla HistorialAlimentosVencidos
-CREATE TABLE HistorialAlimentosVencidos (
-    idMovimientoVencido INT AUTO_INCREMENT PRIMARY KEY,
-    idAlimento INT NOT NULL,                             -- Referencia al alimento vencido
-    cantidad DECIMAL(10,2) NOT NULL,                      -- Cantidad de alimentos vencidos
-    fechaVencimiento DATE NOT NULL,                       -- Fecha de vencimiento del alimento
-    fechaRegistro DATETIME DEFAULT NOW(),                -- Fecha en que se registró el vencimiento
-    motivoVencimiento VARCHAR(255) NOT NULL,              -- Motivo por el cual el alimento se venció (ej. caducidad, mal almacenamiento, etc.)
-    estadoVencido ENUM('Vencido', 'Descartado') DEFAULT 'Vencido',  -- Estado del alimento (se puede cambiar a "Descartado" si fue desechado)
-    CONSTRAINT fk_alimento_vencido FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento) ON DELETE CASCADE
-) ENGINE = INNODB;
-
 
 -- 19. Tabla HistorialMovimientos - alimento
 CREATE TABLE HistorialMovimientos (

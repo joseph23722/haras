@@ -1,6 +1,6 @@
 // Variables capturadas desde PHP
 const nombreEmpresa = "HARAS RANCHO SUR S.A.C";
-const direccionEmpresa = "Calle 10 #123, Colonia San Pedro, Ciudad de Peru, Código Postal 01230";
+const direccionEmpresa = "CAL.FUNDO CHACARILLA NRO. S/N FND. CHACARILLA (SAN LUIS - EL OLIVAR CHINCHA) ICA - CHINCHA - CHINCHA BAJA";
 const modulo = "Alimentos";
 
 const configurarDataTableAlimentos = () => {
@@ -53,35 +53,38 @@ const configurarDataTableAlimentos = () => {
                 extend: 'csvHtml5',
                 text: 'Exportar CSV',
                 className: 'btn btn-secondary',
-                title: nombreEmpresa,
-                messageTop: `
-                    <div style="text-align: center; font-weight: bold; font-size: 20px; color: #004080; margin-bottom: 10px;">
-                        ${nombreEmpresa}
-                    </div>
-                    <div style="text-align: center; font-size: 14px; color: #333; margin-bottom: 20px;">
-                        ${direccionEmpresa}
-                    </div>
-                    <div style="border: 1px solid #ccc; padding: 10px; font-size: 12px; color: #555; margin-bottom: 10px;">
-                        <strong>Nombre del Usuario:</strong> ${nombreCompletoUsuario}<br>
-                        <strong>Identificador:</strong> ${identificadorUsuario}<br>
-                        <strong>Fecha y Hora:</strong> ${fechaActual}<br>
-                        <strong>Módulo:</strong> ${modulo}
-                    </div>
-                `,
+                title: null, // Evita encabezados automáticos duplicados
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9] // Excluye ID (0) y Acciones (última columna)
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8] // Excluye ID (0), Estado (9) y Acciones (última columna)
+                },
+                fieldSeparator: ',', // Separador CSV (puedes cambiarlo a ';' si es necesario)
+                bom: true, // Incluye BOM para evitar problemas de codificación en Excel
+                customize: function (csv) {
+                    // Crear encabezado personalizado
+                    let encabezado = `Nombre de la Empresa: ${nombreEmpresa}\n`;
+                    encabezado += `Dirección: ${direccionEmpresa}\n`;
+                    encabezado += `Módulo: ${modulo}\n`;
+                    encabezado += `Fecha de Exportación: ${new Date().toLocaleString()}\n\n`;
+        
+                    // Agregar encabezado de columnas personalizado
+                    const columnas = `"Nombre del Alimento","Tipo","Unidad de Medida","Lote","Stock Actual","Stock Mínimo","Costo","Fecha de Caducidad"\n`;
+        
+                    // Excluir encabezado automático y concatenar con los datos
+                    const datos = csv.split('\n').slice(1).join('\n'); // Excluir encabezado predeterminado
+                    return encabezado + columnas + datos;
                 }
             },
             {
                 extend: 'pdfHtml5',
                 text: 'Exportar PDF',
                 className: 'btn btn-danger',
-                title: nombreEmpresa,
-                orientation: 'landscape',
+                title: null,
+                orientation: 'landscape', // Orientación horizontal para mejor visibilidad
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9] // Excluye ID (0) y Acciones (última columna)
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8] // Excluye ID (0), Estado (9) y Acciones (última columna)
                 },
                 customize: function (doc) {
+                    // Personalizar encabezado del PDF
                     doc.content.splice(0, 0, {
                         text: nombreEmpresa,
                         style: 'header',
@@ -98,23 +101,19 @@ const configurarDataTableAlimentos = () => {
                         alignment: 'center',
                         margin: [0, 0, 0, 20]
                     });
-
+        
+                    // Personalizar estilo del PDF
                     doc.styles = {
                         header: { fontSize: 18, bold: true, color: '#004080' },
                         subheader: { fontSize: 12, color: '#333' },
                         tableHeader: { fillColor: '#4CAF50', color: 'white', alignment: 'center' }
                     };
-
+        
+                    // Ajustar el tamaño de las columnas
                     const tableContent = doc.content.find(content => content.table);
                     if (tableContent) {
                         const columnCount = tableContent.table.body[0].length;
-                        tableContent.table.widths = Array(columnCount).fill('*');
-                        tableContent.layout = {
-                            hLineWidth: function () { return 0.5; },
-                            vLineWidth: function () { return 0.5; },
-                            hLineColor: function () { return '#aaa'; },
-                            vLineColor: function () { return '#aaa'; },
-                        };
+                        tableContent.table.widths = Array(columnCount).fill('*'); // Ancho automático para columnas
                     }
                 }
             },
@@ -123,9 +122,10 @@ const configurarDataTableAlimentos = () => {
                 text: 'Imprimir',
                 className: 'btn btn-info',
                 exportOptions: {
-                    columns: [1, 2, 3, 4, 5, 6, 7, 8, 9] // Excluye ID (0) y Acciones (última columna)
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8] // Excluye ID (0), Estado (9) y Acciones (última columna)
                 },
                 customize: function (win) {
+                    // Personalizar encabezado de la impresión
                     $(win.document.body)
                         .css('font-size', '10pt')
                         .prepend(`
@@ -147,6 +147,8 @@ const configurarDataTableAlimentos = () => {
                 }
             }
         ]
+        
+        
     });
 
     // Filtro de búsqueda personalizado para las columnas específicas

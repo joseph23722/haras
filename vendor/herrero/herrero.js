@@ -1,6 +1,6 @@
 // Variables capturadas desde PHP
 const nombreEmpresa = "HARAS RANCHO SUR S.A.C";
-const direccionEmpresa = "Calle 10 #123, Colonia San Pedro, Ciudad de Peru, Código Postal 01230";
+const direccionEmpresa = "CAL.FUNDO CHACARILLA NRO. S/N FND. CHACARILLA (SAN LUIS - EL OLIVAR CHINCHA) ICA - CHINCHA - CHINCHA BAJA";
 const modulo = "Historial Herrero";
 
 // Configuración del DataTable para el historial de herrero

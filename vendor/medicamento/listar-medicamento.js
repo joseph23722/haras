@@ -1,6 +1,6 @@
 // Variables capturadas desde PHP
 const nombreEmpresa = "HARAS RANCHO SUR S.A.C";
-const direccionEmpresa = "Calle 10 #123, Colonia San Pedro, Ciudad de Peru, Código Postal 01230";
+const direccionEmpresa = "CAL.FUNDO CHACARILLA NRO. S/N FND. CHACARILLA (SAN LUIS - EL OLIVAR CHINCHA) ICA - CHINCHA - CHINCHA BAJA";
 const modulo = "Medicamentos";
 
 // Función para configurar la tabla
@@ -35,14 +35,14 @@ const configurarDataTableMedicamentos = () => {
             { data: 'cantidad_stock', defaultContent: 'N/A' },
             { data: 'precioUnitario', defaultContent: 'N/A' },
             { data: 'fechaIngreso', defaultContent: 'N/A' },
-            { data: 'estado', defaultContent: 'N/A' },
+            { data: 'estado', defaultContent: 'N/A' }, // Esto no se exportará
             {
                 data: null,
                 orderable: false,
                 render: function(data, type, row) {
                     return `<button class="btn btn-danger btn-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
                                 <i class="fas fa-trash"></i>
-                            </button>`;
+                            </button>`; // Esto no se exportará
                 }
             }
         ],
@@ -51,22 +51,30 @@ const configurarDataTableMedicamentos = () => {
                 extend: 'csvHtml5',
                 text: 'Exportar CSV',
                 className: 'btn btn-secondary',
-                title: nombreEmpresa,
-                messageTop: `
-                    <div style="text-align: center; font-weight: bold; font-size: 20px; color: #004080; margin-bottom: 10px;">
-                        ${nombreEmpresa}
-                    </div>
-                    <div style="text-align: center; font-size: 14px; color: #333; margin-bottom: 20px;">
-                        ${direccionEmpresa}
-                    </div>
-                    <div style="border: 1px solid #ccc; padding: 10px; font-size: 12px; color: #555; margin-bottom: 10px;">
-                        <strong>Nombre del Usuario:</strong> ${nombreCompletoUsuario}<br>
-                        <strong>Identificador:</strong> ${identificadorUsuario}<br>
-                        <strong>Fecha y Hora:</strong> ${fechaActual}<br>
-                        <strong>Módulo:</strong> ${modulo}
-                    </div>
-                `,
+                title: null, // No uses el título para evitar duplicados
+                exportOptions: {
+                    columns: ':not(:last-child):not(:eq(9))' // Excluir la columna de Acciones y Estado
+                },
+                fieldSeparator: ',', // Usa coma como delimitador o cambia a ';' según tu configuración regional
+                bom: true, // Añade BOM para evitar problemas de codificación con Excel
+                customize: function (csv) {
+                    // Crear encabezados personalizados
+                    let encabezado = `Nombre de la Empresa: ${nombreEmpresa}\n`;
+                    encabezado += `Dirección: ${direccionEmpresa}\n`;
+                    encabezado += `Módulo: ${modulo}\n`;
+                    encabezado += `Fecha de Exportación: ${new Date().toLocaleString()}\n\n`;
+            
+                    // Agregar encabezado de columnas manualmente si quieres personalizarlo
+                    const columnas = `"Nombre","Lote","Presentación","Dosis","Tipo","Fecha Caducidad","Cantidad Stock","Costo Unitario","Fecha Registro"\n`;
+            
+                    // Separar datos del CSV, eliminando encabezados generados por defecto
+                    let datos = csv.split('\n').slice(1).join('\n'); // Excluir encabezados por defecto de DataTables
+            
+                    // Concatenar encabezados personalizados con datos
+                    return encabezado + columnas + datos;
+                }
             },
+            
             {
                 extend: 'pdfHtml5',
                 text: 'Exportar PDF',
@@ -111,11 +119,11 @@ const configurarDataTableMedicamentos = () => {
                             vLineColor: function () { return '#aaa'; },
                         };
                     }
+                },
+                exportOptions: {
+                    columns: ':not(:last-child):not(:eq(9))' // Excluir última columna (Acciones) y columna de Estado (índice 9)
                 }
             },
-            
-            
-            
             {
                 extend: 'print',
                 text: 'Imprimir',
@@ -139,6 +147,9 @@ const configurarDataTableMedicamentos = () => {
                             <br>
                         `);
                     $(win.document.body).find('table').addClass('compact').css('font-size', 'inherit');
+                },
+                exportOptions: {
+                    columns: ':not(:last-child):not(:eq(9))' // Excluir última columna (Acciones) y columna de Estado (índice 9)
                 }
             }
         ]
@@ -148,4 +159,4 @@ const configurarDataTableMedicamentos = () => {
 // Llama a la función cuando el DOM esté listo
 $(document).ready(() => {
     configurarDataTableMedicamentos();
-});  
+});
