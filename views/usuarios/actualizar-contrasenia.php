@@ -17,12 +17,12 @@
           </div>
           
           <div class="mb-4">
-            <label for="clave" class="form-label fs-5 text-muted"><i class="fas fa-lock" style="color: #00b894;"></i> Nueva Contraseña</label>
+            <label for="clave" class="form-label fs-5" style="color: #000;"><i class="fas fa-lock" style="color: #00b894;"></i> Nueva Contraseña</label>
             <input type="password" class="form-control form-control-lg border-0 rounded-3 shadow-sm" id="clave" placeholder="Ingresa nueva contraseña" required minlength="8" maxlength="20">
           </div>
           
           <div class="mb-4">
-            <label for="confirmarContrasenia" class="form-label fs-5 text-muted"><i class="fas fa-lock" style="color: #00b894;"></i> Confirmar Contraseña</label>
+            <label for="confirmarContrasenia" class="form-label fs-5" style="color: #000;"><i class="fas fa-lock" style="color: #00b894;"></i> Confirmar Contraseña</label>
             <input type="password" class="form-control form-control-lg border-0 rounded-3 shadow-sm" id="confirmarContrasenia" placeholder="Confirma tu nueva contraseña" required>
           </div>
 
