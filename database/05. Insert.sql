@@ -235,6 +235,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'listar-implemento-campo', 'N', NULL, NULL);
 
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(3, 'listar-diagnostico-avanzado', 'N', NULL, NULL);
+
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
@@ -260,7 +263,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (2, 24),
     (2, 25),
     (2, 26);
-    
+
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
@@ -281,6 +284,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 21),
     (3, 22),
     (3, 23),
+    (3, 28),
     (3, 25); -- falta el 25
     
 -- Supervisor Campo

@@ -525,7 +525,7 @@ CREATE TABLE vistas
     idmodulo		INT					NULL,
     ruta			VARCHAR(50)			NOT NULL,
     sidebaroption	CHAR(1)				NOT NULL,
-    texto			VARCHAR(20)			NULL,
+    texto			VARCHAR(40)			NULL,
     icono			VARCHAR(35)			NULL,
     CONSTRAINT fk_idmodulo_vis FOREIGN KEY (idmodulo) REFERENCES modulos (idmodulo),
     CONSTRAINT uk_ruta_vis	UNIQUE(ruta),

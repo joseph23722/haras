@@ -18,8 +18,14 @@
                 <a href="../inventarios/listar-implemento-caballo" class="btn btn-success btn-lg" role="button" style="width: 200px;">
                     <i class="fas fa-horse"></i> Implementos de Caballo
                 </a>
+                <a href="../inventarios/listar-implemento-campo" class="btn btn-success btn-lg" role="button" style="width: 200px;">
+                    <i class="fas fa-horse"></i> Implementos de Campo
+                </a>
                 <a href="../inventarios/listar-accion-herrero" class="btn btn-warning btn-lg" role="button" style="width: 200px;">
                     <i class="fas fa-tools"></i> Acciones del Herrero
+                </a>
+                <a href="../historialMedico/listar-diagnostico-avanzado" class="btn btn-warning btn-lg" role="button" style="width: 200px;">
+                    <i class="fas fa-tools"></i> Diagnóstico Avanzado
                 </a>
             </div>
         </div>
