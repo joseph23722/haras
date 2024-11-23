@@ -322,39 +322,3 @@ DELIMITER ;
 
 
 
-
--- editar version 2 - funcionando:
-DROP PROCEDURE IF EXISTS spu_equino_editar;
-DELIMITER $$
-CREATE PROCEDURE spu_equino_editar(
-    IN _idEquino INT,
-    IN _idPropietario INT,
-    IN _pesokg DECIMAL(5,1),
-    IN _idEstadoMonta VARCHAR(50),
-    IN _estado ENUM('Vivo', 'Muerto')
-)
-BEGIN
-    DECLARE _errorMsg VARCHAR(255);
-
-    -- Verificar si el equino existe
-    IF NOT EXISTS (SELECT 1 FROM Equinos WHERE idEquino = _idEquino) THEN
-        SET _errorMsg = 'Error: No existe un equino con el ID proporcionado.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-    END IF;
-
-    -- Actualizar solo los campos que no sean NULL
-    UPDATE Equinos
-    SET 
-        idPropietario = COALESCE(_idPropietario, idPropietario),
-        pesokg = COALESCE(_pesokg, pesokg),
-        idEstadoMonta = COALESCE(_idEstadoMonta, idEstadoMonta),
-        estado = COALESCE(_estado, estado)
-    WHERE idEquino = _idEquino;
-
-    -- Validar si se actualizó correctamente
-    IF ROW_COUNT() = 0 THEN
-        SET _errorMsg = 'Error: No se realizaron cambios en el registro.';
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
-    END IF;
-END $$
-DELIMITER ;

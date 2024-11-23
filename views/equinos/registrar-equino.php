@@ -125,23 +125,24 @@
 
 
         <!-- Modal para editar equino-->
-        <div class="modal fade" id="editarEquinosModal" tabindex="-1" aria-labelledby="editarEquinosModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editarEquinosModal" tabindex="-1" aria-labelledby="editarEquinosModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editarEquinosModalLabel">Editar Información del Equino</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-content" style="border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
+                    <div class="modal-header" style="background: linear-gradient(90deg, #74c0fc, #4dabf7); color: #fff;">
+                        <h5 class="modal-title" id="editarEquinosModalLabel">
+                            <i class="fas fa-edit me-2"></i>Editar Información del Equino
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" style="background-color: #f8f9fa;">
                         <!-- Campo de búsqueda de Equino -->
                         <div class="input-group mb-4">
                             <div class="form-floating flex-grow-2">
-                                <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus>
-                                <label for="buscarEquino"><i class="fas fa-search" style="color: #3498db;"></i> Buscar Equino</label>
-                                <!-- Campo oculto para el idEquino -->
+                                <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus style="border-radius: 5px;">
+                                <label for="buscarEquino"><i class="fas fa-search" style="color: #4dabf7;"></i> Buscar Equino</label>
                                 <input type="hidden" id="idEquino" name="idEquino">
                             </div>
-                            <button type="button" id="buscar-equino" class="btn btn-outline-success" title="Buscar">
+                            <button type="button" id="buscar-equino" class="btn btn-outline-success" title="Buscar" style="border-radius: 5px;">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -150,14 +151,14 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="fechanacimiento">
-                                    <label for="fechaNacimiento"><i class="fas fa-calendar-alt" style="color: #3498db;"></i> Fecha Nacimiento</label>
+                                    <input type="text" class="form-control bg-light" id="fechanacimiento" style="border-radius: 5px;">
+                                    <label for="fechaNacimiento"><i class="fas fa-calendar-alt" style="color: #4dabf7;"></i> Fecha Nacimiento</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="nacionalidades">
-                                    <label for="nacionalidad"><i class="fas fa-flag" style="color: #3498db;"></i> Nacionalidad</label>
+                                    <input type="text" class="form-control bg-light" id="nacionalidades" style="border-radius: 5px;">
+                                    <label for="nacionalidad"><i class="fas fa-flag" style="color: #4dabf7;"></i> Nacionalidad</label>
                                 </div>
                             </div>
                         </div>
@@ -166,14 +167,14 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="propietario">
-                                    <label for="idPropietario"><i class="fas fa-user" style="color: #3498db;"></i> Propietario</label>
+                                    <input type="text" class="form-control bg-light" id="propietario" style="border-radius: 5px;">
+                                    <label for="idPropietario"><i class="fas fa-user" style="color: #4dabf7;"></i> Propietario</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="genero">
-                                    <label for="sexo"><i class="fas fa-venus-mars" style="color: #3498db;"></i> Sexo</label>
+                                    <input type="text" class="form-control bg-light" id="genero" style="border-radius: 5px;">
+                                    <label for="sexo"><i class="fas fa-venus-mars" style="color: #4dabf7;"></i> Sexo</label>
                                 </div>
                             </div>
                         </div>
@@ -182,14 +183,14 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="tipoEquino">
-                                    <label for="tipoEquino"><i class="fas fa-horse" style="color: #3498db;"></i> Tipo de Equino</label>
+                                    <input type="text" class="form-control bg-light" id="tipoEquino" style="border-radius: 5px;">
+                                    <label for="tipoEquino"><i class="fas fa-horse" style="color: #4dabf7;"></i> Tipo de Equino</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="idEstadoMonta">
-                                    <label for="idEstadoMonta"><i class="fas fa-chart-line" style="color: #3498db;"></i> Estado Monta</label>
+                                    <input type="text" class="form-control bg-light" id="idEstadoMonta" style="border-radius: 5px;">
+                                    <label for="idEstadoMonta"><i class="fas fa-chart-line" style="color: #4dabf7;"></i> Estado Monta</label>
                                 </div>
                             </div>
                         </div>
@@ -198,26 +199,37 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="peso">
-                                    <label for="pesokg"><i class="fas fa-weight" style="color: #3498db;"></i> Peso (kg)</label>
+                                    <input type="text" class="form-control bg-light" id="peso" style="border-radius: 5px;">
+                                    <label for="pesokg"><i class="fas fa-weight" style="color: #4dabf7;"></i> Peso (kg)</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="estado">
-                                    <label for="estado"><i class="fas fa-horse" style="color: #3498db;"></i> Estado</label>
+                                    <input type="text" class="form-control bg-light" id="estado" style="border-radius: 5px;">
+                                    <label for="estado"><i class="fas fa-heart" style="color: #4dabf7;"></i> Estado</label>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary">Guardar cambios</button>
-                        </div>
+                    <div class="modal-footer" style="background: #f8f9fa;">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 5px;">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary" style="border-radius: 5px;">
+                            <i class="fas fa-save"></i> Guardar cambios
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
     </div>
 </div>
 
