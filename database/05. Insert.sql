@@ -102,14 +102,14 @@ VALUES
 ('Implementos Campos');
 
 -- 2. Insertar Datos en Personal
-INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
+INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, fechaIngreso, tipoContrato)
 VALUES 
-('Gerente', 'Mateo', 'San Agustin ', 'DNI', '11111111', 1, '2024-08-27', 'Completo'),
-('Administrador', 'Marcos', 'Calle Fatima', 'DNI', '22222222', 2, '2024-08-27', 'Completo'),
-('SupervisorE', 'Gereda', 'AV. Los Angeles', 'DNI', '33333333', 3, '2024-08-27', 'Completo'),
-('SupervisorC', 'Mamani', 'Calle Fatima', 'DNI', '44444444', '', '2024-08-27', 'Completo'),
-('Medico', 'Paullac', 'Calle Fatima', 'DNI', '55555555', '', '2024-08-27', 'Completo'),
-('Herrero', 'Nuñez', 'Calle Fatima', 'DNI', '66666666', 2, '2024-08-27', 'Parcial');
+('Gerente', 'Mateo', 'San Agustin ', 'DNI', '11111111', '2024-08-27', 'Completo'),
+('Administrador', 'Marcos', 'Calle Fatima', 'DNI', '22222222', '2024-08-27', 'Completo'),
+('SupervisorE', 'Gereda', 'AV. Los Angeles', 'DNI', '33333333', '2024-08-27', 'Completo'),
+('SupervisorC', 'Mamani', 'Calle Fatima', 'DNI', '44444444', '2024-08-27', 'Completo'),
+('Medico', 'Paullac', 'Calle Fatima', 'DNI', '55555555', '2024-08-27', 'Completo'),
+('Herrero', 'Nuñez', 'Calle Fatima', 'DNI', '66666666', '2024-08-27', 'Parcial');
 
 -- 3. Insertar datos en la tabla Roles
 INSERT INTO Roles (nombreRol) 
@@ -231,6 +231,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(2, 'listar-implemento-caballo', 'N', NULL, NULL);
     
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(2, 'listar-accion-herrero', 'N', NULL, NULL);
+    
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
@@ -267,7 +270,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 21),
     (3, 22),
     (3, 23),
-    (3, 24);
+    (3, 24),
+    (3, 25); -- falta el 25
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES

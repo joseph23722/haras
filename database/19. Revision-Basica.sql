@@ -60,9 +60,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `spu_listar_equinos_por_propietario`;
+DROP PROCEDURE IF EXISTS `spu_listar_equinos_para_revision`;
 DELIMITER $$
-CREATE PROCEDURE spu_listar_equinos_por_propietario(
+CREATE PROCEDURE spu_listar_equinos_para_revision(
     IN p_idPropietario INT
 )
 BEGIN

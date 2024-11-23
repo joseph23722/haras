@@ -154,7 +154,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (result.status === 1) {
                             showToast('Implemento registrado exitosamente', 'SUCCESS');
                             form.reset();
-                            cargarImplementos();
                             cargarHistorialMovimiento();
                         } else if (result.status === -1) {
                             if (result.message && result.message.includes('Ya existe un producto con el mismo nombre')) {
