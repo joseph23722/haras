@@ -1,5 +1,5 @@
 -- agregar historial
-DROP PROCEDURE IF EXISTS `InsertarHistorialHerrero`;
+DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
 DELIMITER $$
 CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_idEquino INT,
@@ -46,7 +46,7 @@ BEGIN
 
     -- Confirmar la transacción
     COMMIT;
-END $$
+END //
 DELIMITER ;
 
 -- listar historial herrero

@@ -15,7 +15,7 @@
 </footer>
 
 <!-- Scripts -->
- 
+
 
 <!-- Cargar jQuery primero -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -44,7 +44,7 @@
     const sidenav = document.getElementById("layoutSidenav_nav");
 
     // Función para alternar la visibilidad del sidebar
-    sidebarToggle.addEventListener("click", function (event) {
+    sidebarToggle.addEventListener("click", function(event) {
         // Prevenir la acción predeterminada del enlace, ya que no es necesario
         event.preventDefault();
 
@@ -52,5 +52,9 @@
         sidenav.classList.toggle("sb-sidenav-toggled");
     });
 </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../swalcustom.js"></script>
 
 </html>

@@ -130,10 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
         cargarUnidadesMedida(e.target.value, document.getElementById("unidadMedida"));
     });
 
-
     // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", cargarTiposAlimento);
-
 
     // Guardar nueva categoría y unidad de medida
     const guardarCategoriaMedida = async () => {
@@ -228,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.warn('El contenedor de mensajes para alimentos no está presente en el DOM.');
         }
     };
-
 
     // **Función para mostrar notificaciones usando showToast**
     const mostrarNotificacion = (mensaje, tipo = 'INFO') => {
@@ -500,7 +497,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalAlimentos = new bootstrap.Modal(modalElement, {
         keyboard: false
     });
-
 
     const setFechaFiltroAlimentos = () => {
         const filtroRango = document.getElementById('filtroRangoAlimentos').value;
@@ -792,36 +788,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Añadir el evento al botón de salida
     document.getElementById("guardarSalida").addEventListener("click", registrarSalida);
 
-    // Función para eliminar un alimento
-    window.eliminarAlimento = async (idAlimento) => {
-        if (await ask('¿Estás seguro de que deseas eliminar este alimento?')) {
-            const data = new URLSearchParams();
-            data.append('operation', 'eliminar');
-            data.append('idAlimento', idAlimento);
-
-            try {
-                // Realizar la solicitud al backend
-                const response = await fetch('../../controllers/alimento.controller.php', {
-                    method: "POST",
-                    body: data
-                });
-
-                const result = JSON.parse(await response.text());
-
-                // Validar y mostrar el resultado de la operación
-                if (result.status === "success" && result.data && result.data.status === "success") {
-                    mostrarMensajeDinamico(result.data.message, 'SUCCESS');
-                    loadAlimentos(); // Recargar la lista de alimentos
-                } else {
-                    mostrarMensajeDinamico(result.data?.message || result.message || "Error en la operación.", 'ERROR');
-                }
-            } catch (error) {
-                mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
-            }
-        }
-    };
-
-
     // Configurar el DataTable para listar los Tipos de Alimentos y Unidades de Medida
     document.getElementById("btnListarAlimentos").addEventListener("click", function () {
         if (!$.fn.DataTable.isDataTable('#tablaAlimentos')) {
@@ -863,7 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
                 ],
-                
+
                 pageLength: 10, // Mostrar 10 registros por página de manera predeterminada
                 lengthMenu: [10, 25], // Opciones para el selector de cantidad
                 order: [[0, 'desc']], // Ordenar por la primera columna (ID) de manera descendente
@@ -887,9 +853,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
-    
-    
-    
+
     // Función para abrir el modal y preparar los datos
     window.editarAlimento = async function (idTipoAlimentoUnidad, tipoAlimento, idUnidadMedida) {
         console.log("Datos para edición:", { idTipoAlimentoUnidad, tipoAlimento, idUnidadMedida });
@@ -986,11 +950,6 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("Ocurrió un error al guardar los cambios.", "ERROR");
         }
     });
-
-    
-    
-    
-
 
     cargarLotes();
     cargarTiposAlimento();
