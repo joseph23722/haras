@@ -23,26 +23,43 @@ function ejecutarProcedimientoHistorial($procedure, $sql_details, $params) {
             array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
         );
 
-        // Preparar la llamada al procedimiento almacenado con los parámetros necesarios
-        $stmt = $pdo->prepare("CALL $procedure(?, ?, ?, 0, 1000, 0)"); // `0, 1000, 0` son ejemplos de límite y desplazamiento (se pueden ajustar)
-        
-        // Ejecutar el procedimiento almacenado pasando los parámetros en orden
+        // Preparar la llamada al procedimiento almacenado
+        $stmt = $pdo->prepare("CALL $procedure(?, ?, ?, ?, ?)");
+
+        // Ejecutar el procedimiento almacenado pasando los parámetros
         $stmt->execute([
             $params['tipoMovimiento'],  // Tipo de movimiento (Entrada o Salida)
-            $params['fechaInicio'],     // Fecha de inicio
-            $params['fechaFin']         // Fecha de fin
+            $params['filtroFecha'],     // Filtro de fecha (hoy, ultimaSemana, ultimoMes, todos)
+            $params['idUsuario'],       // ID del usuario (0 para todos)
+            $params['limite'],          // Límite de resultados
+            $params['desplazamiento']   // Desplazamiento para paginación
         ]);
 
-        // Obtener los resultados
+        // Obtener todos los resultados
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $recordsTotal = count($data);
-        $recordsFiltered = $recordsTotal;
 
+        // Si hay un término de búsqueda, aplicar el filtro
+        if (!empty($params['busqueda'])) {
+            $busqueda = strtolower($params['busqueda']);
+            $data = array_filter($data, function ($row) use ($busqueda) {
+                // Concatenar los valores de las columnas en una sola cadena para buscar
+                $searchable = strtolower(implode(' ', array_values($row)));
+                return strpos($searchable, $busqueda) !== false;
+            });
+        }
+
+        // Total de registros después de aplicar el filtro de búsqueda
+        $recordsTotal = count($data);
+
+        // Aplicar paginación después del filtrado (si es necesario)
+        $data = array_slice($data, 0, $params['limite']);
+
+        // Formatear el resultado para DataTables
         $output = array(
             "draw" => isset($_GET['draw']) ? intval($_GET['draw']) : 0,
             "recordsTotal" => $recordsTotal,
-            "recordsFiltered" => $recordsFiltered,
-            "data" => $data
+            "recordsFiltered" => $recordsTotal,
+            "data" => array_values($data) // Reindexar el array
         );
 
         echo json_encode($output);
@@ -54,13 +71,15 @@ function ejecutarProcedimientoHistorial($procedure, $sql_details, $params) {
     }
 }
 
-// Obtener los parámetros de tipo de movimiento y rango de fechas desde la URL
+// Obtener los parámetros desde la URL
 $params = array(
     'tipoMovimiento' => isset($_GET['tipoMovimiento']) ? $_GET['tipoMovimiento'] : 'Entrada',
-    'fechaInicio' => isset($_GET['fechaInicio']) ? $_GET['fechaInicio'] : '1900-01-01',
-    'fechaFin' => isset($_GET['fechaFin']) ? $_GET['fechaFin'] : date('Y-m-d')
+    'filtroFecha' => isset($_GET['filtroFecha']) ? $_GET['filtroFecha'] : 'hoy',
+    'idUsuario' => isset($_GET['idUsuario']) && is_numeric($_GET['idUsuario']) ? (int)$_GET['idUsuario'] : 0,
+    'limite' => isset($_GET['limite']) && is_numeric($_GET['limite']) ? (int)$_GET['limite'] : 10,
+    'desplazamiento' => isset($_GET['desplazamiento']) && is_numeric($_GET['desplazamiento']) ? (int)$_GET['desplazamiento'] : 0,
+    'busqueda' => isset($_GET['busqueda']) ? $_GET['busqueda'] : '' // Nuevo parámetro de búsqueda
 );
 
 // Llamar a la función con el procedimiento almacenado y los parámetros obtenidos
 ejecutarProcedimientoHistorial('spu_historial_completo', $sql_details, $params);
-

@@ -8,20 +8,20 @@ const configurarDataTableEntradasAlimentos = () => {
                 url: '/haras/table-ssp/historial-alimentos.ssp.php',
                 type: 'GET',
                 data: function (d) {
+                    // Parámetros para el servidor
                     d.tipoMovimiento = 'Entrada';
-                    d.fechaInicio = document.getElementById('filtroRangoAlimentos').getAttribute('data-fecha-inicio') || '';
-                    d.fechaFin = document.getElementById('filtroRangoAlimentos').getAttribute('data-fecha-fin') || '';
+                    d.filtroFecha = document.getElementById('filtroRangoAlimentos').value || 'hoy';
                 },
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'idAlimento' },
-                { data: 'nombreAlimento' },
-                { data: 'nombreTipoAlimento' }, // Cambiado para coincidir con el procedimiento
-                { data: 'nombreUnidadMedida' }, // Cambiado para coincidir con el procedimiento
-                { data: 'cantidad' },
-                { data: 'lote' },
-                { data: 'fechaMovimiento' }
+                { data: 'idAlimento', title: 'ID Alimento' },
+                { data: 'nombreAlimento', title: 'Nombre Alimento' },
+                { data: 'nombreTipoAlimento', title: 'Tipo' },
+                { data: 'nombreUnidadMedida', title: 'Unidad' },
+                { data: 'cantidad', title: 'Cantidad' },
+                { data: 'lote', title: 'Lote' },
+                { data: 'fechaMovimiento', title: 'Fecha Movimiento' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
@@ -29,8 +29,11 @@ const configurarDataTableEntradasAlimentos = () => {
             paging: true,
             searching: true,
             autoWidth: false,
-            responsive: true
+            responsive: true,
+            order: [[6, 'desc']] // Ordenar por fecha de movimiento
         });
+    } else {
+        $('#tabla-entradas-alimentos').DataTable().ajax.reload();
     }
 };
 
@@ -44,22 +47,22 @@ const configurarDataTableSalidasAlimentos = () => {
                 url: '/haras/table-ssp/historial-alimentos.ssp.php',
                 type: 'GET',
                 data: function (d) {
+                    // Parámetros para el servidor
                     d.tipoMovimiento = 'Salida';
-                    d.fechaInicio = document.getElementById('filtroRangoAlimentos').getAttribute('data-fecha-inicio') || '';
-                    d.fechaFin = document.getElementById('filtroRangoAlimentos').getAttribute('data-fecha-fin') || '';
+                    d.filtroFecha = document.getElementById('filtroRangoAlimentos').value || 'hoy';
                 },
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'ID' }, // Cambiado para coincidir con el procedimiento
-                { data: 'Alimento' }, // Cambiado para coincidir con el procedimiento
-                { data: 'TipoEquino' }, // Cambiado para coincidir con el procedimiento
-                { data: 'CantidadEquino' }, // Cambiado para coincidir con el procedimiento
-                { data: 'Cantidad' },
-                { data: 'Unidad' },
-                { data: 'Merma' },
-                { data: 'Lote' },
-                { data: 'FechaSalida' } // Cambiado para coincidir con el procedimiento
+                { data: 'ID', title: 'ID Movimiento' },
+                { data: 'Alimento', title: 'Nombre Alimento' },
+                { data: 'TipoEquino', title: 'Tipo Equino' },
+                { data: 'CantidadEquino', title: 'Cantidad Equinos' },
+                { data: 'Cantidad', title: 'Cantidad Salida' },
+                { data: 'Unidad', title: 'Unidad' },
+                { data: 'Merma', title: 'Merma' },
+                { data: 'Lote', title: 'Lote' },
+                { data: 'FechaSalida', title: 'Fecha Movimiento' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
@@ -67,8 +70,11 @@ const configurarDataTableSalidasAlimentos = () => {
             paging: true,
             searching: true,
             autoWidth: false,
-            responsive: true
+            responsive: true,
+            order: [[8, 'desc']] // Ordenar por fecha de salida
         });
+    } else {
+        $('#tabla-salidas-alimentos').DataTable().ajax.reload();
     }
 };
 
@@ -76,4 +82,10 @@ const configurarDataTableSalidasAlimentos = () => {
 $(document).ready(() => {
     configurarDataTableEntradasAlimentos();
     configurarDataTableSalidasAlimentos();
+
+    // Escuchar cambios en el filtro de rango de fechas
+    $('#filtroRangoAlimentos').on('change', () => {
+        configurarDataTableEntradasAlimentos();
+        configurarDataTableSalidasAlimentos();
+    });
 });
