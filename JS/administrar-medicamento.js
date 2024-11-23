@@ -184,9 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     
-    
-
-
     window.editarSugerencia = function (idCombinacion, tipo, presentacion, dosis) {
         console.log("Editar sugerencia con ID:", idCombinacion);
     

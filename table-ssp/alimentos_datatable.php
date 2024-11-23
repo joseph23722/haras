@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
+// Configuración de la base de datos
 $sql_details = array(
     'user' => 'root',
     'pass' => '',
@@ -27,45 +28,54 @@ try {
     $start = isset($_GET['start']) ? intval($_GET['start']) : 0;
     $length = isset($_GET['length']) ? intval($_GET['length']) : 10;
     $searchValue = isset($_GET['search']['value']) ? $_GET['search']['value'] : '';
+    $orderColumn = isset($_GET['order'][0]['column']) ? intval($_GET['order'][0]['column']) : 0;
+    $orderDir = isset($_GET['order'][0]['dir']) && in_array($_GET['order'][0]['dir'], ['asc', 'desc']) ? $_GET['order'][0]['dir'] : 'asc';
 
-    // Llamar al procedimiento almacenado con parámetros
-    $stmt = $pdo->prepare("CALL spu_Listar_TiposYUnidadesAlimentos(:searchValue, :start, :length)");
-    $stmt->bindParam(':searchValue', $searchValue, PDO::PARAM_STR);
-    $stmt->bindParam(':start', $start, PDO::PARAM_INT);
-    $stmt->bindParam(':length', $length, PDO::PARAM_INT);
+    // Mapear columnas para ordenar
+    $columns = ['TipoAlimento', 'UnidadMedida'];
+    $orderBy = $columns[$orderColumn] ?? 'TipoAlimento';
+
+    // Ejecutar el procedimiento almacenado sin parámetros
+    $stmt = $pdo->prepare("CALL ObtenerSugerenciasAlimentos()");
     $stmt->execute();
-
-    // Obtener los datos
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $stmt->closeCursor(); // Cierra el cursor después del primer conjunto de resultados
+    $stmt->closeCursor();
 
-    // Obtener total filtrado
-    $stmtFiltered = $pdo->query("SELECT COUNT(*) AS totalFiltered FROM TipoAlimentos ta
-                                 LEFT JOIN UnidadesMedidaAlimento uma ON 1 = 1
-                                 WHERE '$searchValue' = '' 
-                                 OR ta.tipoAlimento LIKE '%$searchValue%' 
-                                 OR uma.nombreUnidad LIKE '%$searchValue%'");
-    $filteredResult = $stmtFiltered->fetch(PDO::FETCH_ASSOC);
-    $recordsFiltered = $filteredResult['totalFiltered'];
-    $stmtFiltered->closeCursor();
+    // Filtrar los datos si hay un valor de búsqueda
+    if (!empty($searchValue)) {
+        $data = array_filter($data, function ($row) use ($searchValue) {
+            return stripos($row['TipoAlimento'], $searchValue) !== false ||
+                   stripos($row['UnidadMedida'], $searchValue) !== false;
+        });
+    }
 
-    // Obtener total general
-    $stmtTotal = $pdo->query("SELECT COUNT(*) AS totalRecords FROM TipoAlimentos");
-    $totalResult = $stmtTotal->fetch(PDO::FETCH_ASSOC);
-    $recordsTotal = $totalResult['totalRecords'];
-    $stmtTotal->closeCursor();
+    // Ordenar los datos
+    usort($data, function ($a, $b) use ($orderBy, $orderDir) {
+        if ($orderDir === 'asc') {
+            return strcmp($a[$orderBy], $b[$orderBy]);
+        } else {
+            return strcmp($b[$orderBy], $a[$orderBy]);
+        }
+    });
+
+    // Total de registros después del filtrado
+    $recordsFiltered = count($data);
+
+    // Aplicar paginación
+    $pagedData = array_slice($data, $start, $length);
+
+    // Total de registros sin filtrar
+    $recordsTotal = count($data);
 
     // Respuesta para DataTables
     echo json_encode(array(
         "draw" => $draw,
         "recordsTotal" => $recordsTotal,
         "recordsFiltered" => $recordsFiltered,
-        "data" => $data
+        "data" => $pagedData
     ));
-
 } catch (PDOException $e) {
     echo json_encode(array(
         "error" => "Error en la conexión a la base de datos: " . $e->getMessage()
     ));
 }
-

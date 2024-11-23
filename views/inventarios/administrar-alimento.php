@@ -24,7 +24,7 @@
         style="background-color: #17a2b8; border: none; position: absolute; right: 60px; top: 5px; padding: 10px 15px; font-size: 1.2em;"
         id="btnListarAlimentos"
         data-bs-toggle="modal"
-        data-bs-target="#modalListarAlimentos">
+        data-bs-target="#modalSugerenciasAlimentos">
         <i class="fas fa-list"></i>
       </button>
     </div>
@@ -143,20 +143,18 @@
     </div>
   </div>
 
-  <!-- Modal para listar Tipos de Alimentos y Unidades de Medida -->
-  <div class="modal fade" id="modalListarAlimentos" tabindex="-1" aria-labelledby="modalListarAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+  <!-- Modal para Sugerencias de Alimentos -->
+  <div class="modal fade" id="modalSugerenciasAlimentos" tabindex="-1" aria-labelledby="modalSugerenciasAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <div class="modal-header bg-info text-white">
-          <h5 class="modal-title" id="modalListarAlimentosLabel">Listado de Tipos de Alimentos y Unidades de Medida</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalSugerenciasAlimentosLabel">Sugerencias de Tipos de Alimentos y Unidades de Medida</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!-- Tabla manejada por DataTables -->
-          <table id="tablaAlimentos" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-              <tr>
-                <th>ID</th>
+          <table id="tablaAlimentos" class="table table-hover table-bordered mt-3" style="width: 100%;">
+            <thead class="table-light">
+              <tr class="text-center">
                 <th>Tipo de Alimento</th>
                 <th>Unidad de Medida</th>
                 <th>Acciones</th>
@@ -171,40 +169,36 @@
     </div>
   </div>
 
-  <!-- Modal para editar un Tipo de Alimento y Unidad de Medida -->
-  <div class="modal fade" id="modalEditarAlimento" tabindex="-1" aria-labelledby="modalEditarAlimentoLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+  <!-- Modal para Editar Sugerencias -->
+  <div class="modal fade" id="modalEditarSugerenciaAlimento" tabindex="-1" aria-labelledby="modalEditarSugerenciaAlimentoLabel" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header bg-warning text-white">
-          <h5 class="modal-title" id="modalEditarAlimentoLabel">Editar Tipo de Alimento y Unidad de Medida</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <h5 class="modal-title" id="modalEditarSugerenciaAlimentoLabel">Editar Sugerencia de Alimento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="formEditarAlimento">
-            <!-- Campo oculto para ID de Tipo de Alimento -->
+          <form id="formEditarSugerenciaAlimento">
             <input type="hidden" id="editarIdTipoAlimento">
-            <input type="hidden" id="editarIdTipoAlimentoUnidad">
-
-            <!-- Campo para Tipo de Alimento -->
+            <input type="hidden" id="editarIdUnidadMedida">
             <div class="mb-3">
               <label for="editarTipoAlimento" class="form-label">Tipo de Alimento</label>
-              <input type="text" class="form-control" id="editarTipoAlimento" placeholder="Escriba el tipo de alimento" required>
+              <input type="text" class="form-control" id="editarTipoAlimento" required>
             </div>
-
-            <!-- Campo para Unidad de Medida -->
             <div class="mb-3">
               <label for="editarUnidadMedida" class="form-label">Unidad de Medida</label>
-              <select id="editarUnidadMedida" class="form-select" required>
-                <!-- Las opciones se cargarán dinámicamente -->
-              </select>
+              <input type="text" class="form-control" id="editarUnidadMedida" required>
             </div>
-
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           </form>
         </div>
       </div>
     </div>
   </div>
+
+
+
+
 
   <!-- Modal para Agregar Nueva Categoría de Alimento y Medida -->
   <div class="modal fade" id="modalAgregarCategoriaMedida" tabindex="-1" aria-labelledby="labelAgregarCategoriaMedida" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -464,6 +458,7 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <?php require_once '../footer.php'; ?>

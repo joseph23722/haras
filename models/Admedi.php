@@ -403,19 +403,6 @@ class Admi extends Conexion {
     
     
 
-    // Función para validar si la unidad existe en la tabla UnidadesMedida
-    public function validarUnidad($unidad) {
-        $query = $this->pdo->prepare("SELECT idUnidad FROM UnidadesMedida WHERE unidad = ?");
-        $query->execute([$unidad]);
-        return $query->fetchColumn() !== false;
-    }
-
-    
-    
-    
-
-
-    // Validar presentación y dosis del medicamento
     // Validar presentación y dosis del medicamento
     public function validarRegistrarCombinacion($params = []) {
         try {

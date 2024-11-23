@@ -23,8 +23,16 @@ try {
         switch ($operation) {
 
             case 'listarTiposYUnidades':
-                $result = $model->listarTiposYUnidadesAlimentos();
-                echo json_encode(['status' => 'success', 'data' => $result]);
+                try {
+                    $result = $alimento->listarSugerenciasAlimentos();
+                    if ($result !== false) {
+                        echo json_encode(['status' => 'success', 'data' => $result]);
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'No se pudieron obtener las sugerencias de tipos y unidades de alimentos.']);
+                    }
+                } catch (PDOException $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Error al obtener las sugerencias: ' . $e->getMessage()]);
+                }
                 break;
 
             case 'obtenerTiposAlimento':
@@ -93,18 +101,25 @@ try {
                 exit();
 
             case 'historial':
+                // Obtener los parámetros del request
                 $result = $alimento->obtenerHistorialMovimientos([
-                    'tipoMovimiento' => $_GET['tipoMovimiento'] ?? 'Entrada',
-                    'fechaInicio' => $_GET['fechaInicio'] ?? '1900-01-01',
-                    'fechaFin' => $_GET['fechaFin'] ?? date('Y-m-d'),
-                    'idUsuario' => $_GET['idUsuario'] ?? 0,
-                    'limit' => $_GET['limit'] ?? 10,
-                    'offset' => $_GET['offset'] ?? 0
+                    'tipoMovimiento' => $_GET['tipoMovimiento'] ?? 'Entrada', // Entrada o Salida
+                    'filtroFecha' => $_GET['filtroFecha'] ?? 'todos',        // hoy, ultimaSemana, ultimoMes, todos
+                    'idUsuario' => $_GET['idUsuario'] ?? 0,                 // ID del usuario (0 para todos)
+                    'limit' => $_GET['limit'] ?? 10,                        // Límite para la paginación
+                    'offset' => $_GET['offset'] ?? 0                        // Desplazamiento para la paginación
                 ]);
-
-                $data = $result['data'] ?? [];
-                echo json_encode(['status' => 'success', 'data' => $data]);
+            
+                // Preparar la respuesta
+                if ($result['status'] === 'success') {
+                    echo json_encode(['status' => 'success', 'data' => $result['data']]);
+                } elseif ($result['status'] === 'info') {
+                    echo json_encode(['status' => 'info', 'message' => $result['message']]);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => $result['message']]);
+                }
                 exit();
+                
 
             default:
                 echo json_encode(['status' => 'error', 'message' => 'Operación no válida para GET.']);
@@ -128,53 +143,51 @@ try {
 
 
             case 'editarTipoYUnidad':
-                // Registrar todos los parámetros recibidos
-                error_log("Parámetros recibidos: " . json_encode($_POST));
+                // Configurar encabezado de respuesta como JSON
+                header('Content-Type: application/json');
             
-                // Verifica si todos los parámetros necesarios están presentes
-                if (
-                    isset($_POST['idTipoAlimentoUnidad']) &&
-                    isset($_POST['tipoAlimento']) &&
-                    isset($_POST['idUnidadMedida']) &&
-                    isset($_POST['nombreUnidad'])
-                ) {
-                    // Recuperar los parámetros
-                    $idTipoAlimentoUnidad = $_POST['idTipoAlimentoUnidad'];
-                    $tipoAlimento = $_POST['tipoAlimento'];
-                    $idUnidadMedida = $_POST['idUnidadMedida'];
-                    $nombreUnidad = $_POST['nombreUnidad'];
+                // Leer y decodificar la entrada JSON
+                $data = json_decode(file_get_contents('php://input'), true);
             
-                    // Llama al modelo para realizar la actualización
-                    try {
-                        $result = $alimento->editarTipoYUnidadEspecifica($idTipoAlimentoUnidad, $tipoAlimento, $idUnidadMedida, $nombreUnidad);
-                        echo json_encode($result); // Retorna un JSON válido
-                        exit; // Finaliza la ejecución para evitar múltiples respuestas
-                    } catch (Exception $e) {
-                        error_log("Error al editar Tipo y Unidad: " . $e->getMessage());
-                        echo json_encode(['status' => 'error', 'message' => 'Error interno al procesar la solicitud.']);
-                        exit;
-                    }
-                } else {
-                    // Si faltan parámetros, registra cuáles faltan
-                    $faltantes = [];
-                    if (!isset($_POST['idTipoAlimentoUnidad'])) $faltantes[] = 'idTipoAlimentoUnidad';
-                    if (!isset($_POST['tipoAlimento'])) $faltantes[] = 'tipoAlimento';
-                    if (!isset($_POST['idUnidadMedida'])) $faltantes[] = 'idUnidadMedida';
-                    if (!isset($_POST['nombreUnidad'])) $faltantes[] = 'nombreUnidad';
+                $idTipoAlimento = $data['idTipoAlimento'] ?? null;
+                $nuevoTipo = $data['tipoAlimento'] ?? '';
+                $idUnidadMedida = $data['idUnidadMedida'] ?? null;
+                $nuevaUnidad = $data['nombreUnidad'] ?? '';
             
-                    error_log("Faltan los siguientes parámetros: " . implode(', ', $faltantes));
-            
-                    // Si faltan parámetros, retorna un mensaje de error
-                    echo json_encode(['status' => 'error', 'message' => 'Parámetros incompletos: ' . implode(', ', $faltantes)]);
-                    exit;
+                // Validar si los identificadores están presentes
+                if (!$idTipoAlimento || !$idUnidadMedida) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'El ID del tipo de alimento y la unidad de medida son requeridos.'
+                    ]);
+                    exit; // Terminar ejecución
                 }
+            
+                try {
+                    // Llama al modelo para realizar la edición
+                    $result = $alimento->editarTipoUnidadAlimento($idTipoAlimento, $nuevoTipo, $idUnidadMedida, $nuevaUnidad);
+            
+                    if ($result) {
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Tipo y unidad de alimento actualizados correctamente.'
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => 'No se pudo actualizar el tipo y unidad de alimento. Verifica los datos.'
+                        ]);
+                    }
+                } catch (Exception $e) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Error al actualizar el tipo y unidad de alimento: ' . $e->getMessage()
+                    ]);
+                }
+                exit; // Asegurar que no haya más salidas
                 break;
             
             
-            
-            
-            
-
             case 'agregarTipoUnidadMedidaNuevo':
                 // Verificar que se envíen los parámetros necesarios
                 if (!isset($params['tipoAlimento'], $params['nombreUnidad'])) {

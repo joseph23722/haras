@@ -221,6 +221,7 @@ CREATE TABLE TipoAlimento_UnidadMedida (
 	CONSTRAINT uq_tipo_unidad UNIQUE (idTipoAlimento, idUnidadMedida)
 ) ENGINE = INNODB;
 
+
 -- 17. Tabla Alimentos
 CREATE TABLE Alimentos (
     idAlimento           INT PRIMARY KEY AUTO_INCREMENT,
@@ -283,7 +284,7 @@ CREATE TABLE PresentacionesMedicamentos (
     presentacion VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
--- 22. Unidades Medida
+-- 22. Unidades Medida ---- admedi
 CREATE TABLE UnidadesMedida (
     idUnidad INT AUTO_INCREMENT PRIMARY KEY,
     unidad VARCHAR(50) NOT NULL UNIQUE

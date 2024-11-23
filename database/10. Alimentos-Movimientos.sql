@@ -160,10 +160,6 @@ END $$
 DELIMITER ;
 
 
-
-
-
-
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
@@ -366,17 +362,38 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
 CREATE PROCEDURE spu_historial_completo(
     IN tipoMovimiento VARCHAR(50),
-    IN fechaInicio DATE,
-    IN fechaFin DATE,
+    IN filtroFecha VARCHAR(20),  -- Nuevo parámetro para el filtro de fecha
     IN idUsuario INT,
     IN limite INT,
     IN desplazamiento INT
 )
 BEGIN
+    DECLARE fechaInicio DATE;
+    DECLARE fechaFin DATE;
+
+    -- Establecer las fechas según el filtro seleccionado
+    IF filtroFecha = 'hoy' THEN
+        SET fechaInicio = CURDATE();
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimaSemana' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 7 DAY;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimoMes' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 1 MONTH;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'todos' THEN
+        SET fechaInicio = '1900-01-01'; -- Fecha muy antigua para incluir todos los registros
+        SET fechaFin = CURDATE();
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Filtro de fecha no válido.';
+    END IF;
+
     -- Validar los límites de la paginación
     IF limite <= 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -424,8 +441,8 @@ BEGIN
     -- Si el tipo de movimiento es 'Salida', mostrar campos específicos incluyendo el tipo de equino, cantidad de equinos por categoría, y otros detalles
     ELSEIF tipoMovimiento = 'Salida' THEN
         SELECT 
-            h.idMovimiento AS ID,  -- ID del movimiento
-            a.nombreAlimento AS Alimento,  -- Nombre del alimento
+            h.idMovimiento AS ID,
+            a.nombreAlimento AS Alimento,
             CASE 
                 WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
                 WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
@@ -435,13 +452,13 @@ BEGIN
                 WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
                 WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
                 ELSE 'Desconocido'
-            END AS TipoEquino,  -- Tipo de equino según el estado
-            COUNT(h.idEquino) AS CantidadEquino,  -- Cantidad de equinos por categoría
-            h.cantidad AS Cantidad,  -- Cantidad de salida
-            um.nombreUnidad AS Unidad,  -- Unidad de medida
-            h.merma AS Merma,  -- Merma (si aplica)
-            l.lote AS Lote,  -- Lote del alimento
-            h.fechaMovimiento AS FechaSalida  -- Fecha del movimiento
+            END AS TipoEquino,
+            COUNT(h.idEquino) AS CantidadEquino,
+            h.cantidad AS Cantidad,
+            um.nombreUnidad AS Unidad,
+            h.merma AS Merma,
+            l.lote AS Lote,
+            h.fechaMovimiento AS FechaSalida
         FROM 
             HistorialMovimientos h
         JOIN 
@@ -462,7 +479,7 @@ BEGIN
             AND h.fechaMovimiento <= fechaFin
             AND (idUsuario = 0 OR h.idUsuario = idUsuario)
         GROUP BY 
-            h.idMovimiento, Alimento, TipoEquino, Unidad, Lote, FechaSalida  -- Agrupar para evitar duplicados y calcular cantidad de equinos por categoría
+            h.idMovimiento, Alimento, TipoEquino, Unidad, Lote, FechaSalida
         ORDER BY 
             h.fechaMovimiento DESC
         LIMIT 
@@ -473,6 +490,8 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+
 
 DROP PROCEDURE IF EXISTS `spu_eliminarAlimento`;
 DELIMITER $$
@@ -556,48 +575,73 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 -- sugerencias 
-DROP PROCEDURE IF EXISTS spu_Listar_TiposYUnidadesAlimentos;
+DROP PROCEDURE IF EXISTS ObtenerSugerenciasAlimentos;
 DELIMITER $$
-CREATE PROCEDURE spu_Listar_TiposYUnidadesAlimentos(
-    IN searchValue VARCHAR(255),
-    IN start INT,
-    IN length INT
-)
+CREATE PROCEDURE ObtenerSugerenciasAlimentos()
 BEGIN
-    -- Obtener los registros paginados
     SELECT 
-        ta.idTipoAlimento,
-        ta.tipoAlimento,
-        uma.nombreUnidad AS unidadMedida
-    FROM TipoAlimentos ta
-    LEFT JOIN UnidadesMedidaAlimento uma
-        ON 1 = 1 -- Relación manual, muestra todas las unidades
-    WHERE 
-        (searchValue IS NULL OR searchValue = '' OR 
-         ta.tipoAlimento LIKE CONCAT('%', searchValue, '%') OR
-         uma.nombreUnidad LIKE CONCAT('%', searchValue, '%'))
-    ORDER BY ta.idTipoAlimento DESC
-    LIMIT start, length;
-
-    -- Obtener el total de registros filtrados
-    SELECT COUNT(*) AS totalFiltered
-    FROM TipoAlimentos ta
-    LEFT JOIN UnidadesMedidaAlimento uma
-        ON 1 = 1 -- Relación manual
-    WHERE 
-        (searchValue IS NULL OR searchValue = '' OR 
-         ta.tipoAlimento LIKE CONCAT('%', searchValue, '%') OR
-         uma.nombreUnidad LIKE CONCAT('%', searchValue, '%'));
-
-    -- Obtener el total general de registros sin filtros
-    SELECT COUNT(*) AS totalRecords FROM TipoAlimentos;
-END $$
+        tal.idTipoAlimento AS IdTipoAlimento,
+        tal.tipoAlimento AS TipoAlimento,
+        uma.idUnidadMedida AS IdUnidadMedida,
+        uma.nombreUnidad AS UnidadMedida
+    FROM 
+        TipoAlimento_UnidadMedida taum
+    INNER JOIN 
+        TipoAlimentos tal ON taum.idTipoAlimento = tal.idTipoAlimento
+    INNER JOIN 
+        UnidadesMedidaAlimento uma ON taum.idUnidadMedida = uma.idUnidadMedida
+    ORDER BY 
+        tal.tipoAlimento ASC, 
+        uma.nombreUnidad ASC;
+END$$
 DELIMITER ;
 
 
+-- editar sugerencias
+DROP PROCEDURE IF EXISTS EditarCombinacionAlimento;
+DELIMITER $$
+CREATE PROCEDURE EditarCombinacionAlimento(
+    IN p_IdTipoActual INT,           -- ID actual del tipo de alimento
+    IN p_IdUnidadActual INT,         -- ID actual de la unidad de medida
+    IN p_NuevoTipo VARCHAR(50),      -- Nuevo nombre del tipo de alimento
+    IN p_NuevaUnidad VARCHAR(10)     -- Nuevo nombre de la unidad de medida
+)
+BEGIN
+    DECLARE v_IdNuevoTipo INT;
+    DECLARE v_IdNuevaUnidad INT;
 
+    -- Paso 1: Verificar o insertar el nuevo tipo de alimento
+    SELECT idTipoAlimento INTO v_IdNuevoTipo
+    FROM TipoAlimentos
+    WHERE tipoAlimento = p_NuevoTipo;
 
+    IF v_IdNuevoTipo IS NULL THEN
+        INSERT INTO TipoAlimentos (tipoAlimento)
+        VALUES (p_NuevoTipo);
+        SET v_IdNuevoTipo = LAST_INSERT_ID();
+    END IF;
+
+    -- Paso 2: Verificar o insertar la nueva unidad de medida
+    SELECT idUnidadMedida INTO v_IdNuevaUnidad
+    FROM UnidadesMedidaAlimento
+    WHERE nombreUnidad = p_NuevaUnidad;
+
+    IF v_IdNuevaUnidad IS NULL THEN
+        INSERT INTO UnidadesMedidaAlimento (nombreUnidad)
+        VALUES (p_NuevaUnidad);
+        SET v_IdNuevaUnidad = LAST_INSERT_ID();
+    END IF;
+
+    -- Paso 3: Actualizar la combinación específica en TipoAlimento_UnidadMedida
+    UPDATE TipoAlimento_UnidadMedida
+    SET idTipoAlimento = v_IdNuevoTipo, idUnidadMedida = v_IdNuevaUnidad
+    WHERE idTipoAlimento = p_IdTipoActual AND idUnidadMedida = p_IdUnidadActual;
+
+END$$
+
+DELIMITER ;
 
 
 -- esto no va es prueba 

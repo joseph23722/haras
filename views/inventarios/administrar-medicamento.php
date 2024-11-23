@@ -357,25 +357,24 @@
 
 
 
-    <!-- Modal para Sugerencias de Medicamentos -->
-    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+    <!-- Modal para Listar Sugerencias de Alimentos -->
+    <div class="modal fade" id="modalSugerenciasAlimentos" tabindex="-1" aria-labelledby="modalSugerenciasAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
                 <div class="modal-header" style="background-color: #3498db; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalSugerenciasLabel">Sugerencias de Medicamentos</h5>
+                    <h5 class="modal-title" id="modalSugerenciasAlimentosLabel">Sugerencias de Tipos de Alimentos y Unidades de Medida</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
                 </div>
 
                 <!-- Cuerpo del Modal -->
                 <div class="modal-body">
                     <!-- Tabla para DataTables -->
-                    <table id="tablaSugerencias" class="table table-hover table-bordered mt-3" style="width: 100%;">
+                    <table id="tablaAlimentos" class="table table-hover table-bordered mt-3" style="width: 100%;">
                         <thead class="table-light">
                             <tr class="text-center">
-                                <th>Tipo de Medicamento</th>
-                                <th>Presentación</th>
-                                <th>Composición</th>
+                                <th>Tipo de Alimento</th>
+                                <th>Unidad de Medida</th>
                                 <th>Acciones</th> <!-- Nueva columna para acciones -->
                             </tr>
                         </thead>
@@ -391,37 +390,43 @@
     </div>
 
 
-    <!-- Modal para Editar Sugerencia de Medicamento -->
-    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+
+    <!-- Modal para Editar Tipo de Alimento y Unidad de Medida -->
+    <div class="modal fade" id="modalEditarAlimento" tabindex="-1" aria-labelledby="modalEditarAlimentoLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Encabezado del Modal -->
                 <div class="modal-header" style="background-color: #f39c12; color: white;">
-                    <h5 class="modal-title" id="modalEditarSugerenciaLabel">Editar Sugerencia de Medicamento</h5>
+                    <h5 class="modal-title" id="modalEditarAlimentoLabel">Editar Tipo de Alimento y Unidad de Medida</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="formEditarSugerencia">
-                        <!-- Campo oculto para el ID de la sugerencia (ID de la combinación) -->
 
-                        <input type="hidden" id="editarId"> <!-- Aquí va el ID de la sugerencia -->
+                <!-- Cuerpo del Modal -->
+                <div class="modal-body">
+                    <form id="formEditarSugerenciaAlimento">
+                        <!-- Campo oculto para el ID del Tipo de Alimento -->
+                        <input type="hidden" id="editarIdTipoAlimento">
+                        <input type="hidden" id="editarIdUnidadMedida">
+
+                        <!-- Campo para Tipo de Alimento -->
                         <div class="mb-3">
-                            <label for="editarTipo" class="form-label">Tipo de Medicamento</label>
-                            <input type="text" class="form-control" id="editarTipo" required>
+                            <label for="editarTipoAlimento" class="form-label">Tipo de Alimento</label>
+                            <input type="text" class="form-control" id="editarTipoAlimento" required>
                         </div>
+
+                        <!-- Campo para Unidad de Medida -->
                         <div class="mb-3">
-                            <label for="editarPresentacion" class="form-label">Presentación</label>
-                            <input type="text" class="form-control" id="editarPresentacion" required>
+                            <label for="editarUnidadMedida" class="form-label">Unidad de Medida</label>
+                            <input type="text" class="form-control" id="editarUnidadMedida" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editarDosis" class="form-label">Dosis</label>
-                            <input type="text" class="form-control" id="editarDosis" required>
-                        </div>
+
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
 
 
 

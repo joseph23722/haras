@@ -337,58 +337,57 @@ class Alimento extends Conexion {
             if (!in_array($tipoMovimiento, ['Entrada', 'Salida'])) {
                 throw new Exception('Tipo de movimiento no válido. Debe ser "Entrada" o "Salida".');
             }
-    
-            // Validar que las fechas sean correctas
-            $fechaInicio = $params['fechaInicio'] ?? '1900-01-01';
-            $fechaFin = $params['fechaFin'] ?? date('Y-m-d');
-            if (strtotime($fechaInicio) > strtotime($fechaFin)) {
-                throw new Exception('La fecha de inicio no puede ser posterior a la fecha de fin.');
+
+            // Validar el filtro de fecha
+            $filtroFecha = $params['filtroFecha'] ?? 'todos';
+            if (!in_array($filtroFecha, ['hoy', 'ultimaSemana', 'ultimoMes', 'todos'])) {
+                throw new Exception('Filtro de fecha no válido. Debe ser "hoy", "ultimaSemana", "ultimoMes" o "todos".');
             }
-    
+
             // Validar límite y desplazamiento (paginación)
             $limite = isset($params['limit']) && is_numeric($params['limit']) ? (int)$params['limit'] : 10;
             $desplazamiento = isset($params['offset']) && is_numeric($params['offset']) ? (int)$params['offset'] : 0;
-            
+
             // ID del usuario: 0 para todos o un ID específico
             $idUsuario = isset($params['idUsuario']) && is_numeric($params['idUsuario']) ? (int)$params['idUsuario'] : 0;
-    
+
             // Preparar la llamada al procedimiento almacenado con los parámetros necesarios
-            $query = $this->pdo->prepare("CALL spu_historial_completo(?, ?, ?, ?, ?, ?)");
-    
+            $query = $this->pdo->prepare("CALL spu_historial_completo(?, ?, ?, ?, ?)");
+
             // Ejecutar el procedimiento almacenado pasando los parámetros
             $query->execute([
                 $tipoMovimiento,  // Tipo de movimiento (Entrada/Salida)
-                $fechaInicio,     // Fecha de inicio
-                $fechaFin,        // Fecha de fin
+                $filtroFecha,     // Filtro de fecha ('hoy', 'ultimaSemana', 'ultimoMes', 'todos')
                 $idUsuario,       // ID del usuario (0 para todos los usuarios)
                 $limite,          // Límite de resultados
                 $desplazamiento   // Desplazamiento para paginación
             ]);
-    
+
             // Obtener los resultados y devolverlos
             $resultados = $query->fetchAll(PDO::FETCH_ASSOC);
-    
+
             // Verificar si hay resultados
             if (!empty($resultados)) {
                 return ['status' => 'success', 'data' => $resultados];
             } else {
-                return ['status' => 'info', 'message' => 'No se encontraron movimientos en el rango de fechas seleccionado.'];
+                return ['status' => 'info', 'message' => 'No se encontraron movimientos para el filtro seleccionado.'];
             }
-    
+
         } catch (PDOException $e) {
             // Capturar y registrar cualquier error SQL
             error_log("Error en la base de datos: " . $e->getMessage());
-    
+
             // Devolver un mensaje de error en caso de problemas en la base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
             // Capturar y registrar cualquier otro tipo de error
             error_log("Error: " . $e->getMessage());
-    
+
             // Devolver un mensaje de error general
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
     
 
     // Método para obtener las unidades de medida asociadas a un alimento específico por nombre
@@ -578,68 +577,45 @@ class Alimento extends Conexion {
 
     //original
 
-    public function listarTiposYUnidadesAlimentos() {
+    public function listarSugerenciasAlimentos() {
         try {
-            // Preparar y ejecutar el procedimiento almacenado
-            $query = $this->pdo->prepare("CALL spu_Listar_TiposYUnidadesAlimentos()");
+            // Llamar al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL ObtenerSugerenciasAlimentos()");
             $query->execute();
-    
-            // Obtener todas las filas en formato asociativo
-            $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Log para verificar los datos obtenidos
-            error_log("Tipos y Unidades de Alimentos obtenidos: " . json_encode($result));
-    
-            return $result;
-        } catch (PDOException $e) {
-            // Manejo de errores
-            error_log("Error al listar Tipos y Unidades de Alimentos: " . $e->getMessage());
-            return [];
+            // Retornar los resultados como un arreglo asociativo
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            // Manejo de errores y registro en log
+            error_log("Error al listar sugerencias de alimentos: " . $e->getMessage());
+            return false;
         }
     }
+    
 
 
-    public function editarTipoYUnidadEspecifica($idTipoAlimentoUnidad, $tipoAlimento, $idUnidadMedida, $nombreUnidad) {
+    public function editarTipoUnidadAlimento($idTipoAlimento, $nuevoTipo, $idUnidadMedida, $nuevaUnidad) {
         try {
-            // Inicia una transacción
-            $this->pdo->beginTransaction();
+
+            // Preparar la llamada al procedimiento almacenado
+            $query = $this->pdo->prepare("CALL EditarCombinacionAlimento(?, ?, ?, ?)");
+            
+            // Ejecutar el procedimiento con los parámetros
+            $query->execute([$idTipoAlimento, $idUnidadMedida, $nuevoTipo, $nuevaUnidad]);
     
-            // Actualiza el tipo de alimento
-            $queryTipo = $this->pdo->prepare("
-                UPDATE TipoAlimentos 
-                SET tipoAlimento = :tipoAlimento 
-                WHERE idTipoAlimento = (
-                    SELECT idTipoAlimento FROM TipoAlimento_UnidadMedida WHERE idTipoAlimentoUnidad = :idTipoAlimentoUnidad
-                )
-            ");
-            $queryTipo->bindParam(':tipoAlimento', $tipoAlimento, PDO::PARAM_STR);
-            $queryTipo->bindParam(':idTipoAlimentoUnidad', $idTipoAlimentoUnidad, PDO::PARAM_INT);
-            $queryTipo->execute();
+            // Verificar filas afectadas
+            $affectedRows = $query->rowCount();
+            error_log("Filas afectadas por EditarCombinacionAlimento: $affectedRows");
     
-            // Actualiza la unidad de medida específica
-            $queryUnidad = $this->pdo->prepare("
-                UPDATE UnidadesMedidaAlimento 
-                SET nombreUnidad = :nombreUnidad 
-                WHERE idUnidadMedida = :idUnidadMedida
-            ");
-            $queryUnidad->bindParam(':nombreUnidad', $nombreUnidad, PDO::PARAM_STR);
-            $queryUnidad->bindParam(':idUnidadMedida', $idUnidadMedida, PDO::PARAM_INT);
-            $queryUnidad->execute();
-    
-            // Confirma la transacción
-            $this->pdo->commit();
-    
-            return ['status' => 'success', 'message' => 'Tipo de alimento y unidad de medida actualizados correctamente.'];
-        } catch (PDOException $e) {
-            $this->pdo->rollBack(); // Revierte la transacción si ocurre un error
-            error_log("Error al actualizar Tipo y Unidad: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al actualizar Tipo y Unidad.'];
+            // Si se actualizaron filas, retornar true, de lo contrario false
+            return $affectedRows > 0;
+        } catch (Exception $e) {
+            // Manejo de errores y registro en log
+            error_log("Error al ejecutar EditarCombinacionAlimento: " . $e->getMessage());
+            return false;
         }
     }
     
     
     
-    
-
 
 }
