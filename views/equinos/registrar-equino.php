@@ -122,7 +122,9 @@
                 </div>
             </form>
         </div>
-        <!-- Modal -->
+
+
+        <!-- Modal para editar equino-->
         <div class="modal fade" id="editarEquinosModal" tabindex="-1" aria-labelledby="editarEquinosModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
