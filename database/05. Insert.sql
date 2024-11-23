@@ -231,6 +231,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 -- Reportes
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(7, 'presionar-boton-reporte', 'S', 'Reportes', 'fa-solid fa-file-circle-plus');
+    
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(4, 'listar-implemento-campo', 'N', NULL, NULL);
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -288,6 +291,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (4, 6),
     (4, 7),
     (4, 17),
+    (4, 27),
     (4, 25);
 
 -- Medico
