@@ -181,8 +181,9 @@ INSERT INTO modulos (modulo) VALUES
     ('historialMedico'), -- 3
     ('inventarios'), -- 4
     ('servicios'), -- 5
-    ('usuarios'); -- 6
-
+    ('usuarios'), -- 6
+    ('reportes'); -- 7
+    
 -- HOME
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(NULL, 'home', 'S', 'Inicio', 'fas fa-home');
@@ -197,7 +198,8 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(2, 'registrar-equino', 'S', 'Registro Equinos', 'fa-solid fa-horse'),
    	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop'),
 	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list'),
-    (2, 'historial-equino', 'S', 'Historial Equinos', 'fas fa-history');
+    (2, 'historial-equino', 'S', 'Historial Equinos', 'fas fa-history'),
+    (2, 'mostrar-foto', 'S', 'Colección de Fotos', 'fa-solid fa-image');
     
 -- historialMedico
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
@@ -210,8 +212,12 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
 	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills'),
     (4, 'registrar-implementos-caballos', 'S', 'Implementos Caballos', 'fa-solid fa-scissors'),
+	(4, 'listar-implemento-caballo', 'N', NULL, NULL),
     (4, 'registrar-implementos-campos', 'S', 'Implementos Campos', 'fa-solid fa-wrench'),
-    (4, 'administrar-herramienta', 'S', 'Herrero', 'fas fa-wrench');
+    (4, 'administrar-herramienta', 'S', 'Herrero', 'fas fa-wrench'),
+	(4, 'listar-accion-herrero', 'N', NULL, NULL),
+    (4, 'listar-alimento', 'N', NULL, NULL);
+    
 -- Servicios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     (5, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools'),
@@ -221,34 +227,36 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
 	(6, 'actualizar-contrasenia', 'S', 'Actualizar Contraseña', 'fas fa-key');
-    
+
+-- Reportes
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(2, 'mostrar-foto', 'S', 'Colección de Fotos', 'fa-solid fa-image');
-    
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(2, 'listar-alimento', 'N', NULL, NULL);
-    
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(2, 'listar-implemento-caballo', 'N', NULL, NULL);
-    
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(2, 'listar-accion-herrero', 'N', NULL, NULL);
-    
+	(7, 'presionar-boton-reporte', 'S', 'Reportes', 'fa-solid fa-file-circle-plus');
+
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
     (1, 7),
-    (1, 17),
-    (1, 21); -- Actualizar contrasenia
-    
+    (1, 9),
+    (1, 16),
+    (1, 19),
+    (1, 20),
+    (1, 23),
+    (1, 26), -- Actualizar contrasenia
+	(1, 25);
+
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
     (2, 7),
-    (2, 17),
-    (2, 21);
+    (2, 16),
+    (2, 19),
+    (2, 20),
+    (2, 23),
+    (2, 24),
+    (2, 25),
+    (2, 26);
     
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -262,15 +270,14 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 12),
     (3, 13),
     (3, 14),
+    (3, 15),
     (3, 16),
-    (3, 17),
     (3, 18),
     (3, 19),
     (3, 20),
     (3, 21),
     (3, 22),
     (3, 23),
-    (3, 24),
     (3, 25); -- falta el 25
     
 -- Supervisor Campo
@@ -280,23 +287,24 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (4, 3),
     (4, 6),
     (4, 7),
-    (4, 15),
-    (4, 21);
+    (4, 17),
+    (4, 25);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
 	(5, 1),
-	(5, 9),
     (5, 10),
     (5, 11),
-    (5, 21);
+    (5, 12),
+    (5, 25);
     
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
 	(6, 4),
-    (6, 16),
-    (6, 21);
+    (6, 18),
+    (6, 19),
+    (6, 25);
 
 INSERT INTO Nacionalidades (nacionalidad) VALUES 
 ('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),

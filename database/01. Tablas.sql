@@ -526,7 +526,7 @@ CREATE TABLE vistas
     ruta			VARCHAR(50)			NOT NULL,
     sidebaroption	CHAR(1)				NOT NULL,
     texto			VARCHAR(20)			NULL,
-    icono			VARCHAR(20)			NULL,
+    icono			VARCHAR(35)			NULL,
     CONSTRAINT fk_idmodulo_vis FOREIGN KEY (idmodulo) REFERENCES modulos (idmodulo),
     CONSTRAINT uk_ruta_vis	UNIQUE(ruta),
     CONSTRAINT ck_sidebaroption_vis CHECK (sidebaroption IN ('S', 'N'))
