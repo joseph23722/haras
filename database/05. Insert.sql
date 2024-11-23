@@ -224,7 +224,13 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(2, 'mostrar-foto', 'S', 'Colección de Fotos', 'fa-solid fa-image');
-
+    
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(2, 'listar-alimento', 'N', NULL, NULL);
+    
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(2, 'listar-implemento-caballo', 'N', NULL, NULL);
+    
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
@@ -259,7 +265,9 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 19),
     (3, 20),
     (3, 21),
-    (3, 22);
+    (3, 22),
+    (3, 23),
+    (3, 24);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES

@@ -78,6 +78,9 @@
 
                     <!-- Botones de acción -->
                     <div class="col-md-12 text-end mt-3">
+                        <a href="./listar-implemento-caballo" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+                            <i class="fas fa-save"></i> Listado Implementos
+                        </a>
                         <button type="submit" class="btn btn-primary btn-lg" style="background-color: #0077b6; border: none;">
                             <i class="fas fa-save"></i> Registrar Implemento
                         </button>
@@ -251,18 +254,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
-            <h5 class="text-center"><i class="fas fa-database"></i> Implementos Registrados</h5>
-        </div>
-        <div class="card-body" style="background-color: #f9f9f9;">
-            <table id="implementos-table" class="table table-striped table-hover table-bordered">
-                <thead style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
-                </thead>
-            </table>
         </div>
     </div>
 </div>
