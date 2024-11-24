@@ -165,6 +165,4 @@ const loadHistorialHerreroTable = () => {
 // Inicializar la tabla al cargar la página
 $(document).ready(function () {
     loadHistorialHerreroTable();  // Llamamos la función sin idEquino para obtener todos los registros
-    cargarTiposTrabajos();
-    cargarHerramientas();
 });

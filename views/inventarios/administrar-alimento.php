@@ -196,10 +196,6 @@
     </div>
   </div>
 
-
-
-
-
   <!-- Modal para Agregar Nueva Categoría de Alimento y Medida -->
   <div class="modal fade" id="modalAgregarCategoriaMedida" tabindex="-1" aria-labelledby="labelAgregarCategoriaMedida" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-md">
@@ -459,9 +455,7 @@
         </div>
       </div>
     </div>
-  </div>`
-
-
+  </div>
 </div>
 
 <?php require_once '../footer.php'; ?>

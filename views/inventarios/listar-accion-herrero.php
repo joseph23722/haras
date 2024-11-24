@@ -22,59 +22,61 @@
                         <th>Observaciones</th>
                     </tr>
                 </thead>
-
             </table>
         </div>
     </div>
 </div>
 
 <?php require_once '../footer.php'; ?>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- JS de DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="/haras/vendor/herrero/herrero.js" defer></script>
-
-
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
-<script src="../../swalcustom.js"></script>
 <script>
-    // Cargar herramientas dinámicamente
-async function cargarHerramientas() {
-    try {
-        const response = await fetch('../../controllers/herrero.controller.php?operation=listarHerramientas');
-
-        // Manejo de respuesta como texto para depuración
-        const textResponse = await response.text();
-
-        // Intentar convertir a JSON
-        let data;
-        try {
-            data = JSON.parse(textResponse);
-        } catch (error) {
-            return; // Salir si la respuesta no es JSON válido
-        }
-
-        if (data.status === 'success') {
-            const herramientaSelect = document.getElementById('herramientaUsada');
-            herramientaSelect.innerHTML = '<option value="">Seleccione una herramienta</option>'; // Limpiar opciones previas
-            data.data.forEach(herramienta => {
-                const option = document.createElement('option');
-                option.value = herramienta.idHerramienta;
-                option.textContent = herramienta.nombreHerramienta;
-                herramientaSelect.appendChild(option);
-            });
-        } else {
-            console.error('Error al cargar herramientas:', data.message);
-        }
-    } catch (error) {
-        console.error('Error en la solicitud para herramientas:', error);
-    }
-}
-
+    document.addEventListener("DOMContentLoaded", function() {
+        // Inicializar DataTable
+        const table = $("#historialHerreroTable").DataTable({
+            ajax: {
+                url: "../../controllers/herrero.controller.php?operation=consultarHistorialEquino",
+                method: "GET",
+                dataSrc: function(json) {
+                    if (json.data) {
+                        return json.data;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: json.message || 'Error al cargar los datos.',
+                        });
+                        return [];
+                    }
+                }
+            },
+            columns: [{
+                    data: "nombreEquino"
+                }, // Nombre del Equino
+                {
+                    data: "tipoEquino"
+                }, // Tipo de Equino
+                {
+                    data: "fecha"
+                }, // Fecha
+                {
+                    data: "TrabajoRealizado"
+                }, // Trabajo Realizado
+                {
+                    data: "HerramientasUsadas"
+                }, // Herramientas Usadas
+                {
+                    data: "observaciones"
+                } // Observaciones
+            ]
+        });
+    });
 </script>

@@ -1,5 +1,5 @@
 -- agregar historial
-DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
+DROP PROCEDURE IF EXISTS `InsertarHistorialHerrero`;
 DELIMITER $$
 CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_idEquino INT,
@@ -46,7 +46,7 @@ BEGIN
 
     -- Confirmar la transacción
     COMMIT;
-END //
+END $$
 DELIMITER ;
 
 -- listar historial herrero
@@ -145,8 +145,8 @@ END $$
 DELIMITER ;
 
 -- sugerencias herrero
+DROP PROCEDURE IF EXISTS `spu_ListarTiposYHerramientas`;
 DELIMITER $$
-DROP PROCEDURE IF EXISTS spu_ListarTiposYHerramientas $$
 CREATE PROCEDURE spu_ListarTiposYHerramientas()
 BEGIN
     -- Combinar TiposTrabajos y Herramientas en un solo resultado con IDs únicos

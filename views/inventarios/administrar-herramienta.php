@@ -8,32 +8,28 @@
         <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial de Herrero</h5>
             <!-- Botón para abrir el modal de agregar trabajo o herramienta -->
-            <button type="button" class="btn btn-success btn-sm" 
-                    style="background-color: #28a745; border: none; position: absolute; right: 58px; top: 1px; padding: 11px 15px; font-size: 1.2em;"
-                    id="btnAgregarTrabajoHerramienta" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalAgregarTrabajoHerramienta">
+            <button type="button" class="btn btn-success btn-sm"
+                style="background-color: #28a745; border: none; position: absolute; right: 58px; top: 1px; padding: 11px 15px; font-size: 1.2em;"
+                id="btnAgregarTrabajoHerramienta"
+                data-bs-toggle="modal"
+                data-bs-target="#modalAgregarTrabajoHerramienta">
                 <i class="fas fa-plus"></i>
             </button>
 
             <!-- Botón para abrir el modal de Tipos y Herramientas -->
-            <button type="button" class="btn btn-info btn-sm" 
-                    style="background-color: #17a2b8; border: none; position: absolute; right: 0.5px; top: 1px; padding: 11px 15px; font-size: 1.2em; color: #fff;"
-                    id="btnTiposYHerramientas" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalTiposYHerramientas">
+            <button type="button" class="btn btn-info btn-sm"
+                style="background-color: #17a2b8; border: none; position: absolute; right: 0.5px; top: 1px; padding: 11px 15px; font-size: 1.2em; color: #fff;"
+                id="btnTiposYHerramientas"
+                data-bs-toggle="modal"
+                data-bs-target="#modalTiposYHerramientas">
                 <i class="fas fa-tools"></i>
             </button>
-
-
-
         </div>
 
         <!-- Formulario -->
         <div class="card-body p-4" style="background-color: #f9f9f9;">
             <form action="" id="form-historial-herrero" autocomplete="off">
                 <div class="row g-3">
-
                     <!-- Selector para el Tipo de Equino -->
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -78,7 +74,6 @@
                         </div>
                     </div>
 
-
                     <!-- Campo de fecha -->
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -86,7 +81,6 @@
                             <label for="fecha"><i class="fas fa-calendar-alt" style="color: #007bff;"></i> Fecha</label>
                         </div>
                     </div>
-
 
                     <!-- Observaciones -->
                     <div class="col-md-12">
@@ -100,6 +94,9 @@
 
                     <!-- Botones -->
                     <div class="col-md-12 text-end mt-3">
+                        <a href="./listar-accion-herrero" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+                            <i class="fas fa-save"></i> Listado Herrero
+                        </a>
                         <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial-herrero" style="background-color: #0077b6; border: none;">
                             <i class="fas fa-save"></i> Registrar Historial
                         </button>
@@ -111,7 +108,6 @@
             </form>
         </div>
     </div>
-
 
     <!-- Modal para agregar trabajo o herramienta -->
     <div class="modal fade" id="modalAgregarTrabajoHerramienta" tabindex="-1" aria-labelledby="labelAgregarTrabajoHerramienta" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -166,8 +162,6 @@
             </div>
         </div>
     </div>
-
-
 
     <!-- Modal para mostrar la lista de Tipos y Herramientas -->
     <div class="modal fade" id="modalTiposYHerramientas" tabindex="-1" aria-labelledby="modalTiposYHerramientasLabel" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -239,56 +233,10 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-    <!-- Tabla para DataTable -->
-    <div class="card mt-4">
-        <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
-            <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Historiales de Herrero</h5>
-        </div>
-        <div class="card-body">
-            <!-- No es necesario llenar tbody manualmente, DataTables lo hace -->
-            <table id="historialHerreroTable" class="table table-striped" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Nombre del Equino</th>
-                        <th>Tipo de Equino</th>
-                        <th>Fecha</th>
-                        <th>Trabajo Realizado</th>
-                        <th>Herramienta Usada</th>
-                        <th>Observaciones</th>
-                    </tr>
-                </thead>
-
-            </table>
-        </div>
-    </div>
-
-
-
 </div>
 
-<?php require_once '../footer.php'; ?>
-
-<script src="/haras/vendor/herrero/herrero.js" defer></script>
-
-
-<script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluye SweetAlert -->
-<script src="../../swalcustom.js"></script>
+<?php require_once '../footer.php'; ?><!-- JS de jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- JS de DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="../../JS/administrar-herramienta.js"></script>

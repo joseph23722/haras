@@ -74,17 +74,14 @@ const verificarCamposTrabajoHerramienta = () => {
     return { nombre, tipo, trabajoSeleccionado, herramientaSeleccionada }; // Retorna los campos
 };
 
-
-
-
 // Cargar tipos de trabajo dinámicamente
 async function cargarTiposTrabajos() {
     try {
         const response = await fetch('../../controllers/herrero.controller.php?operation=listarTiposTrabajos');
-        
+
         // Manejo de respuesta como texto para depuración
         const textResponse = await response.text();
-        
+
         // Intentar convertir a JSON
         let data;
         try {
@@ -114,10 +111,10 @@ async function cargarTiposTrabajos() {
 async function cargarHerramientas() {
     try {
         const response = await fetch('../../controllers/herrero.controller.php?operation=listarHerramientas');
-        
+
         // Manejo de respuesta como texto para depuración
         const textResponse = await response.text();
-        
+
         // Intentar convertir a JSON
         let data;
         try {
@@ -142,7 +139,6 @@ async function cargarHerramientas() {
         console.error('Error en la solicitud para herramientas:', error);
     }
 }
-
 
 // Función para cargar los equinos según el tipo seleccionado
 async function loadEquinosPorTipo(tipoEquino) {
@@ -237,7 +233,6 @@ function registrarHistorialHerrero() {
         .catch(error => console.error('Error al registrar historial:', error));
 }
 
-
 // Guardar nuevo Trabajo o Herramienta
 const guardarTrabajoHerramienta = async () => {
     const inputNombre = document.getElementById("inputNombre");
@@ -299,8 +294,6 @@ const guardarTrabajoHerramienta = async () => {
         mensajeModal.innerHTML = '<p class="text-danger">Error al enviar los datos al servidor.</p>';
     }
 };
-
-
 
 // Evento para el botón de sugerencias
 document.getElementById("btnTiposYHerramientas").addEventListener("click", function () {
@@ -383,8 +376,6 @@ function editarTipoOHerramienta(id, nombre, tipo) {
     modalEditar.show();
 }
 
-
-// Editar Tipo o Herramienta
 // Editar Tipo o Herramienta
 document.getElementById('formEditarTipoHerramienta').addEventListener('submit', async function (event) {
     event.preventDefault();
@@ -438,11 +429,6 @@ document.getElementById('formEditarTipoHerramienta').addEventListener('submit', 
     }
 });
 
-
-
-
-
-
 // Asignar evento al botón de guardar
 const btnGuardarTrabajoHerramienta = document.getElementById("btnGuardarTrabajoHerramienta");
 if (btnGuardarTrabajoHerramienta) {
@@ -450,4 +436,3 @@ if (btnGuardarTrabajoHerramienta) {
 } else {
     console.error("El botón #btnGuardarTrabajoHerramienta no se encontró.");
 }
-
