@@ -78,7 +78,7 @@ $params = array(
     'idUsuario' => isset($_GET['idUsuario']) && is_numeric($_GET['idUsuario']) ? (int)$_GET['idUsuario'] : 0,
     'limite' => isset($_GET['limite']) && is_numeric($_GET['limite']) ? (int)$_GET['limite'] : 10,
     'desplazamiento' => isset($_GET['desplazamiento']) && is_numeric($_GET['desplazamiento']) ? (int)$_GET['desplazamiento'] : 0,
-    'busqueda' => isset($_GET['busqueda']) ? $_GET['busqueda'] : '' // Nuevo parámetro de búsqueda
+    'busqueda' => isset($_GET['busqueda']) ? $_GET['busqueda'] : '' 
 );
 
 // Llamar a la función con el procedimiento almacenado y los parámetros obtenidos

@@ -9,8 +9,7 @@ const configurarDataTableEntradas = () => {
                 type: 'GET',
                 data: function (d) {
                     d.tipoMovimiento = 'Entrada';
-                    d.fechaInicio = document.getElementById('filtroRango').getAttribute('data-fecha-inicio') || '';
-                    d.fechaFin = document.getElementById('filtroRango').getAttribute('data-fecha-fin') || '';
+                    d.filtroFecha = document.getElementById('filtroRango').value || 'hoy'; // Usamos filtroFecha
                     d.idUsuario = 0;  // ID del usuario si es necesario
                     d.limit = d.length;  // Define el límite de resultados basados en la configuración de la tabla
                     d.offset = d.start;  // Define el offset para paginación
@@ -18,12 +17,12 @@ const configurarDataTableEntradas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'idMedicamento' },
-                { data: 'Medicamento' },
-                { data: 'Lote' },
-                { data: 'StockActual' },
-                { data: 'Cantidad' },
-                { data: 'FechaMovimiento' }
+                { data: 'idMedicamento', title: 'ID Medicamento' },
+                { data: 'Medicamento', title: 'Medicamento' },
+                { data: 'Lote', title: 'Lote' },
+                { data: 'StockActual', title: 'Stock Actual' },
+                { data: 'Cantidad', title: 'Cantidad' },
+                { data: 'FechaMovimiento', title: 'Fecha Movimiento' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
@@ -47,8 +46,7 @@ const configurarDataTableSalidas = () => {
                 type: 'GET',
                 data: function (d) {
                     d.tipoMovimiento = 'Salida';
-                    d.fechaInicio = document.getElementById('filtroRango').getAttribute('data-fecha-inicio') || '';
-                    d.fechaFin = document.getElementById('filtroRango').getAttribute('data-fecha-fin') || '';
+                    d.filtroFecha = document.getElementById('filtroRango').value || 'hoy'; // Usamos filtroFecha
                     d.idUsuario = 0;  // ID del usuario si es necesario
                     d.limit = d.length;  // Define el límite de resultados basados en la configuración de la tabla
                     d.offset = d.start;  // Define el offset para paginación
@@ -56,14 +54,14 @@ const configurarDataTableSalidas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'ID' },
-                { data: 'Medicamento' },
-                { data: 'Lote' },
-                { data: 'TipoEquino' },
-                { data: 'CantidadEquino' }, // Cambiado para coincidir con el procedimiento
-                { data: 'Cantidad' },
-                { data: 'Motivo' },
-                { data: 'FechaSalida' }
+                { data: 'ID', title: 'ID Movimiento' },
+                { data: 'Medicamento', title: 'Medicamento' },
+                { data: 'Lote', title: 'Lote' },
+                { data: 'TipoEquino', title: 'Tipo Equino' },
+                { data: 'CantidadEquino', title: 'Cantidad Equinos' },
+                { data: 'Cantidad', title: 'Cantidad' },
+                { data: 'Motivo', title: 'Motivo' },
+                { data: 'FechaSalida', title: 'Fecha Movimiento' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
@@ -76,38 +74,6 @@ const configurarDataTableSalidas = () => {
     }
 };
 
-// Función para ajustar las fechas basadas en el filtro seleccionado
-const setFechaFiltro = () => {
-    const filtroRango = document.getElementById('filtroRango').value;
-    const hoy = new Date();
-    let fechaInicio, fechaFin;
-
-    switch (filtroRango) {
-        case 'hoy':
-            fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
-            break;
-        case 'ultimaSemana':
-            fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
-            fechaFin = new Date().toISOString().split('T')[0];
-            break;
-        case 'ultimoMes':
-            fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
-            fechaFin = new Date().toISOString().split('T')[0];
-            break;
-        case 'todos':
-            fechaInicio = '1900-01-01';  // Fecha muy anterior para incluir todos los registros
-            fechaFin = new Date().toISOString().split('T')[0];  // Fecha de hoy
-            break;
-        default:
-            fechaInicio = '';
-            fechaFin = '';
-    }
-
-    // Asigna las fechas como atributos del filtro para uso en AJAX
-    document.getElementById('filtroRango').setAttribute('data-fecha-inicio', fechaInicio);
-    document.getElementById('filtroRango').setAttribute('data-fecha-fin', fechaFin);
-};
-
 // Función para recargar las tablas de Entradas y Salidas sin reinicializarlas
 const reloadHistorialMovimientos = () => {
     $('#tabla-entradas').DataTable().ajax.reload(null, false); // Recarga datos de Entradas sin reiniciar
@@ -116,7 +82,6 @@ const reloadHistorialMovimientos = () => {
 
 // Evento para actualizar el filtro de fecha y recargar las tablas cuando el usuario selecciona un nuevo rango
 document.getElementById('filtroRango').addEventListener('change', () => {
-    setFechaFiltro();
     reloadHistorialMovimientos();
 });
 

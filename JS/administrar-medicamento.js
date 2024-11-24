@@ -290,6 +290,10 @@ document.addEventListener("DOMContentLoaded", () => {
         configurarDataTableSalidas();
     });
 
+
+
+    
+
     // Cargar los tipos de medicamentos desde el servidor
     const loadTiposMedicamentos = async () => {
         try {

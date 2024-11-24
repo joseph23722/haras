@@ -121,12 +121,12 @@ try {
             case 'obtenerHistorialMovimientosMedicamentos':
                 $params = [
                     'tipoMovimiento' => $_GET['tipoMovimiento'] ?? 'Entrada',
-                    'fechaInicio' => $_GET['fechaInicio'] ?? '1900-01-01',
-                    'fechaFin' => $_GET['fechaFin'] ?? date('Y-m-d'),
+                    'filtroFecha' => $_GET['filtroFecha'] ?? 'hoy',  // Filtro dinámico (hoy, ultimaSemana, ultimoMes, todos)
                     'idUsuario' => intval($_GET['idUsuario'] ?? 0),
                     'limit' => intval($_GET['limit'] ?? 10),
                     'offset' => intval($_GET['offset'] ?? 0)
                 ];
+            
                 try {
                     $result = $admi->obtenerHistorialMovimientosMedicamentos($params);
                     if ($result['status'] === 'success') {
@@ -138,6 +138,7 @@ try {
                     sendResponse('error', 'Error al obtener el historial de movimientos: ' . $e->getMessage());
                 }
                 break;
+                
 
             default:
                 sendResponse('error', 'Operación no válida para GET.');
