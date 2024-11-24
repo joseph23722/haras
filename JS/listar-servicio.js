@@ -1,18 +1,10 @@
-$(document).ready(function () {
-    const table = $('#serviciosTable').DataTable({
-        language: {
-            url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-        },
-        autoWidth: true,
-        pagingType: "simple",
-        dom: '<"top"lf>rt<"bottom"p><"clear">'
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    let datosServicios = [];
 
-    const costoServicioColumn = table.column(8);
-    const horaEntradaColumn = table.column(5);
-    const horaSalidaColumn = table.column(6);
-    const equinoExternoColumn = table.column(9);
+    // Verificar que el DOM está completamente cargado
+    console.log("DOM completamente cargado");
 
+    // Función para mostrar mensajes dinámicos
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
         const mensajeDiv = document.getElementById('mensaje');
         if (mensajeDiv) {
@@ -59,72 +51,81 @@ $(document).ready(function () {
         }
     };
 
-    costoServicioColumn.visible(false);
-    horaEntradaColumn.visible(false);
-    horaSalidaColumn.visible(false);
-    equinoExternoColumn.visible(false);
+    // Función para manejar el clic en el botón de filtro
+    const btnFiltrar = document.getElementById('btnFiltrar');
+    btnFiltrar.addEventListener('click', function () {
+        const tipoServicio = document.getElementById('filtroTipoServicio').value;
+        console.log("Tipo de servicio seleccionado:", tipoServicio);
 
-    $('#btnFiltrar').click(function () {
-        const tipoServicio = $('#filtroTipoServicio').val();
+        // Si se seleccionó un tipo de servicio
         if (tipoServicio) {
-            $.ajax({
-                url: '../../controllers/Propio.controller.php',
-                method: 'GET',
-                data: {
-                    tipoServicio: tipoServicio
-                },
-                dataType: 'json',
-                success: function (data) {
-                    table.clear();
-                    if (data.length > 0) {
+            fetch(`../../controllers/Propio.controller.php?tipoServicio=${tipoServicio}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos recibidos:", data);
+
+                    // Verificar si el tbody existe antes de hacer cualquier manipulación
+                    const tbody = document.querySelector("#serviciosTable tbody");
+                    console.log("tbody encontrado: ", tbody);
+
+                    if (tbody) {
+                        // Limpiar el contenido actual del tbody antes de agregar nuevas filas
+                        tbody.innerHTML = "";
+
+                        // Agregar las filas correspondientes al tipo de servicio
                         data.forEach(function (item) {
-                            // Determinar el nombre de Haras solo si el tipo de servicio es "Propio"
                             const nombreHaras = tipoServicio === 'Propio' ? 'Haras Rancho Sur' : item.nombreHaras;
 
-                            // Agregar las filas de la tabla
-                            table.row.add([
-                                item.idServicio,
-                                item.nombrePadrillo,
-                                item.nombreYegua,
-                                item.nombreEquinoExterno || '--',
-                                item.fechaServicio,
-                                item.detalles || '',
-                                item.horaEntrada || '--',
-                                item.horaSalida || '--',
-                                nombreHaras || 'Haras Rancho Sur',
-                                item.costoServicio || 'Por verificar',
-                            ]);
+                            const nuevaFila = `
+                                <tr>
+                                    <td>${item.idServicio}</td>
+                                    <td>${item.nombrePadrillo || '--'}</td>
+                                    <td>${item.nombreYegua || '--'}</td>
+                                    <td>${item.nombreEquinoExterno || '--'}</td>
+                                    <td>${item.fechaServicio}</td>
+                                    <td>${item.detalles || '--'}</td>
+                                    <td>${item.horaEntrada || '--'}</td>
+                                    <td>${item.horaSalida || '--'}</td>
+                                    <td>${nombreHaras || 'Haras Rancho Sur'}</td>
+                                    <td>${item.costoServicio || 'Por verificar'}</td>
+                                </tr>
+                            `;
+                            tbody.innerHTML += nuevaFila;
                         });
-                        table.draw();
 
-                        if (tipoServicio === 'Mixto' || tipoServicio === 'General') {
-                            table.column(3).visible(true);
-                            table.column(5).visible(true);
-                            table.column(6).visible(true);
-                            table.column(7).visible(true);
-                            table.column(8).visible(true);
-                            table.column(9).visible(true);
-                        } else if (tipoServicio === 'Propio') {
-                            table.column(3).visible(false);
-                            table.column(5).visible(true);
-                            table.column(6).visible(false);
-                            table.column(7).visible(false);
-                            table.column(8).visible(false);
-                            table.column(9).visible(false);
+                        // Después de agregar los datos, inicializar el DataTable si no se ha inicializado
+                        if (!window.simpleTable) {
+                            window.simpleTable = new simpleDatatables.DataTable("#serviciosTable", {
+                                autoWidth: true,
+                                perPage: 10,
+                                searchable: true,
+                                sortable: true,
+                            });
+                        } else {
+                            // Si la tabla ya está inicializada, actualizamos los datos
+                            window.simpleTable.update();
                         }
+
+                        // Restaurar el color del encabezado
+                        const encabezado = document.querySelector("#serviciosTable thead");
+                        if (encabezado) {
+                            encabezado.style.backgroundColor = '#a0ffb8';
+                            encabezado.style.color = 'white';
+                        }
+
+                        // Mostrar mensaje de éxito
+                        mostrarMensajeDinamico(`Se han cargado ${data.length} servicios`, 'SUCCESS');
                     } else {
-                        mostrarMensajeDinamico('No se encontraron servicios de monta', 'WARNING');
+                        console.error("El tbody no se encontró en el DOM.");
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error al obtener los datos: ' + error);
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos:', error);
                     mostrarMensajeDinamico('Error al obtener los datos', 'ERROR');
-                }
-            });
+                });
         } else {
-            table.clear().draw();
+            // Si no se seleccionó tipo de servicio
             mostrarMensajeDinamico('Seleccione un tipo de servicio para filtrar', 'INFO');
         }
     });
-
 });

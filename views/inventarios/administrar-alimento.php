@@ -378,87 +378,87 @@
 
   <!-- Modal para Historial de Movimientos de Alimentos -->
   <div class="modal fade" id="modalHistorialAlimentos" tabindex="-1" aria-labelledby="modalHistorialAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-              <div class="modal-header bg-info text-white">
-                  <h5 class="modal-title" id="modalHistorialAlimentosLabel">Historial de Movimientos de Alimentos</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                  <!-- Opciones de Filtrado Rápido -->
-                  <div class="d-flex justify-content-between align-items-center mb-4">
-                      <div class="d-flex align-items-center">
-                          <label for="filtroRangoAlimentos" class="me-2 fw-bold">Ver movimientos de:</label>
-                          <select id="filtroRangoAlimentos" class="form-select form-select-sm">
-                              <option value="hoy">Hoy</option>
-                              <option value="ultimaSemana">Última semana</option>
-                              <option value="ultimoMes">Último mes</option>
-                              <option value="todos">Todos</option>
-                          </select>
-                      </div>
-                      <button type="button" id="buscarHistorialAlimentos" class="btn btn-primary ms-3">
-                          <i class="fas fa-search me-1"></i>Buscar
-                      </button>
-                  </div>
-
-                  <!-- Pestañas para Entrada y Salida -->
-                  <ul class="nav nav-tabs mb-3" id="historialTabAlimentos" role="tablist">
-                      <li class="nav-item" role="presentation">
-                          <button class="nav-link active" id="entradas-tab-alimentos" data-bs-toggle="tab" data-bs-target="#entradasAlimentos" type="button" role="tab" aria-controls="entradasAlimentos" aria-selected="true">Entradas</button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                          <button class="nav-link" id="salidas-tab-alimentos" data-bs-toggle="tab" data-bs-target="#salidasAlimentos" type="button" role="tab" aria-controls="salidasAlimentos" aria-selected="false">Salidas</button>
-                      </li>
-                  </ul>
-
-                  <!-- Contenido de las Pestañas -->
-                  <div class="tab-content">
-                      <!-- Tabla de Entradas de Alimentos -->
-                      <div class="tab-pane fade show active" id="entradasAlimentos" role="tabpanel" aria-labelledby="entradas-tab-alimentos">
-                          <div class="table-responsive">
-                              <table id="tabla-entradas-alimentos" class="table table-bordered table-hover table-striped">
-                                  <thead class="table-primary">
-                                      <tr class="text-center">
-                                          <th>ID Alimento</th>
-                                          <th>Nombre Alimento</th>
-                                          <th>Tipo</th>
-                                          <th>Unidad</th>
-                                          <th>Cantidad</th>
-                                          <th>Lote</th>
-                                          <th>Fecha de Movimiento</th>
-                                      </tr>
-                                  </thead>
-                              </table>
-                          </div>
-                      </div>
-
-                      <!-- Tabla de Salidas de Alimentos -->
-                      <div class="tab-pane fade" id="salidasAlimentos" role="tabpanel" aria-labelledby="salidas-tab-alimentos">
-                          <div class="table-responsive">
-                              <table id="tabla-salidas-alimentos" class="table table-bordered table-hover table-striped">
-                                  <thead class="table-danger">
-                                      <tr class="text-center">
-                                          <th>ID Alimento</th>
-                                          <th>Nombre Alimento</th>
-                                          <th>Tipo</th>
-                                          <th>Unidad</th>
-                                          <th>Cantidad de Salida</th>
-                                          <th>Unidad Medida</th>
-                                          <th>Merma</th>
-                                          <th>Lote</th>
-                                          <th>Fecha de Movimiento</th>
-                                      </tr>
-                                  </thead>
-                              </table>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              </div>
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title" id="modalHistorialAlimentosLabel">Historial de Movimientos de Alimentos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Opciones de Filtrado Rápido -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+              <label for="filtroRangoAlimentos" class="me-2 fw-bold">Ver movimientos de:</label>
+              <select id="filtroRangoAlimentos" class="form-select form-select-sm">
+                <option value="hoy">Hoy</option>
+                <option value="ultimaSemana">Última semana</option>
+                <option value="ultimoMes">Último mes</option>
+                <option value="todos">Todos</option>
+              </select>
+            </div>
+            <button type="button" id="buscarHistorialAlimentos" class="btn btn-primary ms-3">
+              <i class="fas fa-search me-1"></i>Buscar
+            </button>
           </div>
+
+          <!-- Pestañas para Entrada y Salida -->
+          <ul class="nav nav-tabs mb-3" id="historialTabAlimentos" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="entradas-tab-alimentos" data-bs-toggle="tab" data-bs-target="#entradasAlimentos" type="button" role="tab" aria-controls="entradasAlimentos" aria-selected="true">Entradas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="salidas-tab-alimentos" data-bs-toggle="tab" data-bs-target="#salidasAlimentos" type="button" role="tab" aria-controls="salidasAlimentos" aria-selected="false">Salidas</button>
+            </li>
+          </ul>
+
+          <!-- Contenido de las Pestañas -->
+          <div class="tab-content">
+            <!-- Tabla de Entradas de Alimentos -->
+            <div class="tab-pane fade show active" id="entradasAlimentos" role="tabpanel" aria-labelledby="entradas-tab-alimentos">
+              <div class="table-responsive">
+                <table id="tabla-entradas-alimentos" class="table table-bordered table-hover table-striped">
+                  <thead class="table-primary">
+                    <tr class="text-center">
+                      <th>ID Alimento</th>
+                      <th>Nombre Alimento</th>
+                      <th>Tipo</th>
+                      <th>Unidad</th>
+                      <th>Cantidad</th>
+                      <th>Lote</th>
+                      <th>Fecha de Movimiento</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tabla de Salidas de Alimentos -->
+            <div class="tab-pane fade" id="salidasAlimentos" role="tabpanel" aria-labelledby="salidas-tab-alimentos">
+              <div class="table-responsive">
+                <table id="tabla-salidas-alimentos" class="table table-bordered table-hover table-striped">
+                  <thead class="table-danger">
+                    <tr class="text-center">
+                      <th>ID Alimento</th>
+                      <th>Nombre Alimento</th>
+                      <th>Tipo</th>
+                      <th>Unidad</th>
+                      <th>Cantidad de Salida</th>
+                      <th>Unidad Medida</th>
+                      <th>Merma</th>
+                      <th>Lote</th>
+                      <th>Fecha de Movimiento</th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
       </div>
+    </div>
   </div>
 
 
@@ -467,6 +467,6 @@
 <?php require_once '../footer.php'; ?>
 <script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
 <script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="../../swalcustom.js"></script>
+<script id="jqueryScript" src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
+<script id="dataTableScript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js" defer></script>
 <script src="../../JS/administrar-alimento.js"></script>
