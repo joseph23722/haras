@@ -14,7 +14,7 @@ $sql_details = array(
 );
 
 // Función para ejecutar el procedimiento almacenado con parámetros
-function ejecutarProcedimientoDataTablesConParametros($procedure, $sql_details, $params) {
+function ejecutarProcedimientoDataTablesConFiltro($procedure, $sql_details, $params) {
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -23,15 +23,14 @@ function ejecutarProcedimientoDataTablesConParametros($procedure, $sql_details, 
             array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
         );
 
-        // Ejecutar el procedimiento almacenado con los 6 parámetros
-        $stmt = $pdo->prepare("CALL $procedure(?, ?, ?, ?, ?, ?)");
+        // Ejecutar el procedimiento almacenado con los parámetros
+        $stmt = $pdo->prepare("CALL $procedure(?, ?, ?, ?, ?)");
         $stmt->execute([
-            $params['tipoMovimiento'],
-            $params['fechaInicio'],
-            $params['fechaFin'],
-            $params['idUsuario'],
-            $params['limit'],
-            $params['offset']
+            $params['tipoMovimiento'], // Tipo de movimiento (Entrada o Salida)
+            $params['filtroFecha'],    // Filtro de fecha (hoy, ultimaSemana, ultimoMes, todos)
+            $params['idUsuario'],      // ID del usuario
+            $params['limit'],          // Límite de resultados
+            $params['offset']          // Desplazamiento para la paginación
         ]);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -56,13 +55,12 @@ function ejecutarProcedimientoDataTablesConParametros($procedure, $sql_details, 
 
 // Obtener parámetros del request
 $params = [
-    'tipoMovimiento' => $_GET['tipoMovimiento'] ?? 'Entrada',
-    'fechaInicio' => $_GET['fechaInicio'] ?? '1900-01-01',
-    'fechaFin' => $_GET['fechaFin'] ?? date('Y-m-d'),
-    'idUsuario' => $_GET['idUsuario'] ?? 0,     // ID del usuario
-    'limit' => $_GET['length'] ?? 10,           // Límite de resultados para la paginación
-    'offset' => $_GET['start'] ?? 0             // Desplazamiento para la paginación
+    'tipoMovimiento' => $_GET['tipoMovimiento'] ?? 'Entrada', // Entrada o Salida
+    'filtroFecha' => $_GET['filtroFecha'] ?? 'hoy',          // hoy, ultimaSemana, ultimoMes, todos
+    'idUsuario' => $_GET['idUsuario'] ?? 0,                  // ID del usuario
+    'limit' => $_GET['length'] ?? 10,                        // Límite de resultados para la paginación
+    'offset' => $_GET['start'] ?? 0                          // Desplazamiento para la paginación
 ];
 
 // Llamar a la función para ejecutar el procedimiento con los parámetros dados
-ejecutarProcedimientoDataTablesConParametros('spu_historial_completo_medicamentos', $sql_details, $params);
+ejecutarProcedimientoDataTablesConFiltro('spu_historial_completo_medicamentos', $sql_details, $params);

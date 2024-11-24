@@ -249,21 +249,19 @@ class Admi extends Conexion {
                 throw new Exception('Tipo de movimiento no válido. Debe ser "Entrada" o "Salida".');
             }
 
-            // Validar que las fechas sean correctas
-            $fechaInicio = $params['fechaInicio'] ?? '1900-01-01';
-            $fechaFin = $params['fechaFin'] ?? date('Y-m-d');
-            if (strtotime($fechaInicio) > strtotime($fechaFin)) {
-                throw new Exception('La fecha de inicio no puede ser posterior a la fecha de fin.');
+            // Validar que se haya proporcionado un filtro válido
+            $filtroFecha = $params['filtroFecha'] ?? 'hoy';
+            if (!in_array($filtroFecha, ['hoy', 'ultimaSemana', 'ultimoMes', 'todos'])) {
+                throw new Exception('Filtro de fecha no válido.');
             }
 
-            // Preparar la llamada al procedimiento almacenado con los 6 parámetros
-            $query = $this->pdo->prepare("CALL spu_historial_completo_medicamentos(?, ?, ?, ?, ?, ?)");
+            // Preparar la llamada al procedimiento almacenado con los parámetros
+            $query = $this->pdo->prepare("CALL spu_historial_completo_medicamentos(?, ?, ?, ?, ?)");
 
             // Ejecutar el procedimiento almacenado pasando los parámetros necesarios
             $query->execute([
                 $tipoMovimiento,                         // Tipo de movimiento (Entrada/Salida)
-                $fechaInicio,                            // Fecha de inicio
-                $fechaFin,                               // Fecha de fin
+                $filtroFecha,                            // Filtro de fecha (hoy, ultimaSemana, ultimoMes, todos)
                 $params['idUsuario'] ?? 0,               // ID del usuario (0 para todos los usuarios)
                 $params['limit'] ?? 10,                  // Límite de resultados
                 $params['offset'] ?? 0                   // Desplazamiento para paginación
@@ -283,29 +281,20 @@ class Admi extends Conexion {
             if (!empty($resultados)) {
                 return ['status' => 'success', 'data' => $resultados];
             } else {
-                return ['status' => 'info', 'message' => 'No se encontraron movimientos en el rango de fechas seleccionado.'];
+                return ['status' => 'info', 'message' => 'No se encontraron movimientos en el rango seleccionado.'];
             }
 
         } catch (PDOException $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
             // Capturar y registrar cualquier error SQL
             error_log("Error en la base de datos: " . $e->getMessage());
-
-            // Devolver un mensaje de error en caso de problemas en la base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos.'];
         } catch (Exception $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
             // Capturar y registrar cualquier otro tipo de error
             error_log("Error: " . $e->getMessage());
-
-            // Devolver un mensaje de error general
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
+
 
 
     // Método para agregar una nueva combinación de medicamento

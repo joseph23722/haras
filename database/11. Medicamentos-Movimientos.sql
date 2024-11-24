@@ -496,17 +496,40 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+-- historial 
 DROP PROCEDURE IF EXISTS `spu_historial_completo_medicamentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_historial_completo_medicamentos(
     IN tipoMovimiento VARCHAR(50),
-    IN fechaInicio DATE,
-    IN fechaFin DATE,
+    IN filtroFecha VARCHAR(20),  -- Nuevo parámetro para el filtro de fecha
     IN idUsuario INT,
     IN limite INT,
     IN desplazamiento INT
 )
 BEGIN
+    DECLARE fechaInicio DATE;
+    DECLARE fechaFin DATE;
+
+    -- Establecer las fechas según el filtro seleccionado
+    IF filtroFecha = 'hoy' THEN
+        SET fechaInicio = CURDATE();
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimaSemana' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 7 DAY;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimoMes' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 1 MONTH;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'todos' THEN
+        SET fechaInicio = '1900-01-01'; -- Fecha muy antigua para incluir todos los registros
+        SET fechaFin = CURDATE();
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Filtro de fecha no válido.';
+    END IF;
+
     -- Validar los límites de la paginación
     IF limite <= 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -536,8 +559,7 @@ BEGIN
             LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
         WHERE 
             h.tipoMovimiento = 'Entrada'
-            AND h.fechaMovimiento >= fechaInicio
-            AND h.fechaMovimiento <= fechaFin
+            AND h.fechaMovimiento BETWEEN fechaInicio AND fechaFin
             AND (idUsuario = 0 OR h.idUsuario = idUsuario)
         ORDER BY 
             h.fechaMovimiento DESC
@@ -579,8 +601,7 @@ BEGIN
             EstadoMonta em ON eq.idEstadoMonta = em.idEstadoMonta
         WHERE 
             h.tipoMovimiento = 'Salida'
-            AND h.fechaMovimiento >= fechaInicio
-            AND h.fechaMovimiento <= fechaFin
+            AND h.fechaMovimiento BETWEEN fechaInicio AND fechaFin
             AND (idUsuario = 0 OR h.idUsuario = idUsuario)
         GROUP BY 
             h.idMovimiento, Medicamento, TipoEquino, Motivo, FechaSalida
@@ -594,6 +615,7 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos`;
 DELIMITER $$
@@ -614,6 +636,78 @@ BEGIN
         Medicamentos m ON lm.idLoteMedicamento = m.idLoteMedicamento; -- Unir con Medicamentos según el lote
 END $$
 DELIMITER ;
+
+
+Procedimiento para administrar dosis parciales
+DROP PROCEDURE IF EXISTS spu_medicamento_administrar_dosis_parcial;
+DELIMITER $$
+CREATE PROCEDURE spu_medicamento_administrar_dosis_parcial(
+    IN _idMedicamento INT,         -- ID del medicamento
+    IN _dosisRequerida DECIMAL(10,2), -- Dosis requerida (ej. 200 mg)
+    IN _idEquino INT,              -- ID del equino que recibe el medicamento
+    IN _idUsuario INT,             -- ID del usuario que registra el movimiento
+    IN _motivo TEXT                -- Motivo de la administración
+)
+BEGIN
+    DECLARE _stockDisponible DECIMAL(10,2);
+
+    -- Verificar si el medicamento existe y obtener el stock disponible
+    SELECT cantidad_stock INTO _stockDisponible
+    FROM Medicamentos
+    WHERE idMedicamento = _idMedicamento;
+
+    -- Validar si el medicamento existe
+    IF _stockDisponible IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El medicamento no existe.';
+    END IF;
+
+    -- Validar que haya suficiente stock disponible
+    IF _stockDisponible < _dosisRequerida THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stock insuficiente para cubrir la dosis requerida.';
+    END IF;
+
+    -- Actualizar el stock del medicamento
+    UPDATE Medicamentos
+    SET cantidad_stock = cantidad_stock - _dosisRequerida
+    WHERE idMedicamento = _idMedicamento;
+
+    -- Registrar el movimiento en el historial
+    INSERT INTO HistorialMovimientosMedicamentos (
+        idMedicamento,
+        tipoMovimiento,
+        cantidad,
+        motivo,
+        idEquino,
+        idUsuario,
+        fechaMovimiento
+    ) VALUES (
+        _idMedicamento,
+        'Salida',
+        _dosisRequerida,
+        _motivo,
+        _idEquino,
+        _idUsuario,
+        CURDATE()
+    );
+
+    -- Actualizar el estado del medicamento según el nuevo stock
+    UPDATE Medicamentos
+    SET estado = CASE 
+                    WHEN cantidad_stock = 0 THEN 'Agotado'
+                    WHEN cantidad_stock <= stockMinimo THEN 'Por agotarse'
+                    ELSE 'Disponible'
+                 END
+    WHERE idMedicamento = _idMedicamento;
+END $$
+DELIMITER ;
+
+
+
+
+
+
 
 INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antibiótico'),
