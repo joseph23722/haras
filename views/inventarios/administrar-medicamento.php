@@ -345,34 +345,56 @@
         </div>
     </div>
 
-    <!-- Modal para Listar Sugerencias de Alimentos -->
-    <div class="modal fade" id="formEditarSugerencia" tabindex="-1" aria-labelledby="modalSugerenciasAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg">
+    <!-- Modal para listar sugerencias -->
+    <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl"> <!-- modal-xl para ancho extra -->
             <div class="modal-content">
-                <!-- Encabezado del Modal -->
-                <div class="modal-header" style="background-color: #3498db; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalSugerenciasAlimentosLabel">Sugerencias de Tipos de Alimentos y Unidades de Medida</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSugerenciasLabel">Sugerencias de Medicamentos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-
-                <!-- Cuerpo del Modal -->
                 <div class="modal-body">
-                    <!-- Tabla para DataTables -->
-                    <table id="tablaAlimentos" class="table table-hover table-bordered mt-3" style="width: 100%;">
-                        <thead class="table-light">
-                            <tr class="text-center">
-                                <th>Tipo de Alimento</th>
-                                <th>Unidad de Medida</th>
-                                <th>Acciones</th> <!-- Nueva columna para acciones -->
-                            </tr>
-                        </thead>
-                    </table>
+                    <!-- Tabla responsiva -->
+                    <div class="table-responsive">
+                        <table id="tablaSugerencias" class="table table-striped table-bordered" style="width: 100%;"></table>
+                    </div>
                 </div>
-
-                <!-- Pie del Modal -->
-                <div class="modal-footer d-flex justify-content-end">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar sugerencias -->
+    <div class="modal fade" id="modalEditarSugerencia" tabindex="-1" aria-labelledby="modalEditarSugerenciaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarSugerenciaLabel">Editar Sugerencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formEditarSugerencia">
+                    <div class="modal-body">
+                        <input type="hidden" id="editarId">
+                        <div class="mb-3">
+                            <label for="editarTipo" class="form-label">Tipo</label>
+                            <input type="text" id="editarTipo" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarPresentacion" class="form-label">Presentación</label>
+                            <input type="text" id="editarPresentacion" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarDosis" class="form-label">Dosis</label>
+                            <input type="text" id="editarDosis" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

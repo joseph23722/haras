@@ -114,9 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
             pageLength: 10, // Mostrar 10 registros por página
             lengthMenu: [10, 25, 50], // Opciones de cantidad de registros
             order: [[0, 'asc']], // Ordenar por tipo de medicamento
-            language: {
-                url: '/haras/data/es_es.json' // Traducción al español
-            },
             dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
             initComplete: function () {
                 console.log("Tabla de sugerencias inicializada correctamente.");
