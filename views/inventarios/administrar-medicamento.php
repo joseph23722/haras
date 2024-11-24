@@ -142,6 +142,9 @@
 
                     <!-- Botones de acción -->
                     <div class="col-md-12 text-end mt-3">
+                        <a href="./listar-medicamento" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+                            <i class="fas fa-save"></i> Listado Medicamentos
+                        </a>
                         <button type="submit" class="btn btn-primary btn-lg" style="background-color: #0077b6; border: none;">
                             <i class="fas fa-save"></i> Registrar Medicamento
                         </button>
@@ -343,7 +346,7 @@
     </div>
 
     <!-- Modal para Listar Sugerencias de Alimentos -->
-    <div class="modal fade" id="modalSugerenciasAlimentos" tabindex="-1" aria-labelledby="modalSugerenciasAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="formEditarSugerencia" tabindex="-1" aria-labelledby="modalSugerenciasAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <!-- Encabezado del Modal -->
@@ -353,7 +356,7 @@
                 </div>
 
                 <!-- Cuerpo del Modal -->
-                <div class="modal-body">    
+                <div class="modal-body">
                     <!-- Tabla para DataTables -->
                     <table id="tablaAlimentos" class="table table-hover table-bordered mt-3" style="width: 100%;">
                         <thead class="table-light">
@@ -495,33 +498,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Tabla de Medicamentos Registrados -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
-            <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
-        </div>
-        <div class="card-body" style="background-color: #f9f9f9;">
-            <!-- Tabla de medicamentos con botones de exportación y búsqueda integrados en la parte superior -->
-            <table id="tabla-medicamentos" class="table table-striped table-hover table-bordered" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Lote</th>
-                        <th>Presentación</th>
-                        <th>Dosis</th>
-                        <th>Tipo</th>
-                        <th>Fecha Caducidad</th>
-                        <th>Cantidad Stock</th>
-                        <th>Costo Unitario</th>
-                        <th>Fecha Registro</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
 </div>
 <?php require_once '../footer.php'; ?>
 
@@ -535,7 +511,6 @@
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
 <!-- Scripts personalizados -->
 <script src="/haras/vendor/medicamento/historial-medicamento.js"></script>

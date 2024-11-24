@@ -259,7 +259,4 @@
 </div>
 
 <?php require_once '../footer.php'; ?>
-
-<script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
-<script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
 <script src="../../JS/implementoEquino.js"></script>

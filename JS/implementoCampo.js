@@ -298,15 +298,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: "GET"
             });
 
-            const textResponse = await response.text();
-            console.log("Respuesta del servidor en texto:", textResponse);
+            const historial = await response.json();
+            console.log("Respuesta del servidor en json:", historial);
 
-            if (textResponse.startsWith("<")) {
+            if (historial.startsWith("<")) {
                 console.error("Error en la respuesta del servidor.");
                 return;
             }
 
-            const implementos = JSON.parse(textResponse);
+            const implementos = JSON.parse(historial);
             console.log("Datos de implementos:", implementos);
 
             const tbody = document.getElementById(tablaID);

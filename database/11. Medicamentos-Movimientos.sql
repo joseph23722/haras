@@ -638,7 +638,7 @@ END $$
 DELIMITER ;
 
 
-Procedimiento para administrar dosis parciales
+-- Procedimiento para administrar dosis parciales
 DROP PROCEDURE IF EXISTS spu_medicamento_administrar_dosis_parcial;
 DELIMITER $$
 CREATE PROCEDURE spu_medicamento_administrar_dosis_parcial(

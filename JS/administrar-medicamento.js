@@ -70,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
     // Función para validar el campo lote
     async function validarLote(loteInput) {
         const loteValue = loteInput.value.trim();
@@ -80,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return true;
     }
-
 
     // Evento para el botón de sugerencias
     $(document).ready(function () {
@@ -130,10 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
             tablaSugerencias.ajax.reload(); // Recargar datos desde el servidor
         });
     });
-    
-    
-    
-    
 
     document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -183,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    
     window.editarSugerencia = function (idCombinacion, tipo, presentacion, dosis) {
         console.log("Editar sugerencia con ID:", idCombinacion);
     
@@ -198,9 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
         $('#modalEditarSugerencia').modal('show');
     };
     
-
-
-
     // Función para cargar las categorías de equinos con sus cantidades en el select del modal
     const loadCategoriaEquinos = async () => {
         try {
@@ -288,11 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $(document).ready(() => {
         configurarDataTableEntradas();
         configurarDataTableSalidas();
-    });
-
-
-
-    
+    });    
 
     // Cargar los tipos de medicamentos desde el servidor
     const loadTiposMedicamentos = async () => {
@@ -746,7 +732,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
     // Implementar para la entrada de medicamentos
     formEntrada.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -894,7 +879,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarLotes();
     loadCategoriaEquinos();
     notificarStockBajo();
-
     loadSelectMedicamentos();
     loadMedicamentos();
     loadTiposMedicamentos();

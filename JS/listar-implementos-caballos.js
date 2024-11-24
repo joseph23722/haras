@@ -1,3 +1,9 @@
+function mostrarMensajeDinamico(mensaje, tipo) {
+    let color = tipo === 'ERROR' ? 'red' : tipo === 'INFO' ? 'blue' : 'green';
+    console.log(`%c${mensaje}`, `color: ${color}; font-weight: bold;`);
+    // Aquí puedes agregar más lógica para mostrar el mensaje en el UI
+}
+
 const cargarImplementos = async (idTipoinventario = 1) => {
     try {
         const params = new URLSearchParams({
