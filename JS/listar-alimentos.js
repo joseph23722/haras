@@ -51,7 +51,7 @@ const loadAlimentos = async () => {
         const textResponse = await response.text();
         if (textResponse.startsWith("<")) {
             mostrarMensajeDinamico("Error en la respuesta del servidor.", 'ERROR');
-            showToast("Error en la respuesta del servidor", 'ERROR'); // Si `showToast` también es una función válida
+            showToast("Error en la respuesta del servidor", 'ERROR');
             return;
         }
 
@@ -62,7 +62,7 @@ const loadAlimentos = async () => {
         if ($.fn.dataTable.isDataTable('#alimentos-table')) {
             $('#alimentos-table').DataTable().clear().rows.add(alimentos).draw();
         } else {
-            configurarDataTableAlimentos(); // Inicializa DataTable si no está inicializado
+            configurarDataTableAlimentos();
         }
 
     } catch (error) {
