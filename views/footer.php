@@ -15,21 +15,14 @@
 </footer>
 
 <!-- Scripts -->
-
-
-<!-- Cargar jQuery primero -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+
 
 <!-- AdminLTE JS -->
 <script src="<?= $host ?>/plugins/js/adminlte.min.js"></script>
-
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-
 <!-- Tus propios scripts -->
 <script src="<?= $host ?>/plugins/js/scripts.js"></script>
 
@@ -39,21 +32,13 @@
 <script src="http://localhost/haras/JS/notificaciones.js" defer></script>
 
 <script>
-    // Obtener el botón y el sidebar
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidenav = document.getElementById("layoutSidenav_nav");
-
-    // Función para alternar la visibilidad del sidebar
     sidebarToggle.addEventListener("click", function(event) {
-        // Prevenir la acción predeterminada del enlace, ya que no es necesario
         event.preventDefault();
-
-        // Alternar una clase 'sb-sidenav-toggled' en el sidebar
         sidenav.classList.toggle("sb-sidenav-toggled");
     });
 </script>
-
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 

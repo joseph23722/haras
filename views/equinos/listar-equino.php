@@ -55,7 +55,6 @@
             </div>
         </div>
     </div>
-
-</div> <!-- .container-fluid -->
+</div>
 <?php require_once '../footer.php'; ?>
 <script src="../../JS/obtenerHistorialEquino.js"></script>
