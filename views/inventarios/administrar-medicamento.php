@@ -6,7 +6,6 @@
         Gestionar Medicamentos
     </h1>
 
-
     <!-- Sección del formulario para registrar un medicamento -->
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
@@ -30,7 +29,6 @@
 
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
-
             <form action="" id="form-registrar-medicamento" autocomplete="off">
                 <div class="row g-3">
                     <!-- Nombre del Medicamento -->
@@ -62,8 +60,6 @@
                             </label>
                         </div>
                     </div>
-
-
 
                     <!-- Tipo de Medicamento -->
                     <div class="col-md-6">
@@ -100,10 +96,6 @@
                             </label>
                         </div>
                     </div>
-
-
-
-
 
                     <!-- Cantidad en Stock -->
                     <div class="col-md-6">
@@ -226,9 +218,6 @@
         </div>
     </div>
 
-
-
-
     <!-- Modal para Registrar Entrada de Medicamento -->
     <div class="modal fade" id="modalEntrada" tabindex="-1" aria-labelledby="modalEntradaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
@@ -283,7 +272,6 @@
         </div>
     </div>
 
-
     <!-- Modal para Registrar Salida de Medicamento -->
     <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
@@ -314,7 +302,6 @@
                                 <label for="salidaCantidad" class="form-label fw-bold">Cantidad</label>
                                 <input type="number" name="cantidad" id="salidaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
                             </div>
-
 
                             <div class="col-md-6">
                                 <label for="idEquino" class="form-label fw-bold">Categoría de Equino</label> <!-- Etiqueta agregada para consistencia -->
@@ -355,8 +342,6 @@
         </div>
     </div>
 
-
-
     <!-- Modal para Listar Sugerencias de Alimentos -->
     <div class="modal fade" id="modalSugerenciasAlimentos" tabindex="-1" aria-labelledby="modalSugerenciasAlimentosLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
@@ -368,7 +353,7 @@
                 </div>
 
                 <!-- Cuerpo del Modal -->
-                <div class="modal-body">
+                <div class="modal-body">    
                     <!-- Tabla para DataTables -->
                     <table id="tablaAlimentos" class="table table-hover table-bordered mt-3" style="width: 100%;">
                         <thead class="table-light">
@@ -388,8 +373,6 @@
             </div>
         </div>
     </div>
-
-
 
     <!-- Modal para Editar Tipo de Alimento y Unidad de Medida -->
     <div class="modal fade" id="modalEditarAlimento" tabindex="-1" aria-labelledby="modalEditarAlimentoLabel" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -426,9 +409,6 @@
             </div>
         </div>
     </div>
-
-
-
 
     <!-- Modal para Historial de Movimientos de Medicamentos -->
     <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -543,16 +523,21 @@
         </div>
     </div>
 </div>
-
 <?php require_once '../footer.php'; ?>
-<script src="/haras/vendor/medicamento/historial-medicamento.js"></script>
-<script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
+
+<!-- Cargar jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Cargar DataTables y sus dependencias -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="../../swalcustom.js"></script>
+
+<!-- Scripts personalizados -->
+<script src="/haras/vendor/medicamento/historial-medicamento.js"></script>
+<script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
 <script src="../../JS/administrar-medicamento.js"></script>

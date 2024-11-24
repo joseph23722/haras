@@ -54,10 +54,10 @@
 <!-- Cargar jQuery condicionalmente -->
 <script>
     // Condición para verificar si jQuery es necesario
-    const necesitaJQuery = false; // Cambia esto dependiendo de si en alguna parte del proyecto necesitas jQuery.
+    const necesitaJQuery = false;
 
     if (necesitaJQuery) {
-        document.getElementById("jqueryScript").setAttribute("defer", ""); // Esto carga jQuery cuando lo necesites
+        document.getElementById("jqueryScript").setAttribute("defer", ""); // Esto carga jQuery cuando se necesite
     } else {
         // Si no necesitas jQuery, eliminas el script de jQuery para evitar conflictos
         const jqueryScript = document.getElementById("jqueryScript");
