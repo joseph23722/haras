@@ -446,7 +446,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+call spu_listar_tipos_unicos; 
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_unicos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_unicos()
