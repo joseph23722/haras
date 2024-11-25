@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const medicamentoCampos = document.querySelector("#medicamentoCampos"); // Sección de campos relacionados con el medicamento
     const unidadSelect = document.querySelector("#unidad");
     const cantidadAplicadaInput = document.querySelector("#cantidadAplicada");
+    const fechaServicioInput = document.querySelector("#fechaServicio");
 
     // Función para cargar opciones de equinos
     const loadOptions = async (url, selectElement, tipoEquino) => {
@@ -115,6 +116,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const unidadSeleccionada = unidadSelect.options[unidadSelect.selectedIndex];
         data.unidad = unidadSeleccionada ? unidadSeleccionada.textContent : "";
 
+        // Obtener la fecha de servicio
+        const fechaServicio = fechaServicioInput.value;
+        if (!fechaServicio) {
+            showToast("Debe seleccionar una fecha de servicio.", "ERROR");
+            return;
+        }
+        data.fechaServicio = fechaServicio;
+        data.fechaAplicacion = fechaServicio;
+
         console.log("Datos enviados (antes de validación):", data);
 
         // Validar campos relacionados con medicamentos
@@ -144,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 unidadSelect.innerHTML = '<option value="">Seleccione Unidad</option>';
                 cantidadAplicadaInput.disabled = true;
                 unidadSelect.disabled = true;
-                medicamentoCampos.style.display = "none"; // Ocultar los campos tras enviar
+                medicamentoCampos.style.display = "none";
 
                 if (data.idMedicamento) {
                     console.log("Buscando historial actualizado de dosis aplicadas...");
@@ -158,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (result.status === "error") {
                 showToast(result.message, "ERROR");
                 console.error("Error del servidor:", result.message);
-        
             } else {
                 showToast("Ocurrió un error inesperado.", "ERROR");
                 console.error("Respuesta desconocida:", result);
@@ -168,5 +177,4 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast(`Error al registrar servicio propio: ${error.message}`, "ERROR");
         }
     });
-
 });

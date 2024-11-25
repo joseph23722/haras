@@ -169,6 +169,9 @@
 
                 <!-- Botones -->
                 <div class="text-end mt-3">
+                    <a href="./listar-medicamento-usado" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+                        <i class="fas fa-save"></i> Medicamentos Aplicados
+                    </a>
                     <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Registrar Servicio</button>
                     <button type="reset" class="btn btn-outline-secondary btn-lg"><i class="fas fa-times"></i> Cancelar</button>
                 </div>

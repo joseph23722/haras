@@ -59,7 +59,8 @@ if ($requestMethod === 'POST') {
                         $data['idMedicamento'],
                         $idEquino,
                         $data['cantidadAplicada'],
-                        $data['unidad']
+                        $data['unidad'],
+                        $data['fechaAplicacion'],
                     );
         
                     if (!$resultadoDosis) {
@@ -107,11 +108,7 @@ if ($requestMethod === 'POST') {
                 error_log("Error inesperado: " . $e->getMessage());
                 echo json_encode(["status" => "error", "message" => "Error inesperado. Intente nuevamente."]);
             }
-            break;
-        
-        
-        
-        
+            break;        
 
         case 'registrarDosisAplicada':
             try {
@@ -120,7 +117,8 @@ if ($requestMethod === 'POST') {
                     empty($data['idMedicamento']) || 
                     empty($data['idEquino']) || 
                     empty($data['cantidadAplicada']) || 
-                    empty($data['unidadAplicada']) // Validar también la unidad
+                    empty($data['unidadAplicada']) ||
+                    empty($data['fechaAplicacion'])
                 ) {
                     echo json_encode(["status" => "error", "message" => "Faltan parámetros necesarios."]);
                     exit;
@@ -131,7 +129,8 @@ if ($requestMethod === 'POST') {
                     $data['idMedicamento'], 
                     $data['idEquino'], 
                     $data['cantidadAplicada'], 
-                    $data['unidadAplicada'] // Pasar la unidad aplicada
+                    $data['unidadAplicada'],
+                    $data['fechaAplicacion']
                 );
         
                 if ($result) {

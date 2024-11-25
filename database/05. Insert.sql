@@ -240,6 +240,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'listar-medicamento', 'N', NULL, NULL);
+    
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(5, 'listar-medicamento-usado', 'N', NULL, NULL);
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -289,6 +292,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 23),
     (3, 28),
     (3, 29),
+    (3, 30),
     (3, 25); -- falta el 25
     
 -- Supervisor Campo

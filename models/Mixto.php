@@ -16,9 +16,9 @@ class ServicioMixto extends Conexion
     {
         try {
             error_log("Llamando a procedimiento almacenado con: " . print_r($params, true));
-    
+
             $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    
+
             $query->execute([
                 $params['idEquinoMacho'] ?? null,
                 $params['idEquinoHembra'] ?? null,
@@ -32,22 +32,20 @@ class ServicioMixto extends Conexion
                 $params['horaSalida'],
                 $params['costoServicio'] ?? null,
             ]);
-    
+
             return ['status' => 'success', 'message' => 'Servicio mixto registrado exitosamente.'];
         } catch (PDOException $e) {
             error_log("Error al registrar servicio mixto: " . $e->getMessage());
-    
+
             // Extraer mensaje específico de SIGNAL, eliminando el código SQLSTATE y el prefijo del error
             if (preg_match('/SQLSTATE\[45000\]:.+?Error:\s*(.+)/', $e->getMessage(), $matches)) {
                 return ['status' => 'error', 'message' => trim($matches[1])];
             }
-    
+
             // Otros errores
             return ['status' => 'error', 'message' => 'Ocurrió un error interno al registrar el servicio mixto. Contacte al administrador.'];
         }
     }
-    
-
 
     // Listar equinos propios filtrando por tipo
     public function listarEquinosPropios($tipoEquino)
@@ -91,7 +89,6 @@ class ServicioMixto extends Conexion
         }
     }
 
-    // Listar equinos externos por propietario
     // Listar equinos externos por propietario y género
     public function listarEquinosExternosPorPropietarioYGenero($idPropietario, $genero)
     {
@@ -105,9 +102,7 @@ class ServicioMixto extends Conexion
         }
     }
 
-
-
-    public function registrarDosisAplicada($idMedicamento, $idEquino, $cantidadAplicada, $unidadAplicada)
+    public function registrarDosisAplicada($idMedicamento, $idEquino, $cantidadAplicada, $unidadAplicada, $fechaAplicacion)
     {
         try {
             // Validar y obtener el idUsuario desde la sesión
@@ -122,10 +117,10 @@ class ServicioMixto extends Conexion
             }
 
             // Preparar la consulta para llamar al procedimiento
-            $query = $this->pdo->prepare("CALL spu_registrar_dosis_aplicada(?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_registrar_dosis_aplicada(?, ?, ?, ?, ?, ?)");
 
             // Ejecutar el procedimiento con los parámetros proporcionados
-            $query->execute([$idMedicamento, $idEquino, $cantidadAplicada, $idUsuario, $unidadAplicada]);
+            $query->execute([$idMedicamento, $idEquino, $cantidadAplicada, $idUsuario, $unidadAplicada, $fechaAplicacion]);
 
             // Retornar éxito o una confirmación
             return true;
@@ -139,9 +134,6 @@ class ServicioMixto extends Conexion
             return false;
         }
     }
-
-
-
 
     public function obtenerHistorialDosisAplicadas()
     {

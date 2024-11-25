@@ -1,7 +1,5 @@
 <?php
 
-
-/** propio */
 require_once 'Conexion.php';
 
 class ServicioPropio extends Conexion
@@ -13,7 +11,6 @@ class ServicioPropio extends Conexion
         $this->pdo = parent::getConexion();
     }
 
-    // Registrar un nuevo servicio propio
     // Registrar un nuevo servicio propio
     public function registrarServicioPropio($params = [])
     {
@@ -39,8 +36,7 @@ class ServicioPropio extends Conexion
 
             // Respuesta exitosa
             return ['status' => 'success', 'message' => 'Servicio propio registrado exitosamente.'];
-        } 
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             // Log del error completo para depuración
             error_log("Error al registrar servicio propio: " . $e->getMessage());
 
@@ -55,8 +51,6 @@ class ServicioPropio extends Conexion
             return ['status' => 'error', 'message' => "Ocurrió un error interno. Contacte al administrador."];
         }
     }
-
-
 
     // Listar equinos propios filtrando por tipo
     public function listarEquinosPropios($tipoEquino)
@@ -97,11 +91,6 @@ class ServicioPropio extends Conexion
         }
     }
 
-    
-
-
-
-
     public function listarServiciosPorTipo($tipoServicio)
     {
         try {
@@ -114,8 +103,7 @@ class ServicioPropio extends Conexion
         }
     }
 
-
-    public function registrarDosisAplicada($idMedicamento, $idEquino, $cantidadAplicada, $unidadAplicada)
+    public function registrarDosisAplicada($idMedicamento, $idEquino, $cantidadAplicada, $unidadAplicada, $fechaAplicacion)
     {
         try {
             // Validar y obtener el idUsuario desde la sesión
@@ -130,10 +118,10 @@ class ServicioPropio extends Conexion
             }
 
             // Preparar la consulta para llamar al procedimiento
-            $query = $this->pdo->prepare("CALL spu_registrar_dosis_aplicada(?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_registrar_dosis_aplicada(?, ?, ?, ?, ?, ?)");
 
             // Ejecutar el procedimiento con los parámetros proporcionados
-            $query->execute([$idMedicamento, $idEquino, $cantidadAplicada, $idUsuario, $unidadAplicada]);
+            $query->execute([$idMedicamento, $idEquino, $cantidadAplicada, $idUsuario, $unidadAplicada, $fechaAplicacion]);
 
             // Retornar éxito o una confirmación
             return true;
@@ -147,9 +135,6 @@ class ServicioPropio extends Conexion
             return false;
         }
     }
-
-
-
 
     public function obtenerHistorialDosisAplicadas()
     {
@@ -168,6 +153,4 @@ class ServicioPropio extends Conexion
             return [];
         }
     }
-
-    
 }
