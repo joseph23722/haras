@@ -281,6 +281,140 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+-- registrar dosis aplicada
+DROP PROCEDURE IF EXISTS `spu_registrar_dosis_aplicada`;
+DELIMITER $$
+CREATE PROCEDURE spu_registrar_dosis_aplicada(
+    IN _idMedicamento INT, -- Medicamento utilizado
+    IN _idEquino INT, -- Equino al que se aplica la dosis
+    IN _cantidadAplicada DECIMAL(10, 2), -- Dosis utilizada
+    IN _idUsuario INT, -- Veterinario que realiza la aplicación
+    IN _unidadAplicada VARCHAR(50) -- Unidad utilizada para verificar
+)
+BEGIN
+    DECLARE _stockActual DECIMAL(10, 2); -- Stock actual del medicamento
+    DECLARE _unidadCompleta DECIMAL(10, 2); -- Cantidad por unidad en stock (en mg)
+    DECLARE _unidadBase VARCHAR(50); -- Unidad real del medicamento desde la base
+    DECLARE _cantidadRestanteAcumulada DECIMAL(10, 2); -- Cantidad restante acumulada de dosis anteriores
+    DECLARE _cantidadTotal DECIMAL(10, 2); -- Total acumulado con la nueva dosis
+    DECLARE _nuevasUnidades INT; -- Número de unidades completas que se pueden descontar
+    DECLARE _errorMessage VARCHAR(255); -- Mensaje de error
+
+    -- Obtener la cantidad por unidad, stock actual y unidad base del medicamento
+    SELECT c.dosis, m.cantidad_stock, u.unidad
+    INTO _unidadCompleta, _stockActual, _unidadBase
+    FROM Medicamentos m
+    JOIN CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+    JOIN UnidadesMedida u ON c.idUnidad = u.idUnidad
+    WHERE m.idMedicamento = _idMedicamento
+    FOR UPDATE;
+
+    -- Verificar que la unidad proporcionada coincide con la unidad base
+    IF _unidadAplicada != _unidadBase THEN
+        SET _errorMessage = CONCAT('Unidad no válida. Se esperaba: ', _unidadBase);
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMessage;
+    END IF;
+
+    -- Calcular la cantidad restante acumulada de dosis anteriores
+    SELECT COALESCE(cantidadRestante, 0)
+    INTO _cantidadRestanteAcumulada
+    FROM HistorialDosisAplicadas
+    WHERE idMedicamento = _idMedicamento
+    ORDER BY idDosis DESC
+    LIMIT 1;
+
+    -- Sumar la nueva cantidad aplicada al acumulado
+    SET _cantidadTotal = _cantidadRestanteAcumulada + _cantidadAplicada;
+
+    -- Calcular cuántas unidades completas se pueden descontar
+    SET _nuevasUnidades = FLOOR(_cantidadTotal / _unidadCompleta);
+
+    -- Verificar que el stock es suficiente para descontar las unidades completas
+    IF _nuevasUnidades > _stockActual THEN
+        SET _errorMessage = 'Stock insuficiente para completar la operación.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMessage;
+    END IF;
+
+    -- Calcular la cantidad restante después de completar las unidades
+    SET _cantidadRestanteAcumulada = MOD(_cantidadTotal, _unidadCompleta);
+
+    -- Registrar la dosis aplicada en el historial
+    INSERT INTO HistorialDosisAplicadas (idMedicamento, idEquino, cantidadAplicada, cantidadRestante, fechaAplicacion, idUsuario)
+    VALUES (_idMedicamento, _idEquino, _cantidadAplicada, _cantidadRestanteAcumulada, CURRENT_DATE, _idUsuario);
+
+    -- Actualizar el stock general si se completaron unidades completas
+    IF _nuevasUnidades > 0 THEN
+        UPDATE Medicamentos
+        SET cantidad_stock = cantidad_stock - _nuevasUnidades,
+            ultima_modificacion = NOW()
+        WHERE idMedicamento = _idMedicamento;
+    END IF;
+
+    -- Confirmar la transacción
+    COMMIT;
+END $$
+DELIMITER ;
+ 
+ 
+ 
+select * from medicamentos;
+select * from HistorialDosisAplicadas; 
+CALL spu_registrar_dosis_aplicada(1, 3, 6.00, 1, 'mg');
+
+
+-- Obtener Historial Dosis Aplicadas
+
+DROP PROCEDURE IF EXISTS spu_ObtenerHistorialDosisAplicadas;
+DELIMITER $$
+
+CREATE PROCEDURE spu_ObtenerHistorialDosisAplicadas()
+BEGIN
+    SELECT 
+        m.nombreMedicamento AS Medicamento,                     -- Nombre del medicamento
+        CONCAT(h.cantidadAplicada, ' ', u.unidad) AS DosisAplicada, -- Dosis aplicada con unidad desde la base
+        CONCAT(h.cantidadRestante, ' ', u.unidad) AS StockRestante, -- Stock restante después de la aplicación con unidad
+        CONCAT((h.cantidadRestante + h.cantidadAplicada), ' ', u.unidad) AS StockAntes, -- Stock antes de la aplicación con unidad
+        m.cantidad_stock AS StockActual,                        -- Stock actual disponible en unidades completas
+        m.estado AS EstadoMedicamento,                         -- Estado del medicamento (Disponible, Agotado, etc.)
+        h.fechaAplicacion AS FechaAplicación,                  -- Fecha en la que se aplicó la dosis
+        e.nombreEquino AS NombreDelEquino,                     -- Nombre del equino al que se aplicó la dosis
+        CONCAT(p.nombres, ' ', p.apellidos) AS NombreUsuario    -- Nombre completo del usuario que realizó la aplicación
+    FROM 
+        Medicamentos m
+    JOIN 
+        CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN
+        UnidadesMedida u ON c.idUnidad = u.idUnidad            -- Relación con unidades de medida
+    JOIN
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con lotes
+    JOIN
+        HistorialDosisAplicadas h ON m.idMedicamento = h.idMedicamento    -- Relación con historial de dosis
+    JOIN
+        Equinos e ON h.idEquino = e.idEquino                              -- Relación con equinos
+    JOIN
+        Usuarios usr ON h.idUsuario = usr.idUsuario                       -- Relación con usuarios
+    JOIN
+        Personal p ON usr.idPersonal = p.idPersonal                       -- Relación con personal
+    ORDER BY 
+        h.fechaAplicacion DESC, m.nombreMedicamento ASC;
+END $$
+DELIMITER ;
+
+
+
+CALL spu_ObtenerHistorialDosisAplicadas();
+
+
+
+
+
+
+
+
+
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
 CREATE PROCEDURE spu_contar_equinos_por_categoria()

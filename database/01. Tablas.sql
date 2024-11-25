@@ -387,6 +387,21 @@ CREATE TABLE HistorialMovimientosMedicamentos (
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
+CREATE TABLE HistorialDosisAplicadas (
+    idDosis INT PRIMARY KEY AUTO_INCREMENT,
+    idMedicamento INT NOT NULL,
+    idEquino INT NOT NULL,
+    cantidadAplicada DECIMAL(10, 2) NOT NULL,
+    cantidadRestante DECIMAL(10, 2) NOT NULL,
+    fechaAplicacion DATE NOT NULL, -- Fecha obligatoria, sin valor predeterminado
+    idUsuario INT NOT NULL,
+    FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
+    FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+);
+
+
+
 -- 29. servicios
 CREATE TABLE Servicios (
     idServicio               INT PRIMARY KEY AUTO_INCREMENT,

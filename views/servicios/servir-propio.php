@@ -8,63 +8,128 @@
         </li>
     </ol>
 
-    <div class="card mb-4 shadow-sm border-0">
-        <div class="card-header" style="background-color: #a0ffb8; border-bottom: 2px solid #005b99;">
-            <h5 class="mb-0 text-uppercase" style="color: #005b99;">Datos del Servicio</h5>
+    <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+        <div class="card-header" style="background-color: #007bff; color: #fff; text-align: center; font-weight: bold;">
+            <h5 class="mb-0 text-uppercase">Datos del Servicio</h5>
         </div>
-        <div class="card-body p-4 bg-white rounded">
+        <div class="card-body p-4 bg-light rounded" style="border: 1px solid #ddd;">
             <form action="" id="form-registro-servicio-propio" autocomplete="off">
-                <div class="row g-3">
+                <div class="row g-4">
+                    <!-- Seleccionar Padrillo -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="idEquinoMacho" id="idPadrillo" class="form-select" required autofocus>
+                            <select name="idEquinoMacho" id="idPadrillo" class="form-select" style="border-radius: 5px;">
                                 <option value="">Seleccione Padrillo</option>
                             </select>
-                            <label for="idPadrillo"><i class="fas fa-horse-head" style="color: #007bff;"></i> Padrillo</label>
+                            <label for="idPadrillo" style="color: #007bff; font-weight: bold;">
+                                <i class="fas fa-horse-head me-2"></i>Padrillo
+                            </label>
                         </div>
                     </div>
 
+                    <!-- Seleccionar Yegua -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="idEquinoHembra" id="idYegua" class="form-select" required>
+                            <select name="idEquinoHembra" id="idYegua" class="form-select" style="border-radius: 5px;">
                                 <option value="">Seleccione Yegua</option>
                             </select>
-                            <label for="idYegua"><i class="fas fa-horse" style="color: #007bff;"></i> Yegua</label>
+                            <label for="idYegua" style="color: #007bff; font-weight: bold;">
+                                <i class="fas fa-horse me-2"></i>Yegua
+                            </label>
                         </div>
                     </div>
 
+                    <!-- Fecha del Servicio -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="date" name="fechaServicio" id="fechaServicio" class="form-control" required>
-                            <label for="fechaServicio"><i class="fas fa-calendar-alt" style="color: #007bff;"></i> Fecha del Servicio</label>
+                            <input type="date" name="fechaServicio" id="fechaServicio" class="form-control" required style="border-radius: 5px;">
+                            <label for="fechaServicio" style="color: #007bff; font-weight: bold;">
+                                <i class="fas fa-calendar-alt me-2"></i>Fecha del Servicio
+                            </label>
                         </div>
                     </div>
 
+                    <!-- Seleccionar Medicamento -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <select name="idMedicamento" id="idDetalleMed" class="form-select">
-                                <option value="">Seleccione Medicamento (Opcional)</option>
+                            <select name="idMedicamento" id="idDetalleMed" class="form-select" style="border-radius: 5px;">
+                                <option value="">Seleccione Medicamento</option>
                             </select>
-                            <label for="idDetalleMed"><i class="fas fa-pills" style="color: #007bff;"></i> Detalle Medicamento</label>
+                            <label for="idDetalleMed" style="color: #007bff; font-weight: bold;">
+                                <i class="fas fa-pills me-2"></i>Detalle Medicamento
+                            </label>
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <!-- Campos Relacionados con Medicamento -->
+                    <div id="medicamentoCampos" style="display: none; border-top: 2px solid #007bff; padding-top: 15px; margin-top: 20px;">
+                        <!-- Seleccionar Uso del Medicamento -->
+                        <div class="col-md-12">
+                            <label class="form-label mb-3" style="font-weight: bold; color: #007bff;">¿El medicamento se usará para?</label>
+                            <div class="form-check form-check-inline" style="margin-right: 20px;">
+                                <input class="form-check-input" type="radio" name="usoMedicamento" id="usoPadrillo" value="padrillo" style="margin-top: 5px;">
+                                <label class="form-check-label" for="usoPadrillo" style="color: #007bff; font-weight: bold;">
+                                    <i class="fas fa-horse-head me-2"></i>Padrillo
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="usoMedicamento" id="usoYegua" value="yegua" style="margin-top: 5px;">
+                                <label class="form-check-label" for="usoYegua" style="color: #007bff; font-weight: bold;">
+                                    <i class="fas fa-horse me-2"></i>Yegua
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Seleccionar Unidad -->
+                        <div class="col-md-6 mt-3">
+                            <div class="form-floating">
+                                <select name="unidad" id="unidad" class="form-select" style="border-radius: 5px;">
+                                    <option value="">Seleccione Unidad</option>
+                                </select>
+                                <label for="unidad" style="color: #007bff; font-weight: bold;">
+                                    <i class="fas fa-ruler me-2"></i>Unidad
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Cantidad Aplicada -->
+                        <div class="col-md-6 mt-3">
+                            <div class="form-floating">
+                                <input type="number" name="cantidadAplicada" id="cantidadAplicada" class="form-control" step="0.01" style="border-radius: 5px;">
+                                <label for="cantidadAplicada" style="color: #007bff; font-weight: bold;">
+                                    <i class="fas fa-balance-scale me-2"></i>Cantidad Aplicada (mg)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalles -->
+                    <div class="col-md-12 mt-4">
                         <div class="form-floating">
-                            <textarea name="detalles" id="detalles" placeholder="" class="form-control" style="height: 40px;"></textarea>
-                            <label for="detalles"><i class="fas fa-info-circle" style="color: #007bff;"></i> Detalles</label>
+                            <textarea name="detalles" id="detalles" placeholder="" class="form-control" style="height: 80px; border-radius: 5px;"></textarea>
+                            <label for="detalles" style="color: #007bff; font-weight: bold;">
+                                <i class="fas fa-info-circle me-2"></i>Detalles
+                            </label>
                         </div>
                     </div>
 
-                    <div class="col-md-12 text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Registrar Servicio</button>
-                        <button type="reset" class="btn btn-outline-secondary btn-lg"><i class="fas fa-times"></i> Cancelar</button>
+                    <!-- Botones -->
+                    <div class="col-md-12 text-end mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 8px; font-weight: bold; background-color: #007bff; border: none;">
+                            <i class="fas fa-save me-2"></i>Registrar Servicio
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary btn-lg" style="border-radius: 8px; font-weight: bold;">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </button>
                     </div>
                 </div>
             </form>
-            <div id="mensaje" class="mt-3"></div> <!-- Mensaje de resultado -->
         </div>
     </div>
+
+
+
+
 </div>
 
 <?php require_once '../footer.php'; ?>

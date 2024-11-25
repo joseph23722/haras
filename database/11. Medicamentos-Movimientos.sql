@@ -446,7 +446,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-call spu_listar_tipos_unicos; 
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_unicos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_unicos()
@@ -636,77 +635,6 @@ BEGIN
         Medicamentos m ON lm.idLoteMedicamento = m.idLoteMedicamento; -- Unir con Medicamentos según el lote
 END $$
 DELIMITER ;
-
-
--- Procedimiento para administrar dosis parciales
-DROP PROCEDURE IF EXISTS spu_medicamento_administrar_dosis_parcial;
-DELIMITER $$
-CREATE PROCEDURE spu_medicamento_administrar_dosis_parcial(
-    IN _idMedicamento INT,         -- ID del medicamento
-    IN _dosisRequerida DECIMAL(10,2), -- Dosis requerida (ej. 200 mg)
-    IN _idEquino INT,              -- ID del equino que recibe el medicamento
-    IN _idUsuario INT,             -- ID del usuario que registra el movimiento
-    IN _motivo TEXT                -- Motivo de la administración
-)
-BEGIN
-    DECLARE _stockDisponible DECIMAL(10,2);
-
-    -- Verificar si el medicamento existe y obtener el stock disponible
-    SELECT cantidad_stock INTO _stockDisponible
-    FROM Medicamentos
-    WHERE idMedicamento = _idMedicamento;
-
-    -- Validar si el medicamento existe
-    IF _stockDisponible IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'El medicamento no existe.';
-    END IF;
-
-    -- Validar que haya suficiente stock disponible
-    IF _stockDisponible < _dosisRequerida THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Stock insuficiente para cubrir la dosis requerida.';
-    END IF;
-
-    -- Actualizar el stock del medicamento
-    UPDATE Medicamentos
-    SET cantidad_stock = cantidad_stock - _dosisRequerida
-    WHERE idMedicamento = _idMedicamento;
-
-    -- Registrar el movimiento en el historial
-    INSERT INTO HistorialMovimientosMedicamentos (
-        idMedicamento,
-        tipoMovimiento,
-        cantidad,
-        motivo,
-        idEquino,
-        idUsuario,
-        fechaMovimiento
-    ) VALUES (
-        _idMedicamento,
-        'Salida',
-        _dosisRequerida,
-        _motivo,
-        _idEquino,
-        _idUsuario,
-        CURDATE()
-    );
-
-    -- Actualizar el estado del medicamento según el nuevo stock
-    UPDATE Medicamentos
-    SET estado = CASE 
-                    WHEN cantidad_stock = 0 THEN 'Agotado'
-                    WHEN cantidad_stock <= stockMinimo THEN 'Por agotarse'
-                    ELSE 'Disponible'
-                 END
-    WHERE idMedicamento = _idMedicamento;
-END $$
-DELIMITER ;
-
-
-
-
-
 
 
 INSERT INTO TiposMedicamentos (tipo) VALUES
