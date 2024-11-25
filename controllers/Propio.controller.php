@@ -53,18 +53,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
         
-                // Registrar servicio
+                // Registrar servicio llamando al modelo
                 $resultadoServicio = $servicioPropio->registrarServicioPropio($data);
-                if (!$resultadoServicio) {
-                    echo json_encode(["status" => "error", "message" => "Error al registrar el servicio."]);
+                if ($resultadoServicio['status'] === "error") {
+                    echo json_encode(["status" => "error", "message" => $resultadoServicio['message']]);
                     exit;
                 }
+
         
+                // Si todo fue exitoso
                 echo json_encode(["status" => "success", "message" => "Servicio propio registrado exitosamente."]);
+            } catch (PDOException $e) {
+                error_log("Error al procesar registro: " . $e->getMessage());
+        
+                // Extraer mensajes específicos de SIGNAL en el procedimiento almacenado
+                if (preg_match('/SQLSTATE\[45000\]:.+?: (.+)/', $e->getMessage(), $matches)) {
+                    echo json_encode(["status" => "error", "message" => trim($matches[1])]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Ocurrió un error al registrar el servicio."]);
+                }
             } catch (Exception $e) {
-                echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+                error_log("Error inesperado: " . $e->getMessage());
+                echo json_encode(["status" => "error", "message" => "Error inesperado. Intente nuevamente."]);
             }
             break;
+        
         
         
 

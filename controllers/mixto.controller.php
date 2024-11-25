@@ -86,18 +86,29 @@ if ($requestMethod === 'POST') {
                 error_log("Intentando registrar servicio mixto con parámetros: " . print_r($params, true));
                 $resultadoServicio = $servicioMixto->registrarServicioMixto($params);
         
-                if (!$resultadoServicio) {
-                    error_log("Error al registrar el servicio mixto.");
-                    echo json_encode(["status" => "error", "message" => "Error al registrar el servicio mixto."]);
+                // Verificar si el modelo devuelve un error del procedimiento almacenado
+                if ($resultadoServicio['status'] === 'error') {
+                    echo json_encode(["status" => "error", "message" => $resultadoServicio['message']]);
                     exit;
                 }
         
+                // Si todo fue exitoso
                 echo json_encode(["status" => "success", "message" => "Servicio mixto registrado exitosamente."]);
-            } catch (Exception $e) {
+            } catch (PDOException $e) {
                 error_log("Excepción al registrar el servicio mixto: " . $e->getMessage());
-                echo json_encode(["status" => "error", "message" => "Excepción: " . $e->getMessage()]);
+        
+                // Extraer mensajes específicos de SIGNAL en el procedimiento almacenado
+                if (preg_match('/SQLSTATE\[45000\]:.+?: (.+)/', $e->getMessage(), $matches)) {
+                    echo json_encode(["status" => "error", "message" => trim($matches[1])]);
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Ocurrió un error interno. Intente nuevamente."]);
+                }
+            } catch (Exception $e) {
+                error_log("Error inesperado: " . $e->getMessage());
+                echo json_encode(["status" => "error", "message" => "Error inesperado. Intente nuevamente."]);
             }
             break;
+        
         
         
         

@@ -12,11 +12,14 @@ class ServicioPropio extends Conexion
     }
 
     // Registrar un nuevo servicio propio
+    // Registrar un nuevo servicio propio
     public function registrarServicioPropio($params = [])
     {
         try {
+            // Log para verificar los parámetros enviados al procedimiento
             error_log("Llamando a procedimiento almacenado con: " . print_r($params, true));
 
+            // Preparar y ejecutar la consulta para el procedimiento almacenado
             $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['idEquinoMacho'],
@@ -32,12 +35,26 @@ class ServicioPropio extends Conexion
                 null
             ]);
 
+            // Respuesta exitosa
             return ['status' => 'success', 'message' => 'Servicio propio registrado exitosamente.'];
-        } catch (PDOException $e) {
+        } 
+        catch (PDOException $e) {
+            // Log del error completo para depuración
             error_log("Error al registrar servicio propio: " . $e->getMessage());
-            return ['status' => 'error', 'message' => $e->getMessage()];
+
+            // Extraer y devolver mensajes específicos del procedimiento almacenado
+            if (preg_match('/SQLSTATE\[45000\]:.+?: (.+)/', $e->getMessage(), $matches)) {
+                // Limpiar cualquier prefijo numérico del mensaje
+                $mensaje = preg_replace('/^\d+\s+/', '', trim($matches[1]));
+                return ['status' => 'error', 'message' => $mensaje];
+            }
+
+            // Mensaje genérico en caso de error no manejado
+            return ['status' => 'error', 'message' => "Ocurrió un error interno. Contacte al administrador."];
         }
     }
+
+
 
     // Listar equinos propios filtrando por tipo
     public function listarEquinosPropios($tipoEquino)

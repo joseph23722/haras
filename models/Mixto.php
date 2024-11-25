@@ -16,9 +16,9 @@ class ServicioMixto extends Conexion
     {
         try {
             error_log("Llamando a procedimiento almacenado con: " . print_r($params, true));
-
+    
             $query = $this->pdo->prepare("CALL registrarServicio(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
+    
             $query->execute([
                 $params['idEquinoMacho'] ?? null,
                 $params['idEquinoHembra'] ?? null,
@@ -32,13 +32,22 @@ class ServicioMixto extends Conexion
                 $params['horaSalida'],
                 $params['costoServicio'] ?? null,
             ]);
-
+    
             return ['status' => 'success', 'message' => 'Servicio mixto registrado exitosamente.'];
         } catch (PDOException $e) {
             error_log("Error al registrar servicio mixto: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error al registrar el servicio mixto: ' . $e->getMessage()];
+    
+            // Extraer mensaje específico de SIGNAL, eliminando el código SQLSTATE y el prefijo del error
+            if (preg_match('/SQLSTATE\[45000\]:.+?Error:\s*(.+)/', $e->getMessage(), $matches)) {
+                return ['status' => 'error', 'message' => trim($matches[1])];
+            }
+    
+            // Otros errores
+            return ['status' => 'error', 'message' => 'Ocurrió un error interno al registrar el servicio mixto. Contacte al administrador.'];
         }
     }
+    
+
 
     // Listar equinos propios filtrando por tipo
     public function listarEquinosPropios($tipoEquino)

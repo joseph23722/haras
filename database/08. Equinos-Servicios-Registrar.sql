@@ -358,7 +358,7 @@ DELIMITER ;
  
  
 
--- Obtener Historial Dosis Aplicadas
+-- Obtener Historial Dosis Aplicadas  -- crear vista 
 
 DROP PROCEDURE IF EXISTS spu_ObtenerHistorialDosisAplicadas;
 DELIMITER $$

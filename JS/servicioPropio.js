@@ -102,20 +102,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // Manejar envío del formulario
     formPropio.addEventListener("submit", async (event) => {
         event.preventDefault();
-    
+
         const confirmacion = await ask("¿Desea registrar este servicio propio?", "Registro de Servicio Propio");
         if (!confirmacion) return;
-    
+
         const formData = new FormData(formPropio);
         const data = Object.fromEntries(formData.entries());
         data.action = "registrarServicioPropio";
-    
+
         // Convertir el ID de la unidad en su texto correspondiente
         const unidadSeleccionada = unidadSelect.options[unidadSelect.selectedIndex];
         data.unidad = unidadSeleccionada ? unidadSeleccionada.textContent : "";
-    
+
         console.log("Datos enviados (antes de validación):", data);
-    
+
         // Validar campos relacionados con medicamentos
         if (data.idMedicamento) {
             if (!data.unidad || !data.cantidadAplicada) {
@@ -123,20 +123,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
         }
-    
+
         try {
             const response = await fetch('../../controllers/Propio.controller.php', {
                 method: 'POST',
                 body: JSON.stringify(data),
                 headers: { 'Content-Type': 'application/json' }
             });
-    
+
             const textResponse = await response.text();
             console.log("Respuesta como texto (registro):", textResponse);
-    
+
             const result = JSON.parse(textResponse);
             console.log("Respuesta como JSON (registro):", result);
-    
+
             if (result.status === "success") {
                 showToast(result.message, "SUCCESS");
                 formPropio.reset();
@@ -144,23 +144,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 cantidadAplicadaInput.disabled = true;
                 unidadSelect.disabled = true;
                 medicamentoCampos.style.display = "none"; // Ocultar los campos tras enviar
-    
+
                 if (data.idMedicamento) {
                     console.log("Buscando historial actualizado de dosis aplicadas...");
                     const historialResponse = await fetch("../../controllers/Propio.controller.php?action=obtenerHistorialDosisAplicadas");
                     const historialText = await historialResponse.text();
                     console.log("Respuesta como texto (historial):", historialText);
-    
+
                     const historialData = JSON.parse(historialText);
                     console.log("Historial de dosis aplicada (actualizado):", historialData);
                 }
-            } else {
+            } else if (result.status === "error") {
                 showToast(result.message, "ERROR");
-                console.error("Error al registrar servicio propio:", result.message);
+                console.error("Error del servidor:", result.message);
+        
+            } else {
+                showToast("Ocurrió un error inesperado.", "ERROR");
+                console.error("Respuesta desconocida:", result);
             }
         } catch (error) {
             console.error("Error al registrar servicio propio:", error.message);
             showToast(`Error al registrar servicio propio: ${error.message}`, "ERROR");
         }
     });
+
 });

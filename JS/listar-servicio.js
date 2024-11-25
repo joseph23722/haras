@@ -56,44 +56,57 @@ document.addEventListener("DOMContentLoaded", () => {
     btnFiltrar.addEventListener('click', function () {
         const tipoServicio = document.getElementById('filtroTipoServicio').value;
         console.log("Tipo de servicio seleccionado:", tipoServicio);
-
+    
         // Si se seleccionó un tipo de servicio
         if (tipoServicio) {
-            fetch(`../../controllers/Propio.controller.php?tipoServicio=${tipoServicio}`)
+            fetch(`../../controllers/Propio.controller.php?action=listarServiciosPorTipo&tipoServicio=${tipoServicio}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log("Datos recibidos:", data);
-
+    
                     // Verificar si el tbody existe antes de hacer cualquier manipulación
                     const tbody = document.querySelector("#serviciosTable tbody");
                     console.log("tbody encontrado: ", tbody);
-
+    
                     if (tbody) {
                         // Limpiar el contenido actual del tbody antes de agregar nuevas filas
                         tbody.innerHTML = "";
-
-                        // Agregar las filas correspondientes al tipo de servicio
-                        data.forEach(function (item) {
-                            const nombreHaras = tipoServicio === 'Propio' ? 'Haras Rancho Sur' : item.nombreHaras;
-
-                            const nuevaFila = `
-                                <tr>
-                                    <td>${item.idServicio}</td>
-                                    <td>${item.nombrePadrillo || '--'}</td>
-                                    <td>${item.nombreYegua || '--'}</td>
-                                    <td>${item.nombreEquinoExterno || '--'}</td>
-                                    <td>${item.fechaServicio}</td>
-                                    <td>${item.detalles || '--'}</td>
-                                    <td>${item.horaEntrada || '--'}</td>
-                                    <td>${item.horaSalida || '--'}</td>
-                                    <td>${nombreHaras || 'Haras Rancho Sur'}</td>
-                                    <td>${item.costoServicio || 'Por verificar'}</td>
-                                </tr>
-                            `;
-                            tbody.innerHTML += nuevaFila;
-                        });
-
-                        // Después de agregar los datos, inicializar el DataTable si no se ha inicializado
+    
+                        // Validar que data es un array antes de usar forEach
+                        if (Array.isArray(data)) {
+                            data.forEach(function (item) {
+                                const nombreHaras = tipoServicio === 'Propio' ? 'Haras Rancho Sur' : item.nombreHaras;
+    
+                                const nuevaFila = `
+                                    <tr>
+                                        <td>${item.idServicio}</td>
+                                        <td>${item.nombrePadrillo || '--'}</td>
+                                        <td>${item.nombreYegua || '--'}</td>
+                                        <td>${item.nombreEquinoExterno || '--'}</td>
+                                        <td>${item.fechaServicio}</td>
+                                        <td>${item.detalles || '--'}</td>
+                                        <td>${item.horaEntrada || '--'}</td>
+                                        <td>${item.horaSalida || '--'}</td>
+                                        <td>${nombreHaras || 'Haras Rancho Sur'}</td>
+                                        <td>${item.costoServicio || 'Por verificar'}</td>
+                                    </tr>
+                                `;
+                                tbody.innerHTML += nuevaFila;
+                            });
+    
+                            // Mostrar mensaje de éxito
+                            mostrarMensajeDinamico(`Se han cargado ${data.length} servicios`, 'SUCCESS');
+                        } else if (data.status === "error") {
+                            // Si el backend envía un error en formato JSON
+                            console.error("Error recibido del backend:", data.message);
+                            mostrarMensajeDinamico(data.message, 'ERROR');
+                        } else {
+                            // Si data no es un array, mostrar advertencia
+                            console.error("La respuesta no es un array:", data);
+                            mostrarMensajeDinamico('La respuesta no tiene datos válidos.', 'WARNING');
+                        }
+    
+                        // Inicializar o actualizar DataTable
                         if (!window.simpleTable) {
                             window.simpleTable = new simpleDatatables.DataTable("#serviciosTable", {
                                 autoWidth: true,
@@ -102,19 +115,15 @@ document.addEventListener("DOMContentLoaded", () => {
                                 sortable: true,
                             });
                         } else {
-                            // Si la tabla ya está inicializada, actualizamos los datos
                             window.simpleTable.update();
                         }
-
+    
                         // Restaurar el color del encabezado
                         const encabezado = document.querySelector("#serviciosTable thead");
                         if (encabezado) {
                             encabezado.style.backgroundColor = '#a0ffb8';
                             encabezado.style.color = 'white';
                         }
-
-                        // Mostrar mensaje de éxito
-                        mostrarMensajeDinamico(`Se han cargado ${data.length} servicios`, 'SUCCESS');
                     } else {
                         console.error("El tbody no se encontró en el DOM.");
                     }
@@ -128,4 +137,5 @@ document.addEventListener("DOMContentLoaded", () => {
             mostrarMensajeDinamico('Seleccione un tipo de servicio para filtrar', 'INFO');
         }
     });
+    
 });

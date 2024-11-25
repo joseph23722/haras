@@ -39,10 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     
     
-    
-    
-    
-
     const loadUnidadesPorMedicamento = async (idMedicamento) => {
         try {
             const response = await fetch(`../../controllers/mixto.controller.php?action=listarUnidadesPorMedicamento&idMedicamento=${idMedicamento}`);
@@ -136,11 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
-
-    
-
     // Mostrar/ocultar campos relacionados con medicamentos
     idDetalleMedSelect.addEventListener("change", (event) => {
         const idMedicamento = event.target.value;
@@ -163,8 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadOptions('../../controllers/mixto.controller.php?action=listarEquinosPropios&tipoEquino=1', idEquinoHembraSelect);
     loadMedicamentos();
 
-    // Manejar envío del formulario
-    // Manejar envío del formulario
     // Manejar envío del formulario
     formMixto.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -225,15 +214,20 @@ document.addEventListener("DOMContentLoaded", () => {
             if (result.status === "success") {
                 showToast(result.message, "SUCCESS");
                 formMixto.reset();
-            } else {
+            } else if (result.status === "error") {
+                // Mostrar el mensaje de error del procedimiento almacenado o validación del backend
                 showToast(result.message, "ERROR");
                 console.error("Error recibido del backend:", result.message);
+            } else {
+                showToast("Ocurrió un error inesperado.", "ERROR");
+                console.error("Respuesta desconocida:", result);
             }
         } catch (error) {
             console.error("Error en la solicitud al backend:", error.message);
             showToast(`Error al registrar servicio mixto: ${error.message}`, "ERROR");
         }
     });
+
 
 
     
