@@ -209,8 +209,6 @@ CREATE TABLE LotesAlimento (
     estadoLote ENUM('No Vencido', 'Vencido', 'Agotado') DEFAULT 'No Vencido'
 ) ENGINE = INNODB;
 
-
-
 -- 16. Tabla Intermedia para la Relación entre Tipos de Alimento y Unidades de Medida
 CREATE TABLE TipoAlimento_UnidadMedida (
     idTipoAlimento INT NOT NULL,
@@ -392,15 +390,13 @@ CREATE TABLE HistorialDosisAplicadas (
     idMedicamento INT NOT NULL,
     idEquino INT NOT NULL,
     cantidadAplicada DECIMAL(10, 2) NOT NULL,
-    cantidadRestante DECIMAL(10, 2) NOT NULL,
+    cantidadRestante DECIMAL(10, 2) NULL,
     fechaAplicacion DATE NOT NULL, -- Fecha obligatoria, sin valor predeterminado
     idUsuario INT NOT NULL,
-    FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
-    FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
-    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
-);
-
-
+    CONSTRAINT fk_idMedicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
+    CONSTRAINT fk_idEquino_dosis FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
+    CONSTRAINT fk_idUsuario_dosis FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+)ENGINE = INNODB;
 
 -- 29. servicios
 CREATE TABLE Servicios (
