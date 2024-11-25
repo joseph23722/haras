@@ -57,6 +57,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 DROP PROCEDURE IF EXISTS `spu_listar_tipoequinos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_tipoequinos()

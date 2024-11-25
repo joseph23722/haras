@@ -5,35 +5,77 @@ document.addEventListener("DOMContentLoaded", () => {
     const idPropietarioSelect = document.querySelector("#idPropietario");
     const idEquinoExternoSelect = document.querySelector("#idEquinoExterno");
     const idDetalleMedSelect = document.querySelector("#idDetalleMed");
+    const medicamentoCampos = document.querySelector("#medicamentoCampos");
+    const unidadSelect = document.querySelector("#unidad");
+    const cantidadAplicadaInput = document.querySelector("#cantidadAplicada");
     const costoServicioInput = document.querySelector("#costoServicio");
-    const mensajeDiv = document.querySelector("#mensaje");
 
+    // Función para cargar opciones en select
     const loadOptions = async (url, selectElement) => {
         try {
+            console.log(`Fetching URL: ${url}`);
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error('Error al cargar opciones');
+                throw new Error("Error al cargar opciones");
             }
+    
             const data = await response.json();
+            console.log("Datos recibidos:", data);
+    
+            // Convertir a array si no lo es
             const items = Array.isArray(data) ? data : Object.values(data);
+    
             selectElement.innerHTML = '<option value="">Seleccione</option>';
             items.forEach(item => {
                 const option = document.createElement("option");
-                option.value = item.idEquino || item.idPropietario;
-                option.textContent = item.nombreEquino || item.nombreHaras;
+                option.value = item.idEquino || item.idPropietario || item.idMedicamento;
+                option.textContent = item.nombreEquino || item.nombreHaras || item.nombreMedicamento;
                 selectElement.appendChild(option);
             });
         } catch (error) {
             console.error(`Error al cargar opciones: ${error}`);
-            showToast(`Error al cargar opciones: ${error.message}`, 'ERROR');
+            showToast(`Error al cargar opciones: ${error.message}`, "ERROR");
+        }
+    };
+    
+    
+    
+    
+    
+
+    const loadUnidadesPorMedicamento = async (idMedicamento) => {
+        try {
+            const response = await fetch(`../../controllers/mixto.controller.php?action=listarUnidadesPorMedicamento&idMedicamento=${idMedicamento}`);
+            if (!response.ok) {
+                throw new Error("Error al cargar unidades");
+            }
+            const data = await response.json();
+            console.log("Unidades recibidas:", data);
+    
+            unidadSelect.innerHTML = '<option value="">Seleccione Unidad</option>';
+            data.forEach(unidad => {
+                const option = document.createElement("option");
+                option.value = unidad.idUnidad;
+                option.textContent = unidad.nombreUnidad;
+                unidadSelect.appendChild(option);
+            });
+    
+            unidadSelect.disabled = false;
+            cantidadAplicadaInput.disabled = false;
+        } catch (error) {
+            console.error("Error al cargar unidades:", error);
+            showToast(`Error al cargar unidades: ${error.message}`, "ERROR");
         }
     };
 
+    
+
+    // Cargar medicamentos
     const loadMedicamentos = async () => {
         try {
-            const response = await fetch('../../controllers/mixto.controller.php?listarMedicamentos=1');
+            const response = await fetch('../../controllers/mixto.controller.php?action=listarMedicamentos');
             if (!response.ok) {
-                throw new Error('Error al cargar medicamentos');
+                throw new Error("Error al cargar medicamentos");
             }
             const data = await response.json();
             idDetalleMedSelect.innerHTML = '<option value="">Seleccione Medicamento (Opcional)</option>';
@@ -45,50 +87,43 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error(`Error al cargar medicamentos: ${error}`);
-            showToast(`Error al cargar medicamentos: ${error.message}`, 'ERROR');
+            showToast(`Error al cargar medicamentos: ${error.message}`, "ERROR");
         }
     };
 
-    const soloNumerosPositivos = (inputElement) => {
-        inputElement.addEventListener('input', () => {
-            if (!/^\d*\.?\d*$/.test(inputElement.value)) {
-                inputElement.value = inputElement.value.replace(/[^0-9.]/g, '');
-            }
-        });
-    };
-
-    soloNumerosPositivos(costoServicioInput);
-
-    // Carga padrillos (tipo = 2) y yeguas (tipo = 1)
-    loadOptions('../../controllers/mixto.controller.php?tipoEquino=2', idEquinoMachoSelect); // Padrillos
-    loadOptions('../../controllers/mixto.controller.php?tipoEquino=1', idEquinoHembraSelect); // Yeguas
-    loadOptions('../../controllers/mixto.controller.php?listarPropietarios=true', idPropietarioSelect);
-    loadMedicamentos();
-
-    const updateExternoSelect = async (genero) => {
+    // Manejar el select de equinos externos según género y propietario
+    updateExternoSelect = async (genero) => {
         const idPropietario = idPropietarioSelect.value;
-        if (idPropietario) {
-            loadOptions(`../../controllers/mixto.controller.php?idPropietario=${idPropietario}&genero=${genero}`, idEquinoExternoSelect);
-        }
+        if (!idPropietario) return;
+    
+        const url = `../../controllers/mixto.controller.php?action=listarEquinosExternosPorPropietarioYGenero&idPropietario=${idPropietario}&genero=${genero}`;
+        console.log("Fetching equinos externos from:", url);
+        await loadOptions(url, idEquinoExternoSelect);
+        console.log("Opciones en Equino Externo:", idEquinoExternoSelect.innerHTML);
     };
+    
+    
 
-    idEquinoMachoSelect.addEventListener('change', () => {
+    idEquinoMachoSelect.addEventListener("change", () => {
+        console.log("Cambio en Padrillo:", idEquinoMachoSelect.value);
         idEquinoHembraSelect.disabled = !!idEquinoMachoSelect.value;
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
         if (idEquinoMachoSelect.value) {
             updateExternoSelect(2); // Cargar hembras si se seleccionó un macho
         }
     });
-
-    idEquinoHembraSelect.addEventListener('change', () => {
+    
+    idEquinoHembraSelect.addEventListener("change", () => {
+        console.log("Cambio en Yegua:", idEquinoHembraSelect.value);
         idEquinoMachoSelect.disabled = !!idEquinoHembraSelect.value;
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
         if (idEquinoHembraSelect.value) {
             updateExternoSelect(1); // Cargar machos si se seleccionó una hembra
         }
     });
-
-    idPropietarioSelect.addEventListener('change', () => {
+    
+    idPropietarioSelect.addEventListener("change", () => {
+        console.log("Cambio en Propietario:", idPropietarioSelect.value);
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
         if (idEquinoMachoSelect.value) {
             updateExternoSelect(2); // Cargar hembras si hay un macho seleccionado
@@ -97,50 +132,109 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+
+
+
+
+
+
+
+    
+
+    // Mostrar/ocultar campos relacionados con medicamentos
+    idDetalleMedSelect.addEventListener("change", (event) => {
+        const idMedicamento = event.target.value;
+        if (idMedicamento) {
+            medicamentoCampos.style.display = "block"; // Mostrar campos relacionados con el medicamento
+            loadUnidadesPorMedicamento(idMedicamento); // Llamar a la función para cargar las unidades
+        } else {
+            medicamentoCampos.style.display = "none"; // Ocultar campos
+            unidadSelect.innerHTML = '<option value="">Seleccione Unidad</option>';
+            cantidadAplicadaInput.value = '';
+            unidadSelect.disabled = true;
+            cantidadAplicadaInput.disabled = true;
+        }
+    });
+
+
+    // Cargar datos iniciales
+    loadOptions('../../controllers/mixto.controller.php?action=listarPropietarios', idPropietarioSelect);
+    loadOptions('../../controllers/mixto.controller.php?action=listarEquinosPropios&tipoEquino=2', idEquinoMachoSelect);
+    loadOptions('../../controllers/mixto.controller.php?action=listarEquinosPropios&tipoEquino=1', idEquinoHembraSelect);
+    loadMedicamentos();
+
+    // Manejar envío del formulario
+    // Manejar envío del formulario
+    // Manejar envío del formulario
     formMixto.addEventListener("submit", async (event) => {
         event.preventDefault();
-        
-        // Preguntar si se quiere registrar
+
         const confirmacion = await ask("¿Desea registrar este servicio mixto?", "Registro de Servicio Mixto");
-        if (!confirmacion) {
-            return; // Salir si el usuario cancela
-        }
+        if (!confirmacion) return;
 
         const formData = new FormData(formMixto);
         const data = Object.fromEntries(formData.entries());
 
-        if (idEquinoMachoSelect.disabled) {
-            data.idEquinoMacho = null;
+        // Validar si se seleccionó un medicamento y su uso
+        if (data.idMedicamento) {
+            if (!data.usoMedicamento) {
+                showToast("Debe seleccionar si el medicamento es para el Padrillo, Yegua o Equino Externo.", "ERROR");
+                return;
+            }
+
+            if (!data.unidad || !data.cantidadAplicada) {
+                showToast("Debe completar los campos de unidad y cantidad aplicada si selecciona un medicamento.", "ERROR");
+                return;
+            }
         }
 
-        if (idEquinoHembraSelect.disabled) {
-            data.idEquinoHembra = null;
-        }
+        // Obtener el texto de la unidad seleccionada
+        const unidadSeleccionada = unidadSelect.options[unidadSelect.selectedIndex]?.textContent;
+        data.unidad = unidadSeleccionada || ""; // Usar texto en lugar de idUnidad
+
+        // Agregar acción al objeto
+        data.action = "registrarServicioMixto";
+
+        // Logs para depuración
+        console.log("Datos enviados al backend (antes de enviar):", data);
 
         try {
+            // Enviar solicitud
             const response = await fetch('../../controllers/mixto.controller.php', {
-                method: 'POST',
+                method: "POST",
                 body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { "Content-Type": "application/json" },
             });
-            if (!response.ok) {
-                throw new Error('Error al procesar la solicitud');
+
+            // Obtener respuesta como texto para depuración
+            const textResponse = await response.text();
+            console.log("Respuesta como texto (registro):", textResponse);
+
+            // Intentar convertir respuesta a JSON
+            let result;
+            try {
+                result = JSON.parse(textResponse);
+                console.log("Respuesta como JSON (registro):", result);
+            } catch (jsonError) {
+                console.error("Error al convertir la respuesta a JSON:", jsonError.message);
+                showToast(`Error en el formato de la respuesta: ${textResponse}`, "ERROR");
+                return;
             }
 
-            const result = await response.json();
-            if (result.status === "error") {
-                const errorMessage = result.message;
-                const cleanMessage = errorMessage.replace(/SQLSTATE\[\d{5}\]: <<Unknown error>>: \d+ /, '');
-                showToast(cleanMessage, 'ERROR');
-            } else {
-                showToast(result.message, 'SUCCESS');
+            // Manejar respuesta JSON
+            if (result.status === "success") {
+                showToast(result.message, "SUCCESS");
                 formMixto.reset();
+            } else {
+                showToast(result.message, "ERROR");
+                console.error("Error recibido del backend:", result.message);
             }
         } catch (error) {
-            showToast(`Error: ${error.message}`, 'ERROR');
-            console.error(`Error al registrar servicio mixto: ${error.message}`);
+            console.error("Error en la solicitud al backend:", error.message);
+            showToast(`Error al registrar servicio mixto: ${error.message}`, "ERROR");
         }
     });
+
+
+    
 });

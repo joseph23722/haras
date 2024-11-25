@@ -150,8 +150,5 @@ class ServicioPropio extends Conexion
         }
     }
 
-
-
-
-
+    
 }

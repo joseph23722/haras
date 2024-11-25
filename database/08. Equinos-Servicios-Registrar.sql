@@ -357,11 +357,6 @@ END $$
 DELIMITER ;
  
  
- 
-select * from medicamentos;
-select * from HistorialDosisAplicadas; 
-CALL spu_registrar_dosis_aplicada(1, 3, 6.00, 1, 'mg');
-
 
 -- Obtener Historial Dosis Aplicadas
 
@@ -402,17 +397,6 @@ BEGIN
         h.fechaAplicacion DESC, m.nombreMedicamento ASC;
 END $$
 DELIMITER ;
-
-
-
-CALL spu_ObtenerHistorialDosisAplicadas();
-
-
-
-
-
-
-
 
 
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;

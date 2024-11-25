@@ -95,4 +95,78 @@ class ServicioMixto extends Conexion
             return [];
         }
     }
+
+
+
+    public function registrarDosisAplicada($idMedicamento, $idEquino, $cantidadAplicada, $unidadAplicada)
+    {
+        try {
+            // Validar y obtener el idUsuario desde la sesión
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start(); // Iniciar la sesión si no está activa
+            }
+
+            $idUsuario = $_SESSION['idUsuario'] ?? null;
+
+            if ($idUsuario === null) {
+                throw new Exception('Usuario no autenticado. No se puede registrar la dosis aplicada.');
+            }
+
+            // Preparar la consulta para llamar al procedimiento
+            $query = $this->pdo->prepare("CALL spu_registrar_dosis_aplicada(?, ?, ?, ?, ?)");
+
+            // Ejecutar el procedimiento con los parámetros proporcionados
+            $query->execute([$idMedicamento, $idEquino, $cantidadAplicada, $idUsuario, $unidadAplicada]);
+
+            // Retornar éxito o una confirmación
+            return true;
+        } catch (PDOException $e) {
+            // Registrar el error en el log
+            error_log("Error al registrar dosis aplicada: " . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            // Manejar errores generales (como la validación del usuario)
+            error_log("Error general al registrar dosis aplicada: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+
+
+    public function obtenerHistorialDosisAplicadas()
+    {
+        try {
+            // Preparar la consulta para llamar al procedimiento
+            $query = $this->pdo->prepare("CALL spu_ObtenerHistorialDosisAplicadas()");
+
+            // Ejecutar el procedimiento sin parámetros
+            $query->execute();
+
+            // Retornar el resultado como un arreglo asociativo
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Registrar el error en el log
+            error_log("Error al obtener historial de dosis aplicadas: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function listarUnidadesPorMedicamento($idMedicamento)
+    {
+        try {
+            $query = $this->pdo->prepare("
+                SELECT u.idUnidad, u.unidad AS nombreUnidad
+                FROM Medicamentos m
+                JOIN CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+                JOIN UnidadesMedida u ON c.idUnidad = u.idUnidad
+                WHERE m.idMedicamento = ?
+            ");
+            $query->execute([$idMedicamento]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al listar unidades: " . $e->getMessage());
+            return [];
+        }
+    }
 }
