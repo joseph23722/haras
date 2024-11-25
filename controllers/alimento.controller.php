@@ -92,15 +92,31 @@ try {
             
 
             case 'listarLotes':
-                $nombreAlimento = isset($_GET['nombreAlimento']) ? $_GET['nombreAlimento'] : null;
-                $lotes = $alimento->listarLotes($nombreAlimento);
+                header('Content-Type: application/json'); // Asegura que el contenido es JSON
+                ob_clean(); // Limpia cualquier salida previa
             
-                if ($lotes['status'] === 'success') {
-                    echo json_encode(['status' => 'success', 'message' => 'Lotes obtenidos correctamente.', 'data' => $lotes['data']]);
-                } else {
-                    echo json_encode(['status' => $lotes['status'], 'message' => $lotes['message']]);
+                $nombreAlimento = $_GET['nombreAlimento'] ?? null;
+            
+                if (!$nombreAlimento) {
+                    echo json_encode(['status' => 'error', 'message' => 'Debe especificar un alimento.']);
+                    exit;
                 }
-                break;
+            
+                $lotes = $alimento->listarLotesPorAlimento($nombreAlimento);
+            
+                // Responder con JSON
+                echo json_encode([
+                    'status' => $lotes['status'],
+                    'message' => $lotes['message'] ?? null,
+                    'data' => $lotes['data'] ?? null,
+                ]);
+                exit; // Finaliza el script
+                
+                
+                
+                
+                
+                
                 
 
             case 'historial':

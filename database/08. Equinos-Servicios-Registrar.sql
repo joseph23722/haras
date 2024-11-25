@@ -137,6 +137,9 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
 DROP PROCEDURE IF EXISTS `registrarServicio`;
 DELIMITER $$
 CREATE PROCEDURE registrarServicio(
@@ -356,13 +359,11 @@ BEGIN
 END $$
 DELIMITER ;
  
- 
 
 -- Obtener Historial Dosis Aplicadas  -- crear vista 
 
 DROP PROCEDURE IF EXISTS spu_ObtenerHistorialDosisAplicadas;
 DELIMITER $$
-
 CREATE PROCEDURE spu_ObtenerHistorialDosisAplicadas()
 BEGIN
     SELECT 

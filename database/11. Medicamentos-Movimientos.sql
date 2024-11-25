@@ -616,25 +616,22 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos`;
+DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos_por_nombre`;
 DELIMITER $$
-CREATE PROCEDURE spu_listar_lotes_medicamentos()
+CREATE PROCEDURE spu_listar_lotes_medicamentos_por_nombre(IN nombreMedicamento VARCHAR(255))
 BEGIN
-    -- Seleccionar todos los lotes registrados en la tabla LotesMedicamento junto con los datos asociados de Medicamentos
+    -- Seleccionar solo los lotes de medicamentos asociados al nombre especificado
     SELECT 
-        lm.lote,                         -- Lote del medicamento
-        m.nombreMedicamento,             -- Nombre del medicamento
-        m.descripcion,                   -- Descripción del medicamento
-        m.cantidad_stock,                -- Stock actual del medicamento
-        m.stockMinimo,                   -- Stock mínimo del medicamento
-        lm.fechaCaducidad,               -- Fecha de caducidad del lote
-        m.estado                         -- Estado del medicamento
+        lm.lote AS loteMedicamento       -- Lote del medicamento
     FROM 
-        LotesMedicamento lm
+        Medicamentos m
     JOIN 
-        Medicamentos m ON lm.idLoteMedicamento = m.idLoteMedicamento; -- Unir con Medicamentos según el lote
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+    WHERE 
+        m.nombreMedicamento = nombreMedicamento; -- Filtrar por el nombre del medicamento
 END $$
 DELIMITER ;
+
 
 
 INSERT INTO TiposMedicamentos (tipo) VALUES

@@ -502,29 +502,28 @@ class Alimento extends Conexion {
 
 
     // Método para listar todos los lotes registrados
-    // Método para listar lotes según el alimento seleccionado
-    public function listarLotes($nombreAlimento = null) {
+    public function listarLotesPorAlimento($nombreAlimento) {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_lotes_alimentos(:nombreAlimento)");
+            // Llama al procedimiento almacenado para listar lotes por alimento
+            $query = $this->pdo->prepare("CALL spu_listar_lotes_por_nombre(:nombreAlimento)");
             $query->bindParam(':nombreAlimento', $nombreAlimento, PDO::PARAM_STR);
             $query->execute();
-
+    
+            // Obtiene los resultados en formato asociativo
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
-            error_log(print_r($result, true));
-
+    
             if (!empty($result)) {
                 return ['status' => 'success', 'data' => $result];
             } else {
-                return ['status' => 'info', 'message' => 'No se encontraron lotes registrados.'];
+                return ['status' => 'info', 'message' => 'No se encontraron lotes para el alimento seleccionado.'];
             }
         } catch (PDOException $e) {
-            error_log("Error al listar los lotes: " . $e->getMessage());
+            error_log("Error al listar lotes por alimento: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
-        } catch (Exception $e) {
-            error_log("Error inesperado al listar los lotes: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
+    
+    
 
 
 

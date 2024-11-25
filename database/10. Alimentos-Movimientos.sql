@@ -305,35 +305,30 @@ BEGIN
 END $$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos`;
+DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos_por_nombre`;
 DELIMITER $$
-CREATE PROCEDURE spu_listar_lotes_alimentos()
+CREATE PROCEDURE spu_listar_lotes_por_nombre(IN nombreAlimento VARCHAR(100))
 BEGIN
-    -- Seleccionar todos los lotes registrados junto con la información de los alimentos asociados
     SELECT 
-        l.idLote,                               -- ID único del lote
-        l.lote,                                 -- Número del lote
-        l.fechaCaducidad,                       -- Fecha de caducidad del lote
-        l.fechaIngreso,                         -- Fecha de ingreso del lote
-        a.nombreAlimento,                       -- Nombre del alimento
-        ta.tipoAlimento AS nombreTipoAlimento,  -- Nombre del tipo de alimento
-        a.stockActual,                          -- Stock actual del alimento
-        a.stockMinimo,                          -- Stock mínimo para alerta
-        a.estado,                               -- Estado del alimento
-        um.nombreUnidad AS nombreUnidadMedida,  -- Nombre de la unidad de medida
-        a.costo                                 -- Costo unitario del alimento
+        l.lote
     FROM 
         Alimentos a
     JOIN 
-        LotesAlimento l ON a.idLote = l.idLote                -- Relación entre alimentos y lotes
-    JOIN 
-        TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento -- Relación para obtener el tipo de alimento
-    JOIN 
-        UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida -- Relación para obtener la unidad de medida
-    ORDER BY 
-        l.idLote ASC;  -- Ordenar los resultados por idLote para mantener consistencia
+        LotesAlimento l ON a.idLote = l.idLote
+    WHERE 
+        a.nombreAlimento = nombreAlimento;
 END $$
 DELIMITER ;
+
+
+
+
+
+
+
+
+
+
 
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$

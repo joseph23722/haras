@@ -624,28 +624,37 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Función para cargar los lotes en los select de entrada y salida de alimentos
-    // Función para cargar los lotes filtrados por alimento
     const cargarLotes = async (nombreAlimento) => {
         const entradaLoteSelect = document.querySelector("#entradaLote");
         const salidaLoteSelect = document.getElementById("salidaLote");
-
+    
         try {
             const response = await fetch(`../../controllers/alimento.controller.php?operation=listarLotes&nombreAlimento=${encodeURIComponent(nombreAlimento)}`);
-            const result = await response.json();
-
+            const textResponse = await response.text(); // Captura la respuesta como texto
+            console.log("Respuesta cruda del servidor:", textResponse); // Log para depuración
+    
+            // Intenta limpiar la respuesta de HTML innecesario
+            const cleanedResponse = textResponse.replace(/<[^>]*>/g, '').trim();
+            console.log("Respuesta limpia:", cleanedResponse); // Log de la respuesta después de limpiar
+    
+            // Convertir a JSON
+            const result = JSON.parse(cleanedResponse);
+            console.log("Respuesta procesada como JSON:", result);
+    
             if (result.status === "success") {
                 entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
                 salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-
-                result.data.forEach(lote => {
+    
+                // Rellenar los select solo con el campo `lote`
+                result.data.forEach(({ lote }) => {
                     const optionEntrada = document.createElement("option");
-                    optionEntrada.value = lote.lote;
-                    optionEntrada.textContent = `${lote.lote} - ${lote.nombreAlimento}`;
+                    optionEntrada.value = lote;
+                    optionEntrada.textContent = lote; // Solo muestra el lote
                     entradaLoteSelect.appendChild(optionEntrada);
-
+    
                     const optionSalida = document.createElement("option");
-                    optionSalida.value = lote.lote;
-                    optionSalida.textContent = `${lote.lote} - ${lote.nombreAlimento}`;
+                    optionSalida.value = lote;
+                    optionSalida.textContent = lote; // Solo muestra el lote
                     salidaLoteSelect.appendChild(optionSalida);
                 });
             } else {
@@ -658,17 +667,39 @@ document.addEventListener("DOMContentLoaded", () => {
             salidaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
         }
     };
-
-    // Evento para cargar lotes según el alimento seleccionado
-    document.getElementById("alimento-select-entrada").addEventListener("change", (event) => {
-        const alimento = event.target.value;
-        cargarLotes(alimento);
+    
+    
+    
+    
+    
+    // Asociar el evento de cambio al selector de alimentos para entrada
+    document.getElementById('alimento-select-entrada').addEventListener('change', (event) => {
+        const nombreAlimento = event.target.value;
+        if (nombreAlimento) {
+            console.log("Alimento seleccionado para entrada:", nombreAlimento); // Log del alimento seleccionado
+            cargarLotes(nombreAlimento); // Cargar lotes según el alimento seleccionado
+        } else {
+            console.log("No se seleccionó ningún alimento para entrada.");
+            cargarLotes(''); // Limpiar los selects de lotes
+        }
     });
-
-    document.getElementById("alimento-select-salida").addEventListener("change", (event) => {
-        const alimento = event.target.value;
-        cargarLotes(alimento);
+    
+    // Asociar el evento de cambio al selector de alimentos para salida
+    document.getElementById('alimento-select-salida').addEventListener('change', (event) => {
+        const nombreAlimento = event.target.value;
+        if (nombreAlimento) {
+            console.log("Alimento seleccionado para salida:", nombreAlimento); // Log del alimento seleccionado
+            cargarLotes(nombreAlimento); // Cargar lotes según el alimento seleccionado
+        } else {
+            console.log("No se seleccionó ningún alimento para salida.");
+            cargarLotes(''); // Limpiar los selects de lotes
+        }
     });
+    
+
+
+
+    
 
 
     // Función para manejar entradas de alimentos

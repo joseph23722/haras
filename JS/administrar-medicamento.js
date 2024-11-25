@@ -729,6 +729,84 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    
+
+    // Función para cargar los lotes en los select de entrada y salida de medicamentos
+    // Función para cargar los lotes en los select de entrada y salida de medicamentos
+    const cargarLotes = async (nombreMedicamento = '') => {
+        const entradaLoteSelect = document.querySelector("#entradaLote");
+        const salidaLoteSelect = document.getElementById("salidaLote");
+    
+        // Verificación de elementos del DOM
+        console.log("Entrada Lote Select:", entradaLoteSelect);
+        console.log("Salida Lote Select:", salidaLoteSelect);
+        console.log("Nombre del Medicamento:", nombreMedicamento);
+    
+        try {
+            // Solicitud al backend
+            const response = await fetch(`../../controllers/admedi.controller.php?operation=listarLotes&nombreMedicamento=${encodeURIComponent(nombreMedicamento)}`);
+            console.log("Estado HTTP de la respuesta:", response.status);
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            console.log("Respuesta del backend:", result);
+    
+            if (result.status === "success") {
+                // Limpiar los selects de lotes
+                entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
+                salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
+    
+                // Rellenar los selects con los lotes disponibles
+                result.data.forEach(({ loteMedicamento }) => { // Cambiado para reflejar el nombre correcto de la clave
+                    const optionEntrada = document.createElement("option");
+                    optionEntrada.value = loteMedicamento;
+                    optionEntrada.textContent = loteMedicamento;
+                    entradaLoteSelect.appendChild(optionEntrada);
+    
+                    const optionSalida = document.createElement("option");
+                    optionSalida.value = loteMedicamento;
+                    optionSalida.textContent = loteMedicamento;
+                    salidaLoteSelect.appendChild(optionSalida);
+                });
+            } else {
+                console.warn("No se encontraron lotes disponibles.");
+                entradaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
+                salidaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
+            }
+        } catch (error) {
+            console.error("Error al cargar los lotes:", error);
+            entradaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
+            salidaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
+        }
+    };
+    
+    document.getElementById("entradaMedicamento").addEventListener("change", (event) => {
+        const nombreMedicamento = event.target.value;
+        if (nombreMedicamento) {
+            console.log("Medicamento seleccionado para entrada:", nombreMedicamento);
+            cargarLotes(nombreMedicamento); // Llama a cargarLotes con el medicamento seleccionado
+        } else {
+            console.log("No se seleccionó ningún medicamento para entrada.");
+            cargarLotes(""); // Limpia los lotes si no hay selección
+        }
+    });
+    
+    document.getElementById("salidaMedicamento").addEventListener("change", (event) => {
+        const nombreMedicamento = event.target.value;
+        if (nombreMedicamento) {
+            console.log("Medicamento seleccionado para salida:", nombreMedicamento);
+            cargarLotes(nombreMedicamento); // Llama a cargarLotes con el medicamento seleccionado
+        } else {
+            console.log("No se seleccionó ningún medicamento para salida.");
+            cargarLotes(""); // Limpia los lotes si no hay selección
+        }
+    });
+    
+
+
     // Implementar para la entrada de medicamentos
     formEntrada.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -764,41 +842,14 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("Error en la solicitud de registro de entrada: " + error.message, 'error');
         }
     });
+    
+    
+    
+    
+    
 
-    // Función para cargar los lotes en los select de entrada y salida de medicamentos
-    const cargarLotes = async () => {
-        const entradaLoteSelect = document.querySelector("#entradaLote");
-        const salidaLoteSelect = document.getElementById('salidaLote');
 
-        try {
-            const response = await fetch('../../controllers/admedi.controller.php?operation=listarLotes', {
-                method: 'GET',
-            });
 
-            const result = await response.json();
-
-            if (result.status === "success") {
-                entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-                salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-
-                result.data.forEach(lote => {
-                    const optionEntrada = document.createElement("option");
-                    optionEntrada.value = lote.lote;
-                    optionEntrada.textContent = `${lote.lote} - ${lote.nombreMedicamento}`;
-                    entradaLoteSelect.appendChild(optionEntrada);
-
-                    const optionSalida = document.createElement("option");
-                    optionSalida.value = lote.lote;
-                    optionSalida.textContent = `${lote.lote} - ${lote.nombreMedicamento}`;
-                    salidaLoteSelect.appendChild(optionSalida);
-                });
-            } else {
-                mostrarMensaje("No se encontraron lotes registrados.", 'error');
-            }
-        } catch (error) {
-            mostrarMensaje("Error al cargar los lotes: " + error.message, 'error');
-        }
-    };
 
     // Implementar para la salida de medicamentos
     if (formSalida) {

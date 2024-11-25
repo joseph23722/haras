@@ -529,35 +529,35 @@ class Admi extends Conexion {
     
 
     // Método para listar todos los lotes de medicamentos registrados
-    public function listarLotesMedicamentos() {
+    // Método para listar lotes de medicamentos por nombre de medicamento
+    public function listarLotesMedicamentosPorNombre($nombreMedicamento) {
         try {
-            $query = $this->pdo->prepare("CALL spu_listar_lotes_medicamentos()");
+            // Llama al procedimiento almacenado con el nombre del medicamento
+            $query = $this->pdo->prepare("CALL spu_listar_lotes_medicamentos_por_nombre(:nombreMedicamento)");
+            $query->bindParam(':nombreMedicamento', $nombreMedicamento, PDO::PARAM_STR);
             $query->execute();
+            
+            // Obtiene los resultados
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Imprimir los resultados para depuración
-            error_log(print_r($result, true));
-    
+            error_log(print_r($result, true)); // Log para depuración
+
             if ($result) {
                 return ['status' => 'success', 'data' => $result];
             } else {
-                return ['status' => 'error', 'message' => 'No se encontraron lotes de medicamentos registrados.'];
+                return ['status' => 'error', 'message' => 'No se encontraron lotes para el medicamento especificado.'];
             }
-    
         } catch (PDOException $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
+            // Procesar el mensaje de error y registrar
             $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
+            $errorMessage = trim($errorMessage);
             error_log("Error al listar los lotes de medicamentos: " . $e->getMessage());
-            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
+            return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $errorMessage];
         } catch (Exception $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
             error_log("Error inesperado al listar los lotes de medicamentos: " . $e->getMessage());
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
+
     
     // Método para obtener la cantidad de equinos por categoría
     public function getEquinosPorCategoria() {

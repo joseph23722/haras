@@ -90,17 +90,57 @@ try {
                 break;
 
             case 'listarLotes':
+                header('Content-Type: application/json'); // Asegurar el tipo de contenido JSON
+                ob_clean(); // Limpiar cualquier salida previa
+            
                 try {
-                    $lotes = $admi->listarLotesMedicamentos();
+                    // Verificar si se proporciona el nombre del medicamento para filtrar
+                    $nombreMedicamento = $_GET['nombreMedicamento'] ?? null;
+            
+                    if (!$nombreMedicamento) {
+                        echo json_encode(['status' => 'error', 'message' => 'Debe especificar un medicamento.']);
+                        exit; // Detener la ejecución
+                    }
+            
+                    // Llamar al método para listar lotes por medicamento
+                    $lotes = $admi->listarLotesMedicamentosPorNombre($nombreMedicamento);
+            
+                    // Enviar la respuesta según el estado del resultado
                     if ($lotes['status'] === 'success') {
-                        sendResponse('success', 'Lotes obtenidos correctamente.', $lotes['data']);
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Lotes obtenidos correctamente.',
+                            'data' => $lotes['data']
+                        ]);
+                        exit; // Detener la ejecución
                     } else {
-                        sendResponse('error', 'No se pudieron obtener los lotes de medicamentos.');
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => $lotes['message']
+                        ]);
+                        exit; // Detener la ejecución
                     }
                 } catch (PDOException $e) {
-                    sendResponse('error', 'Error al listar los lotes de medicamentos: ' . $e->getMessage());
+                    // Capturar errores de la base de datos
+                    error_log("Error en la base de datos: " . $e->getMessage());
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Error en la base de datos: ' . $e->getMessage()
+                    ]);
+                    exit; // Detener la ejecución
+                } catch (Exception $e) {
+                    // Capturar errores generales
+                    error_log("Error inesperado: " . $e->getMessage());
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Error inesperado: ' . $e->getMessage()
+                    ]);
+                    exit; // Detener la ejecución
                 }
                 break;
+                
+                
+                
 
             case 'notificarStockBajo':
                 try {
