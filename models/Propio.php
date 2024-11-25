@@ -1,5 +1,7 @@
 <?php
 
+
+/** propio */
 require_once 'Conexion.php';
 
 class ServicioPropio extends Conexion

@@ -1,3 +1,4 @@
+/** propio */
 document.addEventListener("DOMContentLoaded", () => {
     const formPropio = document.querySelector("#form-registro-servicio-propio");
     const idPadrilloSelect = document.querySelector("#idPadrillo");

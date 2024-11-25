@@ -92,13 +92,16 @@ try {
             
 
             case 'listarLotes':
-                $lotes = $alimento->listarLotes();
+                $nombreAlimento = isset($_GET['nombreAlimento']) ? $_GET['nombreAlimento'] : null;
+                $lotes = $alimento->listarLotes($nombreAlimento);
+            
                 if ($lotes['status'] === 'success') {
                     echo json_encode(['status' => 'success', 'message' => 'Lotes obtenidos correctamente.', 'data' => $lotes['data']]);
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'No se pudieron obtener los lotes.']);
+                    echo json_encode(['status' => $lotes['status'], 'message' => $lotes['message']]);
                 }
-                exit();
+                break;
+                
 
             case 'historial':
                 // Obtener los parámetros del request

@@ -502,37 +502,30 @@ class Alimento extends Conexion {
 
 
     // Método para listar todos los lotes registrados
-    public function listarLotes() {
+    // Método para listar lotes según el alimento seleccionado
+    public function listarLotes($nombreAlimento = null) {
         try {
-            // Preparar la llamada al procedimiento almacenado para listar los lotes
-            $query = $this->pdo->prepare("CALL spu_listar_lotes_alimentos()");
+            $query = $this->pdo->prepare("CALL spu_listar_lotes_alimentos(:nombreAlimento)");
+            $query->bindParam(':nombreAlimento', $nombreAlimento, PDO::PARAM_STR);
             $query->execute();
-            
-            // Obtener los resultados en formato asociativo
+
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Log para verificar el contenido de los resultados (útil para depuración)
             error_log(print_r($result, true));
 
-            // Verificar si se obtuvieron resultados y retornar la respuesta
             if (!empty($result)) {
                 return ['status' => 'success', 'data' => $result];
             } else {
                 return ['status' => 'info', 'message' => 'No se encontraron lotes registrados.'];
             }
-
         } catch (PDOException $e) {
-            // Registrar el error en los logs para diagnóstico
             error_log("Error al listar los lotes: " . $e->getMessage());
-            // Devolver mensaje de error de base de datos
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         } catch (Exception $e) {
-            // Registrar cualquier otro error en los logs
             error_log("Error inesperado al listar los lotes: " . $e->getMessage());
-            // Devolver mensaje de error inesperado
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $e->getMessage()];
         }
     }
+
 
 
     // Método para verificar si un lote ya está registrado con una unidad de medida específica

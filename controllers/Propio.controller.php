@@ -1,4 +1,5 @@
 <?php
+/** propio */
 require_once '../models/Propio.php';
 
 $servicioPropio = new ServicioPropio();

@@ -624,15 +624,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Función para cargar los lotes en los select de entrada y salida de alimentos
-    const cargarLotes = async () => {
+    // Función para cargar los lotes filtrados por alimento
+    const cargarLotes = async (nombreAlimento) => {
         const entradaLoteSelect = document.querySelector("#entradaLote");
-        const salidaLoteSelect = document.getElementById('salidaLote');
+        const salidaLoteSelect = document.getElementById("salidaLote");
 
         try {
-            const response = await fetch('../../controllers/alimento.controller.php?operation=listarLotes', {
-                method: 'GET',
-            });
-
+            const response = await fetch(`../../controllers/alimento.controller.php?operation=listarLotes&nombreAlimento=${encodeURIComponent(nombreAlimento)}`);
             const result = await response.json();
 
             if (result.status === "success") {
@@ -651,12 +649,27 @@ document.addEventListener("DOMContentLoaded", () => {
                     salidaLoteSelect.appendChild(optionSalida);
                 });
             } else {
-                mostrarMensajeDinamico("No se encontraron lotes registrados.", 'error');
+                entradaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
+                salidaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
             }
         } catch (error) {
-            mostrarMensajeDinamico("Error al cargar los lotes: " + error.message, 'error');
+            console.error("Error al cargar los lotes:", error);
+            entradaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
+            salidaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
         }
     };
+
+    // Evento para cargar lotes según el alimento seleccionado
+    document.getElementById("alimento-select-entrada").addEventListener("change", (event) => {
+        const alimento = event.target.value;
+        cargarLotes(alimento);
+    });
+
+    document.getElementById("alimento-select-salida").addEventListener("change", (event) => {
+        const alimento = event.target.value;
+        cargarLotes(alimento);
+    });
+
 
     // Función para manejar entradas de alimentos
     const registrarEntrada = async () => {
