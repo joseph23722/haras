@@ -281,7 +281,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- registrar dosis aplicada
 DROP PROCEDURE IF EXISTS `spu_registrar_dosis_aplicada`;
 DELIMITER $$
@@ -290,7 +289,8 @@ CREATE PROCEDURE spu_registrar_dosis_aplicada(
     IN _idEquino INT, -- Equino al que se aplica la dosis
     IN _cantidadAplicada DECIMAL(10, 2), -- Dosis utilizada
     IN _idUsuario INT, -- Veterinario que realiza la aplicación
-    IN _unidadAplicada VARCHAR(50) -- Unidad utilizada para verificar
+    IN _unidadAplicada VARCHAR(50), -- Unidad utilizada para verificar
+    IN _fechaAplicacion DATE -- Fecha de la aplicación (anteriormente fecha de servicio)
 )
 BEGIN
     DECLARE _stockActual DECIMAL(10, 2); -- Stock actual del medicamento
@@ -339,9 +339,9 @@ BEGIN
     -- Calcular la cantidad restante después de completar las unidades
     SET _cantidadRestanteAcumulada = MOD(_cantidadTotal, _unidadCompleta);
 
-    -- Registrar la dosis aplicada en el historial
+    -- Registrar la dosis aplicada en el historial, usando la fecha de aplicación proporcionada
     INSERT INTO HistorialDosisAplicadas (idMedicamento, idEquino, cantidadAplicada, cantidadRestante, fechaAplicacion, idUsuario)
-    VALUES (_idMedicamento, _idEquino, _cantidadAplicada, _cantidadRestanteAcumulada, CURRENT_DATE, _idUsuario);
+    VALUES (_idMedicamento, _idEquino, _cantidadAplicada, _cantidadRestanteAcumulada, _fechaAplicacion, _idUsuario);
 
     -- Actualizar el stock general si se completaron unidades completas
     IF _nuevasUnidades > 0 THEN
@@ -356,13 +356,9 @@ BEGIN
 END $$
 DELIMITER ;
  
- 
-
 -- Obtener Historial Dosis Aplicadas  -- crear vista 
-
-DROP PROCEDURE IF EXISTS spu_ObtenerHistorialDosisAplicadas;
+DROP PROCEDURE IF EXISTS `spu_ObtenerHistorialDosisAplicadas`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_ObtenerHistorialDosisAplicadas()
 BEGIN
     SELECT 
@@ -397,7 +393,6 @@ BEGIN
         h.fechaAplicacion DESC, m.nombreMedicamento ASC;
 END $$
 DELIMITER ;
-
 
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
 DELIMITER $$
@@ -437,7 +432,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
 
 -- editar version 2 - funcionando:
 DROP PROCEDURE IF EXISTS spu_equino_editar;

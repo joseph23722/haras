@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const unidadSelect = document.querySelector("#unidad");
     const cantidadAplicadaInput = document.querySelector("#cantidadAplicada");
     const costoServicioInput = document.querySelector("#costoServicio");
+    const fechaServicioInput = document.querySelector("#fechaServicio");
 
     // Función para cargar opciones en select
     const loadOptions = async (url, selectElement) => {
@@ -18,13 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 throw new Error("Error al cargar opciones");
             }
-    
+
             const data = await response.json();
             console.log("Datos recibidos:", data);
-    
+
             // Convertir a array si no lo es
             const items = Array.isArray(data) ? data : Object.values(data);
-    
+
             selectElement.innerHTML = '<option value="">Seleccione</option>';
             items.forEach(item => {
                 const option = document.createElement("option");
@@ -37,8 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast(`Error al cargar opciones: ${error.message}`, "ERROR");
         }
     };
-    
-    
+
     const loadUnidadesPorMedicamento = async (idMedicamento) => {
         try {
             const response = await fetch(`../../controllers/mixto.controller.php?action=listarUnidadesPorMedicamento&idMedicamento=${idMedicamento}`);
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             const data = await response.json();
             console.log("Unidades recibidas:", data);
-    
+
             unidadSelect.innerHTML = '<option value="">Seleccione Unidad</option>';
             data.forEach(unidad => {
                 const option = document.createElement("option");
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 option.textContent = unidad.nombreUnidad;
                 unidadSelect.appendChild(option);
             });
-    
+
             unidadSelect.disabled = false;
             cantidadAplicadaInput.disabled = false;
         } catch (error) {
@@ -63,8 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast(`Error al cargar unidades: ${error.message}`, "ERROR");
         }
     };
-
-    
 
     // Cargar medicamentos
     const loadMedicamentos = async () => {
@@ -91,14 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
     updateExternoSelect = async (genero) => {
         const idPropietario = idPropietarioSelect.value;
         if (!idPropietario) return;
-    
+
         const url = `../../controllers/mixto.controller.php?action=listarEquinosExternosPorPropietarioYGenero&idPropietario=${idPropietario}&genero=${genero}`;
         console.log("Fetching equinos externos from:", url);
         await loadOptions(url, idEquinoExternoSelect);
         console.log("Opciones en Equino Externo:", idEquinoExternoSelect.innerHTML);
     };
-    
-    
 
     idEquinoMachoSelect.addEventListener("change", () => {
         console.log("Cambio en Padrillo:", idEquinoMachoSelect.value);
@@ -108,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateExternoSelect(2); // Cargar hembras si se seleccionó un macho
         }
     });
-    
+
     idEquinoHembraSelect.addEventListener("change", () => {
         console.log("Cambio en Yegua:", idEquinoHembraSelect.value);
         idEquinoMachoSelect.disabled = !!idEquinoHembraSelect.value;
@@ -117,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updateExternoSelect(1); // Cargar machos si se seleccionó una hembra
         }
     });
-    
+
     idPropietarioSelect.addEventListener("change", () => {
         console.log("Cambio en Propietario:", idPropietarioSelect.value);
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
@@ -127,10 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
             updateExternoSelect(1); // Cargar machos si hay una hembra seleccionada
         }
     });
-
-
-
-
 
     // Mostrar/ocultar campos relacionados con medicamentos
     idDetalleMedSelect.addEventListener("change", (event) => {
@@ -146,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
             cantidadAplicadaInput.disabled = true;
         }
     });
-
 
     // Cargar datos iniciales
     loadOptions('../../controllers/mixto.controller.php?action=listarPropietarios', idPropietarioSelect);
@@ -183,6 +174,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Agregar acción al objeto
         data.action = "registrarServicioMixto";
+
+        // Obtener la fecha de servicio
+        const fechaServicio = fechaServicioInput.value;
+        if (!fechaServicio) {
+            showToast("Debe seleccionar una fecha de servicio.", "ERROR");
+            return;
+        }
+        data.fechaServicio = fechaServicio;
+        data.fechaAplicacion = fechaServicio;
 
         // Logs para depuración
         console.log("Datos enviados al backend (antes de enviar):", data);
@@ -227,8 +227,4 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast(`Error al registrar servicio mixto: ${error.message}`, "ERROR");
         }
     });
-
-
-
-    
 });

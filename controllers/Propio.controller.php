@@ -1,4 +1,5 @@
 <?php
+
 /** propio */
 require_once '../models/Propio.php';
 
@@ -26,34 +27,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo json_encode(["status" => "error", "message" => "Debe seleccionar un padrillo o una yegua."]);
                     exit;
                 }
-        
+
                 if (!empty($data['idMedicamento'])) {
                     if (empty($data['unidad']) || empty($data['cantidadAplicada'])) {
                         echo json_encode(["status" => "error", "message" => "Debe especificar unidad y cantidad aplicada si selecciona un medicamento."]);
                         exit;
                     }
-        
+
                     if (empty($data['usoMedicamento'])) {
                         echo json_encode(["status" => "error", "message" => "Debe indicar si el medicamento es para el padrillo o la yegua."]);
                         exit;
                     }
-        
+
                     $idEquino = $data['usoMedicamento'] === 'padrillo' ? $data['idEquinoMacho'] : $data['idEquinoHembra'];
-        
+
                     // Registrar dosis aplicada
                     $resultadoDosis = $servicioPropio->registrarDosisAplicada(
                         $data['idMedicamento'],
                         $idEquino,
                         $data['cantidadAplicada'],
-                        $data['unidad']
+                        $data['unidad'],
+                        $data['fechaAplicacion'],
                     );
-        
+
                     if (!$resultadoDosis) {
                         echo json_encode(["status" => "error", "message" => "Error al registrar dosis para el " . $data['usoMedicamento'] . "."]);
                         exit;
                     }
                 }
-        
+
                 // Registrar servicio llamando al modelo
                 $resultadoServicio = $servicioPropio->registrarServicioPropio($data);
                 if ($resultadoServicio['status'] === "error") {
@@ -61,12 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
 
-        
+
                 // Si todo fue exitoso
                 echo json_encode(["status" => "success", "message" => "Servicio propio registrado exitosamente."]);
             } catch (PDOException $e) {
                 error_log("Error al procesar registro: " . $e->getMessage());
-        
+
                 // Extraer mensajes específicos de SIGNAL en el procedimiento almacenado
                 if (preg_match('/SQLSTATE\[45000\]:.+?: (.+)/', $e->getMessage(), $matches)) {
                     echo json_encode(["status" => "error", "message" => trim($matches[1])]);
@@ -78,31 +80,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(["status" => "error", "message" => "Error inesperado. Intente nuevamente."]);
             }
             break;
-        
-        
-        
 
         case 'registrarDosisAplicada':
             try {
                 // Validar que se reciban todos los parámetros necesarios
                 if (
-                    empty($data['idMedicamento']) || 
-                    empty($data['idEquino']) || 
-                    empty($data['cantidadAplicada']) || 
-                    empty($data['unidadAplicada']) // Validar también la unidad
+                    empty($data['idMedicamento']) ||
+                    empty($data['idEquino']) ||
+                    empty($data['cantidadAplicada']) ||
+                    empty($data['unidadAplicada']) ||
+                    empty($data['fechaAplicacion'])
                 ) {
                     echo json_encode(["status" => "error", "message" => "Faltan parámetros necesarios."]);
                     exit;
                 }
-        
+
                 // Llamar al método registrarDosisAplicada con los nuevos parámetros
                 $result = $servicioPropio->registrarDosisAplicada(
-                    $data['idMedicamento'], 
-                    $data['idEquino'], 
-                    $data['cantidadAplicada'], 
-                    $data['unidadAplicada'] // Pasar la unidad aplicada
+                    $data['idMedicamento'],
+                    $data['idEquino'],
+                    $data['cantidadAplicada'],
+                    $data['unidadAplicada'], // Pasar la unidad aplicada
+                    $data['fechaAplicacion'] // Pasar la fecha de aplicación
                 );
-        
+
                 if ($result) {
                     echo json_encode(["status" => "success", "message" => "Dosis aplicada registrada correctamente."]);
                 } else {
@@ -114,14 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(["status" => "error", "message" => $e->getMessage()]);
             }
             break;
-            
-            
 
         default:
             echo json_encode(["status" => "error", "message" => "Acción POST no válida."]);
             break;
     }
-
     exit;
 }
 
@@ -163,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode(["status" => "error", "message" => "ID de medicamento no proporcionado."]);
             }
             break;
-            
+
 
         case 'listarServiciosPorTipo':
             if (isset($_GET['tipoServicio'])) {
