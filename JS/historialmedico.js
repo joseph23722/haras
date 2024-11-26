@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const mensajeDiv = document.querySelector("#mensaje");
     const selectViaAdministracion = document.getElementById("viaAdministracion");
 
-
     // Verificar campos para Vías de Administración
     const verificarCamposVia = () => {
         const nombreVia = document.getElementById("inputNombreVia")?.value?.trim();
@@ -26,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return { nombreVia, descripcionVia }; // Devolver ambos campos; 'descripcionVia' será null si está vacío
     };
-
 
     // Función para mostrar notificaciones en el div `mensaje`
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
@@ -67,13 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Guardar nueva vía de administración
-    // Guardar nueva vía de administración
     const guardarViaAdministracion = async () => {
-        // Obtener valores de los campos
         const inputNombreVia = document.getElementById("inputNombreVia");
         const inputDescripcionVia = document.getElementById("inputDescripcionVia");
         const mensajeModalVia = document.getElementById("mensajeModalVia");
-
         const nombreVia = inputNombreVia.value.trim();
         const descripcion = inputDescripcionVia.value.trim();
 
@@ -89,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const datos = {
                 operation: "agregarVia",
                 nombreVia: nombreVia,
-                descripcion: descripcion || null // La descripción es opcional
+                descripcion: descripcion || null
             };
             console.log("Datos enviados al backend:", datos);
 
@@ -142,10 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("El botón #btnGuardarViaAdministracion no se encontró.");
     }
 
-
-
-        
-
     // Función para cargar las vías de administración
     async function cargarViasAdministracion() {
         try {
@@ -194,13 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-        // Llamar a la función para cargar las vías
-        cargarViasAdministracion();
-
-
-
-    
-
+    // Llamar a la función para cargar las vías
+    cargarViasAdministracion();
     // Función para mostrar un mensaje de equinos notificaciones
     const notificarTratamientosVeterinarios = async () => {
         try {
@@ -208,14 +194,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch('../../controllers/historialme.controller.php?operation=notificarTratamientosVeterinarios', {
                 method: "GET",
             });
-    
+
             const textResponse = await response.text();
             const result = JSON.parse(textResponse);
-    
+
             // Verifica si 'data' es un array y contiene las notificaciones
             if (Array.isArray(result.data) && result.data.length > 0) {
                 result.data.forEach(notificacion => {
-    
+
                     // Crear el mensaje dinámico con la información del tratamiento
                     const mensajeDinamico = `
                         <span class="text-primary">Equino:</span> <strong>${notificacion.nombreEquino}     ,
@@ -223,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span class="text-warning">Fecha Fin:</span> ${notificacion.fechaFin} ,
                         <span class="text-danger">Estado:</span> ${notificacion.TipoNotificacion} 
                     `.replace(/\s+/g, '  ').trim(); // Elimina espacios extra
-    
+
                     mostrarMensajeDinamico(mensajeDinamico, notificacion.TipoNotificacion === 'PRONTO' ? 'WARNING' : 'INFO');
                 });
             } else {
@@ -233,73 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
             mostrarMensajeDinamico('Error al obtener notificaciones de tratamientos.', 'ERROR');
         }
     };
-    
-    
-
-    
-
 
     // Restringir la fecha de fin a hoy y futuras
     fechaFinInput.min = new Date().toISOString().split("T")[0];
-
-    // Función para cargar la tabla de historial médico
-    // Función para cargar la tabla de historial médico
-    const loadHistorialTable = async () => {
-        if (!$.fn.DataTable.isDataTable('#historialTable')) {
-            // Si el DataTable no está inicializado, crea uno con la configuración
-            $('#historialTable').DataTable(configurarDataTableHistorial());
-        } else {
-            // Si ya está inicializado, simplemente recarga los datos
-            $('#historialTable').DataTable().ajax.reload();
-        }
-    };
-    $(document).ready(function () {
-        loadHistorialTable();
-    });
-    
-
-    
-
-    // Función genérica para enviar la solicitud al servidor
-    const sendRequest = async (idRegistro, accion) => {
-        const data = {
-            operation: 'gestionarTratamiento',
-            idRegistro: idRegistro,
-            accion: accion
-        };
-
-        console.log("Enviando datos al servidor:", JSON.stringify(data));
-
-        try {
-            const response = await fetch('../../controllers/historialme.controller.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-            console.log(`Respuesta del servidor (${accion}):`, result);
-
-            if (result.status === "success") {
-                mostrarMensajeDinamico(`Registro ${accion} exitosamente`);
-                $('#historialTable').DataTable().ajax.reload();
-            } else {
-                mostrarMensajeDinamico(`Error al ${accion} el registro: ` + (result.message || "Error desconocido"));
-            }
-        } catch (error) {
-            console.error(`Error al ${accion} el registro:`, error);
-        }
-    };
-
-    // Llamadas para cada acción
-    const pausarRegistro = (idRegistro) => sendRequest(idRegistro, 'pausar');
-    const continuarRegistro = (idRegistro) => sendRequest(idRegistro, 'continuar');
-    const eliminarRegistro = (idRegistro) => sendRequest(idRegistro, 'eliminar');
-
-    // Adjuntar las funciones a botones
-    window.pausarRegistro = pausarRegistro;
-    window.continuarRegistro = continuarRegistro;
-    window.eliminarRegistro = eliminarRegistro;
 
     // Función para cargar los equinos según el tipo seleccionado
     async function loadEquinosPorTipo(tipoEquino) {
@@ -401,33 +323,32 @@ document.addEventListener("DOMContentLoaded", () => {
     //registrar historial medico
     document.querySelector("#form-historial-medico").addEventListener("submit", async (event) => {
         event.preventDefault();
-    
+
         if (await ask("¿Está seguro de que desea registrar este historial médico?")) {
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
             data.operation = "registrarHistorialMedico";
-    
+
             // Log detallado para verificar los datos que se envían
             console.log("Datos enviados al servidor (detallado):", data);
-    
+
             try {
                 const response = await fetch('../../controllers/historialme.controller.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-    
+
                 // Revisar si el servidor responde correctamente
                 console.log("Respuesta del servidor recibida:", response);
-    
+
                 const result = await response.json();
                 console.log("Respuesta JSON parseada:", result);
-    
+
                 if (result.status === "success") {
                     showToast(result.message || "Historial médico registrado correctamente", "SUCCESS");
                     mostrarMensajeDinamico(result.message || "Historial médico registrado correctamente", "SUCCESS");
                     event.target.reset();
-                    $('#historialTable').DataTable().ajax.reload();
                 } else {
                     // Si el servidor devuelve error, mostramos los detalles
                     console.error("Error al registrar historial médico:", result.message);
@@ -440,12 +361,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
-    
 
     function clearSelect(selectElement) {
         selectElement.innerHTML = `<option value="">Seleccione ${selectElement.id.replace('select', '')}</option>`;
     }
-
 
     // Configurar el DataTable para listar las vías de administración
     document.getElementById("btnVerViasAdministracion").addEventListener("click", function () {
@@ -562,10 +481,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
-
-
     loadMedicamentos();
     notificarTratamientosVeterinarios();
-
 });

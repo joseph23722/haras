@@ -251,5 +251,4 @@
 
 <?php require_once '../footer.php'; ?>
 
-<script src="/haras/vendor/veterinario/veterinario.js" defer></script>
 <script src="../../JS/historialmedico.js"></script>

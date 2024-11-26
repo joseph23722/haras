@@ -9,7 +9,7 @@ CREATE PROCEDURE spu_registrar_revision_equino (
     IN p_costorevision DECIMAL(10,2)
 )
 BEGIN
-    -- Verificar si el equino es una Yegua y ha tenido al menos un servicio
+    -- Verificar si el equino es una Yegua
     DECLARE v_tipoEquino INT;
     DECLARE v_serviciosCount INT;
 
@@ -23,16 +23,24 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El equino no es una yegua';
     END IF;
 
-    -- Verificar si el equino (como yegua) ha tenido al menos un servicio
+    -- Verificar si el equino ha tenido al menos un servicio
+    -- Verificar para yeguas propias (idEquinoHembra)
     SELECT COUNT(*) INTO v_serviciosCount
     FROM Servicios
     WHERE idEquinoHembra = p_idEquino;
+
+    -- Verificar para yeguas externas (idEquinoExterno)
+    IF v_serviciosCount = 0 THEN
+        SELECT COUNT(*) INTO v_serviciosCount
+        FROM Servicios
+        WHERE idEquinoExterno = p_idEquino;
+    END IF;
 
     IF v_serviciosCount = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La yegua no tiene servicios registrados';
     END IF;
     
-     -- Verificar si la fecha de la revisión no es posterior a la fecha actual
+    -- Verificar si la fecha de la revisión no es posterior a la fecha actual
     IF p_fecharevision > CURDATE() THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede registrar una revisión con una fecha futura';
     END IF;
