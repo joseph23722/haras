@@ -180,9 +180,9 @@ INSERT INTO modulos (modulo) VALUES
     ('equinos'), -- 2
     ('historialMedico'), -- 3
     ('inventarios'), -- 4
-    ('servicios'), -- 5
-    ('usuarios'), -- 6
-    ('reportes'); -- 7
+    ('reportes'), -- 5
+    ('servicios'), -- 6
+    ('usuarios'); -- 7
     
 -- HOME
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
@@ -192,90 +192,95 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(1, 'rotar-campo', 'S', 'Campos', 'fa-solid fa-group-arrows-rotate'),
     (1, 'programar-rotacion', 'S', 'Rotacion Campos', 'fa-solid fa-calendar-days');
+    
 -- Equinos
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(2, 'listar-equino', 'S', 'Listado Equinos', 'fa-solid fa-list'),
-	(2, 'registrar-equino', 'S', 'Registro Equinos', 'fa-solid fa-horse'),
-   	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop'),
-	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list'),
     (2, 'historial-equino', 'S', 'Historial Equinos', 'fas fa-history'),
-    (2, 'mostrar-foto', 'S', 'Colección de Fotos', 'fa-solid fa-image');
+	(2, 'listar-bostas', 'S', 'Listado Bostas', 'fa-solid fa-list'),
+	(2, 'listar-equino', 'S', 'Listado Equinos', 'fa-solid fa-list'),
+    (2, 'mostrar-foto', 'S', 'Colección de Fotos', 'fa-solid fa-image'),
+	(2, 'registrar-bostas', 'S', 'Registro Bostas', 'fas fa-poop'),
+	(2, 'registrar-equino', 'S', 'Registro Equinos', 'fa-solid fa-horse');
     
 -- historialMedico
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(3, 'seleccionar-diagnostico', 'S', 'Diagnóstico', 'fa-solid fa-file-waveform'),
 	(3, 'diagnosticar-equino', 'N', NULL, NULL),
-	(3, 'revisar-equino', 'N', NULL, NULL);
+	(3, 'listar-diagnostico-avanzado', 'N', NULL, NULL),
+	(3, 'revisar-equino', 'N', NULL, NULL),
+	(3, 'seleccionar-diagnostico', 'S', 'Diagnóstico', 'fa-solid fa-notes-medical');
 
 -- Inventarios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(4, 'administrar-alimento', 'S', 'Alimentos', 'fas fa-apple-alt'),
+	(4, 'administrar-herramienta', 'S', 'Herrero', 'fas fa-wrench'),
 	(4, 'administrar-medicamento', 'S', 'Medicamentos', 'fas fa-pills'),
-    (4, 'registrar-implementos-caballos', 'S', 'Implementos Caballos', 'fa-solid fa-scissors'),
-	(4, 'listar-implemento-caballo', 'N', NULL, NULL),
-    (4, 'registrar-implementos-campos', 'S', 'Implementos Campos', 'fa-solid fa-wrench'),
-    (4, 'administrar-herramienta', 'S', 'Herrero', 'fas fa-wrench'),
 	(4, 'listar-accion-herrero', 'N', NULL, NULL),
-    (4, 'listar-alimento', 'N', NULL, NULL);
-    
--- Servicios
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-    (5, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools'),
-    (5, 'servir-mixto', 'S', 'Servicio Mixto', 'fas fa-exchange-alt'),
-	(5, 'listar-servicio', 'S', 'Listado Servicios', 'fa-solid fa-list');
--- Usuarios
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(6, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet'),
-	(6, 'actualizar-contrasenia', 'S', 'Actualizar Contraseña', 'fas fa-key');
+	(4, 'listar-alimento', 'N', NULL, NULL),
+	(4, 'listar-implemento-caballo', 'N', NULL, NULL),
+	(4, 'listar-implemento-campo', 'N', NULL, NULL),
+	(4, 'listar-medicamento', 'N', NULL, NULL),
+    (4, 'registrar-implemento-caballo', 'S', 'Implementos Caballos', 'fa-solid fa-scissors'),
+    (4, 'registrar-implemento-campo', 'S', 'Implementos Campos', 'fa-solid fa-wrench');
 
 -- Reportes
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(7, 'presionar-boton-reporte', 'S', 'Reportes', 'fa-solid fa-file-circle-plus');
+	(5, 'presionar-boton-reporte', 'S', 'Reportes', 'fa-solid fa-file-circle-plus');
     
+-- Servicios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(4, 'listar-implemento-campo', 'N', NULL, NULL);
-
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(3, 'listar-diagnostico-avanzado', 'N', NULL, NULL);
-
-INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(4, 'listar-medicamento', 'N', NULL, NULL);
+	(6, 'listar-medicamento-usado', 'N', NULL, NULL),
+	(6, 'listar-servicio', 'S', 'Listado Servicios', 'fa-solid fa-list'),
+	(6, 'servir-mixto', 'S', 'Servicio Mixto', 'fas fa-exchange-alt'),
+    (6, 'servir-propio', 'S', 'Servicio Propio', 'fas fa-tools');
     
+-- Usuarios
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
-	(5, 'listar-medicamento-usado', 'N', NULL, NULL);
+	(7, 'actualizar-contrasenia', 'S', 'Actualizar Contraseña', 'fas fa-key'),
+	(7, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet');
 
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
     (1, 4),
+    (1, 5),
+    (1, 6),
     (1, 7),
-    (1, 9),
-    (1, 16),
+    (1, 11),
+    (1, 17),
+    (1, 18),
     (1, 19),
     (1, 20),
-    (1, 23),
-    (1, 26), -- Actualizar contrasenia
-	(1, 25);
+    (1, 21),
+	(1, 24),
+    (1, 25),
+    (1, 26),
+    (1, 29);
 
 -- Administrador
 INSERT INTO permisos (idRol, idvista) VALUES
 	(2, 1),
     (2, 4),
+    (2, 5),
+    (2, 6),
     (2, 7),
-    (2, 16),
+    (2, 11),
+    (2, 17),
+    (2, 18),
     (2, 19),
     (2, 20),
-    (2, 23),
+    (2, 21),
     (2, 24),
     (2, 25),
-    (2, 26);
+    (2, 26),
+    (2, 30),
+    (2, 29);
 
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
 	(3, 1),
 	(3, 4),
-    (3, 5),
-    (3, 8),
+    (3, 6),
+    (3, 7),
     (3, 9),
     (3, 10),
     (3, 11),
@@ -284,43 +289,47 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 14),
     (3, 15),
     (3, 16),
+    (3, 17),
     (3, 18),
     (3, 19),
-    (3, 20),
     (3, 21),
     (3, 22),
-    (3, 23),
+    (3, 25),
+    (3, 26),
+    (3, 27),
     (3, 28),
-    (3, 29),
     (3, 30),
-    (3, 25); -- falta el 25
+    (3, 29);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
 	(4, 1),
 	(4, 2),
     (4, 3),
+    (4, 5),
     (4, 6),
-    (4, 7),
-    (4, 17),
-    (4, 27),
-    (4, 25);
+    (4, 8),
+    (4, 20),
+    (4, 23),
+    (4, 29);
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES
 	(5, 1),
+    (5, 6),
     (5, 10),
     (5, 11),
     (5, 12),
-    (5, 25);
+	(5, 13),
+    (5, 29);
     
 -- Herrero
 INSERT INTO permisos (idRol, idvista) VALUES
 	(6, 1),
-	(6, 4),
-    (6, 18),
-    (6, 19),
-    (6, 25);
+	(6, 6),
+    (6, 15),
+    (6, 17),
+    (6, 29);
 
 INSERT INTO Nacionalidades (nacionalidad) VALUES 
 ('Afgana'), ('Alemana'), ('Andorrana'), ('Angoleña'), ('Antiguana'), ('Árabe'), ('Argelina'), ('Argentina'),

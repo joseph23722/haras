@@ -1,6 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -79,11 +78,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
     DECLARE _idLote INT;
@@ -158,7 +154,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-
 
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 DELIMITER $$
@@ -305,7 +300,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `spu_listar_lotes_alimentos_por_nombre`;
+DROP PROCEDURE IF EXISTS `spu_listar_lotes_por_nombre`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_por_nombre(IN nombreAlimento VARCHAR(100))
 BEGIN
@@ -319,16 +314,6 @@ BEGIN
         a.nombreAlimento = nombreAlimento;
 END $$
 DELIMITER ;
-
-
-
-
-
-
-
-
-
-
 
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 DELIMITER $$
@@ -356,7 +341,6 @@ BEGIN
     LIMIT 5;                                     -- Limitamos los resultados a 5
 END $$
 DELIMITER ;
-
 
 DROP PROCEDURE IF EXISTS `spu_historial_completo`;
 DELIMITER $$
@@ -486,8 +470,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 DROP PROCEDURE IF EXISTS `spu_eliminarAlimento`;
 DELIMITER $$
 CREATE PROCEDURE spu_eliminarAlimento(IN _idAlimento INT)
@@ -570,9 +552,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- sugerencias 
-DROP PROCEDURE IF EXISTS ObtenerSugerenciasAlimentos;
+DROP PROCEDURE IF EXISTS `ObtenerSugerenciasAlimentos`;
 DELIMITER $$
 CREATE PROCEDURE ObtenerSugerenciasAlimentos()
 BEGIN
@@ -593,9 +574,8 @@ BEGIN
 END$$
 DELIMITER ;
 
-
 -- editar sugerencias
-DROP PROCEDURE IF EXISTS EditarCombinacionAlimento;
+DROP PROCEDURE IF EXISTS `EditarCombinacionAlimento`;
 DELIMITER $$
 CREATE PROCEDURE EditarCombinacionAlimento(
     IN p_IdTipoActual INT,           -- ID actual del tipo de alimento
@@ -635,9 +615,7 @@ BEGIN
     WHERE idTipoAlimento = p_IdTipoActual AND idUnidadMedida = p_IdUnidadActual;
 
 END$$
-
 DELIMITER ;
-
 
 -- esto no va es prueba 
 /*

@@ -137,9 +137,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
 DROP PROCEDURE IF EXISTS `registrarServicio`;
 DELIMITER $$
 CREATE PROCEDURE registrarServicio(
@@ -279,6 +276,124 @@ BEGIN
           SELECT idEquinoHembra
           FROM Servicios
           WHERE fechaServicio >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+      );
+
+END $$
+DELIMITER ;
+
+-- validacion de estadomonta
+DROP PROCEDURE IF EXISTS `registrarServicio`;
+DELIMITER $$
+CREATE PROCEDURE registrarServicio(
+    IN p_idEquinoMacho INT,
+    IN p_idEquinoHembra INT,
+    IN p_idPropietario INT,
+    IN p_idEquinoExterno INT,
+    IN p_fechaServicio DATE,
+    IN p_tipoServicio ENUM('propio', 'mixto'),
+    IN p_detalles TEXT,
+    IN p_idMedicamento INT,
+    IN p_horaEntrada TIME,
+    IN p_horaSalida TIME,
+    IN p_costoServicio DECIMAL(10, 2)
+)
+BEGIN
+    DECLARE v_mensajeError VARCHAR(255);
+    DECLARE v_idEstadoServida INT;
+    DECLARE v_idEstadoActivo INT;
+    DECLARE v_idEstadoSS INT;
+    DECLARE v_sexoEquinoExterno CHAR(1);
+    DECLARE v_existeServicio INT;
+
+    -- Obtener los ID de estados correspondientes
+    SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida' LIMIT 1;
+    SELECT idEstadoMonta INTO v_idEstadoActivo FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Activo' LIMIT 1;
+    SELECT idEstadoMonta INTO v_idEstadoSS FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1;
+
+    -- Verificar si la fecha de servicio es válida
+    IF p_fechaServicio > CURDATE() THEN
+        SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Verificar que la yegua propia no haya recibido un servicio el mismo día
+    IF p_tipoServicio = 'propio' THEN
+        IF EXISTS (
+            SELECT 1
+            FROM Servicios
+            WHERE idEquinoHembra = p_idEquinoHembra
+            AND fechaServicio = p_fechaServicio
+        ) THEN
+            SET v_mensajeError = 'Error: La yegua propia ya recibió un servicio en esta fecha.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+    END IF;
+
+    -- Verificar si la yegua externa ya tiene un servicio en la misma fecha
+    IF p_tipoServicio = 'mixto' THEN
+        -- Verificar si la yegua externa ya tiene un servicio registrado para la misma fecha
+        SELECT COUNT(*) INTO v_existeServicio
+        FROM Servicios
+        WHERE idEquinoHembra = p_idEquinoExterno
+        AND fechaServicio = p_fechaServicio;
+
+        IF v_existeServicio > 0 THEN
+            SET v_mensajeError = 'Error: La yegua externa ya recibió un servicio en esta fecha.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        -- Obtener el sexo del equino externo
+        SELECT sexo INTO v_sexoEquinoExterno
+        FROM Equinos WHERE idEquino = p_idEquinoExterno LIMIT 1;
+
+        -- Si es macho, actualizar su estado a "Activo"
+        IF v_sexoEquinoExterno = 'M' THEN
+            UPDATE Equinos
+            SET idEstadoMonta = v_idEstadoActivo
+            WHERE idEquino = p_idEquinoExterno;
+
+        -- Si es hembra, actualizar su estado a "Servida"
+        ELSEIF v_sexoEquinoExterno = 'H' THEN
+            UPDATE Equinos
+            SET idEstadoMonta = v_idEstadoServida
+            WHERE idEquino = p_idEquinoExterno;
+        END IF;
+    END IF;
+
+    -- Registrar el servicio
+    IF p_tipoServicio = 'propio' THEN
+        INSERT INTO Servicios (
+            idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
+        ) VALUES (
+            p_idEquinoMacho, p_idEquinoHembra, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, NULL, p_costoServicio
+        );
+
+        -- Cambiar estado del macho a "Activo"
+        UPDATE Equinos
+        SET idEstadoMonta = v_idEstadoActivo
+        WHERE idEquino = p_idEquinoMacho;
+
+    ELSEIF p_tipoServicio = 'mixto' THEN
+        INSERT INTO Servicios (
+            idEquinoMacho, idEquinoHembra, idEquinoExterno, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
+        ) VALUES (
+            p_idEquinoMacho, p_idEquinoHembra, p_idEquinoExterno, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, p_idPropietario, p_costoServicio
+        );
+    END IF;
+
+    -- Cambiar estado de la yegua a "Servida" después del servicio
+    UPDATE Equinos
+    SET idEstadoMonta = v_idEstadoServida
+    WHERE idEquino = p_idEquinoHembra;
+
+    -- Actualizar el estado de todas las yeguas no servidas recientemente a "S/S"
+    UPDATE Equinos
+    SET idEstadoMonta = v_idEstadoSS
+    WHERE sexo = 'Hembra'
+      AND idEquino NOT IN (
+          SELECT idEquinoHembra
+          FROM Servicios
+          WHERE fechaServicio >= CURDATE() - INTERVAL 2 DAY
       );
 
 END $$

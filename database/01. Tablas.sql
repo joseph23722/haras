@@ -103,7 +103,7 @@ CREATE TABLE TipoEquinos (
 CREATE TABLE EstadoMonta (
     idEstadoMonta		INT PRIMARY KEY AUTO_INCREMENT,
     genero 				ENUM('Macho', 'Hembra') NOT NULL,
-    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Activo', 'Inactivo') NOT NULL
+    nombreEstado 		ENUM('S/S', 'Servida', 'Por Servir', 'Preñada', 'Vacia', 'Con Cria', 'Activo', 'Inactivo') NOT NULL
 ) ENGINE = INNODB;
 
 -- 8. Propietarios
@@ -148,7 +148,7 @@ CREATE TABLE fotografiaequinos
 (
 	idfotografia	INT PRIMARY KEY AUTO_INCREMENT,
     idEquino		INT NOT NULL,
-    public_id	VARCHAR(255) NOT NULL,
+    public_id		VARCHAR(255) NOT NULL,
     created_at		TIMESTAMP DEFAULT NOW() NOT NULL,
     updated_at		TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_public_id_ft FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino) ON DELETE CASCADE
@@ -190,29 +190,29 @@ CREATE TABLE HistorialImplemento (
 
 -- 13. Tabla Unidades de Medida - alimento
 CREATE TABLE UnidadesMedidaAlimento (
-    idUnidadMedida INT PRIMARY KEY AUTO_INCREMENT,
-    nombreUnidad VARCHAR(10) NOT NULL UNIQUE      -- Ejemplo: 'Kg', 'L'
+    idUnidadMedida 		INT PRIMARY KEY AUTO_INCREMENT,
+    nombreUnidad 		VARCHAR(10) NOT NULL UNIQUE      -- Ejemplo: 'Kg', 'L'
 ) ENGINE = INNODB;
 
 -- 14. Tabla de Tipos de Alimentos
 CREATE TABLE TipoAlimentos (
-    idTipoAlimento INT PRIMARY KEY AUTO_INCREMENT,
-    tipoAlimento VARCHAR(50) NOT NULL UNIQUE      -- Ejemplo: 'Granos', 'Suplemento'
+    idTipoAlimento 		INT PRIMARY KEY AUTO_INCREMENT,
+    tipoAlimento 		VARCHAR(50) NOT NULL UNIQUE      -- Ejemplo: 'Granos', 'Suplemento'
 ) ENGINE = INNODB;
 
 -- 15. Tabla Lotes de Alimentos
 CREATE TABLE LotesAlimento (
-    idLote INT PRIMARY KEY AUTO_INCREMENT,
-    lote VARCHAR(50) NOT NULL,
-    fechaCaducidad DATE DEFAULT NULL,
-    fechaIngreso DATETIME DEFAULT NOW(),
-    estadoLote ENUM('No Vencido', 'Vencido', 'Agotado') DEFAULT 'No Vencido'
+    idLote 				INT PRIMARY KEY AUTO_INCREMENT,
+    lote 				VARCHAR(50) NOT NULL,
+    fechaCaducidad 		DATE DEFAULT NULL,
+    fechaIngreso 		DATETIME DEFAULT NOW(),
+    estadoLote 			ENUM('No Vencido', 'Vencido', 'Agotado') DEFAULT 'No Vencido'
 ) ENGINE = INNODB;
 
 -- 16. Tabla Intermedia para la Relación entre Tipos de Alimento y Unidades de Medida
 CREATE TABLE TipoAlimento_UnidadMedida (
-    idTipoAlimento INT NOT NULL,
-    idUnidadMedida INT NOT NULL,
+    idTipoAlimento 		INT NOT NULL,
+    idUnidadMedida 		INT NOT NULL,
     PRIMARY KEY (idTipoAlimento, idUnidadMedida),
     CONSTRAINT fk_tipoalimento FOREIGN KEY (idTipoAlimento) REFERENCES TipoAlimentos(idTipoAlimento) ON DELETE CASCADE,
     CONSTRAINT fk_unidadmedida FOREIGN KEY (idUnidadMedida) REFERENCES UnidadesMedidaAlimento(idUnidadMedida) ON DELETE CASCADE,
@@ -244,27 +244,25 @@ CREATE TABLE Alimentos (
 
 -- 18. Tabla MermasAlimento
 CREATE TABLE MermasAlimento (
-    idMerma        INT PRIMARY KEY AUTO_INCREMENT,
-    idAlimento     INT NOT NULL,
-    cantidadMerma  DECIMAL(10,2) NOT NULL,
-    fechaMerma     DATETIME DEFAULT NOW(),
-    motivo         VARCHAR(255) NULL,
-
-    -- Clave foránea para relacionar con la tabla Alimentos
+    idMerma       	INT PRIMARY KEY AUTO_INCREMENT,
+    idAlimento     	INT NOT NULL,
+    cantidadMerma 	DECIMAL(10,2) NOT NULL,
+    fechaMerma     	DATETIME DEFAULT NOW(),
+    motivo         	VARCHAR(255) NULL,
     CONSTRAINT fk_merma_alimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento) ON DELETE CASCADE
 ) ENGINE = INNODB;
 
 -- 19. Tabla HistorialMovimientos - alimento
 CREATE TABLE HistorialMovimientos (
-    idMovimiento INT AUTO_INCREMENT PRIMARY KEY,
-    idAlimento INT NOT NULL,
-    tipoMovimiento VARCHAR(50) NOT NULL,
-    cantidad DECIMAL(10,2) NOT NULL,
-    idEquino INT NULL,
-    idUsuario INT NOT NULL,
-    unidadMedida VARCHAR(50) NOT NULL,
-    fechaMovimiento DATE DEFAULT NOW(),
-    merma DECIMAL(10,2) NULL,
+    idMovimiento 		INT AUTO_INCREMENT PRIMARY KEY,
+    idAlimento 			INT NOT NULL,
+    tipoMovimiento 		VARCHAR(50) NOT NULL,
+    cantidad 			DECIMAL(10,2) NOT NULL,
+    idEquino 			INT NULL,
+    idUsuario 			INT NOT NULL,
+    unidadMedida 		VARCHAR(50) NOT NULL,
+    fechaMovimiento 	DATE DEFAULT NOW(),
+    merma 				DECIMAL(10,2) NULL,
     FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento),
     FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
@@ -272,29 +270,29 @@ CREATE TABLE HistorialMovimientos (
 
 -- 20. TiposMedicamentos ---- admedi
 CREATE TABLE TiposMedicamentos (
-    idTipo INT AUTO_INCREMENT PRIMARY KEY,
-    tipo VARCHAR(100) NOT NULL UNIQUE 
+    idTipo 				INT AUTO_INCREMENT PRIMARY KEY,
+    tipo 				VARCHAR(100) NOT NULL UNIQUE 
 ) ENGINE = INNODB;
 
 -- 21. PresentacionesMedicamentos ---- admedi
 CREATE TABLE PresentacionesMedicamentos (
-    idPresentacion INT AUTO_INCREMENT PRIMARY KEY,
-    presentacion VARCHAR(100) NOT NULL UNIQUE
+    idPresentacion 		INT AUTO_INCREMENT PRIMARY KEY,
+    presentacion 		VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
 -- 22. Unidades Medida ---- admedi
 CREATE TABLE UnidadesMedida (
-    idUnidad INT AUTO_INCREMENT PRIMARY KEY,
-    unidad VARCHAR(50) NOT NULL UNIQUE
+    idUnidad 			INT AUTO_INCREMENT PRIMARY KEY,
+    unidad 				VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
 -- 23. CombinacionesMedicamentos ---- admedi
 CREATE TABLE CombinacionesMedicamentos (
-    idCombinacion INT AUTO_INCREMENT PRIMARY KEY,
-    idTipo INT NOT NULL,
-    idPresentacion INT NOT NULL,
-    dosis DECIMAL(10, 2) NOT NULL, 
-    idUnidad INT NOT NULL, 
+    idCombinacion 		INT AUTO_INCREMENT PRIMARY KEY,
+    idTipo 				INT NOT NULL,
+    idPresentacion 		INT NOT NULL,
+    dosis 				DECIMAL(10, 2) NOT NULL, 
+    idUnidad 			INT NOT NULL, 
     FOREIGN KEY (idTipo) REFERENCES TiposMedicamentos(idTipo),
     FOREIGN KEY (idPresentacion) REFERENCES PresentacionesMedicamentos(idPresentacion),
     FOREIGN KEY (idUnidad) REFERENCES UnidadesMedida(idUnidad),
@@ -303,29 +301,29 @@ CREATE TABLE CombinacionesMedicamentos (
 
 -- 24. Tabla de Lotes de Medicamentos - admedi
 CREATE TABLE LotesMedicamento (
-    idLoteMedicamento INT PRIMARY KEY AUTO_INCREMENT,  
-    lote              VARCHAR(100) NOT NULL,             
-    fechaCaducidad    DATE NOT NULL,                      
-    fechaIngreso DATE DEFAULT (CURDATE()),           
+    idLoteMedicamento 	INT PRIMARY KEY AUTO_INCREMENT,  
+    lote              	VARCHAR(100) NOT NULL,             
+    fechaCaducidad    	DATE NOT NULL,                      
+    fechaIngreso 		DATE DEFAULT (CURDATE()),           
     CONSTRAINT UQ_lote_medicamento UNIQUE (lote)  
 ) ENGINE = INNODB;
 
 -- 25  Tabla de Medicamentos
 CREATE TABLE Medicamentos (
-    idMedicamento         INT PRIMARY KEY AUTO_INCREMENT,
-    idUsuario             INT NOT NULL,
-    nombreMedicamento     VARCHAR(255) NOT NULL, 
-    descripcion           TEXT NULL,
-    idCombinacion         INT NOT NULL,
-    cantidad_stock        INT NOT NULL,
-    stockMinimo           INT DEFAULT 0,
-    estado                ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',
-    idEquino INT NULL,
-    idLoteMedicamento     INT NOT NULL,
-    precioUnitario        DECIMAL(10,2) NOT NULL,
-    motivo TEXT  NULL,
-    fecha_registro        DATE NOT NULL,
-    ultima_modificacion   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    idMedicamento         	INT PRIMARY KEY AUTO_INCREMENT,
+    idUsuario             	INT NOT NULL,
+    nombreMedicamento     	VARCHAR(255) NOT NULL, 
+    descripcion           	TEXT NULL,
+    idCombinacion        	INT NOT NULL,
+    cantidad_stock        	INT NOT NULL,
+    stockMinimo           	INT DEFAULT 0,
+    estado               	ENUM('Disponible', 'Por agotarse', 'Agotado') DEFAULT 'Disponible',
+    idEquino 				INT NULL,
+    idLoteMedicamento     	INT NOT NULL,
+    precioUnitario        	DECIMAL(10,2) NOT NULL,
+    motivo 					TEXT  NULL,
+    fecha_registro        	DATE NOT NULL,
+    ultima_modificacion   	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_medicamento_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
     CONSTRAINT fk_medicamento_combinacion FOREIGN KEY (idCombinacion) REFERENCES CombinacionesMedicamentos(idCombinacion),
     CONSTRAINT fk_medicamento_lote FOREIGN KEY (idLoteMedicamento) REFERENCES LotesMedicamento(idLoteMedicamento),
@@ -334,36 +332,26 @@ CREATE TABLE Medicamentos (
 
 -- 26. ViasAdministracion - veterinario 
 CREATE TABLE ViasAdministracion (
-    idViaAdministracion INT PRIMARY KEY AUTO_INCREMENT,
-    nombreVia VARCHAR(50) NOT NULL UNIQUE,
-    descripcion TEXT NULL
+    idViaAdministracion 	INT PRIMARY KEY AUTO_INCREMENT,
+    nombreVia 				VARCHAR(50) NOT NULL UNIQUE,
+    descripcion 			TEXT NULL
 ) ENGINE = INNODB;
-
-/*
-	una tabla para almacenar los datos de la yegua y/o equino que el doctor revisa
-    las revisiones son:
-    1. Ecografía
-    2. Ovulaciones
-    3. Abortos
-    4. Reabsorvos
-    5. Muertes, etc.
-*/
 
 -- 27. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
-    idDetalleMed            INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento           INT NOT NULL,
-    idEquino                INT NOT NULL,
-    dosis                   VARCHAR(50) NOT NULL,
-    frecuenciaAdministracion VARCHAR(50) NOT NULL,
-    idViaAdministracion INT NOT NULL,
-    fechaInicio             DATE NOT NULL,
-    fechaFin                DATE NOT NULL,
-    observaciones           TEXT NULL,
-    reaccionesAdversas      TEXT NULL,
-    idUsuario               INT NOT NULL,
-    tipoTratamiento         ENUM('Primario', 'Complementario') DEFAULT 'Primario',
-    estadoTratamiento       ENUM('Activo', 'Finalizado', 'En pausa') DEFAULT 'Activo',
+    idDetalleMed            	INT PRIMARY KEY AUTO_INCREMENT,
+    idMedicamento           	INT NOT NULL,
+    idEquino                	INT NOT NULL,
+    dosis                   	VARCHAR(50) NOT NULL,
+    frecuenciaAdministracion 	VARCHAR(50) NOT NULL,
+    idViaAdministracion 		INT NOT NULL,
+    fechaInicio             	DATE NOT NULL,
+    fechaFin                	DATE NOT NULL,
+    observaciones           	TEXT NULL,
+    reaccionesAdversas      	TEXT NULL,
+    idUsuario               	INT NOT NULL,
+    tipoTratamiento         	ENUM('Primario', 'Complementario') DEFAULT 'Primario',
+    estadoTratamiento       	ENUM('Activo', 'Finalizado', 'En pausa') DEFAULT 'Activo',
     CONSTRAINT fk_detallemed_medicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_detallemed_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_detallemed_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
@@ -372,27 +360,27 @@ CREATE TABLE DetalleMedicamentos (
 
 -- 28. HistorialMedicamentosMedi ---- admedi..
 CREATE TABLE HistorialMovimientosMedicamentos (
-    idMovimiento INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento INT NOT NULL,
-    tipoMovimiento VARCHAR(50) NOT NULL,
-    cantidad INT NOT NULL,
-    motivo TEXT NOT NULL,
-    idEquino INT NULL,
-    idUsuario INT NOT NULL,
-    fechaMovimiento DATE DEFAULT NOW(), -- Fecha del movimiento
+    idMovimiento 		INT PRIMARY KEY AUTO_INCREMENT,
+    idMedicamento 		INT NOT NULL,
+    tipoMovimiento 		VARCHAR(50) NOT NULL,
+    cantidad 			INT NOT NULL,
+    motivo 				TEXT NOT NULL,
+    idEquino 			INT NULL,
+    idUsuario 			INT NOT NULL,
+    fechaMovimiento 	DATE DEFAULT NOW(), -- Fecha del movimiento
     FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_historialmedicamentos_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
 CREATE TABLE HistorialDosisAplicadas (
-    idDosis INT PRIMARY KEY AUTO_INCREMENT,
-    idMedicamento INT NOT NULL,
-    idEquino INT NOT NULL,
-    cantidadAplicada DECIMAL(10, 2) NOT NULL,
-    cantidadRestante DECIMAL(10, 2) NULL,
-    fechaAplicacion DATE NOT NULL, -- Fecha obligatoria, sin valor predeterminado
-    idUsuario INT NOT NULL,
+    idDosis 			INT PRIMARY KEY AUTO_INCREMENT,
+    idMedicamento 		INT NOT NULL,
+    idEquino 			INT NOT NULL,
+    cantidadAplicada 	DECIMAL(10, 2) NOT NULL,
+    cantidadRestante 	DECIMAL(10, 2) NULL,
+    fechaAplicacion 	DATE NOT NULL, -- Fecha obligatoria, sin valor predeterminado
+    idUsuario 			INT NOT NULL,
     CONSTRAINT fk_idMedicamento FOREIGN KEY (idMedicamento) REFERENCES Medicamentos(idMedicamento),
     CONSTRAINT fk_idEquino_dosis FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_idUsuario_dosis FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
@@ -406,12 +394,12 @@ CREATE TABLE Servicios (
     idEquinoExterno          INT NULL,
     fechaServicio            DATE NOT NULL,
     tipoServicio             ENUM('Propio', 'Mixto') NOT NULL,
-    detalles                 TEXT NOT NULL,
+    detalles                 TEXT NULL,
     idMedicamento            INT NULL,
     horaEntrada              TIME NULL,
-    horaSalida              TIME NULL,
+    horaSalida               TIME NULL,
     idPropietario            INT NULL,
-    idEstadoMonta            INT NOT NULL,
+    idEstadoMonta            INT NULL,
     costoServicio            DECIMAL(10,2) NULL,
     CONSTRAINT fk_servicio_equino_macho FOREIGN KEY (idEquinoMacho) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_servicio_equino_hembra FOREIGN KEY (idEquinoHembra) REFERENCES Equinos(idEquino),
@@ -435,24 +423,24 @@ CREATE TABLE Entrenamientos (
 
 -- 31. tipos de trabajo (herreo)
 CREATE TABLE TiposTrabajos (
-    idTipoTrabajo INT PRIMARY KEY AUTO_INCREMENT,
-    nombreTrabajo VARCHAR(255) NOT NULL UNIQUE
+    idTipoTrabajo 		INT PRIMARY KEY AUTO_INCREMENT,
+    nombreTrabajo 		VARCHAR(255) NOT NULL UNIQUE
 );
 
 -- 32. herramientas (herreo)
 CREATE TABLE Herramientas (
-    idHerramienta INT PRIMARY KEY AUTO_INCREMENT,
-    nombreHerramienta VARCHAR(255) NOT NULL UNIQUE
+    idHerramienta 			INT PRIMARY KEY AUTO_INCREMENT,
+    nombreHerramienta 		VARCHAR(255) NOT NULL UNIQUE
 );
 
 -- 33. Tabla para el Historial del Trabajo de Herrería (herreo)
 CREATE TABLE HistorialHerrero (
-    idHistorialHerrero INT PRIMARY KEY AUTO_INCREMENT,
-    idEquino INT NOT NULL,
-    idUsuario INT NOT NULL,
-    fecha DATE NOT NULL,
-    idTrabajo INT NOT NULL, 
-    observaciones TEXT,
+    idHistorialHerrero 		INT PRIMARY KEY AUTO_INCREMENT,
+    idEquino 				INT NOT NULL,
+    idUsuario 				INT NOT NULL,
+    fecha 					DATE NOT NULL,
+    idTrabajo 				INT NOT NULL, 
+    observaciones 			TEXT,
     CONSTRAINT fk_historialherrero_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino),
     CONSTRAINT fk_historialherrero_usuario FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
     CONSTRAINT fk_historialherrero_trabajo FOREIGN KEY (idTrabajo) REFERENCES TiposTrabajos(idTipoTrabajo)
@@ -460,9 +448,9 @@ CREATE TABLE HistorialHerrero (
 
 -- 34. Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados) - (herreo)
 CREATE TABLE HerramientasUsadasHistorial (
-    idHerramientasUsadas INT PRIMARY KEY AUTO_INCREMENT,
-    idHistorialHerrero INT NOT NULL,
-    idHerramienta INT NOT NULL,
+    idHerramientasUsadas 		INT PRIMARY KEY AUTO_INCREMENT,
+    idHistorialHerrero 			INT NOT NULL,
+    idHerramienta 				INT NOT NULL,
     CONSTRAINT fk_herramienta_historial FOREIGN KEY (idHistorialHerrero) REFERENCES HistorialHerrero(idHistorialHerrero),
     CONSTRAINT fk_herramienta FOREIGN KEY (idHerramienta) REFERENCES Herramientas(idHerramienta)
 );
