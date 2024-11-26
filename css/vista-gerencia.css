@@ -1,0 +1,32 @@
+/* Botones personalizados */
+.btn-report {
+    display: block;
+    text-align: center;
+    padding: 20px;
+    background: #ffffff;
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 18px;
+    text-decoration: none;
+    border: 2px solid #ecf0f1;
+    border-radius: 15px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.btn-report i {
+    display: block;
+    margin-bottom: 10px;
+    color: #2980b9;
+}
+.btn-report:hover {
+    background: #00712D;
+    color: white;
+    border-color: #00712D;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+.btn-report p {
+    margin: 0;
+    font-size: 16px;
+    text-transform: uppercase;
+}
