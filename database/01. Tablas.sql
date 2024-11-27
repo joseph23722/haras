@@ -482,10 +482,9 @@ CREATE TABLE RotacionCampos (
     idRotacion 				INT PRIMARY KEY AUTO_INCREMENT,
     idCampo 				INT NOT NULL,
     idTipoRotacion 			INT NOT NULL,
-    fechaRotacion 			DATETIME NULL,
+    fechaRotacion 			DATE NULL,
     estadoRotacion 			VARCHAR(50) NOT NULL,
     detalleRotacion 		TEXT,
-	fotografia				VARCHAR(255) NULL,
     CONSTRAINT fk_rotacioncampo_campo FOREIGN KEY (idCampo) REFERENCES Campos(idCampo),
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
 ) ENGINE = INNODB;

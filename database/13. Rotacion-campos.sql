@@ -82,8 +82,7 @@ CREATE PROCEDURE `spu_registrar_rotacion_campos`(
     IN p_idCampo INT,
     IN p_idTipoRotacion INT,
     IN p_fechaRotacion DATETIME,
-    IN p_detalleRotacion TEXT,
-    IN _fotografia VARCHAR(255)
+    IN p_detalleRotacion TEXT
 )
 BEGIN
     DECLARE v_count INT;

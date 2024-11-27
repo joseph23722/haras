@@ -46,7 +46,7 @@
 
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <textarea name="detalleRotacion" id="detalleRotacion"  placeholder="" class="form-control" style="height: 50px;"></textarea>
+                            <textarea name="detalleRotacion" id="detalleRotacion" placeholder="" class="form-control" style="height: 50px;"></textarea>
                             <label for="detalleRotacion"><i class="fas fa-info-circle" style="color: #003300;"></i> Detalles</label>
                         </div>
                     </div>
@@ -103,8 +103,7 @@
 </div>
 
 <!-- Modal para registrar un nuevo campo -->
-<div class="modal fade" id="registerFieldModal" tabindex="-1" aria-labelledby="registerFieldModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
->
+<div class="modal fade" id="registerFieldModal" tabindex="-1" aria-labelledby="registerFieldModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -151,8 +150,7 @@
 </div>
 
 <!-- Modal para Editar Campo -->
-<div class="modal fade" id="editarCampoModal" tabindex="-1" role="dialog" aria-labelledby="editarCampoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
->
+<div class="modal fade" id="editarCampoModal" tabindex="-1" role="dialog" aria-labelledby="editarCampoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -197,7 +195,6 @@
 </div>
 
 <?php require_once '../footer.php'; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="../../swalcustom.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="../../JS/rotacionCampos.js"></script>

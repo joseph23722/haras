@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
     // Función para obtener tipos de rotaciones
     async function obtenerTiposRotaciones() {
         try {
@@ -90,8 +89,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     data: null,
                     render: function (data, type, row) {
                         return `
-                            <button class="btn btn-warning btn-sm edit-btn" data-id="${row.idCampo}"><i class="fas fa-edit"></i> Editar</button>
-                            <button class="btn btn-danger btn-sm delete-btn" data-id="${row.idCampo}"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                            <button class="btn btn-warning btn-sm edit-btn" data-id="${row.idCampo}"> Editar</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${row.idCampo}"> Eliminar</button>
                         `;
                     }
                 }
@@ -186,7 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("El usuario canceló la edición del campo.");
         }
     });
-    
 
     // Función para eliminar un campo
     async function eliminarCampo(idCampo) {
@@ -217,8 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     
-
-    // Registrar nuevo campo
     // Registrar nuevo campo
     document.getElementById('guardarCampo').addEventListener('click', async function () {
         const nuevoCampoForm = document.getElementById('form-nuevo-campo');
@@ -257,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
     // Registrar rotación
     document.getElementById('form-rotacion-campos').addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -293,7 +288,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('La operación fue cancelada por el usuario.');
         }
     });
-    
 
     obtenerCampos();
     obtenerTiposRotaciones();
