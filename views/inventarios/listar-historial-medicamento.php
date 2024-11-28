@@ -3,13 +3,13 @@
 <div class="container-fluid px-4">
   <!-- Título de la página -->
   <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
-    Gestionar Medicamentos
+    Historial Medicamentos
   </h1>
 
   <!-- Tabla de Medicamentos Registrados -->
   <div class="card mb-4 shadow-sm">
     <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
-      <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
+      <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Movimientos Registrados</h5>
     </div>
 
     <!-- Filtros de Búsqueda -->

@@ -177,7 +177,7 @@
                     </button>
                 </div>
                 <div class="col-12 col-md-3 mb-3">
-                <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-medicamento'">
+                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-medicamento'">
                         <i class="fas fa-save"></i> Historial Movimientos (E/S)
                     </button>
                 </div>
