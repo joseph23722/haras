@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log("Tabla de sugerencias inicializada correctamente.");
             }
         });
-    
+
         // Recargar tabla al abrir el modal de sugerencias
         $('#btnSugerencias').on('click', function () {
             tablaSugerencias.ajax.reload(); // Recargar datos desde el servidor
@@ -128,22 +128,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
         event.preventDefault();
-    
+
         // Obtener los valores del formulario
         const idCombinacion = document.getElementById('editarId').value.trim();
         const tipo = document.getElementById('editarTipo').value.trim();
         const presentacion = document.getElementById('editarPresentacion').value.trim();
         const dosis = document.getElementById('editarDosis').value.trim();
-    
+
         // Validar datos
         if (!idCombinacion || !tipo || !presentacion || !dosis) {
             showToast("Todos los campos son obligatorios.", "ERROR");
             return;
         }
-    
+
         try {
             console.log("Enviando datos al servidor para actualizar...");
-    
+
             // Realizar la solicitud POST al controlador
             const response = await fetch(`../../controllers/admedi.controller.php`, {
                 method: "POST",
@@ -156,9 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     unidad: dosis  // Nueva unidad de medida
                 })
             });
-    
+
             const result = await response.json();
-    
+
             if (result.status === "success") {
                 console.log("Actualización exitosa.");
                 showToast("Sugerencia actualizada correctamente.", "SUCCESS");
@@ -173,21 +173,21 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("Ocurrió un error al actualizar la sugerencia.", "ERROR");
         }
     });
-    
+
     window.editarSugerencia = function (idCombinacion, tipo, presentacion, dosis) {
         console.log("Editar sugerencia con ID:", idCombinacion);
-    
+
         // Asignar los valores de la sugerencia a los campos del formulario de edición
         document.getElementById('editarId').value = idCombinacion; // Asigna el ID al campo oculto
         document.getElementById('editarTipo').value = tipo;
         document.getElementById('editarPresentacion').value = presentacion;
         document.getElementById('editarDosis').value = dosis;
-    
+
         // Cerrar el modal de sugerencias y abrir el modal de edición
         $('#modalSugerencias').modal('hide');
         $('#modalEditarSugerencia').modal('show');
     };
-    
+
     // Función para cargar las categorías de equinos con sus cantidades en el select del modal
     const loadCategoriaEquinos = async () => {
         try {
@@ -230,52 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error al cargar categorías de equinos:", error);
         }
     };
-
-    // Función para ajustar las fechas basadas en el filtro seleccionado
-    const setFechaFiltro = () => {
-        const filtroRango = document.getElementById('filtroRango').value;
-        const hoy = new Date();
-        let fechaInicio, fechaFin;
-
-        switch (filtroRango) {
-            case 'hoy':
-                fechaInicio = fechaFin = hoy.toISOString().split('T')[0];
-                break;
-            case 'ultimaSemana':
-                fechaInicio = new Date(hoy.setDate(hoy.getDate() - 7)).toISOString().split('T')[0];
-                fechaFin = new Date().toISOString().split('T')[0];
-                break;
-            case 'ultimoMes':
-                fechaInicio = new Date(hoy.setMonth(hoy.getMonth() - 1)).toISOString().split('T')[0];
-                fechaFin = new Date().toISOString().split('T')[0];
-                break;
-            default:
-                fechaInicio = '';
-                fechaFin = '';
-        }
-
-        // Asigna las fechas como atributos del filtro para uso en AJAX
-        document.getElementById('filtroRango').setAttribute('data-fecha-inicio', fechaInicio);
-        document.getElementById('filtroRango').setAttribute('data-fecha-fin', fechaFin);
-    };
-
-    // Función para recargar las tablas de Entradas y Salidas
-    const reloadHistorialMovimientos = () => {
-        $('#tabla-entradas').DataTable().ajax.reload();
-        $('#tabla-salidas').DataTable().ajax.reload();
-    };
-
-    // Evento para actualizar el filtro de fecha y recargar las tablas cuando el usuario selecciona un nuevo rango
-    document.getElementById('filtroRango').addEventListener('change', () => {
-        setFechaFiltro();
-        reloadHistorialMovimientos();
-    });
-
-    // Llamar a las funciones de configuración cuando el DOM esté listo
-    $(document).ready(() => {
-        configurarDataTableEntradas();
-        configurarDataTableSalidas();
-    });    
 
     // Cargar los tipos de medicamentos desde el servidor
     const loadTiposMedicamentos = async () => {
@@ -729,43 +683,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    
-
-    // Función para cargar los lotes en los select de entrada y salida de medicamentos
     // Función para cargar los lotes en los select de entrada y salida de medicamentos
     const cargarLotes = async (nombreMedicamento = '') => {
         const entradaLoteSelect = document.querySelector("#entradaLote");
         const salidaLoteSelect = document.getElementById("salidaLote");
-    
+
         // Verificación de elementos del DOM
         console.log("Entrada Lote Select:", entradaLoteSelect);
         console.log("Salida Lote Select:", salidaLoteSelect);
         console.log("Nombre del Medicamento:", nombreMedicamento);
-    
+
         try {
             // Solicitud al backend
             const response = await fetch(`../../controllers/admedi.controller.php?operation=listarLotes&nombreMedicamento=${encodeURIComponent(nombreMedicamento)}`);
             console.log("Estado HTTP de la respuesta:", response.status);
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-    
+
             const result = await response.json();
             console.log("Respuesta del backend:", result);
-    
+
             if (result.status === "success") {
                 // Limpiar los selects de lotes
                 entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
                 salidaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
-    
+
                 // Rellenar los selects con los lotes disponibles
                 result.data.forEach(({ loteMedicamento }) => { // Cambiado para reflejar el nombre correcto de la clave
                     const optionEntrada = document.createElement("option");
                     optionEntrada.value = loteMedicamento;
                     optionEntrada.textContent = loteMedicamento;
                     entradaLoteSelect.appendChild(optionEntrada);
-    
+
                     const optionSalida = document.createElement("option");
                     optionSalida.value = loteMedicamento;
                     optionSalida.textContent = loteMedicamento;
@@ -782,7 +733,7 @@ document.addEventListener("DOMContentLoaded", () => {
             salidaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
         }
     };
-    
+
     document.getElementById("entradaMedicamento").addEventListener("change", (event) => {
         const nombreMedicamento = event.target.value;
         if (nombreMedicamento) {
@@ -793,7 +744,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cargarLotes(""); // Limpia los lotes si no hay selección
         }
     });
-    
+
     document.getElementById("salidaMedicamento").addEventListener("change", (event) => {
         const nombreMedicamento = event.target.value;
         if (nombreMedicamento) {
@@ -804,8 +755,6 @@ document.addEventListener("DOMContentLoaded", () => {
             cargarLotes(""); // Limpia los lotes si no hay selección
         }
     });
-    
-
 
     // Implementar para la entrada de medicamentos
     formEntrada.addEventListener("submit", async (event) => {
@@ -842,14 +791,6 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("Error en la solicitud de registro de entrada: " + error.message, 'error');
         }
     });
-    
-    
-    
-    
-    
-
-
-
 
     // Implementar para la salida de medicamentos
     if (formSalida) {
