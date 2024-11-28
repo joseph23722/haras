@@ -1,0 +1,26 @@
+1. CARATULA
+2. DATOS EMPRESA: 
+		A qué se dedica, clientes, territoio, gestión, logo, organigrama (opcional), etc.
+3. IDENTIFICACION DEL PROBLEMA TECNICO:
+		Texto, diagramas, fotos, NO TENER SISTEMA (olvidar).
+4. SOLUCION (IDEA).
+5. OBJETIVOS (General, Específicos).
+6. JUSTIFICACIÓN (¿Porqué?) USAR VERBOS.
+7. PROPUESTA TECNICA: PIM, app web,, php, MySQL
+		Cronograma
+			Diagrama de GANT
+8. COSTOS DE IMPLEMENTACION: por servicio, POR HORAS NO.
+9. CONCLUSIONES.
+
+30 MINUTOS
+1 minutos:
+		Saludo
+		Presentación Personal
+		Presenta PIM
+7 minutos:
+		(PPTX) (Diagnóstico)
+15 minutos:
+		(Demo -- Preparar un guión)
+7 minutos:
+		Preguntas y Repuestas
+		JURADO.

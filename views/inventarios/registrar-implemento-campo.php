@@ -99,12 +99,28 @@
             <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
-            <button class="btn btn-outline-danger btn-lg me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalMovimiento">
-                <i class="fas fa-arrow-down"></i> Registrar Movimiento de Implementos
-            </button>
-            <button class="btn btn-outline-success btn-lg me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalHistorial">
-                <i class="fas fa-arrow-down"></i> Historial de Movimientos
-            </button>
+            <div class="row justify-content-center">
+                <!-- Botón Listado Implementos -->
+                <div class="col-12 col-sm-6 col-md-3 mb-3">
+                    <button onclick="window.location.href='./listar-implemento-campo'" class="btn btn-primary btn-lg w-100" style="background-color: #3498db; border-color: #3498db;">
+                        <i class="fas fa-save"></i> Listado Implementos
+                    </button>
+                </div>
+
+                <!-- Botón Registrar Movimiento de Implementos -->
+                <div class="col-12 col-sm-6 col-md-3 mb-3">
+                    <button class="btn btn-outline-danger btn-lg w-100 me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalMovimiento">
+                        <i class="fas fa-arrow-down"></i> Registrar Movimiento de Implementos
+                    </button>
+                </div>
+
+                <!-- Botón Historial de Movimientos -->
+                <div class="col-12 col-sm-6 col-md-3 mb-3">
+                    <button class="btn btn-outline-success btn-lg w-100 me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalHistorial">
+                        <i class="fas fa-arrow-down"></i> Historial de Movimientos
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -260,6 +276,10 @@
 
 <?php require_once '../footer.php'; ?>
 
+<!-- Cargar jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- Cargar DataTables y sus dependencias -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
 <script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
 <script src="../../JS/implementoCampo.js"></script>

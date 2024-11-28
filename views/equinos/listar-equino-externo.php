@@ -2,7 +2,7 @@
 
 <div class="container-fluid px-4">
   <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 36px; color: #0056b3;">
-    <i class="fas fa-horse-head" style="color: #a0ffb8;"></i> Equinos Externos
+    <i class="fas fa-horse-head" style="color: #0056b3;"></i> Equinos Externos
   </h1>
 
   <div class="card mb-4 shadow-lg border-0">
@@ -29,6 +29,7 @@
             <th>Fecha Entrada</th>
             <th>Fecha Salida</th>
             <th>Detalles</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>

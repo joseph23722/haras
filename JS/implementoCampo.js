@@ -103,56 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    const cargarImplementos = async (idTipoinventario = 2) => {
-        try {
-            const params = new URLSearchParams({
-                operation: 'implementosPorInventario',
-                idTipoinventario: idTipoinventario
-            });
-
-            const response = await fetch(`../../controllers/implemento.controller.php?${params.toString()}`, {
-                method: "GET"
-            });
-
-            const textResponse = await response.text();
-
-            if (textResponse.startsWith("<")) {
-                mostrarMensajeDinamico("Error en la respuesta del servidor.", 'ERROR');
-                showToast("Error en la respuesta del servidor", 'ERROR');
-                return;
-            }
-
-            const implementos = JSON.parse(textResponse);
-
-            if (implementos && implementos.length > 0) {
-                if ($.fn.dataTable.isDataTable('#implementos-table')) {
-                    console.log("La tabla ya existe. Actualizando datos...");
-                    $('#implementos-table').DataTable().clear().rows.add(implementos).draw();
-                } else {
-                    console.log("Inicializando DataTable...");
-                    $('#implementos-table').DataTable({
-                        data: implementos,
-                        columns: [
-                            { data: 'idInventario', title: 'ID' },
-                            { data: 'nombreProducto', title: 'Producto' },
-                            { data: 'stockFinal', title: 'Stock Final' },
-                            { data: 'cantidad', title: 'Cantidad' },
-                            { data: 'precioUnitario', title: 'Precio Unitario' },
-                            { data: 'precioTotal', title: 'Precio Total' },
-                            { data: 'estado', title: 'Estado' }
-                        ]
-                    });
-                }
-            } else {
-                mostrarMensajeDinamico("No hay datos para mostrar en esta tabla.", 'INFO');
-            }
-        } catch (error) {
-            console.error("Error al cargar implementos:", error.message);
-            mostrarMensajeDinamico("Error al cargar implementos: " + error.message, 'ERROR');
-            showToast("Error al cargar implementos", 'ERROR');
-        }
-    };
-
     // Función para calcular y mostrar el precio total
     function calcularPrecioTotal() {
         const precioUnitario = parseFloat(document.getElementById('precioUnitario').value);
@@ -202,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (result.status === 1) {
                             showToast('Implemento registrado exitosamente', 'SUCCESS');
                             form.reset();
-                            cargarImplementos();
                             cargarHistorialMovimiento();
                         } else if (result.status === -1) {
                             if (result.message && result.message.includes('Ya existe un producto con el mismo nombre')) {
@@ -270,7 +219,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             showToast(`${operation === 'registrarSalida' ? 'Salida' : 'Entrada'} registrada exitosamente`, 'SUCCESS');
                             this.reset();
                             cargarProductos();
-                            cargarImplementos();
                         } else if (result.status === -1) {
                             showToast(`Error al registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}: ${result.message}`, 'ERROR');
                         }
@@ -286,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Función para cargar el historial de movimientos
-    const cargarHistorialMovimiento = async (idTipoinventario = 2, idTipomovimiento = 1, tablaID) => {
+    const cargarHistorialMovimiento = async (idTipoinventario = 2, idTipomovimiento = 1, tablaID) => { 
         try {
             const params = new URLSearchParams({
                 operation: 'listarHistorialMovimiento',
@@ -301,37 +249,34 @@ document.addEventListener("DOMContentLoaded", function () {
             const historial = await response.json();
             console.log("Respuesta del servidor en json:", historial);
 
-            if (historial.startsWith("<")) {
-                console.error("Error en la respuesta del servidor.");
-                return;
-            }
+            // Verifica si la respuesta es un array de implementos
+            if (Array.isArray(historial)) {
+                const tbody = document.getElementById(tablaID);
+                tbody.innerHTML = "";
 
-            const implementos = JSON.parse(historial);
-            console.log("Datos de implementos:", implementos);
+                if (historial.length > 0) {
+                    historial.forEach(implemento => {
+                        const row = document.createElement("tr");
 
-            const tbody = document.getElementById(tablaID);
-            tbody.innerHTML = "";
+                        row.innerHTML = `
+                            <td>${implemento.idHistorial}</td>
+                            <td>${implemento.nombreProducto}</td>
+                            <td>${implemento.precioUnitario || '-'}</td>
+                            <td>${implemento.cantidad}</td>
+                            <td>${implemento.descripcion || '-'}</td>
+                            <td>${implemento.fechaMovimiento}</td>
+                            <td>${implemento.nombreInventario}</td>
+                        `;
 
-            if (implementos.length > 0) {
-                implementos.forEach(implemento => {
-                    const row = document.createElement("tr");
-
-                    row.innerHTML = `
-                    <td>${implemento.idHistorial}</td>
-                    <td>${implemento.nombreProducto}</td>
-                    <td>${implemento.precioUnitario || '-'}</td>
-                    <td>${implemento.cantidad}</td>
-                    <td>${implemento.descripcion || '-'}</td>
-                    <td>${implemento.fechaMovimiento}</td>
-                    <td>${implemento.nombreInventario}</td>
-                `;
-
-                    tbody.appendChild(row);
-                });
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    const noDataRow = document.createElement("tr");
+                    noDataRow.innerHTML = `<td colspan="7" class="text-center">No hay datos disponibles</td>`;
+                    tbody.appendChild(noDataRow);
+                }
             } else {
-                const noDataRow = document.createElement("tr");
-                noDataRow.innerHTML = `<td colspan="7" class="text-center">No hay datos disponibles</td>`;
-                tbody.appendChild(noDataRow);
+                console.error("La respuesta no es un array válido:", historial);
             }
         } catch (error) {
             console.error("Error al cargar el historial de movimientos:", error);
@@ -351,6 +296,4 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('modalHistorial').addEventListener('show.bs.modal', () => {
         cargarHistorialMovimiento(2, 1, 'historial-entradas-table');
     });
-
-    cargarImplementos();
 });

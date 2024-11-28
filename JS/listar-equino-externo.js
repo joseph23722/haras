@@ -24,6 +24,10 @@ async function cargarEquinosExternos() {
                         <td>${equino.fechaentrada || 'Sin Estadía'}</td>
                         <td>${equino.fechasalida || 'Sin Finalización'}</td>
                         <td>${equino.detalles || 'Sin Detalles'}</td>
+                        <td>
+                          <button class="btn btn-primary btn-sm" onclick="editarEquino(${equino.idEquino})">Editar</button>
+                          <button class="btn btn-danger btn-sm" onclick="eliminarEquino(${equino.idEquino})">Eliminar</button>
+                        </td>
                     </tr>
                 `;
         tableBody.append(row);
