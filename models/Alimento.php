@@ -54,7 +54,6 @@ class Alimento extends Conexion {
         }
     }
     
-
     // Método para registrar un nuevo alimento
     public function registrarNuevoAlimento($params = []) {
         try {
@@ -144,8 +143,6 @@ class Alimento extends Conexion {
         return false;
     }
 
-
-    
     // Método para registrar una entrada de alimento
     public function registrarEntradaAlimento($params = []) {
         try {
@@ -206,8 +203,6 @@ class Alimento extends Conexion {
         }
     }
     
-
-
     // Método para registrar una salida de alimento
     public function registrarSalidaAlimento($params = []) {
         try {
@@ -288,9 +283,6 @@ class Alimento extends Conexion {
         }
     }
 
-
-
-
     // Método para notificar stock bajo
     public function notificarStockBajo() {
         try {
@@ -327,7 +319,6 @@ class Alimento extends Conexion {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
-
 
     // Método para obtener el historial de movimientos de alimentos
     public function obtenerHistorialMovimientos($params = []) {
@@ -388,8 +379,6 @@ class Alimento extends Conexion {
         }
     }
 
-    
-
     // Método para obtener las unidades de medida asociadas a un alimento específico por nombre
     public function obtenerUnidadesPorAlimento($nombreAlimento) {
         try {
@@ -420,8 +409,6 @@ class Alimento extends Conexion {
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
-
-
 
     // Método para obtener alimentos y lotes, con opción de filtrar por un alimento específico
     public function getAllAlimentos($idAlimento = null) {
@@ -500,7 +487,6 @@ class Alimento extends Conexion {
         }
     }
 
-
     // Método para listar todos los lotes registrados
     public function listarLotesPorAlimento($nombreAlimento) {
         try {
@@ -522,10 +508,6 @@ class Alimento extends Conexion {
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
-    
-    
-
-
 
     // Método para verificar si un lote ya está registrado con una unidad de medida específica
     public function verificarLote($lote, $idUnidadMedida) {
@@ -568,7 +550,6 @@ class Alimento extends Conexion {
     }
 
     //original
-
     public function listarSugerenciasAlimentos() {
         try {
             // Llamar al procedimiento almacenado
@@ -582,8 +563,6 @@ class Alimento extends Conexion {
             return false;
         }
     }
-    
-
 
     public function editarTipoUnidadAlimento($idTipoAlimento, $nuevoTipo, $idUnidadMedida, $nuevaUnidad) {
         try {
@@ -606,8 +585,4 @@ class Alimento extends Conexion {
             return false;
         }
     }
-    
-    
-    
-
 }
