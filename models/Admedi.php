@@ -127,6 +127,8 @@ class Admi extends Conexion {
     }
 
     // Registrar salida de medicamentos
+    
+    
     public function salidaMedicamento($params = []) {
         try {
             if (session_status() == PHP_SESSION_NONE) {
@@ -140,9 +142,24 @@ class Admi extends Conexion {
             }
 
             // Verificar que los parámetros obligatorios estén presentes y sean válidos
-            if (empty($params['nombreMedicamento']) || $params['cantidad'] <= 0 || empty($params['idEquino']) || empty($params['motivo'])) {
+            if (empty($params['nombreMedicamento']) || $params['cantidad'] <= 0 || empty($params['motivo'])) {
                 throw new Exception('Faltan datos obligatorios o valores incorrectos.');
             }
+
+            // Verificar que el medicamento existe en la base de datos
+            $query = $this->pdo->prepare("SELECT COUNT(*) FROM Medicamentos WHERE nombreMedicamento = ?");
+            $query->execute([$params['nombreMedicamento']]);
+            $medicamentoExiste = $query->fetchColumn();
+
+            // Agregar registro de depuración
+            error_log("Verificación de existencia del medicamento: " . $params['nombreMedicamento'] . " - Existe: " . $medicamentoExiste);
+
+            if (!$medicamentoExiste) {
+                throw new Exception('El medicamento especificado no existe.');
+            }
+
+            // Si la salida es por otros motivos, podemos dejar idEquino como NULL
+            $idEquino = !empty($params['idEquino']) ? $params['idEquino'] : NULL;
 
             // Ejecutar el procedimiento almacenado para registrar la salida de medicamentos
             $query = $this->pdo->prepare("CALL spu_medicamentos_salida(?, ?, ?, ?, ?, ?)");
@@ -150,8 +167,8 @@ class Admi extends Conexion {
                 $idUsuario,
                 $params['nombreMedicamento'],
                 $params['cantidad'],
-                $params['idEquino'], // Cambiado a idEquino
-                $params['lote'] ?? null, // Permitir que 'lote' sea NULL si no se proporciona
+                $idEquino, // Pasar NULL si no hay ID de equino
+                $params['lote'] ?? NULL, // Permitir que 'lote' sea NULL si no se proporciona
                 $params['motivo']
             ]);
 
@@ -161,15 +178,20 @@ class Admi extends Conexion {
             } else {
                 return ['status' => 'error', 'message' => 'No se pudo registrar la salida del medicamento.'];
             }
+
         } catch (Exception $e) {
             // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
             $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
             $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
+            
             // Registrar el error en el log del servidor
             error_log("Error en salida de medicamentos: " . $errorMessage);
+            
+            // Retornar el mensaje de error al cliente
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $errorMessage];
         }
     }
+            
 
     
 

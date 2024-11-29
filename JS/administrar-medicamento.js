@@ -196,7 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const parsedResponse = await response.json();
-            console.log("Respuesta de la API para cargar categorías de equinos:", parsedResponse);
 
             if (parsedResponse.status === 'success' && Array.isArray(parsedResponse.data)) {
                 const categorias = parsedResponse.data;
@@ -212,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Agregar opciones y verificar que `idEquino` sea válido
                 categorias.forEach(categoria => {
-                    console.log("Verificando categoría:", categoria); // Añadir este log
 
                     if (categoria.idEquino) { // Asegurarse de que el idEquino existe y no está undefined
                         const option = document.createElement('option');
@@ -238,16 +236,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`../../controllers/admedi.controller.php?operation=listarTiposMedicamentos`, {
                 method: "GET",
             });
-            console.log("Respuesta recibida de tipos de medicamentos:", response);
 
             const result = await response.json();
-            console.log("Resultado parseado de tipos de medicamentos:", result);
 
             // Limpiar el select y agregar opciones
             tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
 
             result.data.forEach(tipo => {
-                console.log("Procesando tipo:", tipo);
                 const option = document.createElement("option");
                 option.value = tipo.idTipo; // Usar idTipo para identificar cada tipo
                 option.textContent = tipo.tipo;
@@ -257,7 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // Agregar un evento para cargar presentaciones al cambiar el tipo
             tipoMedicamentoSelect.addEventListener('change', (event) => {
                 const idTipo = event.target.value;
-                console.log("Tipo seleccionado:", idTipo);
                 if (idTipo) {
                     loadPresentaciones(idTipo); // Llamar a loadPresentaciones con el idTipo seleccionado
                 } else {
@@ -598,35 +592,26 @@ document.addEventListener("DOMContentLoaded", () => {
     formRegistrarMedicamento.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        console.log("Iniciando registro de medicamento...");
 
         // Confirmación antes de registrar el medicamento
         if (await ask("¿Confirmar registro del nuevo medicamento?")) {
-            console.log("Confirmación del usuario recibida. Enviando datos...");
 
             // Obtener el valor combinado de dosis y unidad
             const dosisCompleta = document.querySelector("#dosis").value;
-            console.log("Dosis completa ingresada:", dosisCompleta);
 
             // Usar una expresión regular para separar la cantidad de la unidad
             const match = dosisCompleta.match(/^(\d+(\.\d+)?)(\s?[a-zA-Z]+)$/);
             if (!match) {
                 mostrarMensaje("Formato de dosis inválido. Use un número seguido de una unidad (ej. 500 mg)", "error");
-                console.warn("Formato de dosis inválido:", dosisCompleta);
                 return;
             }
 
             const dosis = parseFloat(match[1]);
             const unidad = match[3].trim();
-            console.log("Dosis separada:", dosis, "Unidad:", unidad);
 
             // Validar que ambos elementos estén presentes
             if (!dosis || !unidad) {
                 mostrarMensaje("Debe ingresar una dosis válida con su unidad", "error");
-                console.warn("Datos de dosis incompletos:", {
-                    dosis,
-                    unidad
-                });
                 return;
             }
 
@@ -636,9 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append('unidad', unidad);
             formData.append('operation', 'registrar');
 
-            console.log("Datos del formulario enviados:");
             formData.forEach((value, key) => {
-                console.log(`${key}: ${value}`);
             });
 
             try {
@@ -646,23 +629,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     method: "POST",
                     body: formData
                 });
-                console.log("Respuesta del servidor:", response);
 
                 const text = await response.text();
-                console.log("Texto de respuesta del servidor:", text);
 
                 let result;
                 try {
                     result = JSON.parse(text);
-                    console.log("Resultado parseado del servidor:", result);
                 } catch (jsonError) {
-                    console.error("Error al interpretar la respuesta del servidor:", jsonError);
                     mostrarMensaje("Error al interpretar la respuesta del servidor. Respuesta no válida.", 'error');
                     return;
                 }
 
                 if (result.status === "success") {
-                    console.log("Medicamento registrado correctamente:", result);
                     showToast("Medicamento registrado correctamente", "SUCCESS");
                     formRegistrarMedicamento.reset();
                     // Llamar a las funciones para recargar los selectores de medicamentos y lotes
@@ -670,15 +648,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     await cargarLotes();
                     await loadMedicamentos();
                 } else {
-                    console.warn("Error en el registro:", result.message);
                     mostrarMensaje("Error en el registro: " + result.message, 'error');
                 }
             } catch (error) {
-                console.error("Error al registrar el medicamento:", error);
                 mostrarMensaje("Error al registrar el medicamento: " + error.message, 'error');
             }
         } else {
-            console.log("El usuario canceló la operación.");
             mostrarMensaje("El registro del medicamento fue cancelado por el usuario.", "info");
         }
     });
@@ -688,22 +663,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const entradaLoteSelect = document.querySelector("#entradaLote");
         const salidaLoteSelect = document.getElementById("salidaLote");
 
-        // Verificación de elementos del DOM
-        console.log("Entrada Lote Select:", entradaLoteSelect);
-        console.log("Salida Lote Select:", salidaLoteSelect);
-        console.log("Nombre del Medicamento:", nombreMedicamento);
+
 
         try {
             // Solicitud al backend
             const response = await fetch(`../../controllers/admedi.controller.php?operation=listarLotes&nombreMedicamento=${encodeURIComponent(nombreMedicamento)}`);
-            console.log("Estado HTTP de la respuesta:", response.status);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const result = await response.json();
-            console.log("Respuesta del backend:", result);
 
             if (result.status === "success") {
                 // Limpiar los selects de lotes
@@ -723,12 +693,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     salidaLoteSelect.appendChild(optionSalida);
                 });
             } else {
-                console.warn("No se encontraron lotes disponibles.");
                 entradaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
                 salidaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
             }
         } catch (error) {
-            console.error("Error al cargar los lotes:", error);
             entradaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
             salidaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
         }
@@ -737,10 +705,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("entradaMedicamento").addEventListener("change", (event) => {
         const nombreMedicamento = event.target.value;
         if (nombreMedicamento) {
-            console.log("Medicamento seleccionado para entrada:", nombreMedicamento);
             cargarLotes(nombreMedicamento); // Llama a cargarLotes con el medicamento seleccionado
         } else {
-            console.log("No se seleccionó ningún medicamento para entrada.");
             cargarLotes(""); // Limpia los lotes si no hay selección
         }
     });
@@ -748,10 +714,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("salidaMedicamento").addEventListener("change", (event) => {
         const nombreMedicamento = event.target.value;
         if (nombreMedicamento) {
-            console.log("Medicamento seleccionado para salida:", nombreMedicamento);
             cargarLotes(nombreMedicamento); // Llama a cargarLotes con el medicamento seleccionado
         } else {
-            console.log("No se seleccionó ningún medicamento para salida.");
             cargarLotes(""); // Limpia los lotes si no hay selección
         }
     });
@@ -793,76 +757,142 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Implementar para la salida de medicamentos
+    // Implementar para la salida de medicamentos
     if (formSalida) {
         formSalida.addEventListener("submit", async (event) => {
             event.preventDefault();
-
+    
+            // Obtener la cantidad
             const cantidadField = document.getElementById('salidaCantidad');
             const cantidad = parseFloat(cantidadField.value) || 0;
-
+    
             // Validación de cantidad
             if (cantidad <= 0) {
                 showToast("La cantidad debe ser mayor a 0.", 'ERROR');
                 return;
             }
-
+    
+            // Obtener campos adicionales
             const motivoField = document.getElementById('motivoSalida');
             const loteField = document.getElementById('salidaLote');
             const medicamentoField = document.getElementById('salidaMedicamento');
-            const tipoEquinoField = document.getElementById('idEquino');
-
-
+            const tipoEquinoField = document.querySelector('input[name="tipoSalida"]:checked'); // Tipo de salida (Equino u otro)
+    
             // Validación de motivo
             const motivo = motivoField.value.trim();
             if (!motivo) {
                 showToast("Debe especificar un motivo para la salida del medicamento.", 'ERROR');
                 return;
             }
-
+    
+            // Validación de tipo de salida
+            const tipoSalida = tipoEquinoField ? tipoEquinoField.value : null;
+            if (!tipoSalida) {
+                showToast("Debe seleccionar un tipo de salida.", 'ERROR');
+                return;
+            }
+    
+            // Validar categoría de equino si se selecciona "Equino"
+            let idEquino = null;
+            if (tipoSalida === "equino") {
+                const idEquinoField = document.getElementById('idEquino'); // Campo del ID del equino
+                idEquino = idEquinoField ? idEquinoField.value : null;
+    
+                if (!idEquino) {
+                    showToast("Debe seleccionar una categoría de equino.", 'ERROR');
+                    return;
+                }
+            }
+    
+            // Validación de lote si es requerido
+            const lote = loteField.value.trim();
+            if (lote === "") {
+                showToast("Debe seleccionar un lote.", 'ERROR');
+                return;
+            }
+    
             // Confirmación de la operación
             const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
             if (!confirmar) {
                 showToast("Operación cancelada.", "INFO");
                 return;
             }
-
-            // Preparar datos para enviar
-            const formData = new FormData();
-            formData.append('operation', 'salida');
-            formData.append('nombreMedicamento', medicamentoField.value);
-            formData.append('cantidad', cantidad);
-            formData.append('idEquino', tipoEquinoField.value);
-            formData.append('motivo', motivo);
-
-            const lote = loteField.value.trim() || null;
-            if (lote !== null) {
-                formData.append('lote', lote);
+    
+            // Preparar los datos para enviar
+            const data = new URLSearchParams();
+            data.append('operation', 'salida');
+            data.append('nombreMedicamento', medicamentoField.value);
+            data.append('cantidad', cantidad);
+            data.append('motivo', motivo);
+            data.append('tipoSalida', tipoSalida);
+            data.append('lote', lote); // Asegúrate de que este campo contiene el valor correcto
+    
+            if (tipoSalida === "equino") {
+                data.append('idEquino', idEquino);
             }
-
-            // Intento de envío de datos al servidor
+    
+            // Mostrar los datos que se enviarán al servidor
+            for (let [key, value] of data.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+    
+            // Verificar el nombre del medicamento
+            console.log("Nombre del medicamento enviado:", medicamentoField.value);
+    
+            // Intentar enviar los datos al servidor
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
-                    method: "POST",
-                    body: formData
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: data
                 });
-
-                const result = await response.json();
-
+    
+                // Verificar la respuesta del servidor
+                const textResponse = await response.text();
+                console.log("Respuesta del servidor:", textResponse);
+    
+                const result = JSON.parse(textResponse);
                 if (result.status === "success") {
-                    showToast("Salida registrada correctamente", "SUCCESS");
+                    showToast("La salida de medicamento se registró correctamente.", "SUCCESS");
+                    // Limpiar el formulario o cerrar el modal
                     formSalida.reset();
-                    await loadMedicamentos();
-                    await notificarStockBajo();
-                    await loadSelectMedicamentos();
-                    await cargarLotes();
+                    $('#modalSalida').modal('hide');
+                } else if (result.message.includes("El medicamento especificado no existe")) {
+                    showToast("Error: El medicamento especificado no existe.", "ERROR");
                 } else {
-                    showToast(result.message || "Error en el registro de salida", "ERROR");
+                    showToast("Hubo un error al registrar la salida de medicamento: " + result.message, "ERROR");
                 }
             } catch (error) {
-                showToast("Error en la solicitud de registro de salida", "ERROR");
+                showToast("Error al conectar con el servidor: " + error.message, "ERROR");
             }
         });
     }
+    
+    
+    
+    
+
+    
+
+    // Controlar la visibilidad de la categoría de equino
+    document.querySelectorAll('input[name="tipoSalida"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            const categoriaEquinoDiv = document.getElementById('categoriaEquinoDiv');
+            const tipoSalida = document.querySelector('input[name="tipoSalida"]:checked').value;
+            
+            if (tipoSalida === 'equino') {
+                categoriaEquinoDiv.style.display = 'block'; // Mostrar el campo de categoría de equino
+            } else {
+                categoriaEquinoDiv.style.display = 'none'; // Ocultar el campo de categoría de equino
+            }
+        });
+    });
+
+
+
+
 
     // Cargar datos al iniciar la página
     cargarLotes();

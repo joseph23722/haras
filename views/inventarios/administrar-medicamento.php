@@ -284,6 +284,8 @@
     </div>
 
     <!-- Modal para Registrar Salida de Medicamento -->
+    <!-- Modal para Registrar Salida de Medicamento -->
+    <!-- Modal para Registrar Salida de Medicamento -->
     <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -307,63 +309,77 @@
                             </div>
                         </div>
 
-                        <!-- Cantidad y Tipo de Equino -->
+                        <!-- Tipo de Salida (Por Equino o Por Otros Motivos) -->
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="salidaCantidad" class="form-label fw-bold">Cantidad</label>
-                                <input type="number" name="cantidad" id="salidaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Tipo de Salida</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoSalida" id="tipoOtrosMotivos" value="otros" checked>
+                                    <label class="form-check-label" for="tipoOtrosMotivos">
+                                        Por Otros Motivos
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoSalida" id="tipoEquino" value="equino" >
+                                    <label class="form-check-label" for="tipoEquino">
+                                        Por Equino
+                                    </label>
+                                </div>
+                                
                             </div>
+                        </div>
 
-                            <div class="col-md-6">
-                                <label for="idEquino" class="form-label fw-bold">Categoría de Equino</label> <!-- Etiqueta agregada para consistencia -->
-                                <select id="idEquino" name="idEquino" class="form-select form-control-lg" required>
-                                    <option value="">Seleccione Categoría de Equino</option>
-                                    <!-- Opciones se cargarán dinámicamente -->
+                        <!-- Categoría de Equino (visible solo si el tipo de salida es "Equino") -->
+                        <div id="categoriaEquinoDiv" class="row mb-3" style="display: none;">
+                            <div class="col-md-12">
+                                <label for="idEquino" class="form-label fw-bold">Categoría de Equino</label>
+                                <select name="idEquino" id="idEquino" class="form-select form-select-lg">
+                                    <!-- Las opciones para la categoría de equino serán cargadas dinámicamente -->
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Tipo de Salida: Equino u Otros Motivos -->
+                        <!-- Motivo de Salida -->
                         <div class="row mb-3">
                             <div class="col-md-12">
-                                <label for="tipoSalida" class="form-label fw-bold">Tipo de Salida</label>
-                                <select name="tipoSalida" id="tipoSalida" class="form-select form-select-lg" required>
-                                    <option value="" disabled selected>Seleccione el motivo de la salida</option>
-                                    <option value="equino">Por Equino</option>
-                                    <option value="otros">Por Otros Motivos</option>
-                                </select>
+                                <label for="motivoSalida" class="form-label fw-bold">Motivo de la Salida</label>
+                                <input type="text" name="motivo" id="motivoSalida" class="form-control" required>
                             </div>
                         </div>
 
-                        <!-- Lote -->
-                        <div class="row mb-3">
+                        <!-- Campo de Lote (Select) -->
+                        <div class="row mb-3" id="campoLote" style="display: block;">
                             <div class="col-md-12">
-                                <label for="salidaLote" class="form-label fw-bold">Lote (opcional)</label>
-                                <select name="lote" id="salidaLote" class="form-select form-select-lg">
+                                <label for="salidaLote" class="form-label fw-bold">Lote</label>
+                                <select name="lote" id="salidaLote" class="form-select form-select-lg" required>
                                     <option value="" disabled selected>Seleccione un lote</option>
                                     <!-- Opciones cargadas dinámicamente -->
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Motivo de la salida -->
+                        <!-- Cantidad -->
                         <div class="row mb-3">
                             <div class="col-md-12">
-                                <label for="motivoSalida" class="form-label fw-bold">Motivo</label>
-                                <textarea name="motivo" id="motivoSalida" class="form-control form-control-lg" required placeholder="Ingrese el motivo de la salida"></textarea>
+                                <label for="salidaCantidad" class="form-label fw-bold">Cantidad</label>
+                                <input type="number" name="cantidad" id="salidaCantidad" class="form-control" required min="1">
                             </div>
                         </div>
 
-                        <!-- Botón para registrar la salida -->
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger px-4">Registrar Salida</button>
+                        <!-- Botones -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Registrar Salida</button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+
+
 
     <!-- Modal para listar sugerencias -->
     <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">

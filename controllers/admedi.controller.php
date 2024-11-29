@@ -267,31 +267,46 @@ try {
                 break;
 
             case 'salida':
+                // Recoger parámetros
                 $params = [
                     'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
-                    'unidadMedida' => $_POST['unidadMedida'] ?? '',
+                    'unidadMedida' => $_POST['unidadMedida'] ?? '',  
                     'cantidad' => floatval($_POST['cantidad'] ?? 0),
-                    'idEquino' => intval($_POST['idEquino'] ?? 0),  // Cambiar de idTipoEquino a idEquino
+                    'idEquino' => intval($_POST['idEquino'] ?? 0),  //  idEquino
                     'lote' => $_POST['lote'] ?? null,  // Cambiar a NULL si no se proporciona
                     'motivo' => $_POST['motivo'] ?? ''  // Nuevo campo motivo
                 ];
             
+                // Agregar registros de depuración
+                error_log("Parámetros recibidos: " . json_encode($params));
+            
                 // Validación de cantidad y motivo
                 if ($params['cantidad'] <= 0) {
                     sendResponse('error', 'Error: La cantidad debe ser mayor a 0.');
+                    exit;
                 }
                 if (empty($params['motivo'])) {
                     sendResponse('error', 'Error: Debe especificar un motivo para la salida del medicamento.');
+                    exit;
+                }
+            
+                // Si no se proporciona idEquino, se establece como NULL
+                if ($params['idEquino'] == 0) {
+                    $params['idEquino'] = null;  // Para que sea NULL si no se especifica el equino
                 }
             
                 try {
+                    // Llamar al método para registrar la salida del medicamento
                     $result = $admi->salidaMedicamento($params);
+            
+                    // Evaluar el resultado
                     if ($result['status'] === 'success') {
                         sendResponse('success', 'Salida de medicamento registrada correctamente.');
                     } else {
                         sendResponse('error', $result['message']);
                     }
                 } catch (PDOException $e) {
+                    // Manejo de excepciones, enviar respuesta de error
                     sendResponse('error', 'Error al registrar la salida del medicamento: ' . $e->getMessage());
                 }
                 break;
