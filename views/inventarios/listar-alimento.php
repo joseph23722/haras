@@ -38,12 +38,8 @@
 <div id="mensaje"></div>
 
 <?php require_once '../footer.php'; ?>
-
-<!-- Archivos JS -->
 <script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
 <script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>

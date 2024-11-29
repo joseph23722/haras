@@ -72,10 +72,4 @@
 </div>
 
 <?php require_once '../footer.php'; ?>
-
-<!-- Agregar las librerías necesarias para DataTables -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <script src="../../JS/listar-historial-I-campo.js"></script>
