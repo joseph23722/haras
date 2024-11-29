@@ -33,7 +33,6 @@ if (isset($_POST['operation'])) {
                 "direccion" => $personal->limpiarCadena($_POST['direccion']),
                 "tipodoc" => $personal->limpiarCadena($_POST['tipodoc']),
                 "nrodocumento" => $personal->limpiarCadena($_POST['nrodocumento']),
-                "numeroHijos" => (int) $_POST['numeroHijos'],
                 "fechaIngreso" => $personal->limpiarCadena($_POST['fechaIngreso']),
                 "tipoContrato" => $personal->limpiarCadena($_POST['tipoContrato']),
             ];

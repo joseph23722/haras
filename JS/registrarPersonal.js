@@ -115,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
         parametros.append("direccion", $("#direccion").val());
         parametros.append("tipodoc", $("#tipodoc").val());
         parametros.append("nrodocumento", $("#dni").val());
-        parametros.append("numeroHijos", $("#numeroHijos").val());
         parametros.append("fechaIngreso", $("#fechaIngreso").val());
         parametros.append("tipoContrato", $("#tipoContrato").val());
     

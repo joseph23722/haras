@@ -28,14 +28,13 @@ class Personal extends Conexion {
     // Método para registrar una persona
     public function add($params = []): int {
         try {
-            $cmd = $this->pdo->prepare("CALL spu_personal_registrar(@idPersonal, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $cmd = $this->pdo->prepare("CALL spu_personal_registrar(@idPersonal, ?, ?, ?, ?, ?, ?, ?)");
             $cmd->execute([
                 $params['nombres'],
                 $params['apellidos'],
                 $params['direccion'],
                 $params['tipodoc'],
                 $params['nrodocumento'],
-                $params['numeroHijos'],
                 $params['fechaIngreso'],
                 $params['tipoContrato']
             ]);
