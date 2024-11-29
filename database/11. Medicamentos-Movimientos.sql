@@ -467,8 +467,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 -- historial 
 DROP PROCEDURE IF EXISTS `spu_historial_completo_medicamentos`;
 DELIMITER $$
@@ -587,7 +585,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos_por_nombre`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_medicamentos_por_nombre(IN nombreMedicamento VARCHAR(255))
@@ -605,8 +602,14 @@ END $$
 DELIMITER ;
 
 
-/*
--- original
+
+
+
+
+
+
+
+-- prueba 
 DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
 DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_salida(
@@ -698,7 +701,15 @@ BEGIN
 END $$
 DELIMITER ;
 
-*/
+
+
+CALL spu_medicamentos_salida(1, 'nose', 5, 1, 2, 'Tratamiento para dolor');
+
+CALL spu_medicamentos_salida(1, 'nose', 3, NULL, '2', 'No especificado');
+
+
+select * from HistorialMovimientosMedicamentos;
+
 
 INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antibiótico'),
