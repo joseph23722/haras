@@ -103,8 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-
-
     // Función para calcular y mostrar el precio total
     function calcularPrecioTotal() {
         const precioUnitario = parseFloat(document.getElementById('precioUnitario').value);
@@ -154,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (result.status === 1) {
                             showToast('Implemento registrado exitosamente', 'SUCCESS');
                             form.reset();
-                            cargarHistorialMovimiento();
                         } else if (result.status === -1) {
                             if (result.message && result.message.includes('Ya existe un producto con el mismo nombre')) {
                                 showToast('Error: Ya existe un producto con el mismo nombre en este tipo de inventario.', 'ERROR');
@@ -234,72 +231,4 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-
-    // Función para cargar el historial de movimientos
-    const cargarHistorialMovimiento = async (idTipoinventario = 1, idTipomovimiento = 1, tablaID) => {
-        try {
-            const params = new URLSearchParams({
-                operation: 'listarHistorialMovimiento',
-                idTipoinventario: idTipoinventario,
-                idTipomovimiento: idTipomovimiento
-            });
-
-            const response = await fetch(`../../controllers/implemento.controller.php?${params.toString()}`, {
-                method: "GET"
-            });
-
-            const textResponse = await response.text();
-            console.log("Respuesta del servidor en texto:", textResponse);
-
-            if (textResponse.startsWith("<")) {
-                console.error("Error en la respuesta del servidor.");
-                return;
-            }
-
-            const implementos = JSON.parse(textResponse);
-            console.log("Datos de implementos:", implementos);
-
-            const tbody = document.getElementById(tablaID);
-            tbody.innerHTML = ""; // Limpiar contenido previo
-
-            if (implementos.length > 0) {
-                implementos.forEach(implemento => {
-                    const row = document.createElement("tr");
-
-                    row.innerHTML = `
-                    <td>${implemento.idHistorial}</td>
-                    <td>${implemento.nombreProducto}</td>
-                    <td>${implemento.precioUnitario || '-'}</td>
-                    <td>${implemento.cantidad}</td>
-                    <td>${implemento.descripcion || '-'}</td>
-                    <td>${implemento.fechaMovimiento}</td>
-                    <td>${implemento.nombreInventario}</td>
-                `;
-
-                    tbody.appendChild(row);
-                });
-            } else {
-                const noDataRow = document.createElement("tr");
-                noDataRow.innerHTML = `<td colspan="7" class="text-center">No hay datos disponibles</td>`;
-                tbody.appendChild(noDataRow);
-            }
-        } catch (error) {
-            console.error("Error al cargar el historial de movimientos:", error);
-        }
-    };
-
-    // Event listeners para las pestañas del modal ENTRADA
-    document.getElementById('entradas-tab').addEventListener('click', () => {
-        cargarHistorialMovimiento(1, 1, 'historial-entradas-table');
-    });
-
-    document.getElementById('salidas-tab').addEventListener('click', () => {
-        cargarHistorialMovimiento(1, 2, 'historial-salidas-table');
-    });
-
-    // Llamar a cargar las entradas al abrir el modal
-    document.getElementById('modalHistorial').addEventListener('show.bs.modal', () => {
-        cargarHistorialMovimiento(1, 1, 'historial-entradas-table');
-    });
-
 });

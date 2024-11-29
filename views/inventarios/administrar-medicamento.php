@@ -142,20 +142,12 @@
 
                     <!-- Botones de acción -->
                     <div class="col-md-12 text-end mt-3">
-                        <a href="./listar-medicamento" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
-                            <i class="fas fa-save"></i> Listado Medicamentos
-                        </a>
                         <button type="submit" class="btn btn-primary btn-lg" style="background-color: #0077b6; border: none;">
                             <i class="fas fa-save"></i> Registrar Medicamento
                         </button>
                         <button type="reset" class="btn btn-secondary btn-lg" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
-
-                        <button class="btn btn-outline-info btn-lg" style="border-color: #17a2b8;" data-bs-toggle="modal" data-bs-target="#modalHistorial">
-                            <i class="fas fa-history"></i> Ver Historial de Movimientos
-                        </button>
-
                     </div>
                 </div>
             </form>
@@ -168,12 +160,28 @@
             <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
-            <button class="btn btn-outline-primary btn-lg me-3" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntrada">
-                <i class="fas fa-arrow-up"></i> Registrar Entrada de Medicamento
-            </button>
-            <button class="btn btn-outline-danger btn-lg me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalSalida">
-                <i class="fas fa-arrow-down"></i> Registrar Salida de Medicamento
-            </button>
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-3 mb-3">
+                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-medicamento'">
+                        <i class="fas fa-save"></i> Listado Medicamentos
+                    </button>
+                </div>
+                <div class="col-12 col-md-3 mb-3">
+                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntrada">
+                        <i class="fas fa-arrow-up"></i> Registrar Entrada de Medicamento
+                    </button>
+                </div>
+                <div class="col-12 col-md-3 mb-3">
+                    <button class="btn btn-outline-danger btn-lg w-100 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalSalida">
+                        <i class="fas fa-arrow-down"></i> Registrar Salida de Medicamento
+                    </button>
+                </div>
+                <div class="col-12 col-md-3 mb-3">
+                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-medicamento'">
+                        <i class="fas fa-save"></i> Historial Movimientos (E/S)
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -544,6 +552,5 @@
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="/haras/vendor/medicamento/historial-medicamento.js"></script>
 <script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
 <script src="../../JS/administrar-medicamento.js"></script>

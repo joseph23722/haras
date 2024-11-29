@@ -223,19 +223,10 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
     </div>
 </div>
 
 <?php require_once '../footer.php'; ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="../../swalcustom.js"></script>
 <script
     src="https://widget.cloudinary.com/v2.0/global/all.js"
     type="text/javascript">

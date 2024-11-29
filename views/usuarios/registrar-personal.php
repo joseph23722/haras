@@ -42,7 +42,7 @@
 
               <!-- Fila 2 -->
               <div class="row g-3 mb-3">
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <div class="form-floating">
                     <select class="form-control" id="tipodoc" required>
                       <option value="">Tipo de documento</option>
@@ -51,12 +51,6 @@
                       <option value="Carnet">Carnet</option>
                     </select>
                     <label for="tipodoc"><i class="fas fa-passport" style="color: #3498db;"></i> Tipo de documento</label>
-                  </div>
-                </div>
-                <div class="col-md-2">
-                  <div class="form-floating">
-                    <input type="text" class="form-control" id="numeroHijos" pattern="[0-9]+" title="Solo se permiten números" maxlength="2">
-                    <label for="numeroHijos"><i class="fas fa-child" style="color: #3498db;"></i> Número de Hijos</label>
                   </div>
                 </div>
                 <div class="col-md-3">
@@ -71,7 +65,7 @@
                     <label for="fechaIngreso"><i class="fas fa-calendar-check" style="color: #3498db;"></i> Fecha de Ingreso</label>
                   </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <div class="form-floating">
                     <select class="form-control" id="tipoContrato" required>
                       <option value="">Tipo de Contrato</option>

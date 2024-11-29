@@ -238,6 +238,19 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 	(7, 'actualizar-contrasenia', 'S', 'Actualizar Contraseña', 'fas fa-key'),
 	(7, 'registrar-personal', 'S', 'Registrar Personal', 'fa-solid fa-wallet');
 
+-- Inventarios
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(4, 'listar-historial-medicamento', 'N', NULL, NULL),
+	(4, 'listar-historial-alimento', 'N', NULL, NULL),
+	(4, 'listar-historial-I-caballo', 'N', NULL, NULL),
+    (4, 'listar-historial-I-campo', 'N', NULL, NULL);
+
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+    (2, 'listar-equino-externo', 'S', 'Listado Equinos Ajenos', 'fas fa-file-alt');
+    
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(4, 'listar-historial-I-campo', 'N', NULL, NULL);
+
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
@@ -299,7 +312,11 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 27),
     (3, 28),
     (3, 30),
-    (3, 29);
+    (3, 29),
+    (3, 31),
+    (3, 32),
+    (3, 33),
+    (3, 34);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES
@@ -311,7 +328,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (4, 8),
     (4, 20),
     (4, 23),
-    (4, 29);
+    (4, 29),
+    (4, 35); -- modificar al 34 por un error en orden
 
 -- Medico
 INSERT INTO permisos (idRol, idvista) VALUES

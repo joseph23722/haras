@@ -19,9 +19,6 @@
 </footer>
 
 <!-- Scripts -->
-<!-- Carga condicional de jQuery -->
-<script id="jqueryScript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 <!-- SimpleDataTables CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.css">
 
@@ -51,23 +48,13 @@
     });
 </script>
 
-<!-- Cargar jQuery condicionalmente -->
-<script>
-    // Condición para verificar si jQuery es necesario
-    const necesitaJQuery = false;
-
-    if (necesitaJQuery) {
-        document.getElementById("jqueryScript").setAttribute("defer", ""); // Esto carga jQuery cuando se necesite
-    } else {
-        // Si no necesitas jQuery, eliminas el script de jQuery para evitar conflictos
-        const jqueryScript = document.getElementById("jqueryScript");
-        if (jqueryScript) {
-            jqueryScript.remove();
-        }
-    }
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="../../swalcustom.js"></script>
 
+<!-- Agregar las librerías necesarias para DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 </html>
