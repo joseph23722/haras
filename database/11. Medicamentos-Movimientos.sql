@@ -290,11 +290,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
-
 DROP PROCEDURE IF EXISTS `spu_agregar_nueva_combinacion_medicamento`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_nueva_combinacion_medicamento(
@@ -500,8 +495,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
 -- historial 
 DROP PROCEDURE IF EXISTS `spu_historial_completo_medicamentos`;
 DELIMITER $$
@@ -620,7 +613,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos_por_nombre`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_medicamentos_por_nombre(IN nombreMedicamento VARCHAR(255))
@@ -637,18 +629,9 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-
-
-
-
-
-
-
 -- prueba 
-DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
+/* DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,                    -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255),    -- Nombre del medicamento
@@ -706,16 +689,10 @@ BEGIN
     COMMIT;
 END$$
 DELIMITER ;
+*/
+-- CALL spu_medicamentos_salida(1, 'nose', 5, 1, 2, 'Tratamiento para dolor');
 
-
-
-CALL spu_medicamentos_salida(1, 'nose', 5, 1, 2, 'Tratamiento para dolor');
-
-CALL spu_medicamentos_salida(1, 'nose', 3, NULL, '2', 'No especificado');
-
-
-select * from HistorialMovimientosMedicamentos;
-
+-- CALL spu_medicamentos_salida(1, 'nose', 3, NULL, '2', 'No especificado');
 
 INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antibiótico'),
