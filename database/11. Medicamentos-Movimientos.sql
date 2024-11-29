@@ -199,10 +199,8 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
 DELIMITER $$
-
 CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,                    -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255),    -- Nombre del medicamento
@@ -260,7 +258,6 @@ BEGIN
     COMMIT;
 END$$
 DELIMITER ;
-
 
 DROP PROCEDURE IF EXISTS `spu_agregar_nueva_combinacion_medicamento`;
 DELIMITER $$
