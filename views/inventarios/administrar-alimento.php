@@ -459,6 +459,18 @@
 </div>
 
 <?php require_once '../footer.php'; ?>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- jsPDF-AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.1/jspdf.plugin.autotable.min.js"></script>
+
+
+
+
+
+
 <script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
 <script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
 <script id="jqueryScript" src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>

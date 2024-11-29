@@ -290,6 +290,11 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
+
+
 DROP PROCEDURE IF EXISTS `spu_agregar_nueva_combinacion_medicamento`;
 DELIMITER $$
 CREATE PROCEDURE spu_agregar_nueva_combinacion_medicamento(
@@ -632,6 +637,84 @@ BEGIN
 END $$
 DELIMITER ;
 
+
+
+
+
+
+
+
+
+-- prueba 
+DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
+DELIMITER $$
+
+CREATE PROCEDURE spu_medicamentos_salida(
+    IN _idUsuario INT,                    -- Usuario que realiza la operación
+    IN _nombreMedicamento VARCHAR(255),    -- Nombre del medicamento
+    IN _cantidad DECIMAL(10,2),            -- Cantidad de medicamento a retirar
+    IN _idEquino INT,                      -- ID del equino relacionado con la salida (NULL si es otro motivo)
+    IN _lote VARCHAR(100),                 -- Número de lote del medicamento (puede ser NULL)
+    IN _motivo TEXT                        -- Motivo de la salida del medicamento (obligatorio)
+)
+BEGIN
+    DECLARE _idMedicamento INT;
+    DECLARE _idLoteMedicamento INT;
+    DECLARE _currentStock INT;  -- Usar INT ya que la columna cantidad_stock es de tipo INT
+    DECLARE _finalMotivo TEXT;
+
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Validar que la cantidad a retirar sea mayor que cero
+    IF _cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad a retirar debe ser mayor que cero.';
+    END IF;
+
+    -- Buscar el ID del medicamento y la cantidad en stock
+    SELECT idMedicamento, cantidad_stock INTO _idMedicamento, _currentStock
+    FROM Medicamentos
+    WHERE nombreMedicamento = _nombreMedicamento AND idLoteMedicamento = _lote;
+
+    -- Verificar que el medicamento exista
+    IF _idMedicamento IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El medicamento especificado no existe.';
+    END IF;
+
+    -- Verificar si hay suficiente stock
+    IF _currentStock < _cantidad THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock de este medicamento.';
+    END IF;
+
+    -- Actualizar el stock del medicamento
+    UPDATE Medicamentos
+    SET cantidad_stock = cantidad_stock - _cantidad
+    WHERE idMedicamento = _idMedicamento;
+
+    -- Establecer el motivo en función de si es por equino o por otros motivos
+    IF _idEquino IS NOT NULL THEN
+        SET _finalMotivo = _motivo;
+    ELSE
+        SET _finalMotivo = 'No especificado';
+    END IF;
+
+    -- Registrar el movimiento en la tabla HistorialMovimientosMedicamentos
+    INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, motivo, idEquino, idUsuario)
+    VALUES (_idMedicamento, 'Salida', _cantidad, _finalMotivo, _idEquino, _idUsuario);
+
+    -- Confirmar transacción
+    COMMIT;
+END$$
+DELIMITER ;
+
+
+
+CALL spu_medicamentos_salida(1, 'nose', 5, 1, 2, 'Tratamiento para dolor');
+
+CALL spu_medicamentos_salida(1, 'nose', 3, NULL, '2', 'No especificado');
+
+
+select * from HistorialMovimientosMedicamentos;
 
 
 INSERT INTO TiposMedicamentos (tipo) VALUES

@@ -315,6 +315,18 @@
                             </div>
                         </div>
 
+                        <!-- Tipo de Salida: Equino u Otros Motivos -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="tipoSalida" class="form-label fw-bold">Tipo de Salida</label>
+                                <select name="tipoSalida" id="tipoSalida" class="form-select form-select-lg" required>
+                                    <option value="" disabled selected>Seleccione el motivo de la salida</option>
+                                    <option value="equino">Por Equino</option>
+                                    <option value="otros">Por Otros Motivos</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Lote -->
                         <div class="row mb-3">
                             <div class="col-md-12">
