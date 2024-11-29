@@ -78,9 +78,6 @@
 
                     <!-- Botones de acción -->
                     <div class="col-md-12 text-end mt-3">
-                        <a href="./listar-implemento-campo" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
-                            <i class="fas fa-save"></i> Listado Implementos
-                        </a>
                         <button type="submit" class="btn btn-primary btn-lg" style="background-color: #0077b6; border: none;">
                             <i class="fas fa-save"></i> Registrar Implemento
                         </button>
@@ -113,11 +110,10 @@
                         <i class="fas fa-arrow-down"></i> Registrar Movimiento de Implementos
                     </button>
                 </div>
-
                 <!-- Botón Historial de Movimientos -->
                 <div class="col-12 col-sm-6 col-md-3 mb-3">
-                    <button class="btn btn-outline-success btn-lg w-100 me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalHistorial">
-                        <i class="fas fa-arrow-down"></i> Historial de Movimientos
+                    <button class="btn btn-outline-success btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-I-campo'">
+                        <i class="fas fa-arrow-down"></i> Historial Movimientos (E/S)
                     </button>
                 </div>
             </div>
@@ -189,85 +185,6 @@
                             <button type="submit" class="btn btn-danger px-4">Registrar Movimiento</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Historial de Movimientos de Implementos -->
-    <div class="modal fade" id="modalHistorial" tabindex="-1" aria-labelledby="modalHistorialLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <!-- Encabezado del Modal -->
-                <div class="modal-header" style="background-color: #17a2b8; color: white; border-top-left-radius: .3rem; border-top-right-radius: .3rem;">
-                    <h5 class="modal-title" id="modalHistorialLabel">Historial de Movimientos de Implementos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"></button>
-                </div>
-
-                <!-- Cuerpo del Modal -->
-                <div class="modal-body px-4 py-3">
-
-                    <!-- Pestañas para Entrada y Salida -->
-                    <ul class="nav nav-tabs mb-3" id="historialTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="entradas-tab" data-bs-toggle="tab" data-bs-target="#entradas" type="button" role="tab" aria-controls="entradas" aria-selected="true">Entradas</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="salidas-tab" data-bs-toggle="tab" data-bs-target="#salidas" type="button" role="tab" aria-controls="salidas" aria-selected="false">Salidas</button>
-                        </li>
-                    </ul>
-
-                    <!-- Contenido de las Pestañas -->
-                    <div class="tab-content">
-                        <!-- Tabla de Entradas de Implementos -->
-                        <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
-                            <div class="table-responsive">
-                                <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
-                                    <thead class="table-primary">
-                                        <tr class="text-center">
-                                            <th>ID Historial</th>
-                                            <th>Nombre Producto</th>
-                                            <th>Precio U.</th>
-                                            <th>Cantidad</th>
-                                            <th>Descripcion</th>
-                                            <th>Fecha Movimiento</th>
-                                            <th>Nombre Inventario</th> <!-- Si es necesario si no se modifica o elimina -->
-                                        </tr>
-                                    </thead>
-                                    <tbody id="historial-entradas-table">
-                                        <!-- Los datos se cargarán dinámicamente -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Tabla de Salidas de Implementos -->
-                        <div class="tab-pane fade" id="salidas" role="tabpanel" aria-labelledby="salidas-tab">
-                            <div class="table-responsive">
-                                <table id="tabla-salidas" class="table table-bordered table-hover table-striped">
-                                    <thead class="table-danger">
-                                        <tr class="text-center">
-                                            <th>ID Historial</th>
-                                            <th>Nombre Producto</th>
-                                            <th>Precio U.</th>
-                                            <th>Cantidad</th>
-                                            <th>Descripcion</th>
-                                            <th>Fecha</th>
-                                            <th>nombre Inventario</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="historial-salidas-table">
-                                        <!-- Los datos se cargarán dinámicamente -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pie del Modal -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
