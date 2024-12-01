@@ -179,12 +179,19 @@ function generarPDF() {
             setTimeout(function() {
                 newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
             }, 500); // Esperar medio segundo para que la ventana cargue el PDF
-            
-             // Iniciar la descarga del PDF con el nombre especificado
-             var link = newWindow.document.createElement('a');
-             link.href = url;
-             link.download = nombreArchivo; // Establecer el nombre del archivo
-             link.click(); // Simular el clic para que el archivo se descargue
+
+             // Crear el botón de descarga dentro de la nueva ventana
+            var downloadButton = newWindow.document.createElement('button');
+            downloadButton.textContent = 'Descargar PDF';
+            downloadButton.style.margin = '20px';
+            downloadButton.onclick = function() {
+                var link = newWindow.document.createElement('a');
+                link.href = url;
+                link.download = nombreArchivo; // Establecer el nombre del archivo
+                link.click(); // Simular el clic para que el archivo se descargue
+            };
+
+            newWindow.document.body.appendChild(downloadButton); // Agregar el botón a la nueva ventana
         });
     });
 }
