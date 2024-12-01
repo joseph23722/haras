@@ -191,6 +191,7 @@ BEGIN
 END $$
 DELIMITER ;
 
+
 DROP PROCEDURE IF EXISTS `spu_gestionar_tratamiento`;
 DELIMITER $$
 CREATE PROCEDURE spu_gestionar_tratamiento(
