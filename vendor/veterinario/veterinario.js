@@ -25,8 +25,11 @@ function cargarImagenBase64(url, callback) {
     img.src = url;
 }
 
+
+
 // Función para generar el PDF
 function generarPDF() {
+
     // La URL de la imagen en el servidor
     const imagenURL = 'https://corsproxy.io/?https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
 
@@ -58,7 +61,7 @@ function generarPDF() {
 
         // Definir el contenido del PDF
         const docDefinition = {
-            pageOrientation: 'portrait', // Orientación horizontal :'landscape'  y para vertical es :   'portrait', // Orientación vertical
+            pageOrientation: 'landscape', // Orientación horizontal :'landscape'  y para vertical es :   'portrait', // Orientación vertical
             content: [
                 {
                     image: base64Image, // Usar la imagen convertida a Base64
@@ -92,11 +95,13 @@ function generarPDF() {
                 {
                     table: {
                         headerRows: 1,
-                        widths: ['auto', 'auto', 'auto',75, 'auto', 'auto', 'auto', 'auto'], // Definir el ancho de las columnas
+                        widths: [80,'auto', 'auto','auto', 80, 70, 82, 'auto', 60, 60], // Definir el ancho de las columnas
+                        //widths: Array(12).fill(72), // Ajustar el ancho de las columnas para que se adapten al tamaño de la página
+
                         body: [
                             [
                                 { text: 'Equino', style: 'tableHeader' },
-                                { text: 'Peso (kg)', style: 'tableHeader' },
+                                { text: 'Peso(kg)', style: 'tableHeader' },
                                 { text: 'Tipo', style: 'tableHeader' },
                                 { text: 'Estado', style: 'tableHeader' },
                                 { text: 'Medicamento', style: 'tableHeader' },
@@ -152,6 +157,8 @@ function generarPDF() {
                 };
             }
         };
+        // Nombre del archivo que se desea descargar
+        const nombreArchivo = "Reporte_Medicamentos_" + ".pdf";
 
         // Crear el PDF y abrirlo
         var pdfDoc = pdfMake.createPdf(docDefinition);
@@ -169,10 +176,15 @@ function generarPDF() {
             newWindow.location.href = url;
 
             // Cambiar el título de la nueva ventana
-            // Usamos setTimeout para asegurarnos de que el documento esté cargado
             setTimeout(function() {
                 newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
             }, 500); // Esperar medio segundo para que la ventana cargue el PDF
+            
+             // Iniciar la descarga del PDF con el nombre especificado
+             var link = newWindow.document.createElement('a');
+             link.href = url;
+             link.download = nombreArchivo; // Establecer el nombre del archivo
+             link.click(); // Simular el clic para que el archivo se descargue
         });
     });
 }
@@ -276,13 +288,11 @@ function imprimirDocumento() {
 }
 
 
-// Configuración del DataTable
-const configurarDataTableMedicamentos = () => {
-    const fechaActual = new Date().toLocaleString();
-
-    const table = $('#historialTable').DataTable({
+// Definir la función para configurar el DataTable
+const configurarDataTableHistorial = () => {
+    return {
         ajax: {
-            url: '../../controllers/historialme.controller.php', // URL del archivo PHP que retorna los datos en formato JSON
+            url: '/haras/table-ssp/historial-veterinario.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
             type: 'GET',
             dataSrc: 'data',
             error: function (xhr, status, error) {
@@ -372,52 +382,20 @@ const configurarDataTableMedicamentos = () => {
                 }
             }
         ]
-    });
+    };
 };
 
+// Función para cargar la tabla de historial
+const loadHistorialTable = async () => {
+    if (!$.fn.DataTable.isDataTable('#historialTable')) {
+        // Si el DataTable no está inicializado, crea uno con la configuración
+        $('#historialTable').DataTable(configurarDataTableHistorial());
+    } else {
+        // Si ya está inicializado, simplemente recarga los datos
+        $('#historialTable').DataTable().ajax.reload();
+    }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+$(document).ready(function () {
+    loadHistorialTable();
+});

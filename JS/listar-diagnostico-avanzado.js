@@ -36,18 +36,6 @@ const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
     }
 };
 
-const loadHistorialTable = async () => {
-    if (!$.fn.DataTable.isDataTable('#historialTable')) {
-        // Si el DataTable no está inicializado, crea uno con la configuración
-        $('#historialTable').DataTable(configurarDataTableHistorial());
-    } else {
-        // Si ya está inicializado, simplemente recarga los datos
-        $('#historialTable').DataTable().ajax.reload();
-    }
-};
-$(document).ready(function () {
-    loadHistorialTable();
-});
 
 
 // Llamadas para cada acción
