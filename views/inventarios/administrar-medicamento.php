@@ -559,6 +559,18 @@
 </div>
 <?php require_once '../footer.php'; ?>
 
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- jsPDF-AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.1/jspdf.plugin.autotable.min.js"></script>
+
+
+
+<script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
+<script src="../../JS/administrar-medicamento.js"></script>
+
 <!-- Cargar jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <!-- Cargar DataTables y sus dependencias -->
@@ -566,7 +578,4 @@
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
-<script src="../../JS/administrar-medicamento.js"></script>
+

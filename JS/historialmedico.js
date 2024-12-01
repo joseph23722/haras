@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
         mensajeModalVia.innerHTML = ""; // Limpiar mensajes previos
 
         if (!nombreVia) {
-            console.log("Campo 'Nombre de la Vía' vacío");
             mensajeModalVia.innerHTML = '<p class="text-danger">Por favor, complete el campo "Nombre de la Vía".</p>';
             return false;
         }
@@ -75,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Verificar que el campo obligatorio esté lleno
         if (!nombreVia) {
             mensajeModalVia.innerHTML = '<p class="text-danger">El nombre de la vía es obligatorio.</p>';
-            console.log("El campo 'Nombre de la Vía' está vacío.");
             return;
         }
 
@@ -86,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 nombreVia: nombreVia,
                 descripcion: descripcion || null
             };
-            console.log("Datos enviados al backend:", datos);
 
             const response = await fetch("../../controllers/historialme.controller.php", {
                 method: "POST",
@@ -94,21 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(datos)
             });
 
-            console.log("Respuesta del servidor recibida:", response);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const result = await response.json();
-            console.log("Datos procesados como JSON:", result);
 
             mensajeModalVia.innerHTML = result.status === "success"
                 ? '<p class="text-success">¡Vía de administración agregada correctamente!</p>'
                 : `<p class="text-danger">${result.message}</p>`;
 
             if (result.status === "success") {
-                console.log("Vía agregada exitosamente, actualizando la lista de vías...");
 
                 setTimeout(() => {
                     // Resetear el formulario
@@ -123,7 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 1500);
             }
         } catch (error) {
-            console.error("Error al enviar los datos al servidor:", error);
             mensajeModalVia.innerHTML = '<p class="text-danger">Error al enviar los datos al servidor.</p>';
         }
     };
@@ -131,16 +123,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Asignar evento al botón de guardar
     const btnGuardarVia = document.getElementById("btnGuardarViaAdministracion");
     if (btnGuardarVia) {
-        console.log("Botón 'Guardar' para vías de administración encontrado");
         btnGuardarVia.addEventListener("click", guardarViaAdministracion);
     } else {
-        console.error("El botón #btnGuardarViaAdministracion no se encontró.");
     }
 
     // Función para cargar las vías de administración
     async function cargarViasAdministracion() {
         try {
-            console.log("Iniciando solicitud para listar vías de administración...");
 
             // Solicitud al backend con método GET
             const response = await fetch("../../controllers/historialme.controller.php?operation=listarVias", {
@@ -150,7 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
             });
 
-            console.log("Respuesta del servidor recibida:", response);
 
             // Verificamos si la respuesta fue exitosa
             if (!response.ok) {
@@ -160,10 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // Procesar la respuesta como JSON
             const data = await response.json();
 
-            console.log("Datos procesados como JSON:", data);
 
             if (data.status === "success") {
-                console.log("Vías de administración recibidas:", data.data);
 
                 // Limpiar el select (por si acaso ya tiene datos)
                 selectViaAdministracion.innerHTML = '<option value="">Seleccione Vía de Administración</option>';
@@ -176,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     selectViaAdministracion.appendChild(option);
                 });
 
-                console.log("Select actualizado correctamente.");
             } else {
                 console.error("Error al listar las vías de administración:", data.message || "Respuesta no exitosa.");
             }
@@ -330,7 +315,6 @@ document.addEventListener("DOMContentLoaded", () => {
             data.operation = "registrarHistorialMedico";
 
             // Log detallado para verificar los datos que se envían
-            console.log("Datos enviados al servidor (detallado):", data);
 
             try {
                 const response = await fetch('../../controllers/historialme.controller.php', {
@@ -340,10 +324,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 // Revisar si el servidor responde correctamente
-                console.log("Respuesta del servidor recibida:", response);
 
                 const result = await response.json();
-                console.log("Respuesta JSON parseada:", result);
 
                 if (result.status === "success") {
                     showToast(result.message || "Historial médico registrado correctamente", "SUCCESS");
@@ -351,12 +333,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     event.target.reset();
                 } else {
                     // Si el servidor devuelve error, mostramos los detalles
-                    console.error("Error al registrar historial médico:", result.message);
                     mostrarMensajeDinamico("Error al registrar el historial: " + (result.message || "Desconocido"), "ERROR");
                 }
             } catch (error) {
                 // Manejo de errores del lado del cliente
-                console.error("Error al registrar el historial médico (Error de conexión):", error);
+
                 mostrarMensajeDinamico("Error al registrar el historial médico: Error de conexión o error inesperado", "ERROR");
             }
         }
@@ -476,7 +457,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast('Error al actualizar: ' + result.message, 'ERROR');
             }
         } catch (error) {
-            console.error('Error al guardar los cambios:', error);
             showToast('Ocurrió un error al guardar los cambios.', 'ERROR');
         }
     });

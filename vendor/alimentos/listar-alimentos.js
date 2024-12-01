@@ -22,138 +22,164 @@ function cargarImagenBase64(url, callback) {
     img.src = url;
 }
 
+
+
+
 // Función para generar el PDF
 function generarPDF() {
-    // La URL de la imagen en el servidor
-    const imagenURL = 'https://corsproxy.io/?https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
+    // Obtener los valores de los filtros
+    const fechaCaducidadInicio = $('#filtro-fechaCaducidadInicio').val();
+    const fechaCaducidadFin = $('#filtro-fechaCaducidadFin').val();
+    const fechaRegistroInicio = $('#filtro-fechaRegistroInicio').val();
+    const fechaRegistroFin = $('#filtro-fechaRegistroFin').val();
 
-    // Llamar a la función para convertir la imagen a Base64
-    cargarImagenBase64(imagenURL, function (base64Image) {
-        // Definir el contenido del PDF
-        const docDefinition = {
-            content: [
-                {
-                    image: base64Image, // Usar la imagen convertida a Base64
-                    width: 150,         // Ajustar el tamaño de la imagen
-                    alignment: 'center', // Alineación centrada
-                    margin: [0, 0, 0, 12] // Márgenes
-                },
-                {
-                    text: direccionEmpresa, // Dirección de la empresa
-                    style: 'subheader',
-                    alignment: 'center',
-                    margin: [0, 0, 0, 20]
-                },
-                {
-                    text: `Módulo: ${modulo}`, // Módulo
-                    style: 'subheader',
-                    alignment: 'center',
-                    margin: [0, 0, 0, 20]
-                },
-                {
-                    text: `Fecha de creación: ${new Date().toLocaleString()}`, // Fecha
-                    style: 'subheader',
-                    alignment: 'center',
-                    margin: [0, 0, 0, 20]
-                },
-                {
-                    text: 'Lista de Alimentos:', // Título para la tabla
-                    style: 'subheader',
-                    margin: [0, 10, 0, 10]
-                },
-                {
-                    table: {
-                        headerRows: 1,
-                        widths: ['auto', '*', '*', 'auto', 'auto', 'auto'], // Definir el ancho de las columnas
-                        body: [
-                            [
-                                { text: 'ID', style: 'tableHeader' },
-                                { text: 'Nombre', style: 'tableHeader' },
-                                { text: 'Tipo', style: 'tableHeader' },
-                                { text: 'Unidad', style: 'tableHeader' },
-                                { text: 'Lote', style: 'tableHeader' },
-                                { text: 'Stock', style: 'tableHeader' }
-                            ], // Cabecera de la tabla
-                            // Aquí agregamos los datos dinámicamente desde el DataTable
-                            ...$('#alimentos-table').DataTable().rows().data().toArray().map(item => [
-                                item.idAlimento,
-                                item.nombreAlimento,
-                                item.nombreTipoAlimento,
-                                item.unidadMedidaNombre,
-                                item.lote,
-                                item.stockActual
-                            ])
-                        ]
-                    },
-                    layout: {
-                        fillColor: function (rowIndex) {
-                            return (rowIndex % 2 === 0) ? '#f2f2f2' : null; // Alternar color de fondo
+    // Realizar una solicitud AJAX para obtener los datos filtrados
+    $.ajax({
+        url: '/haras/table-ssp/alimento.ssp.php',
+        type: 'GET',
+        data: {
+            fechaCaducidadInicio: fechaCaducidadInicio,
+            fechaCaducidadFin: fechaCaducidadFin,
+            fechaRegistroInicio: fechaRegistroInicio,
+            fechaRegistroFin: fechaRegistroFin
+        },
+        success: function(response) {
+            const data = response.data;
+
+            // La URL de la imagen en el servidor
+            const imagenURL = 'https://corsproxy.io/?https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
+
+            // Llamar a la función para convertir la imagen a Base64
+            cargarImagenBase64(imagenURL, function (base64Image) {
+                // Definir el contenido del PDF
+                const docDefinition = {
+                    content: [
+                        {
+                            image: base64Image, // Usar la imagen convertida a Base64
+                            width: 150,         // Ajustar el tamaño de la imagen
+                            alignment: 'center', // Alineación centrada
+                            margin: [0, 0, 0, 12] // Márgenes
                         },
-                        hLineColor: '#cccccc',
-                        vLineColor: '#cccccc',
-                        paddingLeft: function (i) { return i === 0 ? 8 : 4; },
-                        paddingRight: function (i, node) { return (i === node.table.widths.length - 1) ? 8 : 4; }
+                        {
+                            text: direccionEmpresa, // Dirección de la empresa
+                            style: 'subheader',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 20]
+                        },
+                        {
+                            text: `Módulo: ${modulo}`, // Módulo
+                            style: 'subheader',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 20]
+                        },
+                        {
+                            text: `Fecha de creación: ${new Date().toLocaleString()}`, // Fecha
+                            style: 'subheader',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 20]
+                        },
+                        {
+                            text: 'Lista de Alimentos:', // Título para la tabla
+                            style: 'subheader',
+                            margin: [0, 10, 0, 10]
+                        },
+                        {
+                            table: {
+                                headerRows: 1,
+                                widths: ['auto', '*', '*', 'auto', 'auto', 'auto'], // Definir el ancho de las columnas
+                                body: [
+                                    [
+                                        { text: 'ID', style: 'tableHeader' },
+                                        { text: 'Nombre', style: 'tableHeader' },
+                                        { text: 'Tipo', style: 'tableHeader' },
+                                        { text: 'Unidad', style: 'tableHeader' },
+                                        { text: 'Lote', style: 'tableHeader' },
+                                        { text: 'Stock', style: 'tableHeader' }
+                                    ], // Cabecera de la tabla
+                                    // Aquí agregamos los datos dinámicamente desde la respuesta AJAX
+                                    ...data.map(item => [
+                                        item.idAlimento,
+                                        item.nombreAlimento,
+                                        item.nombreTipoAlimento,
+                                        item.unidadMedidaNombre,
+                                        item.lote,
+                                        item.stockActual
+                                    ])
+                                ]
+                            },
+                            layout: {
+                                fillColor: function (rowIndex) {
+                                    return (rowIndex % 2 === 0) ? '#f2f2f2' : null; // Alternar color de fondo
+                                },
+                                hLineColor: '#cccccc',
+                                vLineColor: '#cccccc',
+                                paddingLeft: function (i) { return i === 0 ? 8 : 4; },
+                                paddingRight: function (i, node) { return (i === node.table.widths.length - 1) ? 8 : 4; }
+                            }
+                        }
+                    ],
+                    styles: {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 0, 0, 10]
+                        },
+                        subheader: {
+                            fontSize: 14,
+                            italics: true,
+                            margin: [0, 10, 0, 10]
+                        },
+                        tableHeader: {
+                            bold: true,
+                            fontSize: 12,
+                            color: 'white',
+                            fillColor: '#4CAF50', // Color de fondo de la cabecera
+                            alignment: 'center'
+                        }
+                    },
+                    defaultStyle: {
+                        fontSize: 10
+                    },
+                    pageSize: 'A4',
+                    pageMargins: [40, 60, 40, 60],
+                    footer: function (currentPage, pageCount) {
+                        return {
+                            text: currentPage.toString() + ' / ' + pageCount,
+                            alignment: 'center',
+                            margin: [0, 30, 0, 0]
+                        };
                     }
-                }
-            ],
-            styles: {
-                header: {
-                    fontSize: 18,
-                    bold: true,
-                    margin: [0, 0, 0, 10]
-                },
-                subheader: {
-                    fontSize: 14,
-                    italics: true,
-                    margin: [0, 10, 0, 10]
-                },
-                tableHeader: {
-                    bold: true,
-                    fontSize: 12,
-                    color: 'white',
-                    fillColor: '#4CAF50', // Color de fondo de la cabecera
-                    alignment: 'center'
-                }
-            },
-            defaultStyle: {
-                fontSize: 10
-            },
-            pageSize: 'A4',
-            pageMargins: [40, 60, 40, 60],
-            footer: function (currentPage, pageCount) {
-                return {
-                    text: currentPage.toString() + ' / ' + pageCount,
-                    alignment: 'center',
-                    margin: [0, 30, 0, 0]
                 };
-            }
-        };
 
-        // Crear el PDF y abrirlo
-        var pdfDoc = pdfMake.createPdf(docDefinition);
+                // Crear el PDF y abrirlo
+                var pdfDoc = pdfMake.createPdf(docDefinition);
 
-        // Abrir el PDF en una nueva ventana
-        var newWindow = window.open();
+                // Abrir el PDF en una nueva ventana
+                var newWindow = window.open();
 
-        // Generar el buffer del PDF
-        pdfDoc.getBuffer(function(buffer) {
-            // Crear un Blob con los datos del PDF
-            var blob = new Blob([buffer], { type: 'application/pdf' });
-            var url = URL.createObjectURL(blob);
+                // Generar el buffer del PDF
+                pdfDoc.getBuffer(function(buffer) {
+                    // Crear un Blob con los datos del PDF
+                    var blob = new Blob([buffer], { type: 'application/pdf' });
+                    var url = URL.createObjectURL(blob);
 
-            // Establecer el contenido del PDF en la nueva ventana
-            newWindow.location.href = url;
+                    // Establecer el contenido del PDF en la nueva ventana
+                    newWindow.location.href = url;
 
-            // Cambiar el título de la nueva ventana
-            // Usamos setTimeout para asegurarnos de que el documento esté cargado
-            setTimeout(function() {
-                newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
-            }, 500); // Esperar medio segundo para que la ventana cargue el PDF
-        });
-
-
+                    // Cambiar el título de la nueva ventana
+                    // Usamos setTimeout para asegurarnos de que el documento esté cargado
+                    setTimeout(function() {
+                        newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
+                    }, 500); // Esperar medio segundo para que la ventana cargue el PDF
+                });
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al generar el PDF:", error);
+        }
     });
 }
+
 
 // Función para generar y descargar el CSV
 function generarCSV() {
@@ -187,8 +213,6 @@ function generarCSV() {
 }
 
 
-
-// Función para imprimir el contenido de una ventana o documento
 // Función para imprimir el documento
 function imprimirDocumento() {
     // La URL de la imagen en el servidor
@@ -245,17 +269,31 @@ function imprimirDocumento() {
     });
 }
 
+
+
+
 // Configuración del DataTable
 const configurarDataTableAlimentos = () => {
-    const fechaActual = new Date().toLocaleString();
-
     const table = $('#alimentos-table').DataTable({
         ajax: {
             url: '/haras/table-ssp/alimento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
             type: 'GET',
-            dataSrc: 'data',
+            data: function (d) {
+                // Agregar los parámetros de filtro a la solicitud AJAX solo si están presentes
+                d.fechaCaducidadInicio = $('#filtro-fechaCaducidadInicio').val() || null;
+                d.fechaCaducidadFin = $('#filtro-fechaCaducidadFin').val() || null;
+                d.fechaRegistroInicio = $('#filtro-fechaRegistroInicio').val() || null;
+                d.fechaRegistroFin = $('#filtro-fechaRegistroFin').val() || null;
+                console.log("Parámetros enviados:", d); // Log para verificar los parámetros enviados
+            },
+            dataSrc: function (json) {
+                console.log("Datos recibidos del servidor:", json); // Log para verificar los datos recibidos
+                return json.data;
+            },
             error: function (xhr, status, error) {
                 console.error("Error al cargar datos de la tabla:", error);
+                console.log("Estado:", status);
+                console.log("Respuesta del servidor:", xhr.responseText);
             }
         },
         processing: true,
@@ -270,26 +308,26 @@ const configurarDataTableAlimentos = () => {
         },
         dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
         columns: [
-                { data: 'idAlimento', visible: false, searchable: false }, // Ocultar y deshabilitar búsqueda en ID
-                { data: 'nombreAlimento', searchable: true },
-                { data: 'nombreTipoAlimento', searchable: true },
-                { data: 'unidadMedidaNombre', searchable: false },
-                { data: 'lote', searchable: false },
-                { data: 'stockActual', searchable: false },
-                { data: 'stockMinimo', searchable: false },
-                { data: 'costo', searchable: false },
-                { data: 'fechaCaducidad', searchable: true },
-                { data: 'estado', searchable: false },
-                { 
-                    data: null, 
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, row) {
-                        return `<button class="btn btn-danger btn-sm" onclick="eliminarAlimento('${row.idAlimento}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>`;
-                    }
+            { data: 'idAlimento', visible: false, searchable: false }, // Ocultar y deshabilitar búsqueda en ID
+            { data: 'nombreAlimento', searchable: true },
+            { data: 'nombreTipoAlimento', searchable: true },
+            { data: 'unidadMedidaNombre', searchable: false },
+            { data: 'lote', searchable: false },
+            { data: 'stockActual', searchable: false },
+            { data: 'stockMinimo', searchable: false },
+            { data: 'costo', searchable: false },
+            { data: 'fechaCaducidad', searchable: true },
+            { data: 'estado', searchable: false },
+            { 
+                data: null, 
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `<button class="btn btn-danger btn-sm" onclick="eliminarAlimento('${row.idAlimento}')">
+                                <i class="fas fa-trash"></i>
+                            </button>`;
                 }
+            }
         ],
         buttons: [
             {
@@ -316,6 +354,11 @@ const configurarDataTableAlimentos = () => {
                 }
             }
         ]
+    });
+
+    // Evento para recargar la tabla cuando se haga clic en el botón de búsqueda
+    $('#btn-buscar').on('click', function () {
+        table.ajax.reload();
     });
 };
 

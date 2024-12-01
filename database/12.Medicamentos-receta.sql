@@ -63,6 +63,15 @@ BEGIN
         SIGNAL SQLSTATE '45000';
     END IF;
 
+    -- Verificar si el equino tiene algún registro de tratamiento
+    IF NOT EXISTS (SELECT 1 FROM DetalleMedicamentos WHERE idEquino = _idEquino) THEN
+        -- Si no tiene registros, el primer tratamiento debe ser 'Primario'
+        IF _tipoTratamiento != 'Primario' THEN
+            SET _errorMensaje = 'El primer registro del equino debe ser un tratamiento primario, no complementario.';
+            SIGNAL SQLSTATE '45000';
+        END IF;
+    END IF;
+
     -- Verificar que el equino no tenga un tratamiento primario activo si se va a registrar un nuevo tratamiento primario
     IF _tipoTratamiento = 'Primario' AND EXISTS (
         SELECT 1 FROM DetalleMedicamentos 

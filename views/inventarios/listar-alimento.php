@@ -1,10 +1,40 @@
 <?php require_once '../header.php'; ?>
 
+<?php require_once '../header.php'; ?>
+
 <div class="container-fluid px-4">
     <!-- Título principal -->
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
         Listado Alimentos
     </h1>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label for="filtro-fechaCaducidadInicio" class="form-label">Fecha Caducidad Inicio:</label>
+            <input type="date" id="filtro-fechaCaducidadInicio" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="filtro-fechaCaducidadFin" class="form-label">Fecha Caducidad Fin:</label>
+            <input type="date" id="filtro-fechaCaducidadFin" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="filtro-fechaRegistroInicio" class="form-label">Fecha Registro Inicio:</label>
+            <input type="datetime-local" id="filtro-fechaRegistroInicio" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="filtro-fechaRegistroFin" class="form-label">Fecha Registro Fin:</label>
+            <input type="datetime-local" id="filtro-fechaRegistroFin" class="form-control">
+        </div>
+    </div>
+
+    <!-- Botón de Buscar -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <button id="btn-buscar" class="btn btn-primary w-100"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+    </div>
+
 
     <!-- Tabla de Alimentos Registrados -->
     <div class="card mb-4">
@@ -31,8 +61,8 @@
             </table>
         </div>
     </div>
-
 </div>
+
 
 <!-- Contenedor de mensajes dinámicos -->
 <div id="mensaje"></div>
