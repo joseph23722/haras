@@ -162,4 +162,48 @@ DELIMITER ;
 
 
 -- reprote medicamento 
+DROP PROCEDURE IF EXISTS `spu_filtrar_medicamentos_por_stock`;
+DELIMITER $$
+CREATE PROCEDURE spu_filtrar_medicamentos_por_stock(
+    IN _orden VARCHAR(10) -- 'ASC' para ascendente, 'DESC' para descendente
+)
+BEGIN
+    -- Declarar la variable para la consulta dinámica
+    SET @sql = CONCAT('
+        SELECT 
+            m.idMedicamento,
+            m.nombreMedicamento,
+            m.descripcion,
+            lm.lote,                         -- Lote del medicamento (desde LotesMedicamento)
+            p.presentacion,
+            CONCAT(c.dosis, '' '', u.unidad) AS dosis,  -- Concatenar la cantidad y la unidad de medida
+            t.tipo AS nombreTipo,            -- Mostrar el nombre del tipo de medicamento
+            m.cantidad_stock,
+            m.stockMinimo,
+            lm.fechaIngreso,                 -- Fecha de ingreso del lote
+            lm.fechaCaducidad,               -- Fecha de caducidad del lote
+            m.precioUnitario,
+            m.estado
+        FROM 
+            Medicamentos m
+        JOIN 
+            CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+        JOIN 
+            TiposMedicamentos t ON c.idTipo = t.idTipo
+        JOIN 
+            PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+        JOIN
+            UnidadesMedida u ON c.idUnidad = u.idUnidad  -- Relación con UnidadesMedida para obtener la unidad
+        JOIN
+            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
+        WHERE 
+            lm.fechaCaducidad >= CURDATE()  -- Filtrar medicamentos que no estén vencidos
+        ORDER BY 
+            m.cantidad_stock ', _orden);
 
+    -- Preparar y ejecutar la consulta dinámica
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END $$
+DELIMITER ;
