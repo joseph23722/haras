@@ -351,7 +351,6 @@ $(document).ready(function() {
         url: '/haras/table-ssp/historial-veterinario.ssp.php?listarMedicamentos=true',
         method: 'GET',
         success: function(response) {
-            console.log("Respuesta del servidor (medicamentos):", response); // Agregar este log para ver la respuesta del servidor
             try {
                 const medicamentos = response.data;
                 const uniqueMedicamentos = [...new Set(medicamentos.map(medicamento => medicamento.nombreMedicamento))];
@@ -377,10 +376,8 @@ $(document).ready(function() {
                     d.nombreEquino = nombreEquino;
                     d.nombreMedicamento = nombreMedicamento;
                     d.estadoTratamiento = estadoTratamiento;
-                    console.log("Datos enviados al servidor:", d); // Agregar este log para ver los datos enviados al servidor
                 },
                 dataSrc: function(json) {
-                    console.log("Respuesta del servidor (historial):", json); // Agregar este log para ver la respuesta del servidor
                     return json.data;
                 },
                 error: function (xhr, status, error) {
@@ -492,7 +489,6 @@ $(document).ready(function() {
         const nombreEquino = $('#nombreEquinoInput').val();
         const nombreMedicamento = $('#medicamentoSelect').val();
         const estadoTratamiento = $('#estadoSelect').val();
-        console.log("Filtros aplicados:", { nombreEquino, nombreMedicamento, estadoTratamiento }); // Agregar este log para ver los filtros aplicados
         loadHistorialTable(nombreEquino, nombreMedicamento, estadoTratamiento);  // Llamamos la función con los filtros
     });
 });
