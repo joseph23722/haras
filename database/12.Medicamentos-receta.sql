@@ -210,7 +210,7 @@ BEGIN
         -- Verificar si el estado fue actualizado a 'En pausa'
         IF ROW_COUNT() = 0 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'El tratamiento no está activo o no se encontró.';
+            SET MESSAGE_TEXT = 'El tratamiento ya está pausado o no se encontró.';
         END IF;
 
     ELSEIF _accion = 'eliminar' THEN
@@ -235,7 +235,7 @@ BEGIN
         -- Verificar si el estado fue actualizado a 'Activo'
         IF ROW_COUNT() = 0 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'El tratamiento no está en pausa o no se encontró.';
+            SET MESSAGE_TEXT = 'El tratamiento ya está activo o no se encontró.';
         END IF;
 
     ELSE

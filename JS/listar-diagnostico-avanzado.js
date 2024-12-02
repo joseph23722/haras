@@ -37,13 +37,3 @@ const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
 };
 
 
-
-// Llamadas para cada acción
-const pausarRegistro = (idRegistro) => sendRequest(idRegistro, 'pausar');
-const continuarRegistro = (idRegistro) => sendRequest(idRegistro, 'continuar');
-const eliminarRegistro = (idRegistro) => sendRequest(idRegistro, 'eliminar');
-
-// Adjuntar las funciones a botones
-window.pausarRegistro = pausarRegistro;
-window.continuarRegistro = continuarRegistro;
-window.eliminarRegistro = eliminarRegistro;

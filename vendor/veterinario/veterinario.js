@@ -294,8 +294,49 @@ function imprimirDocumento() {
     });
 }
 
+// Función genérica para enviar la solicitud al servidor
+const sendRequest = async (idRegistro, accion) => {
+    const data = {
+        operation: 'gestionarTratamiento',
+        idRegistro: idRegistro,
+        accion: accion
+    };
 
-// Definir la función para configurar el DataTable
+    console.log("Enviando datos al servidor:", JSON.stringify(data));
+
+    try {
+        const response = await fetch('../../controllers/historialme.controller.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        console.log(`Respuesta del servidor (${accion}):`, result);
+
+        if (result.status === "success") {
+            showToast(`Registro ${accion} exitosamente`, "SUCCESS");
+            $('#historialTable').DataTable().ajax.reload();
+        } else {
+            showToast(`Error al ${accion} el registro: ` + (result.message || "Error desconocido"), "ERROR");
+        }
+    } catch (error) {
+        console.error(`Error al ${accion} el registro:`, error);
+        showToast(`Error al ${accion} el registro: Error de conexión o error inesperado`, "ERROR");
+    }
+};
+
+// Llamadas para cada acción
+const pausarRegistro = (idRegistro) => sendRequest(idRegistro, 'pausar');
+const continuarRegistro = (idRegistro) => sendRequest(idRegistro, 'continuar');
+const eliminarRegistro = (idRegistro) => sendRequest(idRegistro, 'eliminar');
+
+// Adjuntar las funciones a botones
+window.pausarRegistro = pausarRegistro;
+window.continuarRegistro = continuarRegistro;
+window.eliminarRegistro = eliminarRegistro;
+
+// Función para configurar el DataTable
 const configurarDataTableHistorial = () => {
     return {
         ajax: {
@@ -344,8 +385,9 @@ const configurarDataTableHistorial = () => {
             },
             {
                 data: null,
-                orderable: false,
                 title: 'Acciones',
+                orderable: false,
+                searchable: false,
                 render: function (data, type, row) {
                     return `
                         <div class="btn-group" role="group" aria-label="Acciones">
@@ -362,15 +404,15 @@ const configurarDataTableHistorial = () => {
                     `;
                 }
             }
-
         ],
         buttons: [
+
             {
                 extend: 'pdfHtml5',
                 text: '<i class="fas fa-file-pdf"></i> Generar PDF',
                 className: 'btn btn-danger',
                 action: function () {
-                    generarPDF(); // Llamar a la función para generar el PDF
+                    generarPDF(); // Llamar a la función para generar el PDF en orientación horizontal
                 }
             },
             {
