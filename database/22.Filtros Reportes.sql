@@ -45,6 +45,46 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL spu_filtrarAlimentos('2023-02-28', '2028-10-30', NULL, NULL);
+-- reporte herrero
+DROP PROCEDURE IF EXISTS `FiltrarHistorialHerreroPorTipoEquino`;
+DELIMITER $$
+CREATE PROCEDURE FiltrarHistorialHerreroPorTipoEquino(
+    IN _tipoEquino VARCHAR(50)
+)
+BEGIN
+    SELECT 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo AS TrabajoRealizado, 
+        GROUP_CONCAT(H.nombreHerramienta SEPARATOR ', ') AS HerramientasUsadas, 
+        HH.observaciones,
+        E.nombreEquino,              
+        TE.tipoEquino                 
+    FROM 
+        HistorialHerrero HH
+    INNER JOIN 
+        Equinos E ON HH.idEquino = E.idEquino
+    INNER JOIN 
+        TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
+    INNER JOIN 
+        TiposTrabajos TT ON HH.idTrabajo = TT.idTipoTrabajo
+    LEFT JOIN 
+        HerramientasUsadasHistorial HUH ON HH.idHistorialHerrero = HUH.idHistorialHerrero
+    LEFT JOIN 
+        Herramientas H ON HUH.idHerramienta = H.idHerramienta
+    WHERE 
+        TE.tipoEquino = _tipoEquino
+        AND TE.tipoEquino IN ('Padrillo', 'Yegua', 'Potrillo', 'Potranca')
+    GROUP BY 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo, 
+        HH.observaciones, 
+        E.nombreEquino, 
+        TE.tipoEquino
+    ORDER BY 
+        HH.fecha DESC;
+END $$
+DELIMITER ;
 
-CALL spu_filtrarAlimentos('2024-11-05', '2025-01-16', NULL, NULL);
+CALL FiltrarHistorialHerreroPorTipoEquino('Padrillo');
