@@ -88,7 +88,6 @@ END $$
 DELIMITER ;
 
 
-
 -- reporte historial medico (veterinario)
 DROP PROCEDURE IF EXISTS `spu_filtrar_historial_medicoMedi`;
 DELIMITER $$
