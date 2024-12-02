@@ -163,4 +163,3 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL spu_listar_medicamentos();
