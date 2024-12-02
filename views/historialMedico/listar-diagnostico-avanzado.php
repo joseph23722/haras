@@ -35,7 +35,7 @@
                 <option value="En pausa">En pausa</option>
             </select>
         </div>
-        <div class="col-md-2 align-self-end">
+        <div class="col-md-2 mt-4">
             <button id="filtrarButton" class="btn btn-primary">Buscar</button>
         </div>
     </div>
