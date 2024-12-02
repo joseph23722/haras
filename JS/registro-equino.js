@@ -357,6 +357,68 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Registrar nuevo propietario para equinos
+    const formRegistrarPropietario = document.querySelector("#formRegistrarPropietario");
+    const nombreHarasInput = document.querySelector("#nombreHaras");
+    const closeModalButton = document.querySelector("#closeModalButton");
+    const registrarPropietarioModal = new bootstrap.Modal(document.getElementById('registrarPropietario'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+
+    formRegistrarPropietario.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        registrarPropietarioModal.show();
+
+        const nombreHaras = nombreHarasInput.value.trim();
+
+        if (!nombreHaras) {
+            showToast("El nombre del Haras es obligatorio.", "ERROR");
+            return;
+        }
+
+        const confirmacion = await ask("¿Está seguro de que desea registrar el propietario?", "Confirmación de Registro");
+
+        if (!confirmacion) {
+            return;
+        }
+
+        try {
+            const response = await fetch('../../controllers/propietario.controller.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    operation: 'registrarPropietario',
+                    nombreHaras: nombreHaras
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la solicitud: ' + response.status);
+            }
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+                showToast("Propietario registrado exitosamente", "SUCCESS");
+                registrarPropietarioModal.hide();
+                formRegistrarPropietario.reset();
+                loadPropietarios();
+            } else {
+                showToast(result.message, "ERROR");
+            }
+        } catch (error) {
+            console.error("Error al registrar propietario:", error);
+            showToast("Hubo un error al registrar el propietario.", "ERROR");
+        }
+    });
+
+    closeModalButton.addEventListener('click', () => {
+        registrarPropietarioModal.hide();
+    });
+
     loadPropietarios();
     loadTipoEquinos();
 });
