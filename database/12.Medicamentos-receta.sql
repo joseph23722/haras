@@ -160,7 +160,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_consultar_historial_medicoMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_consultar_historial_medicoMedi()
