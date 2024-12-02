@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_alimentos_nuevo`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_alimentos_nuevo(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -75,11 +75,11 @@ BEGIN
     -- Confirmar la transacción
     COMMIT;
 
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
 BEGIN
     DECLARE _idLote INT;
@@ -152,11 +152,11 @@ BEGIN
         (_idAlimento IS NULL OR A.idAlimento = _idAlimento)
         AND A.estado != 'Vencido'; -- Excluir alimentos con estado 'Vencido'
 
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_alimentos_entrada(
     IN _idUsuario INT,
     IN _nombreAlimento VARCHAR(100),
@@ -215,11 +215,11 @@ BEGIN
     VALUES (_idAlimento, 'Entrada', _cantidad, _idUsuario, NOW(), _idUnidadMedida);
 
     COMMIT;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_alimentos_salida(
     IN _idUsuario INT,                 -- ID del usuario que realiza la salida
     IN _nombreAlimento VARCHAR(100),   -- Nombre del alimento
@@ -297,11 +297,11 @@ BEGIN
         END IF;
     END IF;
 
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_por_nombre`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_por_nombre(IN nombreAlimento VARCHAR(100))
 BEGIN
     SELECT 
@@ -312,11 +312,11 @@ BEGIN
         LotesAlimento l ON a.idLote = l.idLote
     WHERE 
         a.nombreAlimento = nombreAlimento;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_alimentos()
 BEGIN
     -- Seleccionamos directamente las columnas necesarias, incluyendo un mensaje personalizado
@@ -339,11 +339,11 @@ BEGIN
     WHERE a.stockActual <= a.stockMinimo          -- Filtro para stock bajo o agotado
     ORDER BY a.stockActual ASC                   -- Orden por stock más bajo
     LIMIT 5;                                     -- Limitamos los resultados a 5
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_historial_completo`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_historial_completo(
     IN tipoMovimiento VARCHAR(50),
     IN filtroFecha VARCHAR(20),  -- Nuevo parámetro para el filtro de fecha
@@ -467,11 +467,11 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_eliminarAlimento`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_eliminarAlimento(IN _idAlimento INT)
 BEGIN
     -- Verificar si el alimento existe antes de intentar eliminarlo
@@ -482,21 +482,21 @@ BEGIN
         -- Si no existe, generar un error de control
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El alimento no existe.';
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtenerTiposAlimento`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_obtenerTiposAlimento()
 BEGIN
     SELECT idTipoAlimento, tipoAlimento 
     FROM TipoAlimentos 
     ORDER BY tipoAlimento;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtenerUnidadesPorTipoAlimento`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_obtenerUnidadesPorTipoAlimento(IN _idTipoAlimento INT)
 BEGIN
     -- Verificar si el tipo de alimento existe
@@ -510,11 +510,11 @@ BEGIN
         -- Enviar mensaje de error si el tipo de alimento no existe
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El tipo de alimento especificado no existe.';
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_agregarTipoUnidadMedidaNuevo`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_agregarTipoUnidadMedidaNuevo (
     IN p_tipoAlimento VARCHAR(50),
     IN p_nombreUnidad VARCHAR(10)
@@ -549,12 +549,12 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'La combinación de tipo de alimento y unidad de medida ya existe.';
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 -- sugerencias 
 DROP PROCEDURE IF EXISTS `ObtenerSugerenciasAlimentos`;
-
+DELIMITER $$
 CREATE PROCEDURE ObtenerSugerenciasAlimentos()
 BEGIN
     SELECT 
@@ -571,12 +571,12 @@ BEGIN
     ORDER BY 
         tal.tipoAlimento ASC, 
         uma.nombreUnidad ASC;
-END;
-
+END$$
+DELIMITER ;
 
 -- editar sugerencias
 DROP PROCEDURE IF EXISTS `EditarCombinacionAlimento`;
-
+DELIMITER $$
 CREATE PROCEDURE EditarCombinacionAlimento(
     IN p_IdTipoActual INT,           -- ID actual del tipo de alimento
     IN p_IdUnidadActual INT,         -- ID actual de la unidad de medida
@@ -614,20 +614,20 @@ BEGIN
     SET idTipoAlimento = v_IdNuevoTipo, idUnidadMedida = v_IdNuevaUnidad
     WHERE idTipoAlimento = p_IdTipoActual AND idUnidadMedida = p_IdUnidadActual;
 
-END;
-
+END$$
+DELIMITER ;
 
 -- esto no va es prueba 
 /*
 CALL spu_Listar_TiposYUnidadesAlimentos('', 0, 10);
 -- tipo de equino - alimento ------ 
 DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
-;
+DELIMITER $$
 CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
 BEGIN
     SELECT idTipoEquino, tipoEquino
     FROM TipoEquinos
     WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
-END ;
-
+END $$
+DELIMITER ;
 */

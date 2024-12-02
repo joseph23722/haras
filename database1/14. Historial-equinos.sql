@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_buscar_equino_por_nombre`;
-
+DELIMITER //
 CREATE PROCEDURE spu_buscar_equino_por_nombre(IN p_nombreEquino VARCHAR(100))
 BEGIN
     SELECT 
@@ -25,11 +25,11 @@ BEGIN
     WHERE 
         e.nombreEquino = p_nombreEquino
         AND e.idPropietario IS NULL; 
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_registrar_historial_equinos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_registrar_historial_equinos(
     IN p_idEquino INT,
     IN p_descripcion TEXT
@@ -51,11 +51,11 @@ BEGIN
         INSERT INTO HistorialEquinos (idEquino, descripcion)
         VALUES (p_idEquino, p_descripcion);
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtener_historial_equino`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_obtener_historial_equino`(IN p_idEquino INT)
 BEGIN
     -- Verificar si existen registros en el historial
@@ -74,4 +74,5 @@ BEGIN
         -- Mensaje en caso de no haber registros
         SELECT 'No se encontró historial para el equino con ID ' AS mensaje;
     END IF;
-END ;
+END //
+DELIMITER ;

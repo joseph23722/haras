@@ -1,6 +1,6 @@
 -- agregar historial
 DROP PROCEDURE IF EXISTS `InsertarHistorialHerrero`;
-
+DELIMITER $$
 CREATE PROCEDURE InsertarHistorialHerrero (
     IN p_idEquino INT,
     IN p_idUsuario INT,
@@ -46,12 +46,12 @@ BEGIN
 
     -- Confirmar la transacción
     COMMIT;
-END ;
-
+END $$
+DELIMITER ;
 
 -- listar historial herrero
 DROP PROCEDURE IF EXISTS `ConsultarHistorialEquino`;
-
+DELIMITER $$
 CREATE PROCEDURE ConsultarHistorialEquino()
 BEGIN
     SELECT 
@@ -83,32 +83,32 @@ BEGIN
         TE.tipoEquino
     ORDER BY 
         HH.fecha DESC;
-END ;
-
+END $$
+DELIMITER ;
 
 -- Procedimiento para listar tipos de trabajos
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_trabajos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_trabajos()
 BEGIN
     SELECT idTipoTrabajo, nombreTrabajo
     FROM TiposTrabajos;
-END ;
-
+END $$
+DELIMITER ;
 
 -- Procedimiento para listar herramientas
 DROP PROCEDURE IF EXISTS `spu_listar_herramientas`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_herramientas()
 BEGIN
     SELECT idHerramienta, nombreHerramienta
     FROM Herramientas;
-END ;
-
+END $$
+DELIMITER ;
 
 -- Procedimiento para agregar un nuevo tipo de trabajo
 DROP PROCEDURE IF EXISTS `spu_agregar_tipo_trabajo`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_agregar_tipo_trabajo(
     IN _nombreTrabajo VARCHAR(100)
 )
@@ -122,12 +122,12 @@ BEGIN
         INSERT INTO TiposTrabajos (nombreTrabajo)
         VALUES (_nombreTrabajo);
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 -- Procedimiento para agregar una nueva herramienta
 DROP PROCEDURE IF EXISTS `spu_agregar_herramienta`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_agregar_herramienta(
     IN _nombreHerramienta VARCHAR(100)
 )
@@ -141,12 +141,12 @@ BEGIN
         INSERT INTO Herramientas (nombreHerramienta)
         VALUES (_nombreHerramienta);
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 -- sugerencias herrero
 DROP PROCEDURE IF EXISTS `spu_ListarTiposYHerramientas`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_ListarTiposYHerramientas()
 BEGIN
     -- Combinar TiposTrabajos y Herramientas en un solo resultado con IDs únicos
@@ -165,4 +165,6 @@ BEGIN
         Herramientas
     ORDER BY 
         nombre ASC; -- Ordena por nombre de forma ascendente
-END ;
+END $$
+DELIMITER ;
+

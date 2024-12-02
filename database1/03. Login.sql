@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_usuarios_login`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_usuarios_login`(IN _correo VARCHAR(100))
 BEGIN
     SELECT 
@@ -16,11 +16,11 @@ BEGIN
     WHERE 
         USU.correo = _correo
         AND USU.estado = 1; -- Filtro para solo usuarios activos
-END;
- 
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtener_acceso_usuario`;
- 
+DELIMITER //
 CREATE PROCEDURE spu_obtener_acceso_usuario(IN _idRol INT)
 BEGIN
     SELECT 
@@ -34,5 +34,5 @@ BEGIN
        INNER JOIN vistas VI ON VI.idvista = PE.idvista
        LEFT JOIN modulos MO ON MO.idmodulo = VI.idmodulo
        WHERE PE.idRol = _idRol;
-END;
- 
+END //
+DELIMITER ;

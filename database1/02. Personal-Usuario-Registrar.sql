@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_personal_registrar`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_personal_registrar
 (
     OUT _idPersonal       INT,
@@ -8,7 +8,6 @@ CREATE PROCEDURE spu_personal_registrar
     IN _direccion         VARCHAR(255),
     IN _tipodoc           VARCHAR(20),
     IN _nrodocumento      VARCHAR(50),
-    IN _numeroHijos       INT,
     IN _fechaIngreso      DATE,
     IN _tipoContrato	  ENUM('Parcial', 'Completo', 'Por Prácticas', 'Otro')
 )
@@ -21,8 +20,8 @@ BEGIN
         SET existe_error = 1;
     END;
     
-    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
-    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _numeroHijos, _fechaIngreso, _tipoContrato);
+    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, fechaIngreso, tipoContrato)
+    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _fechaIngreso, _tipoContrato);
     
     -- Verificar si ocurrió un error
     IF existe_error = 1 THEN
@@ -30,11 +29,11 @@ BEGIN
     ELSE
         SET _idPersonal = LAST_INSERT_ID();  -- Devuelve el ID del nuevo registro
     END IF;
-END;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_usuarios_registrar`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_usuarios_registrar
 (
     OUT _idUsuario      INT,
@@ -58,11 +57,11 @@ BEGIN
     ELSE
         SET _idUsuario = LAST_INSERT_ID(); 
     END IF;
-END;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_actualizar_contraseña`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_actualizar_contraseña(
     IN _correo VARCHAR(120),
     IN p_clave VARCHAR(120)
@@ -71,4 +70,5 @@ BEGIN
     UPDATE usuarios
     SET clave = p_clave
     WHERE correo = _correo;
-END;
+END $$
+DELIMITER ;

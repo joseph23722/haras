@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_equino_registrar`;
-
+DELIMITER $$
 CREATE PROCEDURE `spu_equino_registrar`(
     IN _nombreEquino VARCHAR(100),
     IN _fechaNacimiento DATE,
@@ -124,21 +124,21 @@ BEGIN
     SET _idEquino = LAST_INSERT_ID();
     -- Retornar el ID del equino registrado
     SELECT _idEquino AS idEquino;
-END; 
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_buscar_nacionalidad`;
-
+DELIMITER $$
 CREATE PROCEDURE `spu_buscar_nacionalidad`(IN _nacionalidad VARCHAR(255))
 BEGIN
     SELECT idNacionalidad, nacionalidad
     FROM nacionalidades
     WHERE nacionalidad LIKE CONCAT('%', _nacionalidad, '%');
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `registrarServicio`;
-
+DELIMITER $$
 CREATE PROCEDURE registrarServicio(
     IN p_idEquinoMacho INT,
     IN p_idEquinoHembra INT,
@@ -268,12 +268,12 @@ BEGIN
           WHERE fechaServicio = p_fechaServicio
       );
 
-END ;
-
+END $$
+DELIMITER ;
 
 -- registrar dosis aplicada
 DROP PROCEDURE IF EXISTS `spu_registrar_dosis_aplicada`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_registrar_dosis_aplicada(
     IN _idMedicamento INT, -- Medicamento utilizado
     IN _idEquino INT, -- Equino al que se aplica la dosis
@@ -343,14 +343,14 @@ BEGIN
 
     -- Confirmar la transacción
     COMMIT;
-END ;
-
+END $$
+DELIMITER ;
  
  
 
 -- Obtener Historial Dosis Aplicadas  -- crear vista 
 DROP PROCEDURE IF EXISTS `spu_ObtenerHistorialDosisAplicadas`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_ObtenerHistorialDosisAplicadas()
 BEGIN
     SELECT 
@@ -383,11 +383,11 @@ BEGIN
         Personal p ON usr.idPersonal = p.idPersonal                       -- Relación con personal
     ORDER BY 
         h.fechaAplicacion DESC, m.nombreMedicamento ASC;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_contar_equinos_por_categoria`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_contar_equinos_por_categoria()
 BEGIN
     -- Consulta directa para obtener el representante único y la cantidad de equinos por categoría
@@ -422,12 +422,12 @@ BEGIN
     ORDER BY 
         Categoria;
 
-END ;
-
+END $$
+DELIMITER ;
 
 -- editar version 2 - funcionando:
 DROP PROCEDURE IF EXISTS spu_equino_editar;
-
+DELIMITER $$
 CREATE PROCEDURE spu_equino_editar(
     IN _idEquino INT,
     IN _idPropietario INT,
@@ -455,4 +455,5 @@ BEGIN
         SET _errorMsg = 'Error: No se realizaron cambios en el registro.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
-END ;
+END $$
+DELIMITER ;

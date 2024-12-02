@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_registrar_implemento`;
-
+DELIMITER //
 CREATE PROCEDURE spu_registrar_implemento(
     IN p_idTipoinventario INT,
     IN p_nombreProducto VARCHAR(100),
@@ -44,11 +44,11 @@ BEGIN
             1, p_cantidad, p_cantidad, 1, v_precioTotal
         );
     END IF;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_movimiento_implemento`;
-
+DELIMITER //
 CREATE PROCEDURE spu_movimiento_implemento(
     IN p_idTipomovimiento INT,  -- ID del tipo de movimiento (1 para Entrada, 2 para Salida)
     IN p_idTipoinventario INT,  -- Tipo de inventario (Ejemplo: 1 para implementos de caballo)
@@ -135,11 +135,11 @@ BEGIN
         p_descripcion  -- La descripción puede ser NULL
     );
 
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_cambiar_estado_implemento`;
-
+DELIMITER //
 CREATE PROCEDURE spu_cambiar_estado_implemento(
     IN p_idInventario INT,
     IN p_nuevoEstado BIT
@@ -154,11 +154,11 @@ BEGIN
     IF ROW_COUNT() = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Implemento no encontrado.';
     END IF;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_implementos_por_tipo`;
-
+DELIMITER //
 CREATE PROCEDURE spu_listar_implementos_por_tipo(
     IN p_idTipoinventario INT
 )
@@ -168,11 +168,11 @@ BEGIN
     FROM Implementos
     WHERE idTipoinventario = p_idTipoinventario
     ORDER BY estado DESC;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_implementos_con_cantidad`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_implementos_con_cantidad(IN p_idTipoinventario INT)
 BEGIN
     -- Consulta para obtener la lista de implementos filtrados por idTipoinventario
@@ -186,19 +186,19 @@ BEGIN
         idTipoinventario = p_idTipoinventario
     ORDER BY 
         nombreProducto;  -- Ordena por nombre, puedes cambiar el orden si lo necesitas
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_tipo_movimiento`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_listar_tipo_movimiento`()
 BEGIN
     SELECT * FROM tipomovimientos;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_historial_movimiento`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_listar_historial_movimiento`(IN p_idTipoinventario INT, IN p_idTipomovimiento INT)
 BEGIN
     SELECT 
@@ -221,4 +221,5 @@ BEGIN
 	WHERE 
         h.idTipoinventario = p_idTipoinventario
 		AND h.idTipomovimiento = p_idTipomovimiento;
-END ;
+END //
+DELIMITER ;
