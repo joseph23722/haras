@@ -109,7 +109,7 @@ CREATE TABLE EstadoMonta (
 -- 8. Propietarios
 CREATE TABLE Propietarios (  
     idPropietario 		INT PRIMARY KEY AUTO_INCREMENT,  
-    nombreHaras 		VARCHAR(100) NOT NULL
+    nombreHaras 		VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
 -- 9. Nacionalidades

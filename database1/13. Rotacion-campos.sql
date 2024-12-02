@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_campos_listar`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_campos_listar`()
 BEGIN
     SELECT 
@@ -25,11 +25,11 @@ BEGIN
         C.idCampo, C.numeroCampo, C.tamanoCampo, TS.nombreTipoSuelo, C.estado
     ORDER BY 
         C.numeroCampo DESC;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_tiposuelo_listar`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_tiposuelo_listar`()
 BEGIN
     SELECT 
@@ -37,11 +37,11 @@ BEGIN
         C.nombreTipoSuelo
     FROM 
         tipoSuelo C;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtener_ultima_accion`;
-
+DELIMITER //
 CREATE PROCEDURE spu_obtener_ultima_accion(IN idCampo INT)
 BEGIN
     DECLARE nombreRotacion VARCHAR(100);
@@ -58,11 +58,11 @@ BEGIN
     ELSE
         SELECT nombreRotacion;
     END IF;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_tipos_rotaciones_listar`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_tipos_rotaciones_listar`()
 BEGIN
     SELECT 
@@ -73,11 +73,11 @@ BEGIN
         TipoRotaciones TR
     ORDER BY 
         TR.nombreRotacion;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_registrar_rotacion_campos`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_registrar_rotacion_campos`(
     IN p_idCampo INT,
     IN p_idTipoRotacion INT,
@@ -103,11 +103,11 @@ BEGIN
         INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
         VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_detalleRotacion);
     END IF;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_registrar_campo`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_registrar_campo`(
     IN p_numeroCampo INT,
     IN p_tamanoCampo DECIMAL(10,2),
@@ -127,11 +127,11 @@ BEGIN
         INSERT INTO Campos (numeroCampo, tamanoCampo, idTipoSuelo, estado)  -- Cambiado a idTipoSuelo
         VALUES (p_numeroCampo, p_tamanoCampo, p_idTipoSuelo, p_estado);
     END IF;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_rotaciones`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_listar_rotaciones`()
 BEGIN
     SELECT 
@@ -144,11 +144,11 @@ BEGIN
 		TipoRotaciones tr ON rc.idTipoRotacion = tr.idTipoRotacion
 	JOIN
         Campos c ON rc.idCampo = c.idCampo;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_eliminar_campo`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_eliminar_campo`(
     IN `p_idCampo` INT
 )
@@ -158,11 +158,11 @@ BEGIN
 
     -- Ahora eliminar el campo
     DELETE FROM campos WHERE idCampo = p_idCampo;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_editar_campo`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_editar_campo`(
     IN `p_idCampo` INT,
     IN `p_numeroCampo` INT,
@@ -188,11 +188,11 @@ BEGIN
             estado = p_estado
         WHERE idCampo = p_idCampo;
     END IF;
-END;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtener_campoID`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_obtener_campoID`(
     IN `p_idCampo` INT
 )
@@ -207,4 +207,5 @@ BEGIN
     FROM Campos c
     LEFT JOIN tipoSuelo ts ON c.idTipoSuelo = ts.idTipoSuelo
     WHERE c.idCampo = p_idCampo;
-END;
+END //
+DELIMITER ;

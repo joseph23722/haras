@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_externos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_externos()
 BEGIN
 	SELECT 
@@ -19,4 +19,5 @@ BEGIN
     LEFT JOIN Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
     LEFT JOIN Propietarios p ON e.idPropietario = p.idPropietario
     WHERE e.idPropietario IS NOT NULL;
-END;
+END$$
+DELIMITER ;

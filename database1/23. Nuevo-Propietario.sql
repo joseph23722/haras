@@ -1,4 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_registrar_propietario`;
+DELIMITER $$
 CREATE PROCEDURE spu_registrar_propietario(
     OUT _idPropietario INT,          -- Salida: id del propietario insertado
     IN _nombreHaras VARCHAR(100)     -- Entrada: nombre del propietario
@@ -35,7 +36,8 @@ BEGIN
         END IF;
     END IF;
 
-END ;
+END $$
+DELIMITER ;
 
 CALL spu_registrar_propietario(@id, 'Haras Hasmide');
 SELECT @id AS idPropietario;

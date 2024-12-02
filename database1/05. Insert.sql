@@ -1,3 +1,30 @@
+INSERT INTO TiposTrabajos (nombreTrabajo) VALUES
+('Herrado de caballo'),
+('Recorte de cascos'),
+('Mantenimiento de herraduras'),
+('Trabajo de desparacitación'),
+('Trabajo de curado'),
+('Afilado de herraduras'),
+('Instalación de herraduras'),
+('Reemplazo de herraduras'),
+('Trabajo en forja'),
+('Trabajo de laminado');
+
+
+INSERT INTO Herramientas (nombreHerramienta) VALUES
+('Martillo de herrero'),
+('Alicates para herraduras'),
+('Pinzas para cascos'),
+('Gubias para corte'),
+('Limón de herradura'),
+('Forja para calentar herraduras'),
+('Cincel'),
+('Ranura para cascos'),
+('Lima de herrero'),
+('Escuadra para herradura');
+
+
+
 -- Unidades de Medida
 INSERT INTO UnidadesMedidaAlimento (nombreUnidad) VALUES 
     ('kg'),        -- Kilogramos, ID 1

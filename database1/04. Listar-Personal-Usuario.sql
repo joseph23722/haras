@@ -1,4 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_usuarios_listar`;
+DELIMITER $$
 CREATE PROCEDURE spu_usuarios_listar()
 BEGIN
     SELECT 
@@ -16,9 +17,11 @@ BEGIN
         Personal PER ON USU.idPersonal = PER.idPersonal
     ORDER BY 
         USU.idUsuario DESC;
-END;
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_modificar_estado_user`;
+DELIMITER $$
 CREATE PROCEDURE spu_modificar_estado_user(IN p_idUsuario INT)
 BEGIN
 	IF EXISTS (SELECT 1 FROM Usuarios WHERE idUsuario = p_idUsuario) THEN
@@ -33,10 +36,11 @@ BEGIN
     ELSE
 		SELECT 'Usuario no encontrado' AS mensaje;
 	end if;
-END;
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_personal_listar`;
-
+DELIMITER $$
 CREATE PROCEDURE `spu_personal_listar`()
 BEGIN
     SELECT 
@@ -56,4 +60,5 @@ BEGIN
         Personal p
     LEFT JOIN 
         Usuarios u ON p.idPersonal = u.idPersonal;
-END; 
+END $$
+DELIMITER ;

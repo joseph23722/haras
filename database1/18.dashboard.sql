@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `ObtenerResumenStockMedicamentos`;
-
+DELIMITER //
 CREATE PROCEDURE ObtenerResumenStockMedicamentos()
 BEGIN
     SELECT 
@@ -11,11 +11,11 @@ BEGIN
         COUNT(CASE WHEN cantidad_stock > stockMinimo THEN 1 ELSE NULL END) AS en_stock_count
     FROM 
         Medicamentos;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `ObtenerResumenStockAlimentos`;
-
+DELIMITER //
 CREATE PROCEDURE ObtenerResumenStockAlimentos()
 BEGIN
     SELECT 
@@ -27,32 +27,32 @@ BEGIN
         COUNT(CASE WHEN stockActual > stockMinimo THEN 1 ELSE NULL END) AS en_stock_count
     FROM 
         Alimentos;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `ObtenerTotalEquinosRegistrados`;
-
+DELIMITER //
 CREATE PROCEDURE ObtenerTotalEquinosRegistrados()
 BEGIN
     SELECT COUNT(*) AS total_equinos 
     FROM Equinos 
     WHERE estado = 1
     AND idPropietario IS NULL;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `ObtenerServiciosSemanaActual`;
-
+DELIMITER //
 CREATE PROCEDURE ObtenerServiciosSemanaActual()
 BEGIN
     SELECT COUNT(*) AS total_servicios
     FROM Servicios
     WHERE WEEK(fechaServicio) = WEEK(CURDATE()) AND YEAR(fechaServicio) = YEAR(CURDATE());
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `ObtenerResumenServicios`;
-
+DELIMITER $$
 CREATE PROCEDURE ObtenerResumenServicios()
 BEGIN
     SELECT 
@@ -60,11 +60,11 @@ BEGIN
         SUM(CASE WHEN tipoServicio = 'Propio' THEN 1 ELSE 0 END) AS totalServiciosPropios,
         SUM(CASE WHEN tipoServicio = 'Mixto' THEN 1 ELSE 0 END) AS totalServiciosMixtos
     FROM Servicios;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `ObtenerServiciosRealizadosMensual`;
-
+DELIMITER $$
 CREATE PROCEDURE ObtenerServiciosRealizadosMensual(IN p_meta INT)
 BEGIN
     SELECT COUNT(*) AS totalServiciosRealizados,
@@ -72,13 +72,14 @@ BEGIN
     FROM Servicios
     WHERE MONTH(fechaServicio) = MONTH(CURDATE()) 
       AND YEAR(fechaServicio) = YEAR(CURDATE());
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_fotografia_dashboard`;
-
+DELIMITER //
 CREATE PROCEDURE spu_listar_fotografia_dashboard()
 BEGIN
     SELECT nombreEquino, fotografia FROM Equinos
     WHERE idPropietario IS NULL;
-END ;
+END //
+DELIMITER ;

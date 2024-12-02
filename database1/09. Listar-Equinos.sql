@@ -1,4 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
+DELIMITER //
 CREATE PROCEDURE `spu_equinos_listar`()
 BEGIN
     SELECT
@@ -33,4 +34,5 @@ BEGIN
     ORDER BY 
         E.estado DESC,
         E.idEquino DESC;
-END;
+END //
+DELIMITER ;

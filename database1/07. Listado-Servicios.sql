@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_listarServiciosPorTipo`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listarServiciosPorTipo(
     IN p_tipoServicio ENUM('Propio', 'Mixto', 'General')
 )
@@ -28,4 +28,5 @@ BEGIN
         )
     ORDER BY 
         s.fechaServicio DESC;
- END; 
+END $$
+DELIMITER ;

@@ -1,5 +1,6 @@
 -- reportes alimentos 
 DROP PROCEDURE IF EXISTS `spu_filtrarAlimentos`;
+DELIMITER $$
 CREATE PROCEDURE spu_filtrarAlimentos(
     IN _fechaCaducidadInicio DATE,
     IN _fechaCaducidadFin DATE,
@@ -41,10 +42,12 @@ BEGIN
         AND (_fechaRegistroInicio IS NULL OR L.fechaIngreso >= _fechaRegistroInicio)
         AND (_fechaRegistroFin IS NULL OR L.fechaIngreso <= _fechaRegistroFin);
 
-END ;
+END $$
+DELIMITER ;
 
 -- reporte herrero
 DROP PROCEDURE IF EXISTS `FiltrarHistorialHerreroPorTipoEquino`;
+DELIMITER $$
 CREATE PROCEDURE FiltrarHistorialHerreroPorTipoEquino(
     IN _tipoEquino VARCHAR(50)
 )
@@ -81,10 +84,12 @@ BEGIN
         TE.tipoEquino
     ORDER BY 
         HH.fecha DESC;
-END ;
+END $$
+DELIMITER ;
 
 -- reporte historial medico (veterinario)
 DROP PROCEDURE IF EXISTS `spu_filtrar_historial_medicoMedi`;
+DELIMITER $$
 CREATE PROCEDURE spu_filtrar_historial_medicoMedi(
     IN _nombreEquino VARCHAR(255),
     IN _nombreMedicamento VARCHAR(255),
@@ -138,9 +143,11 @@ BEGIN
 
     -- Reactivar el modo seguro
     SET SQL_SAFE_UPDATES = 1;
-END ;
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_medicamentos`;
+DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentos()
 BEGIN
     SELECT 
@@ -150,4 +157,9 @@ BEGIN
         Medicamentos
     ORDER BY 
         nombreMedicamento ASC;
-END ;
+END $$
+DELIMITER ;
+
+
+-- reprote medicamento 
+

@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_listar_medicamentosMedi`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentosMedi()
 BEGIN
     UPDATE Medicamentos 
@@ -14,7 +14,7 @@ BEGIN
     SET estado = 'Disponible'
     WHERE cantidad_stock > stockMinimo;
 
-    -- Mostrar la información detallada de todos los medicamentos registrados
+    -- Mostrar la información detallada de todos los medicamentos registrados que no estén vencidos
     SELECT 
         m.idMedicamento,
         m.nombreMedicamento,
@@ -41,13 +41,15 @@ BEGIN
         UnidadesMedida u ON c.idUnidad = u.idUnidad  -- Relación con UnidadesMedida para obtener la unidad
     JOIN
         LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
+    WHERE 
+        lm.fechaCaducidad >= CURDATE()  -- Filtrar medicamentos que no estén vencidos
     ORDER BY 
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_medicamentos_registrar`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_registrar(
     IN _nombreMedicamento VARCHAR(255),
     IN _descripcion TEXT, 
@@ -66,6 +68,8 @@ BEGIN
     DECLARE _idLoteMedicamento INT DEFAULT NULL;
     DECLARE _dosis DECIMAL(10,2);
     DECLARE _unidad VARCHAR(50);
+    DECLARE _loteVencido BOOLEAN DEFAULT FALSE;
+    DECLARE _medicamentosAgotados BOOLEAN DEFAULT FALSE;
 
     -- Separar dosis en cantidad y unidad
     SET _dosis = CAST(SUBSTRING_INDEX(_dosisCompleta, ' ', 1) AS DECIMAL(10,2));
@@ -88,9 +92,35 @@ BEGIN
     END IF;
 
     -- Verificar si el lote ya existe
-    SELECT idLoteMedicamento INTO _idLoteMedicamento 
+    SELECT idLoteMedicamento, fechaCaducidad INTO _idLoteMedicamento, _loteVencido
     FROM LotesMedicamento
     WHERE lote = _lote;
+
+    -- Verificar si el lote está vencido
+    IF _loteVencido < CURDATE() THEN
+        SET _loteVencido = TRUE;
+    ELSE
+        SET _loteVencido = FALSE;
+    END IF;
+
+    -- Verificar si los medicamentos asociados al lote están agotados
+    SELECT COUNT(*) INTO _medicamentosAgotados
+    FROM Medicamentos
+    WHERE idLoteMedicamento = _idLoteMedicamento
+      AND cantidad_stock > 0;
+
+    IF _medicamentosAgotados = 0 THEN
+        SET _medicamentosAgotados = TRUE;
+    ELSE
+        SET _medicamentosAgotados = FALSE;
+    END IF;
+
+    -- Actualizar la fecha de caducidad del lote existente si está vencido o los medicamentos asociados están agotados
+    IF _idLoteMedicamento IS NOT NULL AND (_loteVencido = TRUE OR _medicamentosAgotados = TRUE) THEN
+        UPDATE LotesMedicamento
+        SET fechaCaducidad = _fechaCaducidad
+        WHERE idLoteMedicamento = _idLoteMedicamento;
+    END IF;
 
     -- Crear el lote si no existe
     IF _idLoteMedicamento IS NULL THEN
@@ -130,11 +160,11 @@ BEGIN
         _idUsuario
     );
 
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_medicamentos_entrada`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_entrada(
     IN _idUsuario INT,                      -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255),     -- Nombre del medicamento
@@ -196,13 +226,11 @@ BEGIN
         SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
     END IF;
 
-END ;
-
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
-
-
+DELIMITER $$
 CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,                    -- Usuario que realiza la operación
     IN _nombreMedicamento VARCHAR(255),    -- Nombre del medicamento
@@ -258,12 +286,11 @@ BEGIN
 
     -- Confirmar transacción
     COMMIT;
-END;
-
-
+END$$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_agregar_nueva_combinacion_medicamento`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_agregar_nueva_combinacion_medicamento(
     IN _tipo VARCHAR(100),
     IN _presentacion VARCHAR(100),
@@ -330,11 +357,11 @@ BEGIN
         VALUES (_idTipo, _idPresentacion, _idUnidad, _dosis);
         SET mensaje = 'Combinación agregada exitosamente.';
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_validar_registrar_combinacion`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_validar_registrar_combinacion(
     IN _idTipo INT,
     IN _idPresentacion INT,
@@ -389,12 +416,12 @@ BEGIN
         COMMIT;
         SELECT 'Nueva combinación registrada.' AS mensaje, _idCombinacion AS idCombinacion;
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 -- sugerencias
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_presentaciones_dosis`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_presentaciones_dosis()
 BEGIN
     -- Selecciona los tipos de medicamentos junto con la presentación y la dosis (cantidad y unidad), agrupados
@@ -415,22 +442,22 @@ BEGIN
         c.idCombinacion, t.tipo  -- Asegúrate de agrupar por idCombinacion para evitar resultados ambiguos
     ORDER BY 
         t.tipo ASC;  -- Ordena por tipo de medicamento
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_unicos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_tipos_unicos()
 BEGIN
     SELECT DISTINCT t.idTipo, t.tipo
     FROM TiposMedicamentos t
     JOIN CombinacionesMedicamentos c ON t.idTipo = c.idTipo
     ORDER BY t.tipo ASC;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_presentaciones_por_tipo`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_presentaciones_por_tipo(IN _idTipo INT)
 BEGIN
     SELECT DISTINCT p.idPresentacion, p.presentacion
@@ -438,11 +465,11 @@ BEGIN
     JOIN PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
     WHERE c.idTipo = _idTipo
     ORDER BY p.presentacion ASC;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_medicamentos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_notificar_stock_bajo_medicamentos()
 BEGIN
     -- Seleccionamos directamente las columnas necesarias, incluyendo un mensaje personalizado
@@ -464,12 +491,12 @@ BEGIN
     ORDER BY 
         m.cantidad_stock ASC
     LIMIT 10; -- Limitar a las primeras 10 notificaciones
-END ;
-
+END $$
+DELIMITER ;
 
 -- historial 
 DROP PROCEDURE IF EXISTS `spu_historial_completo_medicamentos`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_historial_completo_medicamentos(
     IN tipoMovimiento VARCHAR(50),
     IN filtroFecha VARCHAR(20),  -- Nuevo parámetro para el filtro de fecha
@@ -582,11 +609,11 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
     END IF;
-END ;
-
+END $$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos_por_nombre`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_lotes_medicamentos_por_nombre(IN nombreMedicamento VARCHAR(255))
 BEGIN
     -- Seleccionar solo los lotes de medicamentos asociados al nombre especificado
@@ -598,8 +625,8 @@ BEGIN
         LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
     WHERE 
         m.nombreMedicamento = nombreMedicamento; -- Filtrar por el nombre del medicamento
-END ;
-
+END $$
+DELIMITER ;
 
 INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antibiótico'),

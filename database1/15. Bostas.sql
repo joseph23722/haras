@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_registrar_bosta`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_registrar_bosta`(
     IN p_fecha DATE,
     IN p_cantidadsacos INT,
@@ -57,11 +57,11 @@ BEGIN
             );
         END IF;
     END IF;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_obtener_pesos`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_obtener_pesos`()
 BEGIN
     DECLARE v_peso_semanal DECIMAL(9,2);
@@ -85,11 +85,11 @@ BEGIN
     -- Devolver resultados sin el peso diario
     SELECT v_peso_semanal AS peso_semanal,
            v_peso_mensual AS peso_mensual;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_bostas`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_listar_bostas`()
 BEGIN
     SELECT 
@@ -115,11 +115,11 @@ BEGIN
     ORDER BY 
         b.numero_semana DESC,
         b.fecha ASC;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_eliminar_bosta`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_eliminar_bosta`(
     IN p_idbosta INT
 )
@@ -132,11 +132,11 @@ BEGIN
     IF ROW_COUNT() = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se encontró un registro con el ID proporcionado.';
     END IF;
-END ;
-
+END //
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_editar_bosta`;
-
+DELIMITER //
 CREATE PROCEDURE `spu_editar_bosta`(
     IN p_idbosta INT,
     IN p_fecha DATE,
@@ -163,4 +163,5 @@ BEGIN
             numero_semana = WEEK(p_fecha, 1) -- Actualiza el número de semana
         WHERE idbosta = p_idbosta;
     END IF;
-END ;
+END //
+DELIMITER ;

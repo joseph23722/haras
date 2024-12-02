@@ -1,5 +1,5 @@
 DROP PROCEDURE IF EXISTS `spu_registrar_revision_equino`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_registrar_revision_equino (
     IN p_idEquino INT,
     IN p_idPropietario INT,
@@ -65,11 +65,11 @@ BEGIN
 
     -- Mensaje de confirmación
     SELECT 'Revisión registrada correctamente' AS mensaje;
-END;
-
+END$$
+DELIMITER ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_para_revision`;
-
+DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_para_revision(
     IN p_idPropietario INT
 )
@@ -98,4 +98,5 @@ BEGIN
             AND idPropietario IS NULL
             AND estado = 1;
     END IF;
-END ;
+END $$
+DELIMITER ;
