@@ -87,4 +87,88 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL FiltrarHistorialHerreroPorTipoEquino('Padrillo');
+
+
+
+-- reporte historial medico (veterinario)
+DROP PROCEDURE IF EXISTS `spu_filtrar_historial_medicoMedi`;
+DELIMITER $$
+CREATE PROCEDURE spu_filtrar_historial_medicoMedi(
+    IN _nombreEquino VARCHAR(255),
+    IN _nombreMedicamento VARCHAR(255),
+    IN _estadoTratamiento VARCHAR(50)
+)
+BEGIN
+    -- Desactivar el modo seguro temporalmente
+    SET SQL_SAFE_UPDATES = 0;
+
+    -- Actualizar el estado de los tratamientos en la tabla DetalleMedicamentos
+    -- Cambiar a 'Finalizado' los tratamientos cuya fecha de fin ha pasado y que están en estado 'Activo'
+    UPDATE DetalleMedicamentos
+    SET estadoTratamiento = 'Finalizado'
+    WHERE fechaFin < CURDATE() AND estadoTratamiento = 'Activo';
+
+    -- Seleccionar la información detallada de los registros de historial médico con filtros aplicados
+    SELECT 
+        DM.idDetalleMed AS idRegistro,
+        DM.idEquino,
+        E.nombreEquino,
+        DM.idMedicamento,
+        M.nombreMedicamento,
+        DM.dosis,
+        DM.frecuenciaAdministracion,
+        VA.nombreVia AS viaAdministracion,  -- Obtener solo el nombre de la vía desde la tabla ViasAdministracion
+        E.pesokg,
+        DM.fechaInicio,
+        DM.fechaFin,
+        DM.observaciones,
+        DM.reaccionesAdversas,
+        DM.idUsuario AS responsable,
+        DM.tipoTratamiento,
+        DM.estadoTratamiento,       -- Incluir el estado del tratamiento
+        DM.fechaInicio AS fechaRegistro
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    INNER JOIN 
+        Usuarios U ON DM.idUsuario = U.idUsuario
+    LEFT JOIN 
+        ViasAdministracion VA ON DM.idViaAdministracion = VA.idViaAdministracion  -- Vincular con la tabla ViasAdministracion
+    WHERE 
+        (E.nombreEquino LIKE CONCAT('%', _nombreEquino, '%') OR _nombreEquino IS NULL OR _nombreEquino = '')
+        AND (M.nombreMedicamento LIKE CONCAT('%', _nombreMedicamento, '%') OR _nombreMedicamento IS NULL OR _nombreMedicamento = '')
+        AND (DM.estadoTratamiento = _estadoTratamiento OR _estadoTratamiento IS NULL OR _estadoTratamiento = '')
+    ORDER BY 
+        DM.fechaInicio DESC;
+
+    -- Reactivar el modo seguro
+    SET SQL_SAFE_UPDATES = 1;
+END $$
+DELIMITER ;
+
+
+
+
+
+
+
+CALL spu_filtrar_historial_medicoMedi('LOCO', NULL, NULL);
+
+DROP PROCEDURE IF EXISTS `spu_listar_medicamentos`;
+DELIMITER $$
+CREATE PROCEDURE spu_listar_medicamentos()
+BEGIN
+    SELECT 
+        idMedicamento,
+        nombreMedicamento
+    FROM 
+        Medicamentos
+    ORDER BY 
+        nombreMedicamento ASC;
+END $$
+DELIMITER ;
+
+CALL spu_listar_medicamentos();
