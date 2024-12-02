@@ -141,7 +141,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_propiosMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_equinos_propiosMedi()
