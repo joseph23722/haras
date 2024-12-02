@@ -159,3 +159,6 @@ BEGIN
         nombreMedicamento ASC;
 END $$
 DELIMITER ;
+
+
+-- reprote medicamento 
