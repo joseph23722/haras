@@ -23,8 +23,18 @@ try {
         array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
     );
 
-    // Llamar al procedimiento sin parámetros
-    $stmt = $pdo->prepare("CALL ConsultarHistorialEquino()");
+    // Obtener el tipo de equino del parámetro de entrada (si existe)
+    $tipoEquino = isset($_GET['tipoEquino']) ? $_GET['tipoEquino'] : null;
+
+    if ($tipoEquino) {
+        // Llamar al procedimiento almacenado de filtrado
+        $stmt = $pdo->prepare("CALL FiltrarHistorialHerreroPorTipoEquino(:tipoEquino)");
+        $stmt->bindParam(':tipoEquino', $tipoEquino, PDO::PARAM_STR);
+    } else {
+        // Llamar al procedimiento almacenado general
+        $stmt = $pdo->prepare("CALL ConsultarHistorialEquino()");
+    }
+
     $stmt->execute();
 
     // Obtener los datos
@@ -59,4 +69,3 @@ try {
     // Manejar otros errores
     echo json_encode(array("error" => "Error: " . $e->getMessage()));
 }
-

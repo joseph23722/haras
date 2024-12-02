@@ -35,8 +35,9 @@ function generarPDF() {
             return;
         }
 
-        // Obtener los datos de la tabla
-        const tableData = $('#historialHerreroTable').DataTable().rows().data().toArray().map(item => [
+        // Obtener los datos de la tabla, incluyendo los filtros aplicados
+        const table = $('#historialHerreroTable').DataTable();
+        const tableData = table.rows({ search: 'applied' }).data().toArray().map(item => [
             item.nombreEquino,
             item.tipoEquino,
             item.fecha,
@@ -262,13 +263,16 @@ function imprimirDocumento() {
 
 
 // Configuración del DataTable
-const configurarDataTableHerrero = (idEquino = null) => {
+const configurarDataTableHerrero = (tipoEquino = null) => {
     const fechaActual = new Date().toLocaleString();
 
-    const table = $('#historialHerreroTable').DataTable({
+    return {
         ajax: {
             url: '/haras/table-ssp/historial_herrero.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
             type: 'GET',
+            data: function(d) {
+                d.tipoEquino = tipoEquino; // Añadir el filtro de tipo de equino
+            },
             dataSrc: 'data',
             error: function (xhr, status, error) {
                 console.error("Error al cargar datos de la tabla:", error);
@@ -318,22 +322,28 @@ const configurarDataTableHerrero = (idEquino = null) => {
                 }
             }
         ]
-    });
+    };
 };
 
 // Función para cargar el DataTable de historial de herrero
-const loadHistorialHerreroTable = () => {
+const loadHistorialHerreroTable = (tipoEquino = null) => {
     // Si la tabla ya está inicializada, destrúyela
     if ($.fn.DataTable.isDataTable('#historialHerreroTable')) {
         $('#historialHerreroTable').DataTable().clear().destroy();  // Destruir y limpiar la tabla antes de reinicializarla
     }
 
     // Inicializa la tabla con la nueva configuración
-    $('#historialHerreroTable').DataTable(configurarDataTableHerrero());  // Llamamos la función sin pasar idEquino
+    $('#historialHerreroTable').DataTable(configurarDataTableHerrero(tipoEquino));  // Llamamos la función con el filtro de tipo de equino
 };
 
 // Inicializar la tabla al cargar la página
 $(document).ready(function () {
     loadHistorialHerreroTable();  // Llamamos la función sin idEquino para obtener todos los registros
+
+    // Recargar la tabla cuando se hace clic en el botón de filtro
+    $('#filtrarButton').on('click', function() {
+        const tipoEquino = $('#tipoEquinoSelect').val();
+        loadHistorialHerreroTable(tipoEquino);  // Llamamos la función con el filtro de tipo de equino
+    });
 });
 

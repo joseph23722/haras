@@ -4,6 +4,23 @@
     <!-- Título principal -->
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Historial de Herrero</h1>
 
+    <!-- Filtro por tipo de equino -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <label for="tipoEquinoSelect" class="form-label">Filtrar por Tipo de Equino:</label>
+            <select id="tipoEquinoSelect" class="form-select">
+                <option value="">Todos</option>
+                <option value="Padrillo">Padrillo</option>
+                <option value="Yegua">Yegua</option>
+                <option value="Potrillo">Potrillo</option>
+                <option value="Potranca">Potranca</option>
+            </select>
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button id="filtrarButton" class="btn btn-primary">Buscar</button>
+        </div>
+    </div>
+
     <!-- Tabla para DataTable -->
     <div class="card mt-4">
         <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
