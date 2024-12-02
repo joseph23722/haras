@@ -155,7 +155,7 @@ DELIMITER ;
 
 
 
-CALL spu_filtrar_historial_medicoMedi('LOCO', NULL, NULL);
+
 
 DROP PROCEDURE IF EXISTS `spu_listar_medicamentos`;
 DELIMITER $$
