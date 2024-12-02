@@ -149,7 +149,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_medicamentos`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentos()
