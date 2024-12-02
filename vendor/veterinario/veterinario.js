@@ -88,7 +88,7 @@ function generarPDF() {
                     margin: [0, 0, 0, 20]
                 },
                 {
-                    text: 'Lista de Medicamentos:', // Título para la tabla
+                    text: 'Lista de Historial Medico de Equinos:', // Título para la tabla
                     style: 'subheader',
                     margin: [0, 10, 0, 10]
                 },
@@ -228,7 +228,7 @@ function generarCSV() {
     // Crear un enlace temporal para descargar el CSV
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'Reporte_Medicamentos.csv';
+    link.download = 'Reporte_historial_Medico.csv';
     link.click();
 }
 
@@ -260,27 +260,33 @@ function imprimirDocumento() {
         printWindow.document.write(`<div style="font-size: 14px; font-style: italic; margin-bottom: 20px;">${direccionEmpresa}</div>`);
         printWindow.document.write(`<div style="font-size: 14px; font-style: italic; margin-bottom: 20px;">Módulo: ${modulo}</div>`);
         printWindow.document.write(`<div style="font-size: 14px; font-style: italic; margin-bottom: 20px;">Fecha de creación: ${new Date().toLocaleString()}</div>`);
-        printWindow.document.write('<div style="font-size: 14px; font-style: italic; margin-bottom: 10px;">Lista de Alimentos:</div>');
+        printWindow.document.write('<div style="font-size: 14px; font-style: italic; margin-bottom: 10px;">Lista de Historial Medico de Equinos:</div>');
         printWindow.document.write('</div>');
 
         // Crear la tabla con los datos
         printWindow.document.write('<table>');
         printWindow.document.write('<thead><tr><th>Equino</th><th>Peso (kg)</th><th>Tipo</th><th>Estado</th><th>Medicamento</th><th>Dosis</th><th>Frecuencia</th><th>Vía</th><th>Registro</th><th>Fin</th></tr></thead>');
         printWindow.document.write('<tbody>');
-        $('#tabla-medicamento').DataTable().rows().data().toArray().forEach(item => {
-            printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${item.nombreEquino}</td>`);
-            printWindow.document.write(`<td>${item.pesokg}</td>`);
-            printWindow.document.write(`<td>${item.tipoTratamiento}</td>`);
-            printWindow.document.write(`<td>${item.estadoTratamiento}</td>`);
-            printWindow.document.write(`<td>${item.nombreMedicamento}</td>`);
-            printWindow.document.write(`<td>${item.dosis}</td>`);
-            printWindow.document.write(`<td>${item.frecuenciaAdministracion}</td>`);
-            printWindow.document.write(`<td>${item.viaAdministracion}</td>`);
-            printWindow.document.write(`<td>${item.fechaInicio}</td>`);
-            printWindow.document.write(`<td>${item.fechaFin}</td>`);
-            printWindow.document.write('</tr>');
-        });
+        
+        const tableData = $('#historialTable').DataTable().rows({ search: 'applied' }).data().toArray();
+        if (tableData.length === 0) {
+            printWindow.document.write('<tr><td colspan="10" style="text-align: center;">No hay datos disponibles</td></tr>');
+        } else {
+            tableData.forEach(item => {
+                printWindow.document.write('<tr>');
+                printWindow.document.write(`<td>${item.nombreEquino}</td>`);
+                printWindow.document.write(`<td>${item.pesokg}</td>`);
+                printWindow.document.write(`<td>${item.tipoTratamiento}</td>`);
+                printWindow.document.write(`<td>${item.estadoTratamiento}</td>`);
+                printWindow.document.write(`<td>${item.nombreMedicamento}</td>`);
+                printWindow.document.write(`<td>${item.dosis}</td>`);
+                printWindow.document.write(`<td>${item.frecuenciaAdministracion}</td>`);
+                printWindow.document.write(`<td>${item.viaAdministracion}</td>`);
+                printWindow.document.write(`<td>${item.fechaInicio}</td>`);
+                printWindow.document.write(`<td>${item.fechaFin}</td>`);
+                printWindow.document.write('</tr>');
+            });
+        }
         printWindow.document.write('</tbody></table>');
 
         printWindow.document.write('</body></html>');
@@ -293,6 +299,8 @@ function imprimirDocumento() {
         };
     });
 }
+
+
 
 // Función genérica para enviar la solicitud al servidor
 const sendRequest = async (idRegistro, accion) => {
@@ -336,115 +344,155 @@ window.pausarRegistro = pausarRegistro;
 window.continuarRegistro = continuarRegistro;
 window.eliminarRegistro = eliminarRegistro;
 
-// Función para configurar el DataTable
-const configurarDataTableHistorial = () => {
-    return {
-        ajax: {
-            url: '/haras/table-ssp/historial-veterinario.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
-            type: 'GET',
-            dataSrc: 'data',
-            error: function (xhr, status, error) {
-                console.error("Error al cargar datos de la tabla:", error);
-            }
-        },
-        processing: true,
-        serverSide: true,
-        pageLength: 10,
-        paging: true,
-        pagingType: "full_numbers",
-        responsive: true, // Activa la responsividad en el DataTable
-        autoWidth: false, // Desactiva el ancho automático
-        language: {
-            url: '/haras/data/es_es.json'
-        },
-        dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
-        columns: [
-            { data: 'nombreEquino', title: 'Equino' },
-            { data: 'pesokg', title: 'Peso (kg)' },
-            { data: 'tipoTratamiento', title: 'Tipo' },
-            { data: 'estadoTratamiento', title: 'Estado' },
-            { data: 'nombreMedicamento', title: 'Medicamento' },
-            { data: 'dosis', title: 'Dosis' },
-            { data: 'frecuenciaAdministracion', title: 'Frecuencia' },
-            { data: 'viaAdministracion', title: 'Vía' },
-            { data: 'fechaInicio', title: 'Registro' },
-            { data: 'fechaFin', title: 'Fin' },
-            {
-                data: 'observaciones',
-                title: 'Observaciones',
-                render: function (data) {
-                    return data ? data : 'Ninguna';
-                }
-            },
-            {
-                data: 'reaccionesAdversas',
-                title: 'Reacciones',
-                render: function (data) {
-                    return data ? data : 'Ninguna';
-                }
-            },
-            {
-                data: null,
-                title: 'Acciones',
-                orderable: false,
-                searchable: false,
-                render: function (data, type, row) {
-                    return `
-                        <div class="btn-group" role="group" aria-label="Acciones">
-                            <button class="btn btn-sm btn-warning" onclick="pausarRegistro(${row.idRegistro})" title="Pausar">
-                                <i class="fas fa-pause-circle"></i>
-                            </button>
-                            <button class="btn btn-sm btn-success" onclick="continuarRegistro(${row.idRegistro})" title="Continuar">
-                                <i class="fas fa-play-circle"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${row.idRegistro})" title="Eliminar">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-            }
-        ],
-        buttons: [
 
-            {
-                extend: 'pdfHtml5',
-                text: '<i class="fas fa-file-pdf"></i> Generar PDF',
-                className: 'btn btn-danger',
-                action: function () {
-                    generarPDF(); // Llamar a la función para generar el PDF en orientación horizontal
-                }
-            },
-            {
-                extend: 'csvHtml5',
-                text: '<i class="fas fa-file-csv"></i> Generar CSV',
-                className: 'btn btn-success',
-                action: function () {
-                    generarCSV(); // Llamar a la función para generar el CSV
-                }
-            },
-            {
-                text: '<i class="fas fa-print"></i> Imprimir',
-                className: 'btn btn-primary',
-                action: function () {
-                    imprimirDocumento(); // Llamar a la función para imprimir
-                }
+$(document).ready(function() {
+    // Cargar opciones de medicamentos dinámicamente evitando duplicados
+    $.ajax({
+        url: '/haras/table-ssp/historial-veterinario.ssp.php?listarMedicamentos=true',
+        method: 'GET',
+        success: function(response) {
+            console.log("Respuesta del servidor (medicamentos):", response); // Agregar este log para ver la respuesta del servidor
+            try {
+                const medicamentos = response.data;
+                const uniqueMedicamentos = [...new Set(medicamentos.map(medicamento => medicamento.nombreMedicamento))];
+                uniqueMedicamentos.forEach(medicamento => {
+                    $('#medicamentoSelect').append(new Option(medicamento, medicamento));
+                });
+            } catch (e) {
+                console.error("Error al procesar los datos:", e);
             }
-        ]
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al cargar medicamentos:", error);
+        }
+    });
+
+    // Configuración del DataTable
+    const configurarDataTableHistorial = (nombreEquino = null, nombreMedicamento = null, estadoTratamiento = null) => {
+        return {
+            ajax: {
+                url: '/haras/table-ssp/historial-veterinario.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
+                type: 'GET',
+                data: function(d) {
+                    d.nombreEquino = nombreEquino;
+                    d.nombreMedicamento = nombreMedicamento;
+                    d.estadoTratamiento = estadoTratamiento;
+                    console.log("Datos enviados al servidor:", d); // Agregar este log para ver los datos enviados al servidor
+                },
+                dataSrc: function(json) {
+                    console.log("Respuesta del servidor (historial):", json); // Agregar este log para ver la respuesta del servidor
+                    return json.data;
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar datos de la tabla:", error);
+                }
+            },
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            paging: true,
+            pagingType: "full_numbers",
+            responsive: true, // Activa la responsividad en el DataTable
+            autoWidth: false, // Desactiva el ancho automático
+            language: {
+                url: '/haras/data/es_es.json'
+            },
+            dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
+            columns: [
+                { data: 'nombreEquino', title: 'Equino' },
+                { data: 'pesokg', title: 'Peso (kg)' },
+                { data: 'tipoTratamiento', title: 'Tipo' },
+                { data: 'estadoTratamiento', title: 'Estado' },
+                { data: 'nombreMedicamento', title: 'Medicamento' },
+                { data: 'dosis', title: 'Dosis' },
+                { data: 'frecuenciaAdministracion', title: 'Frecuencia' },
+                { data: 'viaAdministracion', title: 'Vía' },
+                { data: 'fechaInicio', title: 'Registro' },
+                { data: 'fechaFin', title: 'Fin' },
+                {
+                    data: 'observaciones',
+                    title: 'Observaciones',
+                    render: function (data) {
+                        return data ? data : 'Ninguna';
+                    }
+                },
+                {
+                    data: 'reaccionesAdversas',
+                    title: 'Reacciones',
+                    render: function (data) {
+                        return data ? data : 'Ninguna';
+                    }
+                },
+                {
+                    data: null,
+                    title: 'Acciones',
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `
+                            <div class="btn-group" role="group" aria-label="Acciones">
+                                <button class="btn btn-sm btn-warning" onclick="pausarRegistro(${row.idRegistro})" title="Pausar">
+                                    <i class="fas fa-pause-circle"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="continuarRegistro(${row.idRegistro})" title="Continuar">
+                                    <i class="fas fa-play-circle"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarRegistro(${row.idRegistro})" title="Eliminar">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            ],
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="fas fa-file-pdf"></i> Generar PDF',
+                    className: 'btn btn-danger',
+                    action: function () {
+                        generarPDF(); // Llamar a la función para generar el PDF en orientación horizontal
+                    }
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: '<i class="fas fa-file-csv"></i> Generar CSV',
+                    className: 'btn btn-success',
+                    action: function () {
+                        generarCSV(); // Llamar a la función para generar el CSV
+                    }
+                },
+                {
+                    text: '<i class="fas fa-print"></i> Imprimir',
+                    className: 'btn btn-primary',
+                    action: function () {
+                        imprimirDocumento(); // Llamar a la función para imprimir
+                    }
+                }
+            ]
+        };
     };
-};
 
-// Función para cargar la tabla de historial
-const loadHistorialTable = async () => {
-    if (!$.fn.DataTable.isDataTable('#historialTable')) {
-        // Si el DataTable no está inicializado, crea uno con la configuración
-        $('#historialTable').DataTable(configurarDataTableHistorial());
-    } else {
-        // Si ya está inicializado, simplemente recarga los datos
-        $('#historialTable').DataTable().ajax.reload();
-    }
-};
+    // Función para cargar el DataTable de historial médico
+    const loadHistorialTable = (nombreEquino = null, nombreMedicamento = null, estadoTratamiento = null) => {
+        // Si la tabla ya está inicializada, destrúyela
+        if ($.fn.DataTable.isDataTable('#historialTable')) {
+            $('#historialTable').DataTable().clear().destroy();  // Destruir y limpiar la tabla antes de reinicializarla
+        }
 
-$(document).ready(function () {
-    loadHistorialTable();
+        // Inicializa la tabla con la nueva configuración
+        $('#historialTable').DataTable(configurarDataTableHistorial(nombreEquino, nombreMedicamento, estadoTratamiento));  // Llamamos la función con los filtros
+    };
+
+    // Inicializar la tabla al cargar la página
+    loadHistorialTable();  // Llamamos la función sin filtros para obtener todos los registros
+
+    // Recargar la tabla cuando se hace clic en el botón de filtro
+    $('#filtrarButton').on('click', function() {
+        const nombreEquino = $('#nombreEquinoInput').val();
+        const nombreMedicamento = $('#medicamentoSelect').val();
+        const estadoTratamiento = $('#estadoSelect').val();
+        console.log("Filtros aplicados:", { nombreEquino, nombreMedicamento, estadoTratamiento }); // Agregar este log para ver los filtros aplicados
+        loadHistorialTable(nombreEquino, nombreMedicamento, estadoTratamiento);  // Llamamos la función con los filtros
+    });
 });

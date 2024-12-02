@@ -13,6 +13,33 @@
         </div>
     </div>
 
+    <!-- Filtros -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <label for="nombreEquinoInput" class="form-label">Nombre del Equino:</label>
+            <input type="text" id="nombreEquinoInput" class="form-control" placeholder="Escriba el nombre del equino">
+        </div>
+        <div class="col-md-4">
+            <label for="medicamentoSelect" class="form-label">Medicamento:</label>
+            <select id="medicamentoSelect" class="form-select">
+                <option value="">Todos</option>
+                <!-- Opciones de medicamentos se cargarán dinámicamente -->
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="estadoSelect" class="form-label">Estado:</label>
+            <select id="estadoSelect" class="form-select">
+                <option value="">Todos</option>
+                <option value="Activo">Activo</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="En pausa">En pausa</option>
+            </select>
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button id="filtrarButton" class="btn btn-primary">Buscar</button>
+        </div>
+    </div>
+
     <!-- Tabla para DataTable de Historiales Médicos -->
     <div class="card mt-4">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">

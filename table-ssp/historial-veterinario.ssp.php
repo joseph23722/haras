@@ -50,6 +50,20 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
     }
 }
 
-// Llamar al procedimiento para obtener el historial médico
-ejecutarProcedimientoDataTables('spu_consultar_historial_medicoMedi', $sql_details);
+// Obtener los parámetros de filtro de la solicitud
+$nombreEquino = isset($_GET['nombreEquino']) ? $_GET['nombreEquino'] : null;
+$nombreMedicamento = isset($_GET['nombreMedicamento']) ? $_GET['nombreMedicamento'] : null;
+$estadoTratamiento = isset($_GET['estadoTratamiento']) ? $_GET['estadoTratamiento'] : null;
+$listarMedicamentos = isset($_GET['listarMedicamentos']) ? $_GET['listarMedicamentos'] : null;
 
+// Determinar qué procedimiento llamar
+if ($listarMedicamentos) {
+    // Llamar al procedimiento para listar medicamentos
+    ejecutarProcedimientoDataTables('spu_listar_medicamentos', $sql_details);
+} elseif ($nombreEquino || $nombreMedicamento || $estadoTratamiento) {
+    // Llamar al procedimiento de filtrado
+    ejecutarProcedimientoDataTables('spu_filtrar_historial_medicoMedi', $sql_details, [$nombreEquino, $nombreMedicamento, $estadoTratamiento]);
+} else {
+    // Llamar al procedimiento general
+    ejecutarProcedimientoDataTables('spu_consultar_historial_medicoMedi', $sql_details);
+}
