@@ -167,3 +167,4 @@ BEGIN
         nombre ASC; -- Ordena por nombre de forma ascendente
 END $$
 DELIMITER ;
+
