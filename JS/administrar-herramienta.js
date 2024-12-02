@@ -196,7 +196,8 @@ document.getElementById('form-historial-herrero').addEventListener('submit', fun
     registrarHistorialHerrero();
 });
 
-function registrarHistorialHerrero() {
+//registrarHistorialHerrero
+async function registrarHistorialHerrero() {
     const formData = new FormData(document.getElementById('form-historial-herrero'));
     formData.append('operation', 'insertarHistorialHerrero');
 
@@ -206,31 +207,32 @@ function registrarHistorialHerrero() {
         datos[key] = value;
     });
 
-
-    fetch('/haras/controllers/herrero.controller.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(datos)
-    })
-        .then(response => response.text()) // Captura como texto para depurar
-        .then(text => {
-            try {
-                const data = JSON.parse(text); // Intenta parsear a JSON
-                if (data.status === 'success') {
-                    Swal.fire('Registrado', data.message, 'success');
-                    document.getElementById('form-historial-herrero').reset();
-                    loadHistorialHerreroTable();
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            } catch (e) {
-                console.error("Error al parsear JSON:", e);
-                console.log("Contenido recibido:", text);
-            }
+    if (await ask("¿Desea registrar este historial?")) {
+        fetch('/haras/controllers/herrero.controller.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datos)
         })
-        .catch(error => console.error('Error al registrar historial:', error));
+            .then(response => response.text()) // Captura como texto para depurar
+            .then(text => {
+                try {
+                    const data = JSON.parse(text); // Intenta parsear a JSON
+                    if (data.status === 'success') {
+                        showToast('Registrado: ' + data.message, 'SUCCESS');
+                        document.getElementById('form-historial-herrero').reset();
+                        loadHistorialHerreroTable();
+                    } else {
+                        showToast('Error: ' + data.message, 'ERROR');
+                    }
+                } catch (e) {
+                    console.error("Error al parsear JSON:", e);
+                    console.log("Contenido recibido:", text);
+                }
+            })
+            .catch(error => console.error('Error al registrar historial:', error));
+    }
 }
 
 // Guardar nuevo Trabajo o Herramienta

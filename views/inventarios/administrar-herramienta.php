@@ -235,8 +235,11 @@
     </div>
 </div>
 
-<?php require_once '../footer.php'; ?><!-- JS de jQuery -->
+<?php require_once '../footer.php'; ?>
+
+<!-- JS de jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- JS de DataTables -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="../../JS/administrar-herramienta.js"></script>
+<script src="/haras/vendor/herrero/herrero.js" defer></script>
