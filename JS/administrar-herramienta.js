@@ -228,7 +228,7 @@ async function registrarHistorialHerrero() {
                     }
                 } catch (e) {
                     console.error("Error al parsear JSON:", e);
-                    console.log("Contenido recibido:", text);
+
                 }
             })
             .catch(error => console.error('Error al registrar historial:', error));
@@ -299,10 +299,8 @@ const guardarTrabajoHerramienta = async () => {
 
 // Evento para el botón de sugerencias
 document.getElementById("btnTiposYHerramientas").addEventListener("click", function () {
-    console.log("Clic en el botón para abrir la tabla de Tipos y Herramientas.");
 
     if (!$.fn.DataTable.isDataTable('#tablaHerrero')) {
-        console.log("Inicializando DataTables...");
 
         $('#tablaHerrero').DataTable({
             processing: true,
@@ -311,24 +309,16 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
                 url: '/haras/table-ssp/herrero_datatable.php',
                 type: 'GET',
                 beforeSend: function () {
-                    console.log("Enviando solicitud AJAX...");
                 },
                 dataSrc: function (json) {
-                    console.log("Respuesta JSON del servidor:", json);
 
                     if (!json || json.error) {
-                        console.error("Error en la respuesta del servidor:", json.error || "Respuesta vacía.");
                         return [];
                     }
 
                     return json.data; // Regresar los datos para renderizar en la tabla
                 },
                 error: function (xhr, error, thrown) {
-                    console.error("Error AJAX:", {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        responseText: xhr.responseText
-                    });
                 }
             },
             columns: [
@@ -349,7 +339,6 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
             },
             dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
             initComplete: function () {
-                console.log("Tabla inicializada correctamente.");
             }
         });
     }
@@ -357,7 +346,7 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
 
 // Función para abrir el modal de edición y cerrar el de listado
 function editarTipoOHerramienta(id, nombre, tipo) {
-    console.log("Editar registro:", { id, nombre, tipo });
+
 
     // Limpiar el ID para eliminar cualquier prefijo como 'H-' o 'T-'
     const cleanId = id.replace(/^[A-Za-z]-/, ''); // Remueve prefijos como 'H-', 'T-' o similares.
@@ -394,10 +383,6 @@ document.getElementById('formEditarTipoHerramienta').addEventListener('submit', 
     }
 
     try {
-        console.log("Datos que se enviarán al servidor:");
-        console.log({ operation: 'editarTipoOHerramienta', id, nombre, tipo });
-
-        console.log("Enviando datos al servidor para guardar cambios...");
         const response = await fetch(`../../controllers/herrero.controller.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -405,10 +390,8 @@ document.getElementById('formEditarTipoHerramienta').addEventListener('submit', 
         });
 
         const responseText = await response.text();
-        console.log("Respuesta como texto:", responseText);
 
         const result = JSON.parse(responseText);
-        console.log("Resultado del guardado (JSON):", result);
 
         if (result.status === 'success') {
             // Mostrar mensaje de éxito con showToast
@@ -426,7 +409,6 @@ document.getElementById('formEditarTipoHerramienta').addEventListener('submit', 
             showToast(`Error: ${result.message}`, 'ERROR');
         }
     } catch (error) {
-        console.error("Error al guardar los cambios:", error);
         showToast(`Ocurrió un error al guardar los cambios: ${error.message}`, 'ERROR');
     }
 });
