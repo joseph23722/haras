@@ -14,7 +14,7 @@ BEGIN
     SET estado = 'Disponible'
     WHERE cantidad_stock > stockMinimo;
 
-    -- Mostrar la información detallada de todos los medicamentos registrados
+    -- Mostrar la información detallada de todos los medicamentos registrados que no estén vencidos
     SELECT 
         m.idMedicamento,
         m.nombreMedicamento,
@@ -41,6 +41,8 @@ BEGIN
         UnidadesMedida u ON c.idUnidad = u.idUnidad  -- Relación con UnidadesMedida para obtener la unidad
     JOIN
         LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
+    WHERE 
+        lm.fechaCaducidad >= CURDATE()  -- Filtrar medicamentos que no estén vencidos
     ORDER BY 
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 END $$
@@ -66,6 +68,8 @@ BEGIN
     DECLARE _idLoteMedicamento INT DEFAULT NULL;
     DECLARE _dosis DECIMAL(10,2);
     DECLARE _unidad VARCHAR(50);
+    DECLARE _loteVencido BOOLEAN DEFAULT FALSE;
+    DECLARE _medicamentosAgotados BOOLEAN DEFAULT FALSE;
 
     -- Separar dosis en cantidad y unidad
     SET _dosis = CAST(SUBSTRING_INDEX(_dosisCompleta, ' ', 1) AS DECIMAL(10,2));
@@ -88,9 +92,35 @@ BEGIN
     END IF;
 
     -- Verificar si el lote ya existe
-    SELECT idLoteMedicamento INTO _idLoteMedicamento 
+    SELECT idLoteMedicamento, fechaCaducidad INTO _idLoteMedicamento, _loteVencido
     FROM LotesMedicamento
     WHERE lote = _lote;
+
+    -- Verificar si el lote está vencido
+    IF _loteVencido < CURDATE() THEN
+        SET _loteVencido = TRUE;
+    ELSE
+        SET _loteVencido = FALSE;
+    END IF;
+
+    -- Verificar si los medicamentos asociados al lote están agotados
+    SELECT COUNT(*) INTO _medicamentosAgotados
+    FROM Medicamentos
+    WHERE idLoteMedicamento = _idLoteMedicamento
+      AND cantidad_stock > 0;
+
+    IF _medicamentosAgotados = 0 THEN
+        SET _medicamentosAgotados = TRUE;
+    ELSE
+        SET _medicamentosAgotados = FALSE;
+    END IF;
+
+    -- Actualizar la fecha de caducidad del lote existente si está vencido o los medicamentos asociados están agotados
+    IF _idLoteMedicamento IS NOT NULL AND (_loteVencido = TRUE OR _medicamentosAgotados = TRUE) THEN
+        UPDATE LotesMedicamento
+        SET fechaCaducidad = _fechaCaducidad
+        WHERE idLoteMedicamento = _idLoteMedicamento;
+    END IF;
 
     -- Crear el lote si no existe
     IF _idLoteMedicamento IS NULL THEN
