@@ -34,6 +34,7 @@ class Historialme extends Conexion
                 'dosis' => $params['dosis'] ?? null,
                 'frecuenciaAdministracion' => $params['frecuenciaAdministracion'] ?? null,
                 'idViaAdministracion' => $params['idViaAdministracion'] ?? null,
+                'fechaInicio' => $params['fechaInicio'] ?? null, // Añadir fechaInicio
                 'fechaFin' => $params['fechaFin'] ?? null,
                 'tipoTratamiento' => $params['tipoTratamiento'] ?? null
             ];
@@ -44,7 +45,7 @@ class Historialme extends Conexion
                 }
             }
 
-            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $query = $this->pdo->prepare("CALL spu_historial_medico_registrarMedi(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $query->execute([
                 $params['idEquino'],
                 $idUsuario,
@@ -52,6 +53,7 @@ class Historialme extends Conexion
                 $params['dosis'],
                 $params['frecuenciaAdministracion'],
                 $params['idViaAdministracion'],
+                $params['fechaInicio'], // Incluir fechaInicio en la llamada
                 $params['fechaFin'],
                 $params['observaciones'] ?? null,
                 $params['reaccionesAdversas'] ?? null,

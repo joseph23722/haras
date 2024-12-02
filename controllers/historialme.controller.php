@@ -79,8 +79,6 @@ try {
                 break;
             
             
-
-            
             case 'registrarHistorialMedico':
                 // Decodificar los datos JSON desde el cuerpo de la solicitud
                 $inputData = json_decode(file_get_contents('php://input'), true);
@@ -100,7 +98,7 @@ try {
                     'dosis' => $inputData['dosis'] ?? null,
                     'frecuenciaAdministracion' => $inputData['frecuenciaAdministracion'] ?? null,
                     'idViaAdministracion' => $inputData['viaAdministracion'] ?? null, // Cambiado a ID
-                    'fechaInicio' => $inputData['fechaInicio'] ?? null,
+                    'fechaInicio' => $inputData['fechaInicio'] ?? null, // Asegurarse de incluir fechaInicio
                     'fechaFin' => $inputData['fechaFin'] ?? null,
                     'observaciones' => $inputData['observaciones'] ?? null,
                     'reaccionesAdversas' => $inputData['reaccionesAdversas'] ?? null,

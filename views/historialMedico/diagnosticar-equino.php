@@ -92,6 +92,14 @@
                         </div>
                     </div>
 
+                    <!-- Fecha de Inicio -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" required>
+                            <label for="fechaInicio"><i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha de Inicio</label>
+                        </div>
+                    </div>
+
                     <!-- Fecha Fin -->
                     <div class="col-md-6">
                         <div class="form-floating">
