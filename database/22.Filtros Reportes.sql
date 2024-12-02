@@ -162,4 +162,3 @@ BEGIN
         nombreMedicamento ASC;
 END $$
 DELIMITER ;
-
