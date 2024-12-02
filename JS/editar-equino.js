@@ -45,8 +45,8 @@ document.querySelector("#buscar-equino").addEventListener("click", function () {
 // Función para limpiar los campos del modal
 function clearModalFields() {
     const fields = [
-        "fechanacimiento", "nacionalidades", "propietario", 
-        "genero", "tipoEquino", "idEstadoMonta", 
+        "fechanacimiento", "nacionalidades", "propietario",
+        "genero", "tipoEquino", "idEstadoMonta",
         "peso", "estado", "idEquino"
     ];
     fields.forEach(field => document.getElementById(field).value = '');
@@ -67,11 +67,8 @@ function loadModalFields(equino) {
     document.getElementById("idEquino").value = equino.idEquino || '';
 }
 
-// Evento para guardar los cambios en el equino
-// Evento para guardar los cambios al presionar el botón "Guardar cambios"
 // Evento para guardar los cambios al presionar el botón "Guardar cambios"
 document.querySelector("#editarEquinosModal .btn-primary").addEventListener("click", function () {
-    // Obtener valores de los campos del modal
     const idEquino = document.getElementById("idEquino").value.trim();
     let idPropietario = document.getElementById("propietario").value.trim();
     const pesokg = document.getElementById("peso").value.trim();

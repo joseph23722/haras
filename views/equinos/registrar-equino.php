@@ -108,21 +108,32 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12 text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-equino" style="background-color: #0077b6; border: none;">
-                            <i class="fas fa-save"></i> Registrar Equino
-                        </button>
-                        <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
-                            <i class="fas fa-times"></i> Cancelar
-                        </button>
-                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" data-bs-toggle="modal" data-bs-target="#editarEquinosModal">
-                            <i class="fas fa-save"></i> Editar Equinos
-                        </button>
+                    <div class="col-md-12 text-center text-md-end mt-3">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <!-- Botón de Registrar Equino -->
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-equino" style="background-color: #0077b6; border: none;">
+                                <i class="fas fa-save"></i> Registrar Equino
+                            </button>
+
+                            <!-- Botón de Cancelar -->
+                            <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+
+                            <!-- Botón de Editar Equinos -->
+                            <button type="button" class="btn btn-warning btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#editarEquinosModal">
+                                <i class="fas fa-save"></i> Editar Equinos
+                            </button>
+
+                            <!-- Botón de Registrar Propietario -->
+                            <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#registrarPropietario">
+                                <i class="fas fa-save"></i> Registrar Propietario
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
-
 
         <!-- Modal para editar equino-->
         <div class="modal fade" id="editarEquinosModal" tabindex="-1" aria-labelledby="editarEquinosModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -219,6 +230,31 @@
                         <button type="button" class="btn btn-primary" style="border-radius: 5px;">
                             <i class="fas fa-save"></i> Guardar cambios
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Registrar Propietario -->
+        <div class="modal fade" id="registrarPropietario" tabindex="-1" aria-labelledby="registrarPropietarioLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registrarPropietarioLabel">Registrar Propietario</h5>
+                        <button type="button" class="btn-close" id="closeModalButton" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formulario para registrar propietario -->
+                        <form id="formRegistrarPropietario">
+                            <div class="mb-3">
+                                <label for="nombreHaras" class="form-label">Nombre del Haras</label>
+                                <input type="text" class="form-control" id="nombreHaras" name="nombreHaras" required>
+                                <div class="invalid-feedback">Por favor ingresa el nombre del Haras.</div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success btn-lg">Registrar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
