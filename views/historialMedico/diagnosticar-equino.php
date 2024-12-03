@@ -12,7 +12,6 @@
             </a>
         </div>
     </div>
-
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial Médico</h5>
