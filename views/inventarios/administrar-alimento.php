@@ -5,7 +5,6 @@
   <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
     Gestionar Alimentos
   </h1>
-
   <!-- Formulario para Registrar Nuevo Alimento -->
   <div class="card mb-4">
     <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
