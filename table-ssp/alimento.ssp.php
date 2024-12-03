@@ -13,7 +13,7 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-function ejecutarProcedimientoDataTables($procedure, $sql_details, $params) {
+function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = []) {
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -23,8 +23,13 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params) {
         );
 
         // Preparar la consulta para el procedimiento almacenado con múltiples parámetros
-        $stmt = $pdo->prepare("CALL $procedure(" . str_repeat('?,', count($params) - 1) . "?)");
-        $stmt->execute($params);
+        if (count($params) > 0) {
+            $stmt = $pdo->prepare("CALL $procedure(" . str_repeat('?,', count($params) - 1) . "?)");
+            $stmt->execute($params);
+        } else {
+            $stmt = $pdo->prepare("CALL $procedure()");
+            $stmt->execute();
+        }
 
         // Obtener los resultados
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
