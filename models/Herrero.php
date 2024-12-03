@@ -99,10 +99,6 @@ class Herrero extends Conexion {
         }
     }
     
-
-
-
-
     // Método para obtener los tipos de equinos
     public function listarEquinosPorTipo()
     {
