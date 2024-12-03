@@ -534,7 +534,6 @@ class Admi extends Conexion {
         }
     }
 
-    
     // Método para obtener la cantidad de equinos por categoría
     public function getEquinosPorCategoria() {
         try {
