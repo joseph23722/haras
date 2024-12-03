@@ -268,7 +268,6 @@
                                 <input type="number" name="cantidad" id="entradaCantidad" class="form-control form-control-lg" required min="1" placeholder="Ingrese cantidad">
                             </div>
                         </div>
-
                         <!-- Botón para registrar la entrada -->
                         <div class="d-flex justify-content-end mt-4">
                             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
