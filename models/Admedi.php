@@ -418,7 +418,6 @@ class Admi extends Conexion {
         }
     }
 
-    
      // Listar los tipos de medicamentos
     public function listarTiposMedicamentos() {
         try {
