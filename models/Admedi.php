@@ -189,10 +189,6 @@ class Admi extends Conexion {
         }
     }
             
-
-    
-
-
     // Método para verificar si un lote de medicamento ya existe
     public function verificarLoteMedicamento($lote) {
         try {
