@@ -29,7 +29,6 @@
             <th>Fecha Entrada</th>
             <th>Fecha Salida</th>
             <th>Detalles</th>
-            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
