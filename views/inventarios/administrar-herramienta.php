@@ -14,7 +14,6 @@
                 data-bs-target="#modalAgregarTrabajoHerramienta">
                 <i class="fas fa-plus"></i>
             </button>
-
             <!-- Botón para abrir el modal de Tipos y Herramientas -->
             <button type="button" class="btn btn-info btn-sm"
                 style="background-color: #17a2b8; border: none; position: absolute; right: 0.5px; top: 1px; padding: 11px 15px; font-size: 1.2em; color: #fff;"
