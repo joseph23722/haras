@@ -375,8 +375,6 @@ try {
                 }
                 break;
 
-                
-      
             case 'validarRegistrarCombinacion':
                 try {
                     // Extraer los parámetros recibidos desde la solicitud POST
