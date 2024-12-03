@@ -555,7 +555,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.1/jspdf.plugin.autotable.min.js"></script>
 
 
-
 <script src="/haras/vendor/medicamento/listar-medicamento.js"></script>
 <script src="../../JS/administrar-medicamento.js"></script>
 
