@@ -139,7 +139,6 @@
                                 <!-- Las opciones de trabajos se cargarán dinámicamente -->
                             </select>
                         </div>
-
                         <!-- Campo para seleccionar herramienta si es tipo herramienta -->
                         <div class="mb-3" id="campoHerramienta" style="display:none;">
                             <label for="selectHerramienta" class="form-label">Seleccionar Herramienta</label>
