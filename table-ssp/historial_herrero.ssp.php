@@ -39,8 +39,26 @@ try {
 
     // Obtener los datos
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+
+    // Total de registros sin filtrar
     $recordsTotal = count($data);
-    $recordsFiltered = $recordsTotal; // Si no hay filtros, los totales son iguales
+
+    // Filtrar los datos si hay un valor de búsqueda
+    if (!empty($_GET['search']['value'])) {
+        $searchValue = $_GET['search']['value'];
+        $data = array_filter($data, function ($row) use ($searchValue) {
+            return stripos($row['nombreEquino'], $searchValue) !== false ||
+                   stripos($row['tipoEquino'], $searchValue) !== false ||
+                   stripos($row['fecha'], $searchValue) !== false ||
+                   stripos($row['TrabajoRealizado'], $searchValue) !== false ||
+                   stripos($row['HerramientasUsadas'], $searchValue) !== false ||
+                   stripos($row['observaciones'], $searchValue) !== false;
+        });
+    }
+
+    // Total de registros después del filtrado
+    $recordsFiltered = count($data);
 
     // Crear el array de salida para el DataTable
     $output = array(
