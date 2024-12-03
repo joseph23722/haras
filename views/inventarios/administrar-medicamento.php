@@ -442,7 +442,6 @@
                         <!-- Campo oculto para el ID del Tipo de Alimento -->
                         <input type="hidden" id="editarIdTipoAlimento">
                         <input type="hidden" id="editarIdUnidadMedida">
-
                         <!-- Campo para Tipo de Alimento -->
                         <div class="mb-3">
                             <label for="editarTipoAlimento" class="form-label">Tipo de Alimento</label>
