@@ -235,8 +235,6 @@ try {
                 }
                 break;
             
-            
-
             case 'entrada':
                 $params = [
                     'nombreMedicamento' => $_POST['nombreMedicamento'] ?? '',
