@@ -2,6 +2,7 @@ DROP PROCEDURE IF EXISTS `spu_listar_medicamentosMedi`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_medicamentosMedi()
 BEGIN
+    -- Actualizar el estado de los medicamentos según su stock
     UPDATE Medicamentos 
     SET estado = 'Agotado'
     WHERE cantidad_stock = 0;
@@ -14,7 +15,7 @@ BEGIN
     SET estado = 'Disponible'
     WHERE cantidad_stock > stockMinimo;
 
-    -- Mostrar la información detallada de todos los medicamentos registrados que no estén vencidos
+    -- Mostrar la información detallada de todos los medicamentos registrados que no estén vencidos y que tengan stock mayor a 0
     SELECT 
         m.idMedicamento,
         m.nombreMedicamento,
@@ -43,6 +44,7 @@ BEGIN
         LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
     WHERE 
         lm.fechaCaducidad >= CURDATE()  -- Filtrar medicamentos que no estén vencidos
+        AND m.cantidad_stock > 0        -- Filtrar medicamentos que tengan stock mayor a 0
     ORDER BY 
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 END $$
