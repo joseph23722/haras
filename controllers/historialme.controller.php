@@ -208,8 +208,6 @@ try {
                 $result = $historialme->getAllMedicamentos();
                 echo json_encode(['data' => $result]);
                 break;
-
-
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }
