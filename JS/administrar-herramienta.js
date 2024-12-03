@@ -207,7 +207,7 @@ async function registrarHistorialHerrero() {
         datos[key] = value;
     });
 
-    if (await ask("¿Desea registrar este historial?")) {
+    if (await ask("¿Desea registrar este historial herrero?")) {
         fetch('/haras/controllers/herrero.controller.php', {
             method: 'POST',
             headers: {
