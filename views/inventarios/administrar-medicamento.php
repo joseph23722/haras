@@ -373,7 +373,6 @@
     </div>
 
 
-
     <!-- Modal para listar sugerencias -->
     <div class="modal fade" id="modalSugerencias" tabindex="-1" aria-labelledby="modalSugerenciasLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl"> <!-- modal-xl para ancho extra -->
