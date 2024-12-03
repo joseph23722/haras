@@ -161,8 +161,6 @@ try {
         $operation = $_GET['operation'] ?? '';
 
         switch ($operation) {
-
-           
             case 'notificarTratamientosVeterinarios':
                 try {
                     $result = $historialme->notificarTratamientosVeterinarios();
