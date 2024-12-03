@@ -6,6 +6,21 @@
         Gestionar Medicamentos
     </h1>
 
+    <!-- Filtros -->
+    <div class="row mt-4 mb-4"> <!-- Agregar margen inferior -->
+        <div class="col-md-4">
+            <label for="ordenSelect" class="form-label">Ordenar por Cantidad en Stock:</label>
+            <select id="ordenSelect" class="form-select">
+                <option value="">Seleccione</option>
+                <option value="ASC">Menor a Mayor</option>
+                <option value="DESC">Mayor a Menor</option>
+            </select>
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button id="filtrarButton" class="btn btn-primary">Buscar</button>
+        </div>
+    </div>
+
     <!-- Tabla de Medicamentos Registrados -->
     <div class="card mb-4 shadow-sm">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
@@ -33,6 +48,8 @@
         </div>
     </div>
 </div>
+
+
 <?php require_once '../footer.php'; ?>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>

@@ -13,7 +13,7 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-function ejecutarProcedimientoDataTables($procedure, $sql_details) {
+function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = []) {
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -22,10 +22,16 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details) {
             array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
         );
 
-        // Ejecutar el procedimiento almacenado sin parámetros
-        $stmt = $pdo->prepare("CALL $procedure");
-        $stmt->execute();
+        // Preparar la consulta para el procedimiento almacenado con múltiples parámetros
+        if (count($params) > 0) {
+            $stmt = $pdo->prepare("CALL $procedure(" . str_repeat('?,', count($params) - 1) . "?)");
+            $stmt->execute($params);
+        } else {
+            $stmt = $pdo->prepare("CALL $procedure()");
+            $stmt->execute();
+        }
 
+        // Obtener los resultados
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $recordsTotal = count($data);
         $recordsFiltered = $recordsTotal;
@@ -38,7 +44,6 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details) {
         );
 
         echo json_encode($output);
-
     } catch (PDOException $e) {
         echo json_encode(array(
             "error" => "Error en la conexión a la base de datos: " . $e->getMessage()
@@ -46,4 +51,14 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details) {
     }
 }
 
-ejecutarProcedimientoDataTables('spu_listar_medicamentosMedi', $sql_details);
+// Obtener los parámetros de filtro de la solicitud
+$orden = isset($_GET['orden']) ? $_GET['orden'] : null;
+
+// Determinar qué procedimiento llamar
+if ($orden) {
+    // Llamar al procedimiento de filtrado por cantidad en stock
+    ejecutarProcedimientoDataTables('spu_filtrar_medicamentos_por_stock', $sql_details, [$orden]);
+} else {
+    // Llamar al procedimiento general
+    ejecutarProcedimientoDataTables('spu_listar_medicamentosMedi', $sql_details);
+}

@@ -268,80 +268,107 @@ function imprimirDocumento() {
 
 
 
-// Configuración del DataTable
-const configurarDataTableMedicamentos = () => {
-    const fechaActual = new Date().toLocaleString();
-
-    const table = $('#tabla-medicamentos').DataTable({
-        ajax: {
-            url: '/haras/table-ssp/medicamento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
-            type: 'GET',
-            dataSrc: 'data',
-            error: function (xhr, status, error) {
-                console.error("Error al cargar datos de la tabla:", error);
-            }
-        },
-        processing: true,
-        serverSide: true,
-        pageLength: 10,
-        paging: true,
-        pagingType: "full_numbers",
-        responsive: true, // Activa la responsividad en el DataTable
-        autoWidth: false, // Desactiva el ancho automático
-        language: {
-            url: '/haras/data/es_es.json'
-        },
-        dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
-        columns: [
-            { data: 'nombreMedicamento' },
-            { data: 'lote' },
-            { data: 'presentacion', defaultContent: 'N/A' },
-            { data: 'dosis', defaultContent: 'N/A' },
-            { data: 'nombreTipo', defaultContent: 'N/A' },
-            { data: 'fechaCaducidad', defaultContent: 'N/A' },
-            { data: 'cantidad_stock', defaultContent: 'N/A' },
-            { data: 'precioUnitario', defaultContent: 'N/A' },
-            { data: 'fechaIngreso', defaultContent: 'N/A' },
-            { data: 'estado', defaultContent: 'N/A' }, // Esto no se exportará
-            {
-                data: null,
-                orderable: false,
-                render: function(data, type, row) {
-                    return `<button class="btn btn-danger btn-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
-                                <i class="fas fa-trash"></i>
-                            </button>`; // Esto no se exportará
-                }
-            }
-
-        ],
-        buttons: [
-            {
-                extend: 'pdfHtml5',
-                text: '<i class="fas fa-file-pdf"></i> Generar PDF',
-                className: 'btn btn-danger',
-                action: function () {
-                    generarPDF(); // Llamar a la función para generar el PDF
-                }
-            },
-            {
-                extend: 'csvHtml5',
-                text: '<i class="fas fa-file-csv"></i> Generar CSV',
-                className: 'btn btn-success',
-                action: function () {
-                    generarCSV(); // Llamar a la función para generar el CSV
-                }
-            },
-            {
-                text: '<i class="fas fa-print"></i> Imprimir',
-                className: 'btn btn-primary',
-                action: function () {
-                    imprimirDocumento(); // Llamar a la función para imprimir
-                }
-            }
-        ]
-    });
-};
-
 $(document).ready(function() {
-    configurarDataTableMedicamentos();  // Inicializar el DataTable
+    // Configuración del DataTable
+    const configurarDataTableMedicamentos = (orden = null) => {
+        const fechaActual = new Date().toLocaleString();
+
+        const table = $('#tabla-medicamentos').DataTable({
+            ajax: {
+                url: '/haras/table-ssp/medicamento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
+                type: 'GET',
+                data: function(d) {
+                    if (orden) {
+                        d.orden = orden;
+                    }
+                    console.log("Datos enviados al servidor:", d); // Agregar este log para ver los datos enviados al servidor
+                },
+                dataSrc: function(json) {
+                    console.log("Respuesta del servidor:", json); // Agregar este log para ver la respuesta del servidor
+                    return json.data;
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al cargar datos de la tabla:", error);
+                }
+            },
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            paging: true,
+            pagingType: "full_numbers",
+            responsive: true, // Activa la responsividad en el DataTable
+            autoWidth: false, // Desactiva el ancho automático
+            language: {
+                url: '/haras/data/es_es.json'
+            },
+            dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
+            columns: [
+                { data: 'nombreMedicamento' },
+                { data: 'lote' },
+                { data: 'presentacion', defaultContent: 'N/A' },
+                { data: 'dosis', defaultContent: 'N/A' },
+                { data: 'nombreTipo', defaultContent: 'N/A' },
+                { data: 'fechaCaducidad', defaultContent: 'N/A' },
+                { data: 'cantidad_stock', defaultContent: 'N/A' },
+                { data: 'precioUnitario', defaultContent: 'N/A' },
+                { data: 'fechaIngreso', defaultContent: 'N/A' },
+                { data: 'estado', defaultContent: 'N/A' }, // Esto no se exportará
+                {
+                    data: null,
+                    orderable: false,
+                    render: function(data, type, row) {
+                        return `<button class="btn btn-danger btn-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>`; // Esto no se exportará
+                    }
+                }
+            ],
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="fas fa-file-pdf"></i> Generar PDF',
+                    className: 'btn btn-danger',
+                    action: function () {
+                        generarPDF(); // Llamar a la función para generar el PDF
+                    }
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: '<i class="fas fa-file-csv"></i> Generar CSV',
+                    className: 'btn btn-success',
+                    action: function () {
+                        generarCSV(); // Llamar a la función para generar el CSV
+                    }
+                },
+                {
+                    text: '<i class="fas fa-print"></i> Imprimir',
+                    className: 'btn btn-primary',
+                    action: function () {
+                        imprimirDocumento(); // Llamar a la función para imprimir
+                    }
+                }
+            ]
+        });
+    };
+
+    // Función para cargar el DataTable de medicamentos
+    const loadMedicamentosTable = (orden = null) => {
+        // Si la tabla ya está inicializada, destrúyela
+        if ($.fn.DataTable.isDataTable('#tabla-medicamentos')) {
+            $('#tabla-medicamentos').DataTable().clear().destroy();  // Destruir y limpiar la tabla antes de reinicializarla
+        }
+
+        // Inicializa la tabla con la nueva configuración
+        configurarDataTableMedicamentos(orden);  // Llamamos la función con los filtros
+    };
+
+    // Inicializar la tabla al cargar la página
+    loadMedicamentosTable();  // Llamamos la función sin filtros para obtener todos los registros
+
+    // Recargar la tabla cuando se hace clic en el botón de filtro
+    $('#filtrarButton').on('click', function() {
+        const orden = $('#ordenSelect').val();
+        console.log("Orden seleccionado:", orden); // Agregar este log para ver el orden seleccionado
+        loadMedicamentosTable(orden);  // Llamamos la función con los filtros
+    });
 });
