@@ -27,7 +27,6 @@ class Admi extends Conexion {
         }
     }
     
-
     // Método para registrar un nuevo medicamento
     public function registrarMedicamento($params = []) {
         try {
@@ -127,8 +126,6 @@ class Admi extends Conexion {
     }
 
     // Registrar salida de medicamentos
-    
-    
     public function salidaMedicamento($params = []) {
         try {
             if (session_status() == PHP_SESSION_NONE) {
