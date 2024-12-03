@@ -3,7 +3,6 @@
 <div class="container-fluid px-4">
     <!-- Título principal -->
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Historial de Herrero</h1>
-
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial de Herrero</h5>
