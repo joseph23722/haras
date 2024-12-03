@@ -22,7 +22,6 @@ function sendResponse($status, $message, $data = null) {
     exit(); // Asegura que no se envíe contenido adicional
 }
 
-
 try {
     // Verificar si el contenido es JSON
     $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
