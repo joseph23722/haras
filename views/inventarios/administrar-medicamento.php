@@ -279,7 +279,7 @@
         </div>
     </div>
 
-    <!-- Modal para Registrar Salida de Medicamento -->
+
     <!-- Modal para Registrar Salida de Medicamento -->
     <!-- Modal para Registrar Salida de Medicamento -->
     <div class="modal fade" id="modalSalida" tabindex="-1" aria-labelledby="modalSalidaLabel" data-bs-backdrop="static" data-bs-keyboard="false">
