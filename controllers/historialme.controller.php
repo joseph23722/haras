@@ -154,8 +154,6 @@ try {
                     ]);
                 }
                 break;
-
-
             default:
                 echo json_encode(['error' => 'Operación no válida']);
         }
