@@ -75,7 +75,6 @@ try {
                 }
                 break;
 
-            
             case 'listarSugerenciasMedicamentos':
                 try {
                     $sugerencias = $admi->listarSugerenciasMedicamentos();
