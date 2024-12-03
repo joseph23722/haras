@@ -249,7 +249,6 @@ function imprimirDocumento() {
     });
 }
 
-
 // Definir la función configurarDataTableAlimentos globalmente
 const configurarDataTableAlimentos = (orden = null) => {
     const table = $('#alimentos-table').DataTable({
