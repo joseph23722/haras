@@ -120,7 +120,7 @@ BEGIN
         WHERE idLote = _idLote;
     END IF;
 
-    -- Realizar la consulta de los alimentos (excluyendo los vencidos)
+    -- Realizar la consulta de los alimentos (excluyendo los vencidos y los que tengan stock 0)
     SELECT 
         A.idAlimento,
         A.idUsuario,
@@ -150,7 +150,9 @@ BEGIN
         UnidadesMedidaAlimento U ON A.idUnidadMedida = U.idUnidadMedida
     WHERE 
         (_idAlimento IS NULL OR A.idAlimento = _idAlimento)
-        AND A.estado != 'Vencido'; -- Excluir alimentos con estado 'Vencido'
+        AND A.estado != 'Vencido' -- Excluir alimentos con estado 'Vencido'
+        AND L.fechaCaducidad >= CURDATE() -- Filtrar alimentos que no estén vencidos
+        AND A.stockActual > 0; -- Filtrar alimentos que tengan stock mayor a 0
 
 END $$
 DELIMITER ;
