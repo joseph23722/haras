@@ -251,7 +251,6 @@
                                 </select>
                             </div>
                         </div>
-
                         <!-- Lote -->
                         <div class="row mb-3">
                             <div class="col-md-12">
