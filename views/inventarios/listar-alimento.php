@@ -37,7 +37,7 @@
                         <th>Tipo</th>
                         <th>U.M</th>
                         <th>Lote</th>
-                        <th>Cantidad</th>
+                        <th>Stock Actual</th>
                         <th>Stock mínimo</th>
                         <th>Costo</th>
                         <th>Fecha Caducidad</th>
