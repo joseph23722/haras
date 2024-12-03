@@ -68,8 +68,6 @@ class Herrero extends Conexion {
         }
     }
 
-    
-    // Método para consultar el historial completo de un equino
     // Método para consultar el historial completo de un equino
     public function consultarHistorialEquino() {
         try {
