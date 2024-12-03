@@ -537,7 +537,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Pie del Modal -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
