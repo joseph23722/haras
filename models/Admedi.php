@@ -301,7 +301,6 @@ class Admi extends Conexion {
         }
     }
 
-
     // editar segurencia de medicamento
     public function editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad) {
         try {
