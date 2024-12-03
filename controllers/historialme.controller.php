@@ -116,9 +116,6 @@ try {
                 }
                 break;
             
-                
-                
-
             case 'gestionarTratamiento':
                 // Decodificar los datos JSON recibidos desde php://input
                 $inputData = json_decode(file_get_contents('php://input'), true);
