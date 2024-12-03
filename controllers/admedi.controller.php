@@ -138,9 +138,6 @@ try {
                 }
                 break;
                 
-                
-                
-
             case 'notificarStockBajo':
                 try {
                     // Llamar al método para obtener las notificaciones de stock bajo/agotado
