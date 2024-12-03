@@ -239,15 +239,4 @@ class Herrero extends Conexion {
     }
 
     
-    
-    
-
-
-    
-
-    
-
-
-
-    
 }
