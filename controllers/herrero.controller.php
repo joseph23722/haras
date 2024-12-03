@@ -75,9 +75,7 @@ try {
                 }
                 break;
                 
-                
-            
-        
+
             case 'listarEquinosPorTipo':
                 // Llamada al método para listar equinos por tipo
                 $result = $herrero->listarEquinosPorTipo();
