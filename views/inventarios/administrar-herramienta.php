@@ -87,7 +87,6 @@
                             <label for="observaciones"><i class="fas fa-notes-medical" style="color: #007bff;"></i> Observaciones</label>
                         </div>
                     </div>
-
                     <div id="mensaje" style="margin-top: 10px; color: green; font-weight: bold;"></div>
 
                     <!-- Botones -->
