@@ -10,7 +10,6 @@ class Herrero extends Conexion {
     }
 
     // Método para insertar un nuevo trabajo en el historial del herrero
-    // Método para insertar un nuevo trabajo en el historial del herrero
     public function insertarHistorialHerrero($params = []) {
         try {
             // Verificar y manejar la sesión
