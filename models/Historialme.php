@@ -65,6 +65,13 @@ class Historialme extends Conexion
             } else {
                 return ['status' => 'error', 'message' => 'No se pudo registrar el historial médico'];
             }
+        } catch (PDOException $e) {
+            error_log("Error en registrarHistorial: " . $e->getMessage());
+            // Limpiar el mensaje de error para ocultar la parte específica del error SQL
+            $mensajeError = preg_replace('/SQLSTATE\[.*?\]:.*?:\s*\d*\s*/', '', $e->getMessage());
+            return ['status' => 'error', 'message' => $mensajeError];
+        
+            
         } catch (Exception $e) {
             error_log("Error en registrarHistorial: " . $e->getMessage());
             return ['status' => 'error', 'message' => $e->getMessage()];
