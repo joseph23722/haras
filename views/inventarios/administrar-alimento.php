@@ -270,7 +270,6 @@
                 </div>
               </div>
 
-
               <div class="col-md-6">
                 <div class="form-floating">
                   <input type="number" name="cantidad" id="stockActual-entrada" class="form-control" required min="0">
