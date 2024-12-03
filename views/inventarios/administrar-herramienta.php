@@ -132,7 +132,6 @@
                                 <option value="herramienta">Herramienta</option>
                             </select>
                         </div>
-
                         <!-- Campo para seleccionar trabajo si es tipo trabajo -->
                         <div class="mb-3" id="campoTrabajo" style="display:none;">
                             <label for="selectTrabajo" class="form-label">Seleccionar Trabajo</label>
