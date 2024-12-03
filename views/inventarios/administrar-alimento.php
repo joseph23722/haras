@@ -291,7 +291,6 @@
         <div class="col-12">
           <span id="mensaje-stock" style="color: red;"></span>
         </div>
-
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="button" class="btn btn-success" id="guardarEntrada">Guardar Entrada</button>
