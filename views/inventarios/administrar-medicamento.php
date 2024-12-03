@@ -5,7 +5,6 @@
     <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
         Gestionar Medicamentos
     </h1>
-
     <!-- Sección del formulario para registrar un medicamento -->
     <div class="card mb-4 shadow border-0">
         <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
