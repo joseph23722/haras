@@ -146,7 +146,6 @@
                                 <!-- Las opciones de herramientas se cargarán dinámicamente -->
                             </select>
                         </div>
-
                         <!-- Mensajes de error o éxito -->
                         <div id="mensajeModal" class="text-center mt-3"></div>
                     </form>
