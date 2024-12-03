@@ -189,35 +189,6 @@ class Admi extends Conexion {
         }
     }
             
-    // Método para verificar si un lote de medicamento ya existe
-    public function verificarLoteMedicamento($lote) {
-        try {
-            $query = $this->pdo->prepare("SELECT idLoteMedicamento FROM LotesMedicamento WHERE lote = ?");
-            $query->execute([$lote]);
-            $result = $query->fetch(PDO::FETCH_ASSOC);
-
-            if ($result) {
-                return [
-                    'status' => 'success',
-                    'idLoteMedicamento' => $result['idLoteMedicamento']
-                ];
-            } else {
-                return [
-                    'status' => 'success',
-                    'idLoteMedicamento' => null  // Indica que el lote no existe
-                ];
-            }
-        } catch (PDOException $e) {
-            // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
-            $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
-            $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
-            return [
-                'status' => 'error',
-                'message' => 'Error en la base de datos: ' . $e->getMessage()
-            ];
-        }
-    }
-
 
     // Notificar medicamentos con stock bajo
     public function notificarStockBajo() {
