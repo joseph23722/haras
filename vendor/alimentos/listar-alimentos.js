@@ -273,95 +273,96 @@ function imprimirDocumento() {
 
 
 // Configuración del DataTable
-const configurarDataTableAlimentos = () => {
-    const table = $('#alimentos-table').DataTable({
-        ajax: {
-            url: '/haras/table-ssp/alimento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
-            type: 'GET',
-            data: function (d) {
-                // Agregar los parámetros de filtro a la solicitud AJAX solo si están presentes
-                d.fechaCaducidadInicio = $('#filtro-fechaCaducidadInicio').val() || null;
-                d.fechaCaducidadFin = $('#filtro-fechaCaducidadFin').val() || null;
-                d.fechaRegistroInicio = $('#filtro-fechaRegistroInicio').val() || null;
-                d.fechaRegistroFin = $('#filtro-fechaRegistroFin').val() || null;
-                console.log("Parámetros enviados:", d); // Log para verificar los parámetros enviados
-            },
-            dataSrc: function (json) {
-                console.log("Datos recibidos del servidor:", json); // Log para verificar los datos recibidos
-                return json.data;
-            },
-            error: function (xhr, status, error) {
-                console.error("Error al cargar datos de la tabla:", error);
-                console.log("Estado:", status);
-                console.log("Respuesta del servidor:", xhr.responseText);
-            }
-        },
-        processing: true,
-        serverSide: true,
-        pageLength: 10,
-        paging: true,
-        pagingType: "full_numbers",
-        responsive: true, // Activa la responsividad en el DataTable
-        autoWidth: false, // Desactiva el ancho automático
-        language: {
-            url: '/haras/data/es_es.json'
-        },
-        dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
-        columns: [
-            { data: 'idAlimento', visible: false, searchable: false }, // Ocultar y deshabilitar búsqueda en ID
-            { data: 'nombreAlimento', searchable: true },
-            { data: 'nombreTipoAlimento', searchable: true },
-            { data: 'unidadMedidaNombre', searchable: false },
-            { data: 'lote', searchable: false },
-            { data: 'stockActual', searchable: false },
-            { data: 'stockMinimo', searchable: false },
-            { data: 'costo', searchable: false },
-            { data: 'fechaCaducidad', searchable: true },
-            { data: 'estado', searchable: false },
-            { 
-                data: null, 
-                orderable: false,
-                searchable: false,
-                render: function(data, type, row) {
-                    return `<button class="btn btn-danger btn-sm" onclick="eliminarAlimento('${row.idAlimento}')">
-                                <i class="fas fa-trash"></i>
-                            </button>`;
-                }
-            }
-        ],
-        buttons: [
-            {
-                extend: 'pdfHtml5',
-                text: '<i class="fas fa-file-pdf"></i> Generar PDF',
-                className: 'btn btn-danger',
-                action: function () {
-                    generarPDF(); // Llamar a la función para generar el PDF
-                }
-            },
-            {
-                extend: 'csvHtml5',
-                text: '<i class="fas fa-file-csv"></i> Generar CSV',
-                className: 'btn btn-success',
-                action: function () {
-                    generarCSV(); // Llamar a la función para generar el CSV
-                }
-            },
-            {
-                text: '<i class="fas fa-print"></i> Imprimir',
-                className: 'btn btn-primary',
-                action: function () {
-                    imprimirDocumento(); // Llamar a la función para imprimir
-                }
-            }
-        ]
-    });
-
-    // Evento para recargar la tabla cuando se haga clic en el botón de búsqueda
-    $('#btn-buscar').on('click', function () {
-        table.ajax.reload();
-    });
-};
-
 $(document).ready(function() {
+    // Configuración del DataTable
+    const configurarDataTableAlimentos = (orden = null) => {
+        const table = $('#alimentos-table').DataTable({
+            ajax: {
+                url: '/haras/table-ssp/alimento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
+                type: 'GET',
+                data: function(d) {
+                    if (orden) {
+                        d.orden = orden;
+                    }
+                    console.log("Parámetros enviados:", d); // Log para verificar los parámetros enviados
+                },
+                dataSrc: function(json) {
+                    console.log("Datos recibidos del servidor:", json); // Log para verificar los datos recibidos
+                    return json.data;
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al cargar datos de la tabla:", error);
+                    console.log("Estado:", status);
+                    console.log("Respuesta del servidor:", xhr.responseText);
+                }
+            },
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            paging: true,
+            pagingType: "full_numbers",
+            responsive: true, // Activa la responsividad en el DataTable
+            autoWidth: false, // Desactiva el ancho automático
+            language: {
+                url: '/haras/data/es_es.json'
+            },
+            dom: '<"d-flex justify-content-between align-items-center mb-2"<"mr-auto"l><"ml-auto"f><"text-center"B>>rt<"d-flex justify-content-between"ip>',
+            columns: [
+                { data: 'idAlimento', visible: false, searchable: false }, // Ocultar y deshabilitar búsqueda en ID
+                { data: 'nombreAlimento', searchable: true },
+                { data: 'nombreTipoAlimento', searchable: true },
+                { data: 'unidadMedidaNombre', searchable: false },
+                { data: 'lote', searchable: false },
+                { data: 'stockActual', searchable: false },
+                { data: 'stockMinimo', searchable: false },
+                { data: 'costo', searchable: false },
+                { data: 'fechaCaducidad', searchable: true },
+                { data: 'estado', searchable: false },
+                { 
+                    data: null, 
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row) {
+                        return `<button class="btn btn-danger btn-sm" onclick="eliminarAlimento('${row.idAlimento}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>`;
+                    }
+                }
+            ],
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="fas fa-file-pdf"></i> Generar PDF',
+                    className: 'btn btn-danger',
+                    action: function () {
+                        generarPDF(); // Llamar a la función para generar el PDF
+                    }
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: '<i class="fas fa-file-csv"></i> Generar CSV',
+                    className: 'btn btn-success',
+                    action: function () {
+                        generarCSV(); // Llamar a la función para generar el CSV
+                    }
+                },
+                {
+                    text: '<i class="fas fa-print"></i> Imprimir',
+                    className: 'btn btn-primary',
+                    action: function () {
+                        imprimirDocumento(); // Llamar a la función para imprimir
+                    }
+                }
+            ]
+        });
+
+        // Evento para recargar la tabla cuando se haga clic en el botón de búsqueda
+        $('#btn-buscar').on('click', function() {
+            const orden = $('#ordenSelect').val();
+            console.log("Orden seleccionado:", orden); // Log para verificar el orden seleccionado
+            table.ajax.reload(null, false); // Recargar la tabla sin reiniciar la paginación
+        });
+    };
+
     configurarDataTableAlimentos();  // Inicializar el DataTable
 });

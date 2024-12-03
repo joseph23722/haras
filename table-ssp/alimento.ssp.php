@@ -45,17 +45,14 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params) {
     }
 }
 
-// Obtener los parámetros de filtro
-$fechaCaducidadInicio = empty($_GET['fechaCaducidadInicio']) ? null : $_GET['fechaCaducidadInicio'];
-$fechaCaducidadFin = empty($_GET['fechaCaducidadFin']) ? null : $_GET['fechaCaducidadFin'];
-$fechaRegistroInicio = empty($_GET['fechaRegistroInicio']) ? null : $_GET['fechaRegistroInicio'];
-$fechaRegistroFin = empty($_GET['fechaRegistroFin']) ? null : $_GET['fechaRegistroFin'];
+// Obtener el parámetro de orden
+$orden = isset($_GET['orden']) ? $_GET['orden'] : null;
 
-// Determinar qué procedimiento llamar en función de los parámetros
-if ($fechaCaducidadInicio || $fechaCaducidadFin || $fechaRegistroInicio || $fechaRegistroFin) {
-    // Llamar al procedimiento de filtrado
-    ejecutarProcedimientoDataTables('spu_filtrarAlimentos', $sql_details, [$fechaCaducidadInicio, $fechaCaducidadFin, $fechaRegistroInicio, $fechaRegistroFin]);
+// Determinar qué procedimiento llamar en función del parámetro de orden
+if ($orden) {
+    // Llamar al procedimiento de filtrado por cantidad en stock
+    ejecutarProcedimientoDataTables('spu_filtrarAlimentos', $sql_details, [$orden]);
 } else {
-    // Llamar al procedimiento para obtener todos los alimentos
-    ejecutarProcedimientoDataTables('spu_obtenerAlimentosConLote', $sql_details, [null]);
+    // Llamar al procedimiento para obtener todos los alimentos sin orden específico
+    ejecutarProcedimientoDataTables('spu_obtenerAlimentosConLote', $sql_details, []);
 }
