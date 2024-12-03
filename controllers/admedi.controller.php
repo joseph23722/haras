@@ -400,7 +400,6 @@ try {
                 }
                 break;
                 
-
             case 'deleteMedicamento':
                 // Obtener el ID del medicamento desde el POST
                 $idMedicamento = intval($_POST['idMedicamento'] ?? 0);
@@ -413,7 +412,6 @@ try {
                 echo json_encode($result);
                 break;
                 
-
             default:
                 sendResponse('error', 'Operación no válida para POST.');
         }
