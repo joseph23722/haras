@@ -560,7 +560,6 @@ class Admi extends Conexion {
         }
     }
     
-
 }
 
 
