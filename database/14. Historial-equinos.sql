@@ -27,6 +27,33 @@ BEGIN
         AND e.idPropietario IS NULL; 
 END ;
 
+DROP PROCEDURE IF EXISTS `spu_buscar_equino_por_nombre_general`;
+
+CREATE PROCEDURE spu_buscar_equino_por_nombre_general(IN p_nombreEquino VARCHAR(100))
+BEGIN
+    SELECT 
+        e.idEquino,
+        e.nombreEquino,
+        e.fechaNacimiento,
+        e.sexo,
+        te.tipoEquino,
+        em.nombreEstado AS estadoMonta,
+        n.nacionalidad,
+        e.pesokg,
+        e.idPropietario,
+        e.fotografia,
+        IF(e.estado = 1, 'Vivo', IF(e.estado = 2, 'Muerto', 'Desconocido')) AS estado
+    FROM 
+        Equinos e
+    JOIN 
+        TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
+    LEFT JOIN 
+        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta 
+    LEFT JOIN 
+        Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
+    WHERE 
+        e.nombreEquino = p_nombreEquino;
+END ;
 
 DROP PROCEDURE IF EXISTS `spu_registrar_historial_equinos`;
 

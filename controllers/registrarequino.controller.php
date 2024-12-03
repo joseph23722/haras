@@ -74,6 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             }
             break;
 
+        case 'buscarEquinosGeneral':
+            if (isset($requestBody['nombreEquino'])) {
+                echo json_encode($controller->buscarEquinosGenerales($requestBody['nombreEquino']));
+            } else {
+                echo json_encode(["status" => "error", "message" => "Nombre del equino no especificado."]);
+            }
+            break;
+
         case 'buscarNacionalidad':
             if (isset($requestBody['nacionalidad'])) {
                 echo json_encode($controller->buscarNacionalidad($requestBody['nacionalidad']));

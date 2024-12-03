@@ -313,7 +313,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 31),
     (3, 32),
     (3, 33),
-    (3, 34);
+    (3, 34),
+    (3, 35);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES

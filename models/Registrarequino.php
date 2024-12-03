@@ -89,6 +89,21 @@ class Registrarequino extends Conexion
         }
     }
 
+    public function buscarEquinosGenerales($nombreEquino): array
+    {
+        try {
+            $sql = "CALL spu_buscar_equino_por_nombre_general(:nombreEquino)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':nombreEquino', $nombreEquino, PDO::PARAM_STR);
+
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ["status" => "error", "message" => "Error al buscar el equino: " . $e->getMessage()];
+        }
+    }
+
     public function buscarNacionalidad($nacionalidad)
     {
         try {
