@@ -396,7 +396,6 @@
 
 
 
-
 <script src="/haras/vendor/alimentos/historial-alimentos.js" defer></script>
 <script src="/haras/vendor/alimentos/listar-alimentos.js" defer></script>
 <script id="jqueryScript" src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
