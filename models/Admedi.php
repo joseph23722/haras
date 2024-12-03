@@ -372,8 +372,6 @@ class Admi extends Conexion {
         }
     }
     
-    
-
     // Validar presentación y dosis del medicamento
     public function validarRegistrarCombinacion($params = []) {
         try {
