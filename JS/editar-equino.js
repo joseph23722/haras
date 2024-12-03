@@ -10,7 +10,7 @@ document.querySelector("#buscar-equino").addEventListener("click", function () {
     fetch('../../controllers/registrarequino.controller.php', {
         method: 'POST',
         body: JSON.stringify({
-            operation: 'buscarEquinoPorNombre',
+            operation: 'buscarEquinosGeneral',
             nombreEquino: nombreEquino
         }),
         headers: { 'Content-Type': 'application/json' }
@@ -56,12 +56,12 @@ function clearModalFields() {
 function loadModalFields(equino) {
     console.log("Cargando datos del equino en el modal:", equino); // Para depuración
 
-    document.getElementById("fechanacimiento").value = equino.fechaNacimiento || '';
-    document.getElementById("nacionalidades").value = equino.nacionalidad || '';
+    document.getElementById("fechanacimiento").value = equino.fechaNacimiento || '--';
+    document.getElementById("nacionalidades").value = equino.nacionalidad || '--';
     document.getElementById("propietario").value = equino.idPropietario || 'Haras Rancho Sur';
-    document.getElementById("genero").value = equino.sexo || '';
-    document.getElementById("tipoEquino").value = equino.tipoEquino || '';
-    document.getElementById("idEstadoMonta").value = equino.estadoMonta || '';
+    document.getElementById("genero").value = equino.sexo || '--';
+    document.getElementById("tipoEquino").value = equino.tipoEquino || '--';
+    document.getElementById("idEstadoMonta").value = equino.estadoMonta || '--';
     document.getElementById("peso").value = equino.pesokg || 'Por pesar';
     document.getElementById("estado").value = equino.estado || 'Desconocido';
     document.getElementById("idEquino").value = equino.idEquino || '';
