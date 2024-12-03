@@ -450,7 +450,6 @@ class Admi extends Conexion {
         }
     }
 
-
     // Función para listar las sugerencias de medicamentos
     public function listarSugerenciasMedicamentos() {
         try {
@@ -506,8 +505,6 @@ class Admi extends Conexion {
         }
     }
     
-
-    // Método para listar todos los lotes de medicamentos registrados
     // Método para listar lotes de medicamentos por nombre de medicamento
     public function listarLotesMedicamentosPorNombre($nombreMedicamento) {
         try {
