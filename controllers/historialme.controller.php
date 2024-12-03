@@ -38,8 +38,6 @@ try {
         // Obtener la operación desde el JSON
         $operation = $inputData['operation'] ?? '';
         switch ($operation) {
-
-
             case 'editarViaAdministracion':
                 $data = json_decode(file_get_contents('php://input'), true);
     
