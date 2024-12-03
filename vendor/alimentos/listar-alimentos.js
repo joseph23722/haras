@@ -23,8 +23,6 @@ function cargarImagenBase64(url, callback) {
 }
 
 
-
-
 // Función para generar el PDF
 function generarPDF() {
     // Obtener los datos actuales del DataTable
