@@ -142,7 +142,7 @@ END ;
 
 DROP PROCEDURE IF EXISTS `spu_listar_medicamentos`;
 CREATE PROCEDURE spu_listar_medicamentos()
-BEGIN
+BEGIN                                       
     SELECT 
         idMedicamento,
         nombreMedicamento
