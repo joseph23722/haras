@@ -454,7 +454,6 @@
                             <label for="editarUnidadMedida" class="form-label">Unidad de Medida</label>
                             <input type="text" class="form-control" id="editarUnidadMedida" required>
                         </div>
-
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                     </form>
                 </div>
