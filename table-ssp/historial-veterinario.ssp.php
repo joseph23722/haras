@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
+// Detalles de la conexión a la base de datos
 $sql_details = array(
     'user' => 'root',
     'pass' => '',
@@ -33,17 +34,35 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
 
         // Obtener los resultados
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $recordsTotal = count($data);
-        $recordsFiltered = $recordsTotal;
+        $stmt->closeCursor();
 
+        // Total de registros sin filtrar
+        $recordsTotal = count($data);
+
+        // Filtrar los datos si hay un valor de búsqueda
+        if (!empty($_GET['search']['value'])) {
+            $searchValue = $_GET['search']['value'];
+            $data = array_filter($data, function ($row) use ($searchValue) {
+                return stripos($row['nombreEquino'], $searchValue) !== false ||
+                       stripos($row['nombreMedicamento'], $searchValue) !== false ||
+                       stripos($row['estadoTratamiento'], $searchValue) !== false;
+            });
+        }
+
+        // Total de registros después del filtrado
+        $recordsFiltered = count($data);
+
+        // Crear el array de salida para el DataTable
         $output = array(
             "draw" => isset($_GET['draw']) ? intval($_GET['draw']) : 0,
             "recordsTotal" => $recordsTotal,
             "recordsFiltered" => $recordsFiltered,
-            "data" => $data
+            "data" => array_values($data) // Asegurarse de que los índices sean consecutivos
         );
 
+        // Enviar el resultado como JSON
         echo json_encode($output);
+
     } catch (PDOException $e) {
         error_log("Error en ejecutarProcedimientoDataTables: " . $e->getMessage());
         echo json_encode(['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()]);
