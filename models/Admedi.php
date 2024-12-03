@@ -225,7 +225,6 @@ class Admi extends Conexion {
         }
     }
 
-
     // Método para obtener el historial de movimientos de medicamentos
     public function obtenerHistorialMovimientosMedicamentos($params = []) {
         try {
@@ -280,8 +279,6 @@ class Admi extends Conexion {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
-
-
 
     // Método para agregar una nueva combinación de medicamento
     public function agregarCombinacionMedicamento($tipo, $presentacion, $unidad, $dosis)
