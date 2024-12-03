@@ -209,9 +209,6 @@ class Herrero extends Conexion {
         }
     }
     
-    
-
-    // Función para editar tipo o herramienta
     // Función para editar tipo o herramienta
     public function editarTipoOHerramienta($id, $nombre, $tipo) {
         try {
