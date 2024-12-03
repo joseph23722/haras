@@ -14,71 +14,68 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-try {
-    // Conexión a la base de datos
-    $pdo = new PDO(
-        "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
-        $sql_details['user'],
-        $sql_details['pass'],
-        array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-    );
+function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = []) {
+    try {
+        $pdo = new PDO(
+            "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
+            $sql_details['user'],
+            $sql_details['pass'],
+            array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+        );
 
-    // Parámetros enviados por DataTables
-    $draw = isset($_GET['draw']) ? intval($_GET['draw']) : 1;
-    $start = isset($_GET['start']) ? intval($_GET['start']) : 0;
-    $length = isset($_GET['length']) ? intval($_GET['length']) : 10;
-    $searchValue = isset($_GET['search']['value']) ? $_GET['search']['value'] : '';
-    $orderColumn = isset($_GET['order'][0]['column']) ? intval($_GET['order'][0]['column']) : 0;
-    $orderDir = isset($_GET['order'][0]['dir']) && in_array($_GET['order'][0]['dir'], ['asc', 'desc']) ? $_GET['order'][0]['dir'] : 'asc';
-
-    // Mapear columnas para ordenar
-    $columns = ['nombreAlimento', 'nombreTipoAlimento', 'unidadMedidaNombre', 'lote', 'stockActual', 'stockMinimo', 'costo', 'fechaCaducidad', 'estado'];
-    $orderBy = $columns[$orderColumn] ?? 'nombreAlimento';
-
-    // Ejecutar el procedimiento almacenado sin parámetros
-    $stmt = $pdo->prepare("CALL spu_obtenerAlimentosConLote(NULL)");
-    $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $stmt->closeCursor();
-
-    // Filtrar los datos si hay un valor de búsqueda
-    if (!empty($searchValue)) {
-        $data = array_filter($data, function ($row) use ($searchValue) {
-            return stripos($row['nombreAlimento'], $searchValue) !== false ||
-                   stripos($row['nombreTipoAlimento'], $searchValue) !== false ||
-                   stripos($row['unidadMedidaNombre'], $searchValue) !== false ||
-                   stripos($row['lote'], $searchValue) !== false ||
-                   stripos($row['estado'], $searchValue) !== false;
-        });
-    }
-
-    // Ordenar los datos
-    usort($data, function ($a, $b) use ($orderBy, $orderDir) {
-        if ($orderDir === 'asc') {
-            return strcmp($a[$orderBy], $b[$orderBy]);
+        // Preparar la consulta para el procedimiento almacenado con múltiples parámetros
+        if (count($params) > 0) {
+            $stmt = $pdo->prepare("CALL $procedure(" . str_repeat('?,', count($params) - 1) . "?)");
+            $stmt->execute($params);
         } else {
-            return strcmp($b[$orderBy], $a[$orderBy]);
+            $stmt = $pdo->prepare("CALL $procedure()");
+            $stmt->execute();
         }
-    });
 
-    // Total de registros después del filtrado
-    $recordsFiltered = count($data);
+        // Obtener los resultados
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
 
-    // Aplicar paginación
-    $pagedData = array_slice($data, $start, $length);
+        // Total de registros sin filtrar
+        $recordsTotal = count($data);
 
-    // Total de registros sin filtrar
-    $recordsTotal = count($data);
+        // Filtrar los datos si hay un valor de búsqueda
+        if (!empty($_GET['search']['value'])) {
+            $searchValue = $_GET['search']['value'];
+            $data = array_filter($data, function ($row) use ($searchValue) {
+                return stripos($row['nombreAlimento'], $searchValue) !== false ||
+                       stripos($row['nombreTipoAlimento'], $searchValue) !== false ||
+                       stripos($row['unidadMedidaNombre'], $searchValue) !== false ||
+                       stripos($row['lote'], $searchValue) !== false ||
+                       stripos($row['estado'], $searchValue) !== false;
+            });
+        }
 
-    // Respuesta para DataTables
-    echo json_encode(array(
-        "draw" => $draw,
-        "recordsTotal" => $recordsTotal,
-        "recordsFiltered" => $recordsFiltered,
-        "data" => $pagedData
-    ));
-} catch (PDOException $e) {
-    echo json_encode(array(
-        "error" => "Error en la conexión a la base de datos: " . $e->getMessage()
-    ));
+        // Total de registros después del filtrado
+        $recordsFiltered = count($data);
+
+        // Respuesta para DataTables
+        echo json_encode(array(
+            "draw" => isset($_GET['draw']) ? intval($_GET['draw']) : 0,
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => array_values($data) // Asegurarse de que los índices sean consecutivos
+        ));
+    } catch (PDOException $e) {
+        error_log("Error en ejecutarProcedimientoDataTables: " . $e->getMessage());
+        echo json_encode(['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()]);
+    }
+}
+
+// Obtener los parámetros de filtro
+$orden = isset($_GET['orden']) ? $_GET['orden'] : null;
+$idAlimento = isset($_GET['idAlimento']) ? $_GET['idAlimento'] : null;
+
+// Determinar qué procedimiento llamar en función de los parámetros
+if ($orden) {
+    // Llamar al procedimiento de filtrado por cantidad en stock
+    ejecutarProcedimientoDataTables('spu_filtrarAlimentos', $sql_details, [$orden]);
+} else {
+    // Llamar al procedimiento para obtener todos los alimentos con el parámetro idAlimento
+    ejecutarProcedimientoDataTables('spu_obtenerAlimentosConLote', $sql_details, [$idAlimento]);
 }
