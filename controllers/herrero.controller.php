@@ -101,8 +101,7 @@ try {
                 $data = $result['data'] ?? [];
                 sendResponse($status, $message, $data);
                 break;
-            
-
+        
             default:
                 sendResponse('error', 'Operación no válida para GET.');
         }
