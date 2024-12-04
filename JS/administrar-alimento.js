@@ -806,7 +806,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
     }
-
     // Confirmar que el formulario existe y tiene un evento asociado
     document.addEventListener('DOMContentLoaded', function () {
         const formEditarSugerencia = document.getElementById('formEditarSugerenciaAlimento');
@@ -816,7 +815,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("El formulario 'formEditarSugerenciaAlimento' no existe en el DOM.");
         }
     });
-
     cargarLotes();
     cargarTiposAlimento();
     loadAlimentos();
