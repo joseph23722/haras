@@ -31,12 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
         mensajeModal.innerHTML = ""; // Limpiar mensajes previos
 
         if (!categoriaAlimento) {
-            console.log("Campo 'Categoría de Alimento' vacío");
             mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete el campo "Categoría de Alimento".</p>';
             return false;
         }
         if (!unidadMedida) {
-            console.log("Campo 'Unidad de Medida' vacío");
             mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete el campo "Unidad de Medida".</p>';
             return false;
         }
@@ -48,11 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(url);
             const result = await response.json();
-            console.log("Respuesta de la API para URL:", url, "->", result);
             // Asegúrate de que `result` tiene el formato esperado antes de devolver `result.data`
             return result.status === "success" && Array.isArray(result.data) ? result.data : null;
         } catch (error) {
-            console.error("Error en la solicitud:", error.message);
             return null;
         }
     };
@@ -85,13 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para cargar las unidades de medida según tipo o nombre de alimento
     const cargarUnidadesMedida = async (param, selectElement, byType = true) => {
         const operation = byType ? `obtenerUnidadesPorTipoAlimento&idTipoAlimento=${param}` : `getUnidadesMedida&nombreAlimento=${param}`;
-
-        console.log(`Ejecutando cargarUnidadesMedida con parámetro: ${param}, operación: ${operation}`); // Log para verificar la llamada
-
         const unidades = await fetchData(`../../controllers/alimento.controller.php?operation=${operation}`);
-
-        console.log(`Unidades obtenidas para ${param} ->`, unidades); // Log para verificar los datos obtenidos
-
         if (unidades && unidades.length > 0) {
             // Crear un Set para almacenar solo unidades de medida únicas
             const uniqueUnitsSet = new Set();
