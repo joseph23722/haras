@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     let datosServicios = [];
 
-    // Verificar que el DOM está completamente cargado
-    console.log("DOM completamente cargado");
-
     // Función para mostrar mensajes dinámicos
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
         const mensajeDiv = document.getElementById('mensaje');
@@ -55,18 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnFiltrar = document.getElementById('btnFiltrar');
     btnFiltrar.addEventListener('click', function () {
         const tipoServicio = document.getElementById('filtroTipoServicio').value;
-        console.log("Tipo de servicio seleccionado:", tipoServicio);
     
         // Si se seleccionó un tipo de servicio
         if (tipoServicio) {
             fetch(`../../controllers/Propio.controller.php?action=listarServiciosPorTipo&tipoServicio=${tipoServicio}`)
                 .then(response => response.json())
-                .then(data => {
-                    console.log("Datos recibidos:", data);
-    
+                .then(data => {    
                     // Verificar si el tbody existe antes de hacer cualquier manipulación
                     const tbody = document.querySelector("#serviciosTable tbody");
-                    console.log("tbody encontrado: ", tbody);
     
                     if (tbody) {
                         // Limpiar el contenido actual del tbody antes de agregar nuevas filas
@@ -98,14 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             mostrarMensajeDinamico(`Se han cargado ${data.length} servicios`, 'SUCCESS');
                         } else if (data.status === "error") {
                             // Si el backend envía un error en formato JSON
-                            console.error("Error recibido del backend:", data.message);
                             mostrarMensajeDinamico(data.message, 'ERROR');
                         } else {
                             // Si data no es un array, mostrar advertencia
-                            console.error("La respuesta no es un array:", data);
                             mostrarMensajeDinamico('La respuesta no tiene datos válidos.', 'WARNING');
                         }
-    
+
                         // Inicializar o actualizar DataTable
                         if (!window.simpleTable) {
                             window.simpleTable = new simpleDatatables.DataTable("#serviciosTable", {
@@ -129,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 })
                 .catch(error => {
-                    console.error('Error al obtener los datos:', error);
                     mostrarMensajeDinamico('Error al obtener los datos', 'ERROR');
                 });
         } else {

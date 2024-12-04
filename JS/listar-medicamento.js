@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     let notificacionesMostradas = false;
-
     // Función para mostrar mensajes dinámicos para medicamentos
     function mostrarMensaje(mensaje, tipo = 'INFO') {
         const messageArea = document.getElementById("message-area");
@@ -33,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Obtener los estilos correspondientes al tipo de mensaje
             const estilo = estilos[tipo] || estilos['INFO'];
-
             // Aplicar estilos al contenedor del mensaje
             messageArea.style.display = 'flex';
             messageArea.style.alignItems = 'center';
@@ -48,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Mostrar el mensaje con un icono
             messageArea.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
-
             // Ocultar el mensaje después de 5 segundos
             setTimeout(() => {
                 messageArea.style.display = 'none';
