@@ -115,8 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
         data.fechaServicio = fechaServicio;
         data.fechaAplicacion = fechaServicio;
 
-        console.log("Datos enviados (antes de validación):", data);
-
         // Validar campos relacionados con medicamentos
         if (data.idMedicamento) {
             if (!data.unidad || !data.cantidadAplicada) {
@@ -133,11 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const textResponse = await response.text();
-            console.log("Respuesta como texto (registro):", textResponse);
-
             const result = JSON.parse(textResponse);
-            console.log("Respuesta como JSON (registro):", result);
-
             if (result.status === "success") {
                 showToast(result.message, "SUCCESS");
                 formPropio.reset();
@@ -147,23 +141,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 medicamentoCampos.style.display = "none";
 
                 if (data.idMedicamento) {
-                    console.log("Buscando historial actualizado de dosis aplicadas...");
                     const historialResponse = await fetch("../../controllers/Propio.controller.php?action=obtenerHistorialDosisAplicadas");
                     const historialText = await historialResponse.text();
-                    console.log("Respuesta como texto (historial):", historialText);
-
                     const historialData = JSON.parse(historialText);
-                    console.log("Historial de dosis aplicada (actualizado):", historialData);
                 }
             } else if (result.status === "error") {
                 showToast(result.message, "ERROR");
-                console.error("Error del servidor:", result.message);
             } else {
                 showToast("Ocurrió un error inesperado.", "ERROR");
-                console.error("Respuesta desconocida:", result);
             }
         } catch (error) {
-            console.error("Error al registrar servicio propio:", error.message);
             showToast(`Error al registrar servicio propio: ${error.message}`, "ERROR");
         }
     });
