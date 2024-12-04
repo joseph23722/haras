@@ -85,8 +85,6 @@ const myWidget = cloudinary.createUploadWidget({
 }, async (error, result) => {
     if (!error && result && result.event === "success") {
         const public_id = result.info.public_id;
-        console.log("Public ID de la imagen:", public_id); /* Muestra en consola el public_id almacenado */
-
         // Guardar el public_id en el campo hidden
         $('#foto-nueva').val(public_id);
     }
@@ -126,7 +124,6 @@ async function registrarNuevaFoto(public_id, idEquino) {
             showToast("Error al registrar la foto.", 'ERROR');
         }
     } catch (error) {
-        console.error("Error en la función registrarNuevaFoto:", error);
         showToast("Hubo un problema al registrar la foto.", 'ERROR');
     }
 }
@@ -251,7 +248,6 @@ async function registrarNuevaFoto(idEquino, public_id) {
         const result = await response.json();
         return result;
     } catch (error) {
-        console.error("Error al registrar la foto:", error);
         return { status: 'error', message: "Hubo un problema al registrar la foto." };
     }
 }
