@@ -20,8 +20,6 @@ document.querySelector("#buscar-equino").addEventListener("click", function () {
             return response.json();
         })
         .then(data => {
-            console.log("Datos recibidos del servidor:", data); // Para depuración
-
             if (data.error) {
                 showToast(data.message || "Error desconocido.", "ERROR");
                 clearModalFields(); // Limpia los campos del modal en caso de error
@@ -37,7 +35,6 @@ document.querySelector("#buscar-equino").addEventListener("click", function () {
             }
         })
         .catch(error => {
-            console.error("Error al buscar el equino:", error);
             showToast("Error al buscar el equino.", "ERROR");
         });
 });
@@ -54,7 +51,6 @@ function clearModalFields() {
 
 // Función para cargar los datos en el modal
 function loadModalFields(equino) {
-    console.log("Cargando datos del equino en el modal:", equino); // Para depuración
 
     document.getElementById("fechanacimiento").value = equino.fechaNacimiento || '--';
     document.getElementById("nacionalidades").value = equino.nacionalidad || '--';
@@ -115,7 +111,6 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
     if (idEstadoMonta !== undefined) datosEdicion.idEstadoMonta = idEstadoMonta;
     if (estado !== undefined) datosEdicion.estado = estado;
 
-    console.log("Datos enviados para edición:", datosEdicion); // Log de los datos enviados
 
     // Enviar los datos al backend
     fetch('../../controllers/editarequino.controller.php', {
@@ -124,17 +119,12 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
         headers: { 'Content-Type': 'application/json' }
     })
         .then(response => {
-            console.log("Estado HTTP:", response.status); // Log del estado HTTP
             return response.text(); // Capturar la respuesta como texto
         })
         .then(text => {
-            console.log("Respuesta completa (text):", text); // Log de la respuesta en texto
-
             // Intentar convertir la respuesta en JSON
             try {
                 const data = JSON.parse(text);
-                console.log("Respuesta JSON:", data); // Log del JSON convertido
-
                 // Manejo de respuesta
                 if (data.status === "success") {
                     showToast(data.message || "Equino actualizado correctamente.", "SUCCESS");
@@ -145,12 +135,10 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
                     showToast(data.message || "Error al actualizar el equino.", "ERROR");
                 }
             } catch (error) {
-                console.error("Error al convertir respuesta a JSON:", error); // Log del error de conversión
                 showToast("Error inesperado en la respuesta del servidor.", "ERROR");
             }
         })
         .catch(error => {
-            console.error("Error al guardar los cambios:", error); // Log del error de fetch
             showToast("Ocurrió un error al intentar guardar los cambios.", "ERROR");
         });
 });
