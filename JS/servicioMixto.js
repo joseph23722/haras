@@ -82,13 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!idPropietario) return;
 
         const url = `../../controllers/mixto.controller.php?action=listarEquinosExternosPorPropietarioYGenero&idPropietario=${idPropietario}&genero=${genero}`;
-        console.log("Fetching equinos externos from:", url);
         await loadOptions(url, idEquinoExternoSelect);
-        console.log("Opciones en Equino Externo:", idEquinoExternoSelect.innerHTML);
     };
 
     idEquinoMachoSelect.addEventListener("change", () => {
-        console.log("Cambio en Padrillo:", idEquinoMachoSelect.value);
         idEquinoHembraSelect.disabled = !!idEquinoMachoSelect.value;
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
         if (idEquinoMachoSelect.value) {
@@ -97,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     idEquinoHembraSelect.addEventListener("change", () => {
-        console.log("Cambio en Yegua:", idEquinoHembraSelect.value);
         idEquinoMachoSelect.disabled = !!idEquinoHembraSelect.value;
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
         if (idEquinoHembraSelect.value) {
@@ -106,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     idPropietarioSelect.addEventListener("change", () => {
-        console.log("Cambio en Propietario:", idPropietarioSelect.value);
         idEquinoExternoSelect.innerHTML = '<option value="">Seleccione Equino Externo</option>';
         if (idEquinoMachoSelect.value) {
             updateExternoSelect(2); // Cargar hembras si hay un macho seleccionado
@@ -175,9 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
         data.fechaServicio = fechaServicio;
         data.fechaAplicacion = fechaServicio;
 
-        // Logs para depuración
-        console.log("Datos enviados al backend (antes de enviar):", data);
-
         try {
             // Enviar solicitud
             const response = await fetch('../../controllers/mixto.controller.php', {
@@ -188,15 +180,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Obtener respuesta como texto para depuración
             const textResponse = await response.text();
-            console.log("Respuesta como texto (registro):", textResponse);
-
             // Intentar convertir respuesta a JSON
             let result;
             try {
                 result = JSON.parse(textResponse);
-                console.log("Respuesta como JSON (registro):", result);
             } catch (jsonError) {
-                console.error("Error al convertir la respuesta a JSON:", jsonError.message);
                 showToast(`Error en el formato de la respuesta: ${textResponse}`, "ERROR");
                 return;
             }
@@ -208,13 +196,10 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (result.status === "error") {
                 // Mostrar el mensaje de error del procedimiento almacenado o validación del backend
                 showToast(result.message, "ERROR");
-                console.error("Error recibido del backend:", result.message);
             } else {
                 showToast("Ocurrió un error inesperado.", "ERROR");
-                console.error("Respuesta desconocida:", result);
             }
         } catch (error) {
-            console.error("Error en la solicitud al backend:", error.message);
             showToast(`Error al registrar servicio mixto: ${error.message}`, "ERROR");
         }
     });
