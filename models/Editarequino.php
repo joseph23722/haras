@@ -22,7 +22,7 @@ class Editarequino extends Conexion
         // Procesar propietario solo si está presente y no es 'Haras Rancho Sur'
         if (isset($params['idPropietario']) && $params['idPropietario'] !== null && strtolower($params['idPropietario']) !== strtolower('Haras Rancho Sur')) {
             if (!is_numeric($params['idPropietario'])) {
-                $cmd = $this->pdo->prepare("SELECT idPropietario FROM propietarios WHERE nombrePropietario = ?");
+                $cmd = $this->pdo->prepare("SELECT idPropietario FROM propietarios WHERE nombreharas = ?");
                 $cmd->execute([$params['idPropietario']]);
                 $propietarioID = $cmd->fetchColumn();
 
@@ -84,7 +84,9 @@ class Editarequino extends Conexion
             return 1; // Operación exitosa
         } catch (PDOException $e) {
             error_log("Error de base de datos al ejecutar spu_equino_editar: " . $e->getMessage());
-            throw new Exception("Error en la base de datos: " . $e->getMessage());
+            // Limpiar el mensaje de error para ocultar la parte específica del error SQL
+            $mensajeError = preg_replace('/SQLSTATE\[.*?\]:.*?:\s*\d*\s*/', '', $e->getMessage());
+            return 0; // Operación fallida
         } catch (Exception $e) {
             error_log("Error al ejecutar spu_equino_editar: " . $e->getMessage());
             throw new Exception("Error al editar el equino: " . $e->getMessage());

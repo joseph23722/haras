@@ -43,7 +43,7 @@ BEGIN
         e.pesokg,
         e.idPropietario,
         e.fotografia,
-        IF(e.estado = 1, 'Vivo', IF(e.estado = 2, 'Muerto', 'Desconocido')) AS estado
+        IF(e.estado = 1, 'Vivo', IF(e.estado = 0, 'Muerto', 'Desconocido')) AS estado
     FROM 
         Equinos e
     JOIN 
