@@ -42,16 +42,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         selectTipoMovimiento.appendChild(option);
                     });
                 } else {
-                    console.error('No se encontró el select con id "idTipoMovimiento"');
                     showToast('No se encontró el campo de tipo de movimiento.', 'ERROR');
                 }
             } else {
-                console.error('Error al cargar los tipos de movimiento:', data.message || 'Datos vacíos');
                 showToast('Error al cargar los tipos de movimiento', 'ERROR');
             }
         })
         .catch(error => {
-            console.error('Error de solicitud de tipos de movimiento:', error);
             showToast('Hubo un problema al cargar los tipos de movimiento', 'ERROR');
         });
 
@@ -89,16 +86,13 @@ document.addEventListener("DOMContentLoaded", function () {
                             selectNombreProducto.appendChild(option);
                         });
                     } else {
-                        console.log('No se encontraron productos.');
                         showToast('No se encontraron productos para este inventario.', 'ERROR');
                     }
                 } else {
-                    console.error('No se encontró el select con id "productos"');
                     showToast('No se encontró el campo de productos.', 'ERROR');
                 }
             })
             .catch(error => {
-                console.error('Error de solicitud de productos:', error);
                 showToast('Hubo un problema al cargar los productos', 'ERROR');
             });
     }
@@ -161,7 +155,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     })
                     .catch(error => {
-                        console.error('Error de solicitud al registrar implemento:', error);
                         showToast('Hubo un problema al registrar el implemento', 'ERROR');
                     });
             } else {
@@ -223,7 +216,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     })
                     .catch(error => {
-                        console.error(`Error de solicitud al registrar ${operation === 'registrarSalida' ? 'salida' : 'entrada'}:`, error);
                         showToast(`Hubo un problema al registrar la ${operation === 'registrarSalida' ? 'salida' : 'entrada'}`, 'ERROR');
                     });
             } else {
