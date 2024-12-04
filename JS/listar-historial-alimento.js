@@ -2,8 +2,6 @@
 const setFechaFiltroAlimentos = () => {
   try {
     const filtroRango = document.getElementById('filtroRangoAlimentos').value;
-    console.log('Filtro de rango seleccionado:', filtroRango);
-
     const hoy = new Date();
     let fechaInicio, fechaFin;
 
@@ -24,7 +22,6 @@ const setFechaFiltroAlimentos = () => {
         fechaFin = new Date().toISOString().split('T')[0];
         break;
       default:
-        console.warn('Filtro de rango no válido seleccionado.');
         fechaInicio = '';
         fechaFin = '';
     }
@@ -34,16 +31,13 @@ const setFechaFiltroAlimentos = () => {
     filtroElement.setAttribute('data-fecha-inicio', fechaInicio);
     filtroElement.setAttribute('data-fecha-fin', fechaFin);
 
-    console.log(`Fechas configuradas -> Inicio: ${fechaInicio}, Fin: ${fechaFin}`);
   } catch (error) {
-    console.error('Error al configurar las fechas del filtro:', error);
   }
 };
 
 // Función para recargar las tablas de Entradas y Salidas
 const reloadHistorialAlimentos = () => {
   try {
-    console.log('Recargando tablas...');
     if ($.fn.DataTable.isDataTable('#tabla-entradas-alimentos')) {
       $('#tabla-entradas-alimentos').DataTable().ajax.reload(
         (json) => console.log('Tabla Entradas Recargada:', JSON.stringify(json)),
@@ -71,14 +65,12 @@ window.reloadHistorialAlimentos = reloadHistorialAlimentos;
 
 // Evento para actualizar tablas al cambiar el filtro
 document.getElementById('filtroRangoAlimentos').addEventListener('change', () => {
-  console.log('Cambio en el filtro de rango.');
   setFechaFiltroAlimentos();
   reloadHistorialAlimentos();
 });
 
 // Configurar y recargar tablas al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM completamente cargado. Configurando filtro y tablas...');
   setFechaFiltroAlimentos();
   reloadHistorialAlimentos();
 });

@@ -15,19 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const textResponse = await response.text();
 
             if (textResponse.startsWith("<")) {
-                console.error("Error en la respuesta del servidor.");
                 return;
             }
-
             const implementos = JSON.parse(textResponse);
-
             const tbody = document.getElementById(tablaID);
             tbody.innerHTML = ""; // Limpiar contenido previo
 
             if (implementos.length > 0) {
                 implementos.forEach(implemento => {
                     const row = document.createElement("tr");
-
                     row.innerHTML = `
                         <td>${implemento.idHistorial}</td>
                         <td>${implemento.nombreProducto}</td>
