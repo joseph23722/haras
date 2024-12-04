@@ -250,7 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast("Error en la respuesta del servidor", 'ERROR'); // Si `showToast` también es una función válida
                 return;
             }
-
             const result = JSON.parse(textResponse);
             const alimentos = result.data;
 
@@ -338,20 +337,13 @@ document.addEventListener("DOMContentLoaded", () => {
     async function validarLote() {
         // Verificar si los elementos del formulario existen en el DOM
         if (!loteInput || !nombreAlimentoInput || !unidadMedidaElementRegistrar) {
-            console.error('Uno o más elementos de entrada no están definidos.');
             mostrarMensajeDinamico('Error: Uno o más campos están vacíos o no existen.', 'ERROR');
             return false;
         }
-
         // Obtener los valores de lote, nombre del alimento y unidad de medida
         const lote = loteInput.value.trim();
         const nombreAlimento = nombreAlimentoInput.value.trim();
         const unidadMedida = unidadMedidaElementRegistrar.value.trim();
-        console.log("Lote a validar:", lote);
-        console.log("Nombre del alimento:", nombreAlimento);
-        console.log("Unidad de medida:", unidadMedida);
-
-
         // Verificar si los campos están vacíos
         if (!lote || !nombreAlimento || !unidadMedida) {
             mostrarMensajeDinamico('El lote, nombre del alimento y la unidad de medida no pueden estar vacíos.', 'ERROR');
@@ -391,9 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formRegistrarAlimento) {
         formRegistrarAlimento.addEventListener("submit", async (event) => {
             event.preventDefault();
-
-            console.log("Formulario enviado. Iniciando validaciones...");
-
+            
             // Validar fecha de caducidad
             if (!validarFechaCaducidad()) {
                 mostrarMensajeDinamico('Error en las fechas de caducidad.', 'ERROR');
