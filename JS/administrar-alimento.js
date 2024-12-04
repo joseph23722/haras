@@ -383,7 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formRegistrarAlimento) {
         formRegistrarAlimento.addEventListener("submit", async (event) => {
             event.preventDefault();
-            
+
             // Validar fecha de caducidad
             if (!validarFechaCaducidad()) {
                 mostrarMensajeDinamico('Error en las fechas de caducidad.', 'ERROR');
@@ -392,15 +392,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Validar si el lote es único para ese alimento y unidad
-            console.log("Validando el lote...");
             const loteValido = await validarLote();
             if (!loteValido) {
                 mostrarMensajeDinamico('Lote inválido o ya registrado. Verifica los datos.', 'ERROR');
-                console.log("Error en la validación del lote.");
                 return;
             }
-            console.log("Lote válido.");
-
             // Crear un FormData a partir del formulario
             const formData = new FormData(formRegistrarAlimento);
             const stockActual = parseFloat(formData.get('stockActual'));
@@ -409,27 +405,20 @@ document.addEventListener("DOMContentLoaded", () => {
             // Validar que el stock mínimo no supere al stock actual
             if (stockMinimo > stockActual) {
                 mostrarMensajeDinamico("El stock mínimo no puede ser mayor que el stock actual.", 'ERROR');
-                console.log("Error: Stock mínimo mayor que el stock actual.");
                 return;
             }
-            console.log("Stock válido.");
-
             // Confirmación antes de registrar el alimento
             if (await ask("¿Confirmar registro de nuevo alimento?")) {
-                console.log("Confirmación del usuario recibida. Enviando datos...");
                 const data = new URLSearchParams(formData);
                 data.append('operation', 'registrar');
 
                 try {
-                    console.log("Enviando solicitud al servidor...");
                     const response = await fetch('../../controllers/alimento.controller.php', {
                         method: "POST",
                         body: data
                     });
 
                     const textResult = await response.text();
-                    console.log("Respuesta en texto recibida:", textResult);
-
                     try {
                         const jsonResult = JSON.parse(textResult);
                         console.log("Respuesta en JSON recibida:", jsonResult);
