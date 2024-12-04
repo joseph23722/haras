@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     function inicializarDataTable() {
         if ($.fn.DataTable.isDataTable('#tabla-personal')) {
             $('#tabla-personal').DataTable().destroy();
@@ -13,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
             pageLength: 10
         });
     }
-
     async function obtenerPersonal() {
         try {
             $("#tabla-personal tbody").empty();
@@ -26,8 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
 
             const data = await response.json();
-            console.log(data);
-
             let numeroFila = 1;
             data.forEach(personal => {
                 const correoUsuario = personal.correo || '---';
@@ -85,23 +81,19 @@ document.addEventListener("DOMContentLoaded", () => {
                             const resultado = await respuesta.json();
 
                             if (resultado.status === 'success') {
-                                console.log('Estado cambiado correctamente');
                                 showToast(resultado.mensaje, 'SUCCESS');
                                 obtenerPersonal();
                             } else {
-                                console.error('Error:', resultado.mensaje);
                                 showToast(resultado.mensaje, 'ERROR');
                             }
 
                         } catch (error) {
-                            console.error('Error al cambiar el estado:', error);
                             showToast('Hubo un problema con la conexión', 'ERROR');
                         }
                     }
                 });
             });
         } catch (error) {
-            console.error("Error al obtener personal:", error);
             showToast('Hubo un problema al obtener los datos del personal', 'ERROR');
         }
     }
@@ -136,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast("Error en la respuesta del servidor", "ERROR");
             }
         } catch (error) {
-            console.error("Error en la solicitud:", error);
             showToast("Hubo un error en la solicitud: " + error.message, "ERROR");
         }
     }
@@ -145,14 +136,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Registrar Usuario
     async function registrarUsuario(event) {
         event.preventDefault();
-
         const confirmarRegistro = await ask("¿Deseas registrar este usuario?");
-
         if (!confirmarRegistro) {
             showToast("Registro cancelado", "ERROR");
             return;
         }
-
         const parametros = new FormData();
         parametros.append("operation", "add");
         parametros.append("idPersonal", $("#idPersonal").val());
@@ -179,7 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast('Error en la respuesta del servidor', 'ERROR');
             }
         } catch (error) {
-            console.error("Error al registrar usuario:", error);
             showToast('Hubo un problema al registrar el usuario', 'ERROR');
         }
     }

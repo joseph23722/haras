@@ -152,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast(result.message || 'Hubo un error al registrar la revisión.', 'ERROR', 4500);
             }
         } catch (error) {
-            console.error('Error al registrar la revisión:', error);
             showToast('Hubo un error al registrar la revisión.', 'ERROR', 4500);
         }
     });

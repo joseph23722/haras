@@ -268,8 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!error && result && result.event === "success") {
             // Mostrar el public_id en la consola para verificar que se ha capturado correctamente
             const public_id = result.info.public_id;
-            console.log("Public ID de la imagen:", public_id);
-
             // Guardar el public_id en el campo hidden
             $('#fotografia').val(public_id);
         }
@@ -295,10 +293,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Validación de campos obligatorios
         if (!nombreEquino || !sexo || !idTipoEquino || (!idPropietarioSelect.value && (!idNacionalidad || !fechaNacimientoInput.value))) {
             showToast('Los campos nombre, sexo, tipo de equino, y nacionalidad y fecha de nacimiento (si no hay propietario) son obligatorios.', 'ERROR');
-            console.log('Registro fallido: faltan campos obligatorios.');
             return;
         }
-
         // Si no hay propietario seleccionado, la fotografía es obligatoria
         if (!idPropietarioSelect.value && !document.querySelector("#fotografia").value) {
             showToast('Debe cargar una fotografía del equino', 'ERROR');
@@ -352,7 +348,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast(cleanMessage, 'ERROR');
             }
         } catch (error) {
-            console.error('Error en el envío del formulario:', error);
             showToast('Error en el registro del equino. Inténtalo de nuevo más tarde.', 'ERROR');
         }
     });
