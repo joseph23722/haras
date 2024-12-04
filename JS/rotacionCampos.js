@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable('#tabla-campos')) {
             $('#tabla-campos').DataTable().destroy();
         }
-
         $('#tabla-campos').DataTable({
             ajax: {
                 url: '../../controllers/campos.controller.php?operation=getCampos',
@@ -111,11 +110,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.status !== "error") {
                     ultimaAccionTextarea.value = data.nombreRotacion || "No hay acciones registradas.";
                 } else {
-                    console.error(data.message);
                     ultimaAccionTextarea.value = "No hay acciones registradas.";
                 }
             } catch (error) {
-                console.error('Error fetching ultima accion:', error);
                 ultimaAccionTextarea.value = "Error al obtener la última acción.";
             }
         } else {
@@ -137,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`../../controllers/campos.controller.php?operation=getCampoID&idCampo=${idCampo}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if (data.status !== "error") {
                     document.getElementById('numeroCampoEdit').value = data.numeroCampo;
                     document.getElementById('tamanoCampoEdit').value = data.tamanoCampo;
@@ -146,7 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     obtenerTipoSuelo().then(() => {
                         document.getElementById('tipoSueloEdit').value = data.idTipoSuelo;
-                        console.log("ID de tipo de suelo seleccionado:", data.idTipoSuelo);
                     });
 
                     $('#editarCampoModal').modal('show');
@@ -168,9 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'POST',
                     body: formData
                 });
-    
                 const data = await response.json();
-    
                 if (data.status !== "error") {
                     console.log("Campo editado exitosamente.");
                     $('#editarCampoModal').modal('hide'); // Ocultar el modal
@@ -202,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
     
                 if (data.status !== "error") {
-                    console.log('Campo eliminado exitosamente.');
                     inicializarDataTable(); // Actualizar la tabla de datos
                 } else {
                     console.error('Error al eliminar el campo:', data.message);
@@ -221,7 +213,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const numeroCampo = parseInt(document.getElementById('numeroCampo').value);
 
         if (numeroCampo < 1) {
-            console.error("El número del campo debe ser mayor que 0.");
             return;
         }
 

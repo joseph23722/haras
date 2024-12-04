@@ -389,13 +389,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     nombreHaras: nombreHaras
                 })
             });
-
             if (!response.ok) {
                 throw new Error('Error en la solicitud: ' + response.status);
             }
-
             const result = await response.json();
-
             if (result.status === "success") {
                 showToast("Propietario registrado exitosamente", "SUCCESS");
                 registrarPropietarioModal.hide();
@@ -405,15 +402,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast(result.message, "ERROR");
             }
         } catch (error) {
-            console.error("Error al registrar propietario:", error);
             showToast("Hubo un error al registrar el propietario.", "ERROR");
         }
     });
-
     closeModalButton.addEventListener('click', () => {
         registrarPropietarioModal.hide();
     });
-
     loadPropietarios();
     loadTipoEquinos();
 });
