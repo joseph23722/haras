@@ -627,8 +627,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 lote
             };
 
-            console.log("Parámetros que se enviarán al servidor:", params);
-
             const response = await fetch('../../controllers/alimento.controller.php', {
                 method: "POST",
                 headers: {
@@ -637,11 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(params)
             });
 
-            console.log("Estado de la respuesta:", response.status, response.statusText);
-
             const result = await response.json();
-
-            console.log("Respuesta de la API:", result);
 
             if (result.status === "success") {
                 showToast(result.message || "Salida registrada exitosamente.", 'SUCCESS');
@@ -650,12 +644,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 await loadAlimentos();
                 await notificarStockBajo();
-                console.log("Stock y movimientos actualizados en la interfaz.");
             } else {
                 showToast(result.message || "Error al registrar la salida.", 'ERROR');
             }
         } catch (error) {
-            console.error("Error en registrarSalida:", error);
             showToast("Error en la solicitud: " + error.message, 'ERROR');
         }
     };
@@ -681,7 +673,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } else {
             mermaField.value = 0;
-            console.warn("El valor de uso no puede ser mayor que la cantidad total.");
         }
     };
 
@@ -730,19 +721,15 @@ document.addEventListener("DOMContentLoaded", () => {
           language: { url: '/haras/data/es_es.json' },
           dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
           initComplete: function () {
-            console.log("Tabla de sugerencias inicializada correctamente.");
           },
         });
-      
         $('#btnSugerencias').on('click', function () {
           tablaSugerencias.ajax.reload();
         });
     });
       
     // Función para abrir el modal de edición con datos prellenados
-    window.editarSugerencia = function (idTipoAlimento, tipoAlimento, idUnidadMedida, unidadMedida) {
-        console.log("Editar sugerencia con ID:", { idTipoAlimento, tipoAlimento, idUnidadMedida, unidadMedida });
-        
+    window.editarSugerencia = function (idTipoAlimento, tipoAlimento, idUnidadMedida, unidadMedida) {        
         // Asignar valores a los campos del formulario de edición
         document.getElementById('editarIdTipoAlimento').value = idTipoAlimento;
         document.getElementById('editarTipoAlimento').value = tipoAlimento;
@@ -770,8 +757,6 @@ document.addEventListener("DOMContentLoaded", () => {
         formEditarSugerencia.onsubmit = async (event) => {
             event.preventDefault(); // Evitar recarga de la página
 
-            console.log("Botón 'Guardar Cambios' presionado");
-
             const idTipoAlimento = document.getElementById('editarIdTipoAlimento').value.trim();
             const tipoAlimento = document.getElementById('editarTipoAlimento').value.trim();
             const idUnidadMedida = document.getElementById('editarIdUnidadMedida').value.trim();
@@ -784,15 +769,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                console.log("Enviando datos al servidor...");
-                console.log({
-                    operation: 'editarTipoYUnidad',
-                    idTipoAlimento,
-                    tipoAlimento,
-                    idUnidadMedida,
-                    nombreUnidad: unidadMedida,
-                });
-
                 const response = await fetch('../../controllers/alimento.controller.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -807,15 +783,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Capturar respuesta como texto para depuración
                 const textResponse = await response.text();
-                console.log("Respuesta en texto:", textResponse);
-
                 // Intentar convertir la respuesta en JSON
                 let result;
                 try {
                     result = JSON.parse(textResponse);
-                    console.log("Respuesta en JSON:", result);
                 } catch (jsonError) {
-                    console.error("Error al parsear JSON:", jsonError.message);
                     showToast("Error inesperado en la respuesta del servidor.", "ERROR");
                     return;
                 }
@@ -827,11 +799,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     modalEditar.hide(); // Cerrar modal de edición
                     $('#tablaAlimentos').DataTable().ajax.reload(); // Recargar tabla
                 } else {
-                    console.error("Error en la respuesta del servidor:", result.message);
                     showToast("Error: " + result.message, "ERROR");
                 }
             } catch (error) {
-                console.error("Error al actualizar la sugerencia:", error.message);
                 showToast("Ocurrió un error al actualizar la sugerencia.", "ERROR");
             }
         };
