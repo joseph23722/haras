@@ -849,8 +849,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
     // Cargar datos al iniciar la página
     cargarLotes();
     loadCategoriaEquinos();
