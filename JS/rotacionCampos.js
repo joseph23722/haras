@@ -219,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (await ask('¿Está seguro de que desea registrar este nuevo campo?')) {
             const formData = new FormData(nuevoCampoForm);
             formData.append('operation', 'registrarCampo');
-
             try {
                 const response = await fetch('../../controllers/campos.controller.php', {
                     method: 'POST',
@@ -229,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (data.status !== "error") {
-                    console.log("Campo registrado exitosamente.");
                     $('#registerFieldModal').modal('hide');
                     obtenerCampos(); // Recargar los campos
                     inicializarDataTable(); // Actualizar la tabla de datos
@@ -253,20 +251,16 @@ document.addEventListener('DOMContentLoaded', function () {
             // Crear los datos del formulario
             const formData = new FormData(this);
             formData.append('operation', 'rotacionCampos');
-    
             try {
                 // Enviar la solicitud al servidor
                 const response = await fetch('../../controllers/campos.controller.php', {
                     method: 'POST',
                     body: formData
                 });
-    
                 // Procesar la respuesta del servidor
                 const data = await response.json();
-    
                 // Manejar la respuesta según el estado
                 if (data.status !== "error" && data.idRotacion) {
-                    console.log('Rotación registrada con éxito. ID Rotación:', data.idRotacion);
                     inicializarDataTable(); // Actualizar la tabla de datos
                     this.reset(); // Reiniciar el formulario
                 } else {
