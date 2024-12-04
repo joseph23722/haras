@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            console.log("Preparando datos para enviar al backend...");
             const datos = {
                 operation: "agregarVia",
                 nombreVia: nombreVia,
@@ -172,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Llamar a la función para cargar las vías
     cargarViasAdministracion();
+
     // Función para mostrar un mensaje de equinos notificaciones
     const notificarTratamientosVeterinarios = async () => {
         try {
@@ -211,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para cargar los equinos según el tipo seleccionado
     async function loadEquinosPorTipo(tipoEquino) {
         const equinoSelect = document.getElementById("equinoSelect");
-
         try {
             const response = await fetch(`../../controllers/historialme.controller.php?operation=listarEquinosPorTipo`, {
                 method: 'GET',
@@ -219,7 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const data = await response.json();
-
             // Limpiar el selector de equinos
             equinoSelect.innerHTML = '<option value="">Seleccione Equino</option>';
 
@@ -289,21 +287,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const pesoDiv = document.getElementById("pesokg");
 
         if (selectedOption) {
-            console.log("Opción seleccionada:", selectedOption);
 
             const peso = selectedOption.getAttribute('data-peso');
-
-            console.log("Peso obtenido:", peso);
-
             pesoDiv.value = peso ? `${peso} kg` : '';
         } else {
             pesoDiv.value = '';
-            console.log("No hay opción seleccionada.");
         }
     };
 
     document.getElementById("equinoSelect").addEventListener("change", mostrarPesoEquinoSeleccionado);
-
 
     //registrar historial medico
     document.querySelector("#form-historial-medico").addEventListener("submit", async (event) => {
@@ -315,7 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
             data.operation = "registrarHistorialMedico";
 
             // Log detallado para verificar los datos que se envían
-
             try {
                 const response = await fetch('../../controllers/historialme.controller.php', {
                     method: 'POST',
@@ -326,7 +317,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Revisar si el servidor responde correctamente
 
                 const result = await response.json();
-
                 if (result.status === "success") {
                     showToast(result.message || "Historial médico registrado correctamente", "SUCCESS");
                     mostrarMensajeDinamico(result.message || "Historial médico registrado correctamente", "SUCCESS");
@@ -364,11 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         return json.data;
                     },
                     error: function (xhr, error, thrown) {
-                        console.error("Error AJAX:", {
-                            status: xhr.status,
-                            statusText: xhr.statusText,
-                            responseText: xhr.responseText
-                        });
                     }
                 },
                 columns: [
@@ -395,8 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     $('#tablaViasAdministracion_wrapper').css({
                         'padding': '10px'
                     });
-
-                    console.log("Tabla de Vías de Administración inicializada correctamente.");
                 }
             });
         }
