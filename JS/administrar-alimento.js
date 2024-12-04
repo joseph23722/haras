@@ -95,34 +95,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     uniqueUnits.push({ id: u.idUnidadMedida, nombre: unitName });
                 }
             });
-
             // Llenar el select con las unidades únicas
             fillSelect(selectElement, uniqueUnits, "Seleccione la Unidad de Medida");
         } else {
-            console.warn("cargarUnidadesMedida: No se encontraron unidades de medida.");
             fillSelect(selectElement, [], "Seleccione la Unidad de Medida");
         }
     };
 
     // Eventos de cambio para los selects de alimento y tipo de alimento
     document.getElementById("alimento-select-entrada")?.addEventListener("change", e => {
-        console.log("Evento de cambio en alimento-select-entrada activado con valor:", e.target.value);
         cargarUnidadesMedida(e.target.value, document.getElementById("unidadMedidaEntrada"), false);
     });
 
     document.getElementById("alimento-select-salida")?.addEventListener("change", e => {
-        console.log("Evento de cambio en alimento-select-salida activado con valor:", e.target.value);
         cargarUnidadesMedida(e.target.value, document.getElementById("unidadMedidaSalida"), false);
     });
 
     document.getElementById("tipoAlimento")?.addEventListener("change", e => {
-        console.log("Evento de cambio en tipoAlimento activado con valor:", e.target.value);
         cargarUnidadesMedida(e.target.value, document.getElementById("unidadMedida"));
     });
 
     // Inicialización al cargar la página
     document.addEventListener("DOMContentLoaded", cargarTiposAlimento);
-
     // Guardar nueva categoría y unidad de medida
     const guardarCategoriaMedida = async () => {
         const valores = verificarCampos();
@@ -131,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const { categoriaAlimento, unidadMedida } = valores;
 
         try {
-            console.log("Enviando datos...");
             const response = await fetch(`../../controllers/alimento.controller.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -143,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const result = await response.json();
-
             const mensajeModal = document.getElementById("mensajeModal");
             mensajeModal.innerHTML = result.status === "success"
                 ? '<p class="text-success">¡Agregado correctamente!</p>'
@@ -167,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Asignar evento al botón de guardar
     const btnGuardar = document.getElementById("btnGuardarCategoriaMedida");
     if (btnGuardar) {
-        console.log("Botón 'Guardar' encontrado");
         btnGuardar.addEventListener("click", guardarCategoriaMedida);
     } else {
         console.error("El botón #btnGuardarCategoriaMedida no se encontró.");
@@ -240,7 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Comparar las fechas en formato YYYY-MM-DD
         if (fechaCaducidadStr < hoyStr) {
             mostrarMensajeDinamico("La fecha de caducidad no puede ser en el pasado.", 'ERROR');
-            console.log('Error: La fecha de caducidad es menor que hoy.');
             return false;
         }
         return true;
