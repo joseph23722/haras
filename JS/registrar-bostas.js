@@ -45,7 +45,6 @@ document.getElementById('form-registro-bostas').addEventListener('submit', async
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 showToast('Ocurrió un error al registrar la bosta.', 'ERROR');
             });
     }

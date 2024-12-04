@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Datos de los equinos:', data);
                 datosEquinos = data;
                 if (data.length > 0) {
                     let tabla = document.querySelector('#tabla-equinos tbody');
@@ -115,10 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('body').addEventListener('click', (event) => {
         if (event.target && event.target.matches('button.historial')) {
             const idEquino = event.target.getAttribute('data-idequino');
-            console.log('ID Equino:', idEquino);
 
             mostrarHistorial(idEquino);
-
             const historialModal = new bootstrap.Modal(document.getElementById('historialModal'));
             historialModal.show();
         }

@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch('../../controllers/campos.controller.php?operation=getRotaciones')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data)
                     if (data.status !== "error") {
                         const eventos = data.map(evento => {
                             const fechaRotacion = new Date(evento.fechaRotacion);
@@ -22,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 console.error('Fecha no válida:', evento.fechaRotacion);
                                 return null;
                             }
-
                             const hoy = new Date();
                             hoy.setHours(0, 0, 0, 0);
 
@@ -49,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching eventos:', error);
                     failureCallback();
                 });
         },
