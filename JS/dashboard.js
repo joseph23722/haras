@@ -13,11 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function cargarDatosDashboard() {
     // Servicios Realizados este Mes
-    // Realiza la solicitud fetch para obtener los datos del backend
     fetch('../../controllers/dashboard.controller.php?action=servicios_mensual&meta=100')
         .then(response => response.json())  // Asegúrate de que la respuesta sea JSON
         .then(data => {
-            console.log('Respuesta del servidor:', data);  // Verifica la respuesta completa
             
             if (data) {
                 // Actualiza el total de servicios realizados
@@ -102,7 +100,6 @@ function cargarDatosDashboard() {
     fetch('../../controllers/dashboard.controller.php?action=medicamentos_stock')
         .then(response => validarRespuestaJSON(response))
         .then(data => {
-            console.log("Datos de medicamento:", data);
 
             if (data) {
                 // Obtener las cantidades de medicamentos en stock y críticos
@@ -143,7 +140,6 @@ function cargarDatosDashboard() {
     fetch('../../controllers/dashboard.controller.php?action=alimentos_stock')
         .then(response => validarRespuestaJSON(response))
         .then(data => {
-            console.log("Datos de alimento:", data);
 
             if (data) {
                 // Obtener las cantidades de alimentos en stock y baja cantidad
@@ -339,9 +335,6 @@ function actualizarGraficoBarra(serviciosPropios, serviciosMixtos) {
     });
 }
 
-
-
-// Función para actualizar el gráfico de barras de Alimentos
 // Función para actualizar el gráfico de barras de Alimentos
 function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnStockList, alimentosBajaCantidadList) {
     const ctx = document.getElementById("earningsBarChart").getContext("2d");
@@ -455,7 +448,6 @@ function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentos
                 duration: 1500,  // Duración de la animación (1.5 segundos)
                 easing: 'easeOutBounce',  // Efecto de rebote al final de la animación
                 onComplete: function() {
-                    console.log('Animación completada'); // Acción cuando la animación termina
                 }
             }
         }
