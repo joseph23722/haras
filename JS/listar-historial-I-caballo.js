@@ -7,13 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 idTipoinventario: idTipoinventario,
                 idTipomovimiento: idTipomovimiento
             });
-
             const response = await fetch(`../../controllers/implemento.controller.php?${params.toString()}`, {
                 method: "GET"
             });
-
             const textResponse = await response.text();
-
             if (textResponse.startsWith("<")) {
                 return;
             }
