@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     let notificacionesMostradas = false;
-
     const formRegistrarMedicamento = document.querySelector("#form-registrar-medicamento");
     const formEntrada = document.querySelector("#formEntrada");
     const formSalida = document.querySelector("#formSalida");
@@ -41,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Obtener los estilos correspondientes al tipo de mensaje
             const estilo = estilos[tipo] || estilos['INFO'];
-
             // Aplicar estilos al contenedor del mensaje
             messageArea.style.display = 'flex';
             messageArea.style.alignItems = 'center';
@@ -90,11 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 url: '/haras/table-ssp/medicamento_datatable.php',
                 type: "GET",
                 error: function (xhr, error, thrown) {
-                    console.error("Error al cargar las sugerencias:", {
-                        status: xhr.status,
-                        statusText: xhr.statusText,
-                        responseText: xhr.responseText
-                    });
                 }
             },
             columns: [
@@ -116,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
             order: [[0, 'asc']], // Ordenar por tipo de medicamento
             dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-inline-flex me-3"l><"d-inline-flex"f>>rtip',
             initComplete: function () {
-                console.log("Tabla de sugerencias inicializada correctamente.");
             }
         });
 
@@ -128,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('formEditarSugerencia').addEventListener('submit', async (event) => {
         event.preventDefault();
-
         // Obtener los valores del formulario
         const idCombinacion = document.getElementById('editarId').value.trim();
         const tipo = document.getElementById('editarTipo').value.trim();
@@ -142,8 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            console.log("Enviando datos al servidor para actualizar...");
-
             // Realizar la solicitud POST al controlador
             const response = await fetch(`../../controllers/admedi.controller.php`, {
                 method: "POST",
@@ -160,23 +148,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
 
             if (result.status === "success") {
-                console.log("Actualización exitosa.");
                 showToast("Sugerencia actualizada correctamente.", "SUCCESS");
                 $('#modalEditarSugerencia').modal('hide'); // Cerrar el modal de edición
                 $('#tablaSugerencias').DataTable().ajax.reload(); // Recargar la tabla
             } else {
-                console.error("Error en la respuesta del servidor:", result.message);
                 showToast("Error: " + result.message, "ERROR");
             }
         } catch (error) {
-            console.error("Error al actualizar la sugerencia:", error.message);
             showToast("Ocurrió un error al actualizar la sugerencia.", "ERROR");
         }
     });
 
     window.editarSugerencia = function (idCombinacion, tipo, presentacion, dosis) {
-        console.log("Editar sugerencia con ID:", idCombinacion);
-
         // Asignar los valores de la sugerencia a los campos del formulario de edición
         document.getElementById('editarId').value = idCombinacion; // Asigna el ID al campo oculto
         document.getElementById('editarTipo').value = tipo;
@@ -202,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const idEquinoSelect = document.getElementById('idEquino');
 
                 if (!idEquinoSelect) {
-                    console.error("El select con ID 'idEquino' no existe en el DOM.");
                     return;
                 }
 
@@ -238,10 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const result = await response.json();
-
             // Limpiar el select y agregar opciones
             tipoMedicamentoSelect.innerHTML = '<option value="">Seleccione el Tipo de Medicamento</option>';
-
             result.data.forEach(tipo => {
                 const option = document.createElement("option");
                 option.value = tipo.idTipo; // Usar idTipo para identificar cada tipo
@@ -260,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
         } catch (error) {
-            console.error("Error al cargar tipos de medicamentos:", error);
             mostrarMensaje("Error al cargar tipos de medicamentos: " + error.message, 'error');
         }
     };
@@ -315,7 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast("No se olvide ,Debe seleccionar un tipo de medicamento antes de cargar las presentaciones.", 'INFO');
                 return;
             }
-
             const response = await fetch(`../../controllers/admedi.controller.php`, {
                 method: "POST",
                 headers: {
@@ -331,7 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (result.status === "success") {
                 const presentaciones = result.data;
-
                 // Limpiar las opciones previas y agregar el mensaje inicial
                 presentacionSelect.innerHTML = '<option value="">Seleccione la Presentación</option>';
                 presentaciones.forEach(presentacion => {
@@ -389,9 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.querySelector("#salidaMedicamento").appendChild(optionSalida);
                 }
             });
-
-
-
         } catch (error) {
             mostrarMensaje("Error al cargar medicamentos: " + error.message, 'error');
             showToast("Error al cargar medicamentos", 'ERROR');
@@ -662,9 +636,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const cargarLotes = async (nombreMedicamento = '') => {
         const entradaLoteSelect = document.querySelector("#entradaLote");
         const salidaLoteSelect = document.getElementById("salidaLote");
-
-
-
         try {
             // Solicitud al backend
             const response = await fetch(`../../controllers/admedi.controller.php?operation=listarLotes&nombreMedicamento=${encodeURIComponent(nombreMedicamento)}`);
@@ -726,7 +697,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Confirmar la operación
         const confirmar = await ask("¿Estás seguro de que deseas registrar la entrada de este medicamento?", "Registrar Entrada de Medicamento");
-
         if (!confirmar) {
             showToast("Operación cancelada.", "INFO");
             return;
@@ -756,7 +726,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Implementar para la salida de medicamentos
     // Implementar para la salida de medicamentos
     if (formSalida) {
         formSalida.addEventListener("submit", async (event) => {
@@ -835,10 +804,6 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let [key, value] of data.entries()) {
                 console.log(`${key}: ${value}`);
             }
-    
-            // Verificar el nombre del medicamento
-            console.log("Nombre del medicamento enviado:", medicamentoField.value);
-    
             // Intentar enviar los datos al servidor
             try {
                 const response = await fetch('../../controllers/admedi.controller.php', {
@@ -851,7 +816,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
                 // Verificar la respuesta del servidor
                 const textResponse = await response.text();
-                console.log("Respuesta del servidor:", textResponse);
     
                 const result = JSON.parse(textResponse);
                 if (result.status === "success") {
@@ -869,13 +833,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
-    
-    
-    
-
-    
-
     // Controlar la visibilidad de la categoría de equino
     document.querySelectorAll('input[name="tipoSalida"]').forEach((radio) => {
         radio.addEventListener('change', () => {
