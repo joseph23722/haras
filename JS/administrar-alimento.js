@@ -417,40 +417,30 @@ document.addEventListener("DOMContentLoaded", () => {
                         method: "POST",
                         body: data
                     });
-
                     const textResult = await response.text();
                     try {
                         const jsonResult = JSON.parse(textResult);
-                        console.log("Respuesta en JSON recibida:", jsonResult);
-
                         // Verificar si el registro fue exitoso
                         if (jsonResult.status === "success") {
                             mostrarMensajeDinamico(jsonResult.message, 'SUCCESS');
                             showToast(jsonResult.message, 'SUCCESS');
                             formRegistrarAlimento.reset();
                             loadAlimentos();
-                            console.log("Alimento registrado exitosamente.");
                             await cargarLotes();
-                            console.log("Lotes actualizados en los selectores.");
                         } else {
                             mostrarMensajeDinamico(jsonResult.message || "Error en la operación.", 'ERROR');
-                            console.log("Error en la respuesta del servidor:", jsonResult.message || "Error en la operación.");
                         }
                     } catch (jsonParseError) {
                         mostrarMensajeDinamico("Error inesperado en la respuesta del servidor. Ver consola.", 'ERROR');
-                        console.log("Error al parsear el JSON. Respuesta cruda:", textResult);
                     }
                 } catch (error) {
                     mostrarMensajeDinamico("Error en la solicitud: " + error.message, 'ERROR');
-                    console.log("Error en la solicitud:", error);
                 }
             } else {
                 mostrarMensajeDinamico('El usuario canceló la operación.', 'INFO');
-                console.log("El usuario canceló la operación.");
             }
         });
     }
-
 
     // **Función para manejar la notificación de stock bajo/agotado**
     const notificarStockBajo = async () => {
@@ -494,15 +484,12 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`../../controllers/alimento.controller.php?operation=listarLotes&nombreAlimento=${encodeURIComponent(nombreAlimento)}`);
             const textResponse = await response.text(); // Captura la respuesta como texto
-            console.log("Respuesta cruda del servidor:", textResponse); // Log para depuración
     
             // Intenta limpiar la respuesta de HTML innecesario
             const cleanedResponse = textResponse.replace(/<[^>]*>/g, '').trim();
-            console.log("Respuesta limpia:", cleanedResponse); // Log de la respuesta después de limpiar
     
             // Convertir a JSON
             const result = JSON.parse(cleanedResponse);
-            console.log("Respuesta procesada como JSON:", result);
     
             if (result.status === "success") {
                 entradaLoteSelect.innerHTML = '<option value="">Seleccione un lote</option>';
@@ -525,7 +512,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 salidaLoteSelect.innerHTML = '<option value="">No hay lotes disponibles</option>';
             }
         } catch (error) {
-            console.error("Error al cargar los lotes:", error);
             entradaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
             salidaLoteSelect.innerHTML = '<option value="">Error al cargar</option>';
         }
