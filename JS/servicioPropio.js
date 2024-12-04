@@ -14,10 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`${url}?action=listarEquinosPropios&tipoEquino=${tipoEquino === 'padrillo' ? 2 : 1}`);
             const textResponse = await response.text();
-            console.log(`Respuesta como texto (${tipoEquino}):`, textResponse);
 
             const data = JSON.parse(textResponse);
-            console.log(`Datos convertidos a JSON (${tipoEquino}):`, data);
 
             selectElement.innerHTML = '<option value="">Seleccione</option>';
             Object.values(data).forEach(item => {
@@ -27,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectElement.appendChild(option);
             });
         } catch (error) {
-            console.error(`Error al cargar ${tipoEquino}:`, error);
             showToast(`Error al cargar opciones de ${tipoEquino}: ${error.message}`, "ERROR");
         }
     };
@@ -37,10 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch('../../controllers/Propio.controller.php?action=listarMedicamentos');
             const textResponse = await response.text();
-            console.log("Respuesta como texto (medicamentos):", textResponse);
 
             const data = JSON.parse(textResponse);
-            console.log("Datos convertidos a JSON (medicamentos):", data);
 
             idDetalleMedSelect.innerHTML = '<option value="">Seleccione Medicamento (Opcional)</option>';
             data.forEach(item => {
@@ -50,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 idDetalleMedSelect.appendChild(option);
             });
         } catch (error) {
-            console.error("Error al cargar medicamentos:", error);
             showToast(`Error al cargar medicamentos: ${error.message}`, "ERROR");
         }
     };
@@ -60,10 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`../../controllers/Propio.controller.php?action=listarUnidadesPorMedicamento&idMedicamento=${idMedicamento}`);
             const textResponse = await response.text();
-            console.log("Respuesta como texto (unidades):", textResponse);
-
             const data = JSON.parse(textResponse);
-            console.log("Datos convertidos a JSON (unidades):", data);
 
             unidadSelect.innerHTML = '<option value="">Seleccione Unidad</option>';
             data.forEach(unidad => {
@@ -76,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
             unidadSelect.disabled = false;
             cantidadAplicadaInput.disabled = false;
         } catch (error) {
-            console.error("Error al cargar unidades:", error);
             showToast(`Error al cargar unidades: ${error.message}`, "ERROR");
         }
     };
