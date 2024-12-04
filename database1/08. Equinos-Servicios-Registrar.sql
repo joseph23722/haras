@@ -345,8 +345,6 @@ BEGIN
     COMMIT;
 END $$
 DELIMITER ;
- 
- 
 
 -- Obtener Historial Dosis Aplicadas  -- crear vista 
 DROP PROCEDURE IF EXISTS `spu_ObtenerHistorialDosisAplicadas`;
