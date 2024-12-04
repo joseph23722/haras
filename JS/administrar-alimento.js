@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const loteInput = document.querySelector('#lote');
     const nombreAlimentoInput = document.querySelector('#nombreAlimento');
 
-    // Coloca la función `guardarTipoUnidad` aquí, fuera del bloque `DOMContentLoaded`
     // Verificar campos
     const verificarCampos = () => {
         const categoriaAlimento = document.getElementById("inputCategoriaAlimento")?.value?.trim();
