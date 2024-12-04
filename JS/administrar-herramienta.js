@@ -81,7 +81,6 @@ async function cargarTiposTrabajos() {
 
         // Manejo de respuesta como texto para depuración
         const textResponse = await response.text();
-
         // Intentar convertir a JSON
         let data;
         try {
@@ -89,7 +88,6 @@ async function cargarTiposTrabajos() {
         } catch (error) {
             return; // Salir si la respuesta no es JSON válido
         }
-
         if (data.status === 'success') {
             const trabajoSelect = document.getElementById('trabajoRealizado');
             trabajoSelect.innerHTML = '<option value="">Seleccione un trabajo</option>'; // Limpiar opciones previas
@@ -122,7 +120,6 @@ async function cargarHerramientas() {
         } catch (error) {
             return; // Salir si la respuesta no es JSON válido
         }
-
         if (data.status === 'success') {
             const herramientaSelect = document.getElementById('herramientaUsada');
             herramientaSelect.innerHTML = '<option value="">Seleccione una herramienta</option>'; // Limpiar opciones previas
@@ -191,7 +188,6 @@ document.getElementById("tipoEquinoSelect").addEventListener("change", function 
 document.getElementById('form-historial-herrero').addEventListener('submit', function (event) {
     // Prevenir el comportamiento predeterminado de recargar la página
     event.preventDefault();
-
     // Llama a la función de registro de historial
     registrarHistorialHerrero();
 });
@@ -200,7 +196,6 @@ document.getElementById('form-historial-herrero').addEventListener('submit', fun
 async function registrarHistorialHerrero() {
     const formData = new FormData(document.getElementById('form-historial-herrero'));
     formData.append('operation', 'insertarHistorialHerrero');
-
     const datos = {};
     formData.forEach((value, key) => {
         if (key === 'herramientaUsada') key = 'herramientasUsadas'; // Asegura la clave correcta
@@ -346,8 +341,6 @@ document.getElementById("btnTiposYHerramientas").addEventListener("click", funct
 
 // Función para abrir el modal de edición y cerrar el de listado
 function editarTipoOHerramienta(id, nombre, tipo) {
-
-
     // Limpiar el ID para eliminar cualquier prefijo como 'H-' o 'T-'
     const cleanId = id.replace(/^[A-Za-z]-/, ''); // Remueve prefijos como 'H-', 'T-' o similares.
 
