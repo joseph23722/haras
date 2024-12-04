@@ -34,7 +34,6 @@ async function cargarEquinosExternos() {
       showError('No se encontraron equinos externos.');
     }
   } catch (error) {
-    console.error('Error al cargar los equinos:', error);
     showError('Hubo un problema al cargar los equinos externos. Intenta nuevamente más tarde.');
   }
 }

@@ -1,18 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const tableElement = document.querySelector("#medicamentosAplicadosTable tbody");
-
     try {
         // Realizar una solicitud fetch para obtener datos
         const response = await fetch("../../controllers/Propio.controller.php?action=obtenerHistorialDosisAplicadas");
         const data = await response.json();
-
-        console.log(data); // Agrega esto para ver la respuesta completa del servidor
-
         if (data.status === "success") {
             // Iterar sobre los datos y crear filas dinámicas
             data.data.forEach(item => {
-                console.log(item.EstadoMedicamento); // Verifica el valor de EstadoMedicamento
-
                 const row = `
                     <tr>
                         <td>${item.NombreDelEquino}</td>
@@ -45,11 +39,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 },
             });
         } else {
-            console.error("Error al obtener los datos: ", data.message);
             Swal.fire("Error", data.message, "error");
         }
     } catch (error) {
-        console.error("Error en la solicitud: ", error);
         Swal.fire("Error", "No se pudo cargar el historial. Intente nuevamente.", "error");
     }
 });

@@ -54,7 +54,6 @@ const loadAlimentos = async () => {
             showToast("Error en la respuesta del servidor", 'ERROR');
             return;
         }
-
         const result = JSON.parse(textResponse);
         const alimentos = result.data;
 
