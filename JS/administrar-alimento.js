@@ -521,10 +521,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('alimento-select-entrada').addEventListener('change', (event) => {
         const nombreAlimento = event.target.value;
         if (nombreAlimento) {
-            console.log("Alimento seleccionado para entrada:", nombreAlimento); // Log del alimento seleccionado
             cargarLotes(nombreAlimento); // Cargar lotes según el alimento seleccionado
         } else {
-            console.log("No se seleccionó ningún alimento para entrada.");
             cargarLotes(''); // Limpiar los selects de lotes
         }
     });
@@ -533,10 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('alimento-select-salida').addEventListener('change', (event) => {
         const nombreAlimento = event.target.value;
         if (nombreAlimento) {
-            console.log("Alimento seleccionado para salida:", nombreAlimento); // Log del alimento seleccionado
             cargarLotes(nombreAlimento); // Cargar lotes según el alimento seleccionado
         } else {
-            console.log("No se seleccionó ningún alimento para salida.");
             cargarLotes(''); // Limpiar los selects de lotes
         }
     });
@@ -550,18 +546,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const formEntradaAlimento = document.querySelector("#form-entrada-alimento");
 
         if (!cantidadField || !loteField || !alimentoSelectEntrada || !unidadMedidaEntrada) {
-            console.error("Error: Uno o más elementos del formulario no se encontraron en el DOM.");
             showToast("Error en el formulario: faltan elementos.", 'ERROR');
             return;
         }
-
         const cantidad = parseFloat(cantidadField.value) || 0;
         const lote = loteField.value ? loteField.value : null;
 
-
         if (await ask("¿Confirmar entrada de alimento?")) {
-            console.log("Usuario confirmó la entrada de alimento.");
-
             const params = {
                 operation: 'entrada',
                 nombreAlimento: alimentoSelectEntrada.value,
@@ -569,9 +560,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 lote: lote,
                 cantidad: cantidad
             };
-
-            console.log("Parámetros enviados:", params);
-
             const data = JSON.stringify(params);
 
             try {
@@ -584,23 +572,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 const textResponse = await response.text();
-                console.log("Respuesta completa del servidor:", textResponse);
-
                 const result = JSON.parse(textResponse);
-                console.log("Respuesta procesada (JSON):", result);
-
                 if (result.status === "success") {
                     showToast(result.message || "Entrada registrada exitosamente.", 'SUCCESS');
                     formEntradaAlimento.reset();
                     $('#modalEntradaAlimento').modal('hide');
 
                     await loadAlimentos();
-                    console.log("Stock actualizado en la interfaz.");
                 } else {
                     showToast(result.message || "Error al registrar la entrada.", 'ERROR');
                 }
             } catch (error) {
-                console.error("Error en la solicitud:", error.message);
                 showToast("Error en la solicitud: " + error.message, 'ERROR');
             }
         } else {
@@ -624,13 +606,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Validar que la cantidad de uso y merma sumen la cantidad total de salida
             if (cantidad !== (uso + merma)) {
-                console.warn("La cantidad total de salida debe ser igual a la suma de uso y merma.");
                 showToast("La cantidad total debe ser igual a la suma de uso y merma.", 'WARNING');
                 return;
             }
 
             if (!nombreAlimento || !cantidad || !unidadMedida || !lote || idEquino === '' || unidadMedida === '') {
-                console.warn("Faltan datos necesarios para registrar la salida.");
                 showToast("Por favor, complete todos los campos requeridos.", 'WARNING');
                 return;
             }
