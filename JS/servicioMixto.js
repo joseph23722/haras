@@ -14,15 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para cargar opciones en select
     const loadOptions = async (url, selectElement) => {
         try {
-            console.log(`Fetching URL: ${url}`);
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Error al cargar opciones");
             }
-
             const data = await response.json();
-            console.log("Datos recibidos:", data);
-
             // Convertir a array si no lo es
             const items = Array.isArray(data) ? data : Object.values(data);
 
@@ -34,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectElement.appendChild(option);
             });
         } catch (error) {
-            console.error(`Error al cargar opciones: ${error}`);
             showToast(`Error al cargar opciones: ${error.message}`, "ERROR");
         }
     };
@@ -46,8 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error("Error al cargar unidades");
             }
             const data = await response.json();
-            console.log("Unidades recibidas:", data);
-
             unidadSelect.innerHTML = '<option value="">Seleccione Unidad</option>';
             data.forEach(unidad => {
                 const option = document.createElement("option");
@@ -59,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
             unidadSelect.disabled = false;
             cantidadAplicadaInput.disabled = false;
         } catch (error) {
-            console.error("Error al cargar unidades:", error);
             showToast(`Error al cargar unidades: ${error.message}`, "ERROR");
         }
     };
@@ -80,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 idDetalleMedSelect.appendChild(option);
             });
         } catch (error) {
-            console.error(`Error al cargar medicamentos: ${error}`);
             showToast(`Error al cargar medicamentos: ${error.message}`, "ERROR");
         }
     };
