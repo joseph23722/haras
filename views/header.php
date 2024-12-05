@@ -13,7 +13,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
         const nombreCompletoUsuario = '{$nombreCompleto}';
         const identificadorUsuario = '{$correo}';
     </script>";
-        
+
 
 
     // El usuario a ingresado al sistema, solo se le permitirá acceso a las vistas indicadores por su PERFIL
@@ -67,7 +67,7 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
     <link href="http://localhost/haras/plugins/css/adminlte.min.css" rel="stylesheet" />
     <link href="http://localhost/haras/css/styles.css" rel="stylesheet" />
     <link href="http://localhost/haras/css/registro-medi-ali.css" rel="stylesheet" />
-    
+
 
     <!-- Notificaciones -->
     <link href="http://localhost/haras/css/notificaciones.css" rel="stylesheet" />
@@ -83,10 +83,10 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
             <i class="fas fa-hat-cowboy"></i> Haras Rancho Sur
         </a>
 
-        
+
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-    
+
 
         <!-- Navbar Notifications -->
         <div class="ms-auto me-3 my-2 my-md-0">
