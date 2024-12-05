@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-center mt-1">
                 <a href="./revisar-equino" class="btn btn-primary btn-lg mx-3" style="font-size: 1.1em; padding: 12px 30px;">
                     Revisión Básica
-                </a>                
+                </a>
                 <a href="./diagnosticar-equino" class="btn btn-warning btn-lg mx-3" style="font-size: 1.1em; padding: 12px 30px;">
                     Revisión Avanzada
                 </a>
