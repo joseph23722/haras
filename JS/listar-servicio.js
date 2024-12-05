@@ -52,24 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnFiltrar = document.getElementById('btnFiltrar');
     btnFiltrar.addEventListener('click', function () {
         const tipoServicio = document.getElementById('filtroTipoServicio').value;
-    
+
         // Si se seleccionó un tipo de servicio
         if (tipoServicio) {
             fetch(`../../controllers/Propio.controller.php?action=listarServiciosPorTipo&tipoServicio=${tipoServicio}`)
                 .then(response => response.json())
-                .then(data => {    
+                .then(data => {
                     // Verificar si el tbody existe antes de hacer cualquier manipulación
                     const tbody = document.querySelector("#serviciosTable tbody");
-    
+
                     if (tbody) {
                         // Limpiar el contenido actual del tbody antes de agregar nuevas filas
                         tbody.innerHTML = "";
-    
+
                         // Validar que data es un array antes de usar forEach
                         if (Array.isArray(data)) {
                             data.forEach(function (item) {
                                 const nombreHaras = tipoServicio === 'Propio' ? 'Haras Rancho Sur' : item.nombreHaras;
-    
+
                                 const nuevaFila = `
                                     <tr>
                                         <td>${item.idServicio}</td>
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 `;
                                 tbody.innerHTML += nuevaFila;
                             });
-    
+
                             // Mostrar mensaje de éxito
                             mostrarMensajeDinamico(`Se han cargado ${data.length} servicios`, 'SUCCESS');
                         } else if (data.status === "error") {
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         } else {
                             window.simpleTable.update();
                         }
-    
+
                         // Restaurar el color del encabezado
                         const encabezado = document.querySelector("#serviciosTable thead");
                         if (encabezado) {
@@ -127,5 +127,5 @@ document.addEventListener("DOMContentLoaded", () => {
             mostrarMensajeDinamico('Seleccione un tipo de servicio para filtrar', 'INFO');
         }
     });
-    
+
 });
