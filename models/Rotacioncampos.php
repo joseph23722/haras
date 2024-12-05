@@ -54,7 +54,7 @@ class RotacionCampos extends Conexion
             }
         }
     }
-    
+
     // Método para editar un campo
     public function editarCampo($params = []): int
     {
@@ -101,7 +101,7 @@ class RotacionCampos extends Conexion
             return ["status" => "error", "message" => "Error al obtener el campo."];
         }
     }
-    
+
     public function listarCampos(): array
     {
         return parent::getData("spu_campos_listar");
@@ -135,5 +135,4 @@ class RotacionCampos extends Conexion
     {
         return parent::getData("spu_tiposuelo_listar");
     }
-
 }
