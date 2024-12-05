@@ -14,7 +14,6 @@ BEGIN
         AND estado = 1;
  END; 
 
-
 DROP PROCEDURE IF EXISTS `listarMedicamentos`;
 
 CREATE PROCEDURE listarMedicamentos()
@@ -22,7 +21,6 @@ BEGIN
     SELECT idMedicamento, nombreMedicamento
     FROM Medicamentos;
  END; 
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_haras`;
 
@@ -33,7 +31,6 @@ BEGIN
         nombreHaras
     FROM Propietarios;
  END; 
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_por_propietario`;
 
@@ -54,8 +51,6 @@ BEGIN
         e.idPropietario = _idPropietario AND  
         e.sexo = _genero;                      
  END; 
-
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_tipoequinos`;
 
