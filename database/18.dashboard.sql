@@ -13,7 +13,6 @@ BEGIN
         Medicamentos;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `ObtenerResumenStockAlimentos`;
 
 CREATE PROCEDURE ObtenerResumenStockAlimentos()
@@ -40,7 +39,6 @@ BEGIN
     AND idPropietario IS NULL;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `ObtenerServiciosSemanaActual`;
 
 CREATE PROCEDURE ObtenerServiciosSemanaActual()
@@ -49,7 +47,6 @@ BEGIN
     FROM Servicios
     WHERE WEEK(fechaServicio) = WEEK(CURDATE()) AND YEAR(fechaServicio) = YEAR(CURDATE());
 END ;
-
 
 DROP PROCEDURE IF EXISTS `ObtenerResumenServicios`;
 
@@ -62,7 +59,6 @@ BEGIN
     FROM Servicios;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `ObtenerServiciosRealizadosMensual`;
 
 CREATE PROCEDURE ObtenerServiciosRealizadosMensual(IN p_meta INT)
@@ -73,7 +69,6 @@ BEGIN
     WHERE MONTH(fechaServicio) = MONTH(CURDATE()) 
       AND YEAR(fechaServicio) = YEAR(CURDATE());
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_fotografia_dashboard`;
 

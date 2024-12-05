@@ -48,7 +48,6 @@ BEGIN
     COMMIT;
 END ;
 
-
 -- listar historial herrero
 DROP PROCEDURE IF EXISTS `ConsultarHistorialEquino`;
 
@@ -85,7 +84,6 @@ BEGIN
         HH.fecha DESC;
 END ;
 
-
 -- Procedimiento para listar tipos de trabajos
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_trabajos`;
 
@@ -105,7 +103,6 @@ BEGIN
     FROM Herramientas;
 END ;
 
-
 -- Procedimiento para agregar un nuevo tipo de trabajo
 DROP PROCEDURE IF EXISTS `spu_agregar_tipo_trabajo`;
 
@@ -124,7 +121,6 @@ BEGIN
     END IF;
 END ;
 
-
 -- Procedimiento para agregar una nueva herramienta
 DROP PROCEDURE IF EXISTS `spu_agregar_herramienta`;
 
@@ -142,7 +138,6 @@ BEGIN
         VALUES (_nombreHerramienta);
     END IF;
 END ;
-
 
 -- sugerencias herrero
 DROP PROCEDURE IF EXISTS `spu_ListarTiposYHerramientas`;
