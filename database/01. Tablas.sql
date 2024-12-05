@@ -143,7 +143,7 @@ CREATE TABLE Equinos (
 	CONSTRAINT fk_equino_nacionalidad FOREIGN KEY (idNacionalidad) REFERENCES nacionalidades(idNacionalidad)
 ) ENGINE = INNODB;
 
--- POR VERIFICAR E IMPLEMENTAR:
+-- fotografias equinos COLECCION FOTOS
 CREATE TABLE fotografiaequinos 
 (
 	idfotografia	INT PRIMARY KEY AUTO_INCREMENT,
