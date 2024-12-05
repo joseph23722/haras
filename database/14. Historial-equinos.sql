@@ -80,7 +80,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_obtener_historial_equino`;
 
 CREATE PROCEDURE `spu_obtener_historial_equino`(IN p_idEquino INT)

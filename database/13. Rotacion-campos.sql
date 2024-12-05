@@ -27,7 +27,6 @@ BEGIN
         C.numeroCampo DESC;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_tiposuelo_listar`;
 
 CREATE PROCEDURE `spu_tiposuelo_listar`()
@@ -38,7 +37,6 @@ BEGIN
     FROM 
         tipoSuelo C;
 END;
-
 
 DROP PROCEDURE IF EXISTS `spu_obtener_ultima_accion`;
 
@@ -60,7 +58,6 @@ BEGIN
     END IF;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_tipos_rotaciones_listar`;
 
 CREATE PROCEDURE `spu_tipos_rotaciones_listar`()
@@ -74,7 +71,6 @@ BEGIN
     ORDER BY 
         TR.nombreRotacion;
 END;
-
 
 DROP PROCEDURE IF EXISTS `spu_registrar_rotacion_campos`;
 
@@ -105,7 +101,6 @@ BEGIN
     END IF;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_registrar_campo`;
 
 CREATE PROCEDURE `spu_registrar_campo`(
@@ -129,7 +124,6 @@ BEGIN
     END IF;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_rotaciones`;
 
 CREATE PROCEDURE `spu_listar_rotaciones`()
@@ -146,7 +140,6 @@ BEGIN
         Campos c ON rc.idCampo = c.idCampo;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_eliminar_campo`;
 
 CREATE PROCEDURE `spu_eliminar_campo`(
@@ -159,7 +152,6 @@ BEGIN
     -- Ahora eliminar el campo
     DELETE FROM campos WHERE idCampo = p_idCampo;
 END;
-
 
 DROP PROCEDURE IF EXISTS `spu_editar_campo`;
 
@@ -189,7 +181,6 @@ BEGIN
         WHERE idCampo = p_idCampo;
     END IF;
 END;
-
 
 DROP PROCEDURE IF EXISTS `spu_obtener_campoID`;
 
