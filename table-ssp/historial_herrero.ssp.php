@@ -49,11 +49,11 @@ try {
         $searchValue = $_GET['search']['value'];
         $data = array_filter($data, function ($row) use ($searchValue) {
             return stripos($row['nombreEquino'], $searchValue) !== false ||
-                   stripos($row['tipoEquino'], $searchValue) !== false ||
-                   stripos($row['fecha'], $searchValue) !== false ||
-                   stripos($row['TrabajoRealizado'], $searchValue) !== false ||
-                   stripos($row['HerramientasUsadas'], $searchValue) !== false ||
-                   stripos($row['observaciones'], $searchValue) !== false;
+                stripos($row['tipoEquino'], $searchValue) !== false ||
+                stripos($row['fecha'], $searchValue) !== false ||
+                stripos($row['TrabajoRealizado'], $searchValue) !== false ||
+                stripos($row['HerramientasUsadas'], $searchValue) !== false ||
+                stripos($row['observaciones'], $searchValue) !== false;
         });
     }
 
@@ -79,7 +79,6 @@ try {
 
     // Enviar el resultado como JSON
     echo json_encode($output);
-
 } catch (PDOException $e) {
     // Manejar errores de conexión a la base de datos
     echo json_encode(array("error" => "Error en la conexión a la base de datos: " . $e->getMessage()));

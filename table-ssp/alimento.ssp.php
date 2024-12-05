@@ -14,7 +14,8 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = []) {
+function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
+{
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -44,10 +45,10 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
             $searchValue = $_GET['search']['value'];
             $data = array_filter($data, function ($row) use ($searchValue) {
                 return stripos($row['nombreAlimento'], $searchValue) !== false ||
-                       stripos($row['nombreTipoAlimento'], $searchValue) !== false ||
-                       stripos($row['unidadMedidaNombre'], $searchValue) !== false ||
-                       stripos($row['lote'], $searchValue) !== false ||
-                       stripos($row['estado'], $searchValue) !== false;
+                    stripos($row['nombreTipoAlimento'], $searchValue) !== false ||
+                    stripos($row['unidadMedidaNombre'], $searchValue) !== false ||
+                    stripos($row['lote'], $searchValue) !== false ||
+                    stripos($row['estado'], $searchValue) !== false;
             });
         }
 

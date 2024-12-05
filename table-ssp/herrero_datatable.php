@@ -47,8 +47,8 @@ try {
     if (!empty($searchValue)) {
         $data = array_filter($data, function ($row) use ($searchValue) {
             return stripos($row['id'], $searchValue) !== false ||
-                   stripos($row['nombre'], $searchValue) !== false ||
-                   stripos($row['tipo'], $searchValue) !== false;
+                stripos($row['nombre'], $searchValue) !== false ||
+                stripos($row['tipo'], $searchValue) !== false;
         });
     }
 

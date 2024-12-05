@@ -45,7 +45,7 @@ try {
     if (!empty($searchValue)) {
         $data = array_filter($data, function ($row) use ($searchValue) {
             return stripos($row['TipoAlimento'], $searchValue) !== false ||
-                   stripos($row['UnidadMedida'], $searchValue) !== false;
+                stripos($row['UnidadMedida'], $searchValue) !== false;
         });
     }
 
