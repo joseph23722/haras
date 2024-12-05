@@ -32,7 +32,9 @@
         try {
             const response = await fetch('../controllers/alimento.controller.php', {
                 method: 'POST',
-                body: new URLSearchParams({ operation: 'getAllAlimentos' }) // Llamada al método para obtener los alimentos
+                body: new URLSearchParams({
+                    operation: 'getAllAlimentos'
+                }) // Llamada al método para obtener los alimentos
             });
 
             if (!response.ok) {
