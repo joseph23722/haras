@@ -76,7 +76,7 @@ function generarPDF() {
                     margin: [0, 0, 0, 20]
                 },
                 {
-                    text: `Fecha de creación: ${new Date().toLocaleString()}` , // Fecha
+                    text: `Fecha de creación: ${new Date().toLocaleString()}`, // Fecha
                     style: 'subheader',
                     alignment: 'center',
                     margin: [0, 0, 0, 20]
@@ -89,7 +89,7 @@ function generarPDF() {
                 {
                     table: {
                         headerRows: 1,
-                        widths: ['auto', 'auto', 'auto',75, 'auto', 'auto', 'auto', 'auto'], // Definir el ancho de las columnas
+                        widths: ['auto', 'auto', 'auto', 75, 'auto', 'auto', 'auto', 'auto'], // Definir el ancho de las columnas
                         body: [
                             [
                                 { text: 'Nombre', style: 'tableHeader' },
@@ -155,7 +155,7 @@ function generarPDF() {
         var newWindow = window.open();
 
         // Generar el buffer del PDF
-        pdfDoc.getBuffer(function(buffer) {
+        pdfDoc.getBuffer(function (buffer) {
             // Crear un Blob con los datos del PDF
             var blob = new Blob([buffer], { type: 'application/pdf' });
             var url = URL.createObjectURL(blob);
@@ -165,7 +165,7 @@ function generarPDF() {
 
             // Cambiar el título de la nueva ventana
             // Usamos setTimeout para asegurarnos de que el documento esté cargado
-            setTimeout(function() {
+            setTimeout(function () {
                 newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
             }, 500); // Esperar medio segundo para que la ventana cargue el PDF
         });
@@ -274,17 +274,17 @@ const configurarDataTableMedicamentos = (orden = null) => {
         ajax: {
             url: '/haras/table-ssp/medicamento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
             type: 'GET',
-            data: function(d) {
+            data: function (d) {
                 if (orden) {
                     d.orden = orden;
                 }
                 console.log("Datos enviados al servidor:", d); // Agregar este log para ver los datos enviados al servidor
             },
-            dataSrc: function(json) {
+            dataSrc: function (json) {
                 console.log("Respuesta del servidor:", json); // Agregar este log para ver la respuesta del servidor
                 return json.data;
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("Error al cargar datos de la tabla:", error);
             }
         },
@@ -313,7 +313,7 @@ const configurarDataTableMedicamentos = (orden = null) => {
             {
                 data: null,
                 orderable: false,
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     return `<button class="btn btn-danger btn-sm" onclick="borrarMedicamento('${row.idMedicamento}')">
                                 <i class="fas fa-trash"></i>
                             </button>`; // Esto no se exportará
@@ -348,13 +348,13 @@ const configurarDataTableMedicamentos = (orden = null) => {
     });
 
     // Evento para recargar la tabla cuando se haga clic en el botón de filtro
-    $('#filtrarButton').on('click', function() {
+    $('#filtrarButton').on('click', function () {
         const orden = $('#ordenSelect').val();
         console.log("Orden seleccionado:", orden); // Agregar este log para ver el orden seleccionado
         table.ajax.url('/haras/table-ssp/medicamento.ssp.php?orden=' + orden).load(); // Recargar la tabla con el nuevo orden
     });
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     configurarDataTableMedicamentos();  // Inicializar el DataTable
 });
