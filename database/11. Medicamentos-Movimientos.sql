@@ -45,7 +45,6 @@ BEGIN
         m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_medicamentos_registrar`;
 
 CREATE PROCEDURE spu_medicamentos_registrar(
@@ -132,7 +131,6 @@ BEGIN
 
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_medicamentos_entrada`;
 
 CREATE PROCEDURE spu_medicamentos_entrada(
@@ -198,10 +196,7 @@ BEGIN
 
 END ;
 
-
-
 DROP PROCEDURE IF EXISTS `spu_medicamentos_salida`;
-
 
 CREATE PROCEDURE spu_medicamentos_salida(
     IN _idUsuario INT,                    -- Usuario que realiza la operación
@@ -259,8 +254,6 @@ BEGIN
     -- Confirmar transacción
     COMMIT;
 END;
-
-
 
 DROP PROCEDURE IF EXISTS `spu_agregar_nueva_combinacion_medicamento`;
 
@@ -332,7 +325,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_validar_registrar_combinacion`;
 
 CREATE PROCEDURE spu_validar_registrar_combinacion(
@@ -391,7 +383,6 @@ BEGIN
     END IF;
 END ;
 
-
 -- sugerencias
 DROP PROCEDURE IF EXISTS `spu_listar_tipos_presentaciones_dosis`;
 
@@ -427,7 +418,6 @@ BEGIN
     JOIN CombinacionesMedicamentos c ON t.idTipo = c.idTipo
     ORDER BY t.tipo ASC;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_presentaciones_por_tipo`;
 
@@ -465,7 +455,6 @@ BEGIN
         m.cantidad_stock ASC
     LIMIT 10; -- Limitar a las primeras 10 notificaciones
 END ;
-
 
 -- historial 
 DROP PROCEDURE IF EXISTS `spu_historial_completo_medicamentos`;
@@ -584,7 +573,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_medicamentos_por_nombre`;
 
 CREATE PROCEDURE spu_listar_lotes_medicamentos_por_nombre(IN nombreMedicamento VARCHAR(255))
@@ -599,7 +587,6 @@ BEGIN
     WHERE 
         m.nombreMedicamento = nombreMedicamento; -- Filtrar por el nombre del medicamento
 END ;
-
 
 INSERT INTO TiposMedicamentos (tipo) VALUES
 ('Antibiótico'),

@@ -118,7 +118,6 @@ BEGIN
 
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_propiosMedi`;
 
 CREATE PROCEDURE spu_listar_equinos_propiosMedi()
@@ -136,7 +135,6 @@ BEGIN
 		AND idTipoEquino IN (1, 2, 3, 4)
 		AND estado = 1;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_consultar_historial_medicoMedi`;
 
@@ -180,7 +178,6 @@ BEGIN
     ORDER BY 
         DM.fechaInicio DESC;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_gestionar_tratamiento`;
 
@@ -234,7 +231,6 @@ BEGIN
         SET MESSAGE_TEXT = 'Acción no válida. Use "pausar", "eliminar" o "continuar".';
     END IF;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_notificar_tratamientos_veterinarios`;
 
@@ -291,7 +287,6 @@ BEGIN
         AND DM.fechaFin BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE();
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_Listar_ViasAdministracion`;
 
 CREATE PROCEDURE spu_Listar_ViasAdministracion()
@@ -319,8 +314,6 @@ BEGIN
     END IF;
 END ;
 
-
-
 INSERT INTO ViasAdministracion (nombreVia, descripcion)
 VALUES 
 ('Oral', 'Por la boca.'),
@@ -330,4 +323,3 @@ VALUES
 ('Tópica', 'Sobre la piel.'),
 ('Rectal', 'Por el recto.'),
 ('Inhalatoria', 'Por las vías respiratorias.');
-
