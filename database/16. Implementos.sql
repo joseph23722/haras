@@ -46,7 +46,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_movimiento_implemento`;
 
 CREATE PROCEDURE spu_movimiento_implemento(
@@ -137,7 +136,6 @@ BEGIN
 
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_cambiar_estado_implemento`;
 
 CREATE PROCEDURE spu_cambiar_estado_implemento(
@@ -156,7 +154,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_implementos_por_tipo`;
 
 CREATE PROCEDURE spu_listar_implementos_por_tipo(
@@ -169,7 +166,6 @@ BEGIN
     WHERE idTipoinventario = p_idTipoinventario
     ORDER BY estado DESC;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_implementos_con_cantidad`;
 
@@ -188,14 +184,12 @@ BEGIN
         nombreProducto;  -- Ordena por nombre, puedes cambiar el orden si lo necesitas
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_tipo_movimiento`;
 
 CREATE PROCEDURE `spu_listar_tipo_movimiento`()
 BEGIN
     SELECT * FROM tipomovimientos;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_historial_movimiento`;
 

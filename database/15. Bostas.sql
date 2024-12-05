@@ -59,7 +59,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_obtener_pesos`;
 
 CREATE PROCEDURE `spu_obtener_pesos`()
@@ -86,7 +85,6 @@ BEGIN
     SELECT v_peso_semanal AS peso_semanal,
            v_peso_mensual AS peso_mensual;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_listar_bostas`;
 
@@ -117,7 +115,6 @@ BEGIN
         b.fecha ASC;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_eliminar_bosta`;
 
 CREATE PROCEDURE `spu_eliminar_bosta`(
@@ -133,7 +130,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se encontró un registro con el ID proporcionado.';
     END IF;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_editar_bosta`;
 
