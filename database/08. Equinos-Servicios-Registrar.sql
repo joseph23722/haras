@@ -126,7 +126,6 @@ BEGIN
     SELECT _idEquino AS idEquino;
 END; 
 
-
 DROP PROCEDURE IF EXISTS `spu_buscar_nacionalidad`;
 
 CREATE PROCEDURE `spu_buscar_nacionalidad`(IN _nacionalidad VARCHAR(255))
@@ -135,7 +134,6 @@ BEGIN
     FROM nacionalidades
     WHERE nacionalidad LIKE CONCAT('%', _nacionalidad, '%');
 END ;
-
 
 DROP PROCEDURE IF EXISTS `registrarServicio`;
 
@@ -270,7 +268,6 @@ BEGIN
 
 END ;
 
-
 -- registrar dosis aplicada
 DROP PROCEDURE IF EXISTS `spu_registrar_dosis_aplicada`;
 
@@ -344,9 +341,6 @@ BEGIN
     -- Confirmar la transacción
     COMMIT;
 END ;
-
- 
- 
 
 -- Obtener Historial Dosis Aplicadas  -- crear vista 
 DROP PROCEDURE IF EXISTS `spu_ObtenerHistorialDosisAplicadas`;
@@ -423,7 +417,6 @@ BEGIN
         Categoria;
 
 END ;
-
 
 -- editar version 2 - funcionando:
 DROP PROCEDURE IF EXISTS spu_equino_editar;

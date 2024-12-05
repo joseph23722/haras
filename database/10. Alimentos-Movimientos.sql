@@ -77,7 +77,6 @@ BEGIN
 
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_obtenerAlimentosConLote`;
 
 CREATE PROCEDURE spu_obtenerAlimentosConLote(IN _idAlimento INT)
@@ -154,7 +153,6 @@ BEGIN
 
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_alimentos_entrada`;
 
 CREATE PROCEDURE spu_alimentos_entrada(
@@ -216,7 +214,6 @@ BEGIN
 
     COMMIT;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_alimentos_salida`;
 
@@ -299,7 +296,6 @@ BEGIN
 
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_lotes_por_nombre`;
 
 CREATE PROCEDURE spu_listar_lotes_por_nombre(IN nombreAlimento VARCHAR(100))
@@ -313,7 +309,6 @@ BEGIN
     WHERE 
         a.nombreAlimento = nombreAlimento;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_notificar_stock_bajo_alimentos`;
 
@@ -469,7 +464,6 @@ BEGIN
     END IF;
 END ;
 
-
 DROP PROCEDURE IF EXISTS `spu_eliminarAlimento`;
 
 CREATE PROCEDURE spu_eliminarAlimento(IN _idAlimento INT)
@@ -493,7 +487,6 @@ BEGIN
     FROM TipoAlimentos 
     ORDER BY tipoAlimento;
 END ;
-
 
 DROP PROCEDURE IF EXISTS `spu_obtenerUnidadesPorTipoAlimento`;
 
@@ -551,7 +544,6 @@ BEGIN
     END IF;
 END ;
 
-
 -- sugerencias 
 DROP PROCEDURE IF EXISTS `ObtenerSugerenciasAlimentos`;
 
@@ -572,7 +564,6 @@ BEGIN
         tal.tipoAlimento ASC, 
         uma.nombreUnidad ASC;
 END;
-
 
 -- editar sugerencias
 DROP PROCEDURE IF EXISTS `EditarCombinacionAlimento`;
@@ -615,19 +606,3 @@ BEGIN
     WHERE idTipoAlimento = p_IdTipoActual AND idUnidadMedida = p_IdUnidadActual;
 
 END;
-
-
--- esto no va es prueba 
-/*
-CALL spu_Listar_TiposYUnidadesAlimentos('', 0, 10);
--- tipo de equino - alimento ------ 
-DROP PROCEDURE IF EXISTS `spu_obtener_tipo_equino_alimento`;
-;
-CREATE PROCEDURE spu_obtener_tipo_equino_alimento()
-BEGIN
-    SELECT idTipoEquino, tipoEquino
-    FROM TipoEquinos
-    WHERE tipoEquino IN ('Yegua', 'Padrillo', 'Potranca', 'Potrillo');
-END ;
-
-*/
