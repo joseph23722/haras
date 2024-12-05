@@ -32,7 +32,6 @@ BEGIN
     END IF;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_usuarios_registrar`;
 
 CREATE PROCEDURE spu_usuarios_registrar
@@ -59,7 +58,6 @@ BEGIN
         SET _idUsuario = LAST_INSERT_ID(); 
     END IF;
 END;
-
 
 DROP PROCEDURE IF EXISTS `spu_actualizar_contraseña`;
 

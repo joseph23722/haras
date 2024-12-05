@@ -16,8 +16,7 @@ BEGIN
     WHERE 
         USU.correo = _correo
         AND USU.estado = 1; -- Filtro para solo usuarios activos
-END;
- 
+END; 
 
 DROP PROCEDURE IF EXISTS `spu_obtener_acceso_usuario`;
  
@@ -35,4 +34,3 @@ BEGIN
        LEFT JOIN modulos MO ON MO.idmodulo = VI.idmodulo
        WHERE PE.idRol = _idRol;
 END;
- 
