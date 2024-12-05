@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="/haras/css/404.css" rel="stylesheet" />
 
 </head>
+
 <body>
     <div class="background-animation"></div>
     <div class="container">
@@ -17,4 +19,5 @@
         <a href="/HARAS/views/home/index.php">Volver a la página principal</a>
     </div>
 </body>
+
 </html>
