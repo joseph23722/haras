@@ -66,24 +66,24 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       <!-- Servicios Realizados GRAFICO + TOTAL -->
       <!-- Servicios Realizados GRAFICO + TOTAL -->
       <div class="col-md-6 col-lg-4">
-          <div class="card">
-              <h5 class="card-title">Servicios Realizados</h5>
-              <h3 class="text-accent"><?php echo $totalServiciosMes; ?></h3> <!-- Este valor lo actualizarás desde JS -->
-              <p class="small text-muted">Total de Servicios Realizados este Mes</p>
-              <div class="progress my-2">
-                  <!-- Barra de progreso, esta se actualizará dinámicamente también -->
-                  <div class="progress-bar bg-success" role="progressbar" 
-                      style="width: <?php echo $porcentajeProgreso; ?>%;" 
-                      aria-valuenow="<?php echo $porcentajeProgreso; ?>" 
-                      aria-valuemin="0" aria-valuemax="100">
-                      <?php echo $porcentajeProgreso; ?>%
-                  </div>
-              </div>
-              <!-- Canvas del gráfico -->
-              <div class="chart-container mt-3">
-                  <canvas id="salesLineChart" style="max-height: 380px; width: 100%;"></canvas>
-              </div>
+        <div class="card">
+          <h5 class="card-title">Servicios Realizados</h5>
+          <h3 class="text-accent"><?php echo $totalServiciosMes; ?></h3> <!-- Este valor lo actualizarás desde JS -->
+          <p class="small text-muted">Total de Servicios Realizados este Mes</p>
+          <div class="progress my-2">
+            <!-- Barra de progreso, esta se actualizará dinámicamente también -->
+            <div class="progress-bar bg-success" role="progressbar"
+              style="width: <?php echo $porcentajeProgreso; ?>%;"
+              aria-valuenow="<?php echo $porcentajeProgreso; ?>"
+              aria-valuemin="0" aria-valuemax="100">
+              <?php echo $porcentajeProgreso; ?>%
+            </div>
           </div>
+          <!-- Canvas del gráfico -->
+          <div class="chart-container mt-3">
+            <canvas id="salesLineChart" style="max-height: 380px; width: 100%;"></canvas>
+          </div>
+        </div>
       </div>
 
 
