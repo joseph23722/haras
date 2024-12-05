@@ -1,5 +1,3 @@
-
-
 // Definir las opciones de animación globalmente
 const animationOptions = {
     duration: 1500,
@@ -16,7 +14,7 @@ function cargarDatosDashboard() {
     fetch('../../controllers/dashboard.controller.php?action=servicios_mensual&meta=100')
         .then(response => response.json())  // Asegúrate de que la respuesta sea JSON
         .then(data => {
-            
+
             if (data) {
                 // Actualiza el total de servicios realizados
                 const totalServiciosMesElement = document.querySelector(".text-accent");
@@ -242,7 +240,7 @@ function actualizarGraficoLineal(dataSeries) {
     }
 
     const salesCtx = document.getElementById('salesLineChart').getContext('2d');
-    
+
     // Etiquetas para semanas del mes
     const semanasDelMes = ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5'];
 
@@ -280,7 +278,7 @@ function actualizarGraficoLineal(dataSeries) {
                     }
                 }
             },
-            animation: { 
+            animation: {
                 duration: 1000,  // Duración de la animación
                 easing: 'easeOutQuart'  // Efecto de animación de la línea
             }
@@ -326,7 +324,7 @@ function actualizarGraficoBarra(serviciosPropios, serviciosMixtos) {
             animation: {
                 duration: 1500,  // Duración de la animación en milisegundos
                 easing: 'easeOutBounce', // Tipo de animación (rebote al final)
-                onComplete: function() {
+                onComplete: function () {
                     // Llamar a cualquier función adicional al completar la animación (opcional)
                     console.log('Animación completada');
                 }
@@ -386,7 +384,7 @@ function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnSt
             animation: {
                 duration: 1500,  // Duración de la animación en milisegundos (1.5 segundos)
                 easing: 'easeOutBounce', // Efecto de rebote en la animación
-                onComplete: function() {
+                onComplete: function () {
                     // Llamada de función opcional cuando la animación se completa
                     console.log('Animación completada');
                 }
@@ -447,7 +445,7 @@ function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentos
                 animateScale: true,  // Habilitar animación de escala (expandir/contraer)
                 duration: 1500,  // Duración de la animación (1.5 segundos)
                 easing: 'easeOutBounce',  // Efecto de rebote al final de la animación
-                onComplete: function() {
+                onComplete: function () {
                 }
             }
         }

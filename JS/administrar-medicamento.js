@@ -730,63 +730,63 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formSalida) {
         formSalida.addEventListener("submit", async (event) => {
             event.preventDefault();
-    
+
             // Obtener la cantidad
             const cantidadField = document.getElementById('salidaCantidad');
             const cantidad = parseFloat(cantidadField.value) || 0;
-    
+
             // Validación de cantidad
             if (cantidad <= 0) {
                 showToast("La cantidad debe ser mayor a 0.", 'ERROR');
                 return;
             }
-    
+
             // Obtener campos adicionales
             const motivoField = document.getElementById('motivoSalida');
             const loteField = document.getElementById('salidaLote');
             const medicamentoField = document.getElementById('salidaMedicamento');
             const tipoEquinoField = document.querySelector('input[name="tipoSalida"]:checked'); // Tipo de salida (Equino u otro)
-    
+
             // Validación de motivo
             const motivo = motivoField.value.trim();
             if (!motivo) {
                 showToast("Debe especificar un motivo para la salida del medicamento.", 'ERROR');
                 return;
             }
-    
+
             // Validación de tipo de salida
             const tipoSalida = tipoEquinoField ? tipoEquinoField.value : null;
             if (!tipoSalida) {
                 showToast("Debe seleccionar un tipo de salida.", 'ERROR');
                 return;
             }
-    
+
             // Validar categoría de equino si se selecciona "Equino"
             let idEquino = null;
             if (tipoSalida === "equino") {
                 const idEquinoField = document.getElementById('idEquino'); // Campo del ID del equino
                 idEquino = idEquinoField ? idEquinoField.value : null;
-    
+
                 if (!idEquino) {
                     showToast("Debe seleccionar una categoría de equino.", 'ERROR');
                     return;
                 }
             }
-    
+
             // Validación de lote si es requerido
             const lote = loteField.value.trim();
             if (lote === "") {
                 showToast("Debe seleccionar un lote.", 'ERROR');
                 return;
             }
-    
+
             // Confirmación de la operación
             const confirmar = await ask("¿Estás seguro de que deseas registrar la salida de este medicamento?", "Registrar Salida de Medicamento");
             if (!confirmar) {
                 showToast("Operación cancelada.", "INFO");
                 return;
             }
-    
+
             // Preparar los datos para enviar
             const data = new URLSearchParams();
             data.append('operation', 'salida');
@@ -795,11 +795,11 @@ document.addEventListener("DOMContentLoaded", () => {
             data.append('motivo', motivo);
             data.append('tipoSalida', tipoSalida);
             data.append('lote', lote); // Asegúrate de que este campo contiene el valor correcto
-    
+
             if (tipoSalida === "equino") {
                 data.append('idEquino', idEquino);
             }
-    
+
             // Mostrar los datos que se enviarán al servidor
             for (let [key, value] of data.entries()) {
                 console.log(`${key}: ${value}`);
@@ -813,10 +813,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     },
                     body: data
                 });
-    
+
                 // Verificar la respuesta del servidor
                 const textResponse = await response.text();
-    
+
                 const result = JSON.parse(textResponse);
                 if (result.status === "success") {
                     showToast("La salida de medicamento se registró correctamente.", "SUCCESS");
@@ -838,7 +838,7 @@ document.addEventListener("DOMContentLoaded", () => {
         radio.addEventListener('change', () => {
             const categoriaEquinoDiv = document.getElementById('categoriaEquinoDiv');
             const tipoSalida = document.querySelector('input[name="tipoSalida"]:checked').value;
-            
+
             if (tipoSalida === 'equino') {
                 categoriaEquinoDiv.style.display = 'block'; // Mostrar el campo de categoría de equino
             } else {
