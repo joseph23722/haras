@@ -109,13 +109,13 @@ document.addEventListener("DOMContentLoaded", () => {
         parametros.append("nrodocumento", $("#dni").val());
         parametros.append("fechaIngreso", $("#fechaIngreso").val());
         parametros.append("tipoContrato", $("#tipoContrato").val());
-    
+
         try {
             const response = await fetch(`../../controllers/persona.controller.php`, {
                 method: 'POST',
                 body: parametros
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 if (data['idPersonal'] > 0) {
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("Hubo un error en la solicitud: " + error.message, "ERROR");
         }
     }
-    
+
 
     // Registrar Usuario
     async function registrarUsuario(event) {

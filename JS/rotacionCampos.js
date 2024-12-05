@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (await ask('¿Está seguro de que desea editar este campo?')) {
             const formData = new FormData(document.getElementById('form-editar-campo'));
             formData.append('operation', 'editarCampo');
-    
+
             try {
                 const response = await fetch('../../controllers/campos.controller.php', {
                     method: 'POST',
@@ -185,15 +185,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = new FormData();
             formData.append('operation', 'eliminarCampo');
             formData.append('idCampo', idCampo);
-    
+
             try {
                 const response = await fetch('../../controllers/campos.controller.php', {
                     method: 'POST',
                     body: formData
                 });
-    
+
                 const data = await response.json();
-    
+
                 if (data.status !== "error") {
                     inicializarDataTable(); // Actualizar la tabla de datos
                 } else {
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('El usuario canceló la operación de eliminación.');
         }
     }
-    
+
     // Registrar nuevo campo
     document.getElementById('guardarCampo').addEventListener('click', async function () {
         const nuevoCampoForm = document.getElementById('form-nuevo-campo');
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Registrar rotación
     document.getElementById('form-rotacion-campos').addEventListener('submit', async function (event) {
         event.preventDefault();
-    
+
         // Confirmar la acción con el usuario
         if (await ask('¿Está seguro de que desea registrar esta rotación de campos?')) {
             // Crear los datos del formulario
