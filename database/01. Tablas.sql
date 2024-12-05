@@ -143,7 +143,7 @@ CREATE TABLE Equinos (
 	CONSTRAINT fk_equino_nacionalidad FOREIGN KEY (idNacionalidad) REFERENCES nacionalidades(idNacionalidad)
 ) ENGINE = INNODB;
 
--- fotografias equinos COLECCION FOTOS
+-- 11. fotografias equinos COLECCION FOTOS
 CREATE TABLE fotografiaequinos 
 (
 	idfotografia	INT PRIMARY KEY AUTO_INCREMENT,
@@ -155,7 +155,7 @@ CREATE TABLE fotografiaequinos
 -- ON DELETE CASCADE evita que queden datos huerfanos en la tabla
 )ENGINE = INNODB;
 
--- 11. Implementos
+-- 12. Implementos
 CREATE TABLE Implementos (
     idInventario 		INT PRIMARY KEY AUTO_INCREMENT,
     idTipoinventario 	INT NOT NULL,
@@ -173,7 +173,7 @@ CREATE TABLE Implementos (
     CONSTRAINT fk_implemento_movimiento FOREIGN KEY (idTipomovimiento) REFERENCES TipoMovimientos(idTipomovimiento)
 ) ENGINE = INNODB;
 
--- 12. Historial Implemento
+-- 13. Historial Implemento
 CREATE TABLE HistorialImplemento (
     idHistorial        INT PRIMARY KEY AUTO_INCREMENT,
     idInventario       INT NOT NULL,
@@ -188,19 +188,19 @@ CREATE TABLE HistorialImplemento (
     CONSTRAINT fk_historial_tipoinventario FOREIGN KEY (idTipoinventario) REFERENCES TipoInventarios(idTipoinventario)
 ) ENGINE = INNODB;
 
--- 13. Tabla Unidades de Medida - alimento
+-- 14. Tabla Unidades de Medida - alimento
 CREATE TABLE UnidadesMedidaAlimento (
     idUnidadMedida 		INT PRIMARY KEY AUTO_INCREMENT,
     nombreUnidad 		VARCHAR(10) NOT NULL UNIQUE      -- Ejemplo: 'Kg', 'L'
 ) ENGINE = INNODB;
 
--- 14. Tabla de Tipos de Alimentos
+-- 15. Tabla de Tipos de Alimentos
 CREATE TABLE TipoAlimentos (
     idTipoAlimento 		INT PRIMARY KEY AUTO_INCREMENT,
     tipoAlimento 		VARCHAR(50) NOT NULL UNIQUE      -- Ejemplo: 'Granos', 'Suplemento'
 ) ENGINE = INNODB;
 
--- 15. Tabla Lotes de Alimentos
+-- 16. Tabla Lotes de Alimentos
 CREATE TABLE LotesAlimento (
     idLote 				INT PRIMARY KEY AUTO_INCREMENT,
     lote 				VARCHAR(50) NOT NULL,
@@ -209,7 +209,7 @@ CREATE TABLE LotesAlimento (
     estadoLote 			ENUM('No Vencido', 'Vencido', 'Agotado') DEFAULT 'No Vencido'
 ) ENGINE = INNODB;
 
--- 16. Tabla Intermedia para la Relación entre Tipos de Alimento y Unidades de Medida
+-- 17. Tabla Intermedia para la Relación entre Tipos de Alimento y Unidades de Medida
 CREATE TABLE TipoAlimento_UnidadMedida (
     idTipoAlimento 		INT NOT NULL,
     idUnidadMedida 		INT NOT NULL,
@@ -220,7 +220,7 @@ CREATE TABLE TipoAlimento_UnidadMedida (
 ) ENGINE = INNODB;
 
 
--- 17. Tabla Alimentos
+-- 18. Tabla Alimentos
 CREATE TABLE Alimentos (
     idAlimento           INT PRIMARY KEY AUTO_INCREMENT,
     idUsuario            INT NOT NULL,
@@ -242,7 +242,7 @@ CREATE TABLE Alimentos (
     CONSTRAINT fk_alimento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
--- 18. Tabla MermasAlimento
+-- 19. Tabla MermasAlimento
 CREATE TABLE MermasAlimento (
     idMerma       	INT PRIMARY KEY AUTO_INCREMENT,
     idAlimento     	INT NOT NULL,
@@ -252,7 +252,7 @@ CREATE TABLE MermasAlimento (
     CONSTRAINT fk_merma_alimento FOREIGN KEY (idAlimento) REFERENCES Alimentos(idAlimento) ON DELETE CASCADE
 ) ENGINE = INNODB;
 
--- 19. Tabla HistorialMovimientos - alimento
+-- 20. Tabla HistorialMovimientos - alimento
 CREATE TABLE HistorialMovimientos (
     idMovimiento 		INT AUTO_INCREMENT PRIMARY KEY,
     idAlimento 			INT NOT NULL,
