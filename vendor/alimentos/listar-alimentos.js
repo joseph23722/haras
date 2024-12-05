@@ -141,7 +141,7 @@ function generarPDF() {
         var newWindow = window.open();
 
         // Generar el buffer del PDF
-        pdfDoc.getBuffer(function(buffer) {
+        pdfDoc.getBuffer(function (buffer) {
             // Crear un Blob con los datos del PDF
             var blob = new Blob([buffer], { type: 'application/pdf' });
             var url = URL.createObjectURL(blob);
@@ -151,7 +151,7 @@ function generarPDF() {
 
             // Cambiar el título de la nueva ventana
             // Usamos setTimeout para asegurarnos de que el documento esté cargado
-            setTimeout(function() {
+            setTimeout(function () {
                 newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
             }, 500); // Esperar medio segundo para que la ventana cargue el PDF
         });
@@ -253,17 +253,17 @@ const configurarDataTableAlimentos = (orden = null) => {
         ajax: {
             url: '/haras/table-ssp/alimento.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
             type: 'GET',
-            data: function(d) {
+            data: function (d) {
                 if (orden) {
                     d.orden = orden;
                 }
                 console.log("Parámetros enviados:", d); // Log para verificar los parámetros enviados
             },
-            dataSrc: function(json) {
+            dataSrc: function (json) {
                 console.log("Datos recibidos del servidor:", json); // Log para verificar los datos recibidos
                 return json.data;
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("Error al cargar datos de la tabla:", error);
                 console.log("Estado:", status);
                 console.log("Respuesta del servidor:", xhr.responseText);
@@ -291,11 +291,11 @@ const configurarDataTableAlimentos = (orden = null) => {
             { data: 'costo', searchable: false },
             { data: 'fechaCaducidad', searchable: true },
             { data: 'estado', searchable: false },
-            { 
-                data: null, 
+            {
+                data: null,
                 orderable: false,
                 searchable: false,
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     return `<button class="btn btn-danger btn-sm" onclick="eliminarAlimento('${row.idAlimento}')">
                                 <i class="fas fa-trash"></i>
                             </button>`;
@@ -330,13 +330,13 @@ const configurarDataTableAlimentos = (orden = null) => {
     });
 
     // Evento para recargar la tabla cuando se haga clic en el botón de búsqueda
-    $('#btn-buscar').on('click', function() {
+    $('#btn-buscar').on('click', function () {
         const orden = $('#ordenSelect').val();
         console.log("Orden seleccionado:", orden); // Log para verificar el orden seleccionado
         table.ajax.url('/haras/table-ssp/alimento.ssp.php?orden=' + orden).load(); // Recargar la tabla con el nuevo orden
     });
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     configurarDataTableAlimentos();  // Inicializar el DataTable
 });
