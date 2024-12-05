@@ -268,25 +268,25 @@ CREATE TABLE HistorialMovimientos (
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE=InnoDB;
 
--- 20. TiposMedicamentos ---- admedi
+-- 21. TiposMedicamentos ---- admedi
 CREATE TABLE TiposMedicamentos (
     idTipo 				INT AUTO_INCREMENT PRIMARY KEY,
     tipo 				VARCHAR(100) NOT NULL UNIQUE 
 ) ENGINE = INNODB;
 
--- 21. PresentacionesMedicamentos ---- admedi
+-- 22. PresentacionesMedicamentos ---- admedi
 CREATE TABLE PresentacionesMedicamentos (
     idPresentacion 		INT AUTO_INCREMENT PRIMARY KEY,
     presentacion 		VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
--- 22. Unidades Medida ---- admedi
+-- 23. Unidades Medida ---- admedi
 CREATE TABLE UnidadesMedida (
     idUnidad 			INT AUTO_INCREMENT PRIMARY KEY,
     unidad 				VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE = INNODB;
 
--- 23. CombinacionesMedicamentos ---- admedi
+-- 24. CombinacionesMedicamentos ---- admedi
 CREATE TABLE CombinacionesMedicamentos (
     idCombinacion 		INT AUTO_INCREMENT PRIMARY KEY,
     idTipo 				INT NOT NULL,
@@ -299,7 +299,7 @@ CREATE TABLE CombinacionesMedicamentos (
     UNIQUE (idTipo, idPresentacion, dosis, idUnidad) 
 ) ENGINE = INNODB;
 
--- 24. Tabla de Lotes de Medicamentos - admedi
+-- 25. Tabla de Lotes de Medicamentos - admedi
 CREATE TABLE LotesMedicamento (
     idLoteMedicamento 	INT PRIMARY KEY AUTO_INCREMENT,  
     lote              	VARCHAR(100) NOT NULL,             
@@ -308,7 +308,7 @@ CREATE TABLE LotesMedicamento (
     CONSTRAINT UQ_lote_medicamento UNIQUE (lote)  
 ) ENGINE = INNODB;
 
--- 25  Tabla de Medicamentos
+-- 26.  Tabla de Medicamentos
 CREATE TABLE Medicamentos (
     idMedicamento         	INT PRIMARY KEY AUTO_INCREMENT,
     idUsuario             	INT NOT NULL,
@@ -330,14 +330,14 @@ CREATE TABLE Medicamentos (
     CONSTRAINT fk_medicamento_equino FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
--- 26. ViasAdministracion - veterinario 
+-- 27. ViasAdministracion - veterinario 
 CREATE TABLE ViasAdministracion (
     idViaAdministracion 	INT PRIMARY KEY AUTO_INCREMENT,
     nombreVia 				VARCHAR(50) NOT NULL UNIQUE,
     descripcion 			TEXT NULL
 ) ENGINE = INNODB;
 
--- 27. DetalleMedicamentos -- veterinario
+-- 28. DetalleMedicamentos -- veterinario
 CREATE TABLE DetalleMedicamentos (
     idDetalleMed            	INT PRIMARY KEY AUTO_INCREMENT,
     idMedicamento           	INT NOT NULL,
@@ -358,7 +358,7 @@ CREATE TABLE DetalleMedicamentos (
     CONSTRAINT fk_detallemed_via FOREIGN KEY (idViaAdministracion) REFERENCES ViasAdministracion(idViaAdministracion)
 ) ENGINE = INNODB;
 
--- 28. HistorialMedicamentosMedi ---- admedi..
+-- 29. HistorialMedicamentosMedi ---- admedi..
 CREATE TABLE HistorialMovimientosMedicamentos (
     idMovimiento 		INT PRIMARY KEY AUTO_INCREMENT,
     idMedicamento 		INT NOT NULL,
@@ -373,6 +373,7 @@ CREATE TABLE HistorialMovimientosMedicamentos (
     FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 ) ENGINE = INNODB;
 
+-- 30. Historial dosis
 CREATE TABLE HistorialDosisAplicadas (
     idDosis 			INT PRIMARY KEY AUTO_INCREMENT,
     idMedicamento 		INT NOT NULL,
@@ -386,7 +387,7 @@ CREATE TABLE HistorialDosisAplicadas (
     CONSTRAINT fk_idUsuario_dosis FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
 )ENGINE = INNODB;
 
--- 29. servicios
+-- 31. servicios
 CREATE TABLE Servicios (
     idServicio               INT PRIMARY KEY AUTO_INCREMENT,
     idEquinoMacho            INT NULL,
@@ -408,7 +409,7 @@ CREATE TABLE Servicios (
     CONSTRAINT fk_servicio_propietario FOREIGN KEY (idPropietario) REFERENCES Propietarios(idPropietario)
 ) ENGINE = INNODB;
 
--- 30. Entrenamientos
+-- 32. Entrenamientos
 CREATE TABLE Entrenamientos (
     idEntrenamiento 		INT PRIMARY KEY AUTO_INCREMENT,
     idEquino 				INT NOT NULL,
@@ -421,19 +422,19 @@ CREATE TABLE Entrenamientos (
 ) ENGINE = INNODB;
 
 
--- 31. tipos de trabajo (herreo)
+-- 33. tipos de trabajo (herreo)
 CREATE TABLE TiposTrabajos (
     idTipoTrabajo 		INT PRIMARY KEY AUTO_INCREMENT,
     nombreTrabajo 		VARCHAR(255) NOT NULL UNIQUE
 );
 
--- 32. herramientas (herreo)
+-- 34. herramientas (herreo)
 CREATE TABLE Herramientas (
     idHerramienta 			INT PRIMARY KEY AUTO_INCREMENT,
     nombreHerramienta 		VARCHAR(255) NOT NULL UNIQUE
 );
 
--- 33. Tabla para el Historial del Trabajo de Herrería (herreo)
+-- 35. Tabla para el Historial del Trabajo de Herrería (herreo)
 CREATE TABLE HistorialHerrero (
     idHistorialHerrero 		INT PRIMARY KEY AUTO_INCREMENT,
     idEquino 				INT NOT NULL,
@@ -446,7 +447,7 @@ CREATE TABLE HistorialHerrero (
     CONSTRAINT fk_historialherrero_trabajo FOREIGN KEY (idTrabajo) REFERENCES TiposTrabajos(idTipoTrabajo)
 );
 
--- 34. Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados) - (herreo)
+-- 36. Tabla para Herramientas Usadas en Cada Trabajo de Herrería (sin estados) - (herreo)
 CREATE TABLE HerramientasUsadasHistorial (
     idHerramientasUsadas 		INT PRIMARY KEY AUTO_INCREMENT,
     idHistorialHerrero 			INT NOT NULL,
@@ -455,13 +456,13 @@ CREATE TABLE HerramientasUsadasHistorial (
     CONSTRAINT fk_herramienta FOREIGN KEY (idHerramienta) REFERENCES Herramientas(idHerramienta)
 );
 
--- 35. Tipo Suelo
+-- 37. Tipo Suelo
 CREATE TABLE tipoSuelo (
 	idTipoSuelo				INT PRIMARY KEY AUTO_INCREMENT,
     nombreTipoSuelo			VARCHAR(50) UNIQUE NOT NULL
 ) ENGINE = INNODB;
 
--- 36. Campos
+-- 38. Campos
 CREATE TABLE Campos (
     idCampo 				INT PRIMARY KEY AUTO_INCREMENT,
     numeroCampo 			INT NOT NULL,
@@ -470,14 +471,14 @@ CREATE TABLE Campos (
     estado 					VARCHAR(50) NOT NULL
 ) ENGINE = INNODB;
 
--- 37. TipoRotaciones
+-- 39. TipoRotaciones
 CREATE TABLE TipoRotaciones (
     idTipoRotacion 			INT PRIMARY KEY AUTO_INCREMENT,
     nombreRotacion 			VARCHAR(100) NOT NULL,
     detalles 				TEXT
 ) ENGINE = INNODB;
 
--- 38. RotacionCampos
+-- 40. RotacionCampos
 CREATE TABLE RotacionCampos (
     idRotacion 				INT PRIMARY KEY AUTO_INCREMENT,
     idCampo 				INT NOT NULL,
