@@ -1,5 +1,5 @@
 <?php
-require_once '../models/ssp.class.php';// Asegúrate de tener la clase SSP
+require_once '../models/ssp.class.php'; // Asegúrate de tener la clase SSP
 
 // Configuración de la conexión a la base de datos
 $sql_details = array(
@@ -17,7 +17,8 @@ $search = isset($_GET['search']['value']) ? $_GET['search']['value'] : '';
 
 // Llamada al procedimiento almacenado `spu_listar_medicamentosMedi`
 // NOTA: Asegúrate de que este procedimiento acepte los parámetros de paginación y búsqueda
-function ejecutarProcedimientoDataTables($sql_details, $start, $length, $search) {
+function ejecutarProcedimientoDataTables($sql_details, $start, $length, $search)
+{
     try {
         // Conectar a la base de datos
         $pdo = new PDO(

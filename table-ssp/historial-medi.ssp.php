@@ -14,7 +14,8 @@ $sql_details = array(
 );
 
 // Función para ejecutar el procedimiento almacenado con parámetros
-function ejecutarProcedimientoDataTablesConFiltro($procedure, $sql_details, $params) {
+function ejecutarProcedimientoDataTablesConFiltro($procedure, $sql_details, $params)
+{
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -45,7 +46,6 @@ function ejecutarProcedimientoDataTablesConFiltro($procedure, $sql_details, $par
         );
 
         echo json_encode($output);
-
     } catch (PDOException $e) {
         echo json_encode(array(
             "error" => "Error en la conexión a la base de datos: " . $e->getMessage()

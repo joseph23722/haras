@@ -13,7 +13,8 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-function ejecutarProcedimientoDataTables($procedure, $sql_details) {
+function ejecutarProcedimientoDataTables($procedure, $sql_details)
+{
     try {
         // Conexión a la base de datos
         $pdo = new PDO(
@@ -53,7 +54,6 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details) {
         error_log("Enviando respuesta JSON: " . json_encode($response) . "\n");
 
         echo json_encode($response);
-
     } catch (PDOException $e) {
         error_log("Error en conexión o ejecución: " . $e->getMessage() . "\n");
         echo json_encode(array(

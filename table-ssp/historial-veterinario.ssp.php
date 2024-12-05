@@ -14,7 +14,8 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = []) {
+function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
+{
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -44,8 +45,8 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
             $searchValue = $_GET['search']['value'];
             $data = array_filter($data, function ($row) use ($searchValue) {
                 return stripos($row['nombreEquino'], $searchValue) !== false ||
-                       stripos($row['nombreMedicamento'], $searchValue) !== false ||
-                       stripos($row['estadoTratamiento'], $searchValue) !== false;
+                    stripos($row['nombreMedicamento'], $searchValue) !== false ||
+                    stripos($row['estadoTratamiento'], $searchValue) !== false;
             });
         }
 
@@ -62,7 +63,6 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
 
         // Enviar el resultado como JSON
         echo json_encode($output);
-
     } catch (PDOException $e) {
         error_log("Error en ejecutarProcedimientoDataTables: " . $e->getMessage());
         echo json_encode(['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()]);

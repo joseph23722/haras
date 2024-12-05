@@ -14,7 +14,8 @@ $sql_details = array(
     'charset' => 'utf8'
 );
 
-function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = []) {
+function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
+{
     try {
         $pdo = new PDO(
             "mysql:host={$sql_details['host']};dbname={$sql_details['db']};charset={$sql_details['charset']}",
@@ -44,12 +45,12 @@ function ejecutarProcedimientoDataTables($procedure, $sql_details, $params = [])
             $searchValue = $_GET['search']['value'];
             $data = array_filter($data, function ($row) use ($searchValue) {
                 return stripos($row['nombreMedicamento'], $searchValue) !== false ||
-                       stripos($row['lote'], $searchValue) !== false ||
-                       stripos($row['presentacion'], $searchValue) !== false ||
-                       stripos($row['dosis'], $searchValue) !== false ||
-                       stripos($row['nombreTipo'], $searchValue) !== false ||
-                       stripos($row['fechaCaducidad'], $searchValue) !== false ||
-                       stripos($row['estado'], $searchValue) !== false;
+                    stripos($row['lote'], $searchValue) !== false ||
+                    stripos($row['presentacion'], $searchValue) !== false ||
+                    stripos($row['dosis'], $searchValue) !== false ||
+                    stripos($row['nombreTipo'], $searchValue) !== false ||
+                    stripos($row['fechaCaducidad'], $searchValue) !== false ||
+                    stripos($row['estado'], $searchValue) !== false;
             });
         }
 
