@@ -128,7 +128,6 @@ async function registrarNuevaFoto(public_id, idEquino) {
     }
 }
 
-
 /* Formulario de Historial */
 document.querySelector("#form-historial-equino").addEventListener("submit", async function (event) {
     event.preventDefault();
