@@ -82,7 +82,7 @@ function generarPDF() {
                     margin: [0, 0, 0, 20]
                 },
                 {
-                    text: `Fecha de creación: ${new Date().toLocaleString()}` , // Fecha
+                    text: `Fecha de creación: ${new Date().toLocaleString()}`, // Fecha
                     style: 'subheader',
                     alignment: 'center',
                     margin: [0, 0, 0, 20]
@@ -95,7 +95,7 @@ function generarPDF() {
                 {
                     table: {
                         headerRows: 1,
-                        widths: [80,'auto', 'auto','auto', 80, 70, 82, 'auto', 60, 60], // Definir el ancho de las columnas
+                        widths: [80, 'auto', 'auto', 'auto', 80, 70, 82, 'auto', 60, 60], // Definir el ancho de las columnas
                         //widths: Array(12).fill(72), // Ajustar el ancho de las columnas para que se adapten al tamaño de la página
 
                         body: [
@@ -167,7 +167,7 @@ function generarPDF() {
         var newWindow = window.open();
 
         // Generar el buffer del PDF
-        pdfDoc.getBuffer(function(buffer) {
+        pdfDoc.getBuffer(function (buffer) {
             // Crear un Blob con los datos del PDF
             var blob = new Blob([buffer], { type: 'application/pdf' });
             var url = URL.createObjectURL(blob);
@@ -176,15 +176,15 @@ function generarPDF() {
             newWindow.location.href = url;
 
             // Cambiar el título de la nueva ventana
-            setTimeout(function() {
+            setTimeout(function () {
                 newWindow.document.title = "HARAS RANCHO SUR"; // Título personalizado
             }, 500); // Esperar medio segundo para que la ventana cargue el PDF
 
-             // Crear el botón de descarga dentro de la nueva ventana
+            // Crear el botón de descarga dentro de la nueva ventana
             var downloadButton = newWindow.document.createElement('button');
             downloadButton.textContent = 'Descargar PDF';
             downloadButton.style.margin = '20px';
-            downloadButton.onclick = function() {
+            downloadButton.onclick = function () {
                 var link = newWindow.document.createElement('a');
                 link.href = url;
                 link.download = nombreArchivo; // Establecer el nombre del archivo
@@ -267,7 +267,7 @@ function imprimirDocumento() {
         printWindow.document.write('<table>');
         printWindow.document.write('<thead><tr><th>Equino</th><th>Peso (kg)</th><th>Tipo</th><th>Estado</th><th>Medicamento</th><th>Dosis</th><th>Frecuencia</th><th>Vía</th><th>Registro</th><th>Fin</th></tr></thead>');
         printWindow.document.write('<tbody>');
-        
+
         const tableData = $('#historialTable').DataTable().rows({ search: 'applied' }).data().toArray();
         if (tableData.length === 0) {
             printWindow.document.write('<tr><td colspan="10" style="text-align: center;">No hay datos disponibles</td></tr>');
@@ -345,12 +345,12 @@ window.continuarRegistro = continuarRegistro;
 window.eliminarRegistro = eliminarRegistro;
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Cargar opciones de medicamentos dinámicamente evitando duplicados
     $.ajax({
         url: '/haras/table-ssp/historial-veterinario.ssp.php?listarMedicamentos=true',
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             try {
                 const medicamentos = response.data;
                 const uniqueMedicamentos = [...new Set(medicamentos.map(medicamento => medicamento.nombreMedicamento))];
@@ -361,7 +361,7 @@ $(document).ready(function() {
                 console.error("Error al procesar los datos:", e);
             }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.error("Error al cargar medicamentos:", error);
         }
     });
@@ -372,12 +372,12 @@ $(document).ready(function() {
             ajax: {
                 url: '/haras/table-ssp/historial-veterinario.ssp.php', // URL del archivo PHP que retorna los datos en formato JSON
                 type: 'GET',
-                data: function(d) {
+                data: function (d) {
                     d.nombreEquino = nombreEquino;
                     d.nombreMedicamento = nombreMedicamento;
                     d.estadoTratamiento = estadoTratamiento;
                 },
-                dataSrc: function(json) {
+                dataSrc: function (json) {
                     return json.data;
                 },
                 error: function (xhr, status, error) {
@@ -485,7 +485,7 @@ $(document).ready(function() {
     loadHistorialTable();  // Llamamos la función sin filtros para obtener todos los registros
 
     // Recargar la tabla cuando se hace clic en el botón de filtro
-    $('#filtrarButton').on('click', function() {
+    $('#filtrarButton').on('click', function () {
         const nombreEquino = $('#nombreEquinoInput').val();
         const nombreMedicamento = $('#medicamentoSelect').val();
         const estadoTratamiento = $('#estadoSelect').val();
