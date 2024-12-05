@@ -10,7 +10,6 @@ BEGIN
     VALUES (p_idEquino, p_public_id, NOW());
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_fotografias_equinos`;
 
 CREATE PROCEDURE spu_listar_fotografias_equinos(

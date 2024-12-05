@@ -67,7 +67,6 @@ BEGIN
     SELECT 'Revisión registrada correctamente' AS mensaje;
 END;
 
-
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_para_revision`;
 
 CREATE PROCEDURE spu_listar_equinos_para_revision(
