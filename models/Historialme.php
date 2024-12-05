@@ -70,8 +70,6 @@ class Historialme extends Conexion
             // Limpiar el mensaje de error para ocultar la parte específica del error SQL
             $mensajeError = preg_replace('/SQLSTATE\[.*?\]:.*?:\s*\d*\s*/', '', $e->getMessage());
             return ['status' => 'error', 'message' => $mensajeError];
-        
-            
         } catch (Exception $e) {
             error_log("Error en registrarHistorial: " . $e->getMessage());
             return ['status' => 'error', 'message' => $e->getMessage()];
@@ -209,7 +207,8 @@ class Historialme extends Conexion
 
 
     // Editar una vía de administración
-    public function editarViaAdministracion($id, $nombre, $descripcion) {
+    public function editarViaAdministracion($id, $nombre, $descripcion)
+    {
         try {
             $query = $this->pdo->prepare("UPDATE ViasAdministracion SET nombreVia = ?, descripcion = ? WHERE idViaAdministracion = ?");
             $query->execute([$nombre, $descripcion, $id]);

@@ -58,7 +58,7 @@ class Editarequino extends Conexion
                 $params['estado'] = null; // Si no hay un estado válido, asignar null
             }
         }
-        
+
 
         return $params;
     }

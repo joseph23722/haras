@@ -29,24 +29,23 @@ try {
 
   // Procesar cada archivo SQL
   foreach ($files as $file) {
-      try {
-          // Leer el contenido del archivo
-          $sql = file_get_contents($file);
-          
-          // Ejecutar el contenido del archivo SQL
-          $pdo->exec($sql);
-          
-          echo "Archivo ejecutado con éxito: " . basename($file) . "<br>";
-      } catch (PDOException $e) {
-          echo "Error al ejecutar el archivo: " . basename($file) . "<br>";
-          echo "Mensaje de error: " . $e->getMessage() . "<br>";
-          // Opcional: Escribir el error en un archivo de registro
-          // file_put_contents('errores.log', "Error en " . basename($file) . ": " . $e->getMessage() . "\n", FILE_APPEND);
-      }
+    try {
+      // Leer el contenido del archivo
+      $sql = file_get_contents($file);
+
+      // Ejecutar el contenido del archivo SQL
+      $pdo->exec($sql);
+
+      echo "Archivo ejecutado con éxito: " . basename($file) . "<br>";
+    } catch (PDOException $e) {
+      echo "Error al ejecutar el archivo: " . basename($file) . "<br>";
+      echo "Mensaje de error: " . $e->getMessage() . "<br>";
+      // Opcional: Escribir el error en un archivo de registro
+      // file_put_contents('errores.log', "Error en " . basename($file) . ": " . $e->getMessage() . "\n", FILE_APPEND);
+    }
   }
 
   echo "Todos los archivos SQL se ejecutaron correctamente.";
-
 } catch (PDOException $e) {
   echo "Error: " . $e->getMessage();
 }

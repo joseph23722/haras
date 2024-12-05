@@ -29,7 +29,8 @@ class Implemento extends Conexion
         }
     }
 
-    public function listarHistorialMovimiento($idTipoinventario, $idTipomovimiento) {
+    public function listarHistorialMovimiento($idTipoinventario, $idTipomovimiento)
+    {
         try {
             $stmt = $this->pdo->prepare("CALL spu_listar_historial_movimiento(:idTipoinventario, :idTipomovimiento)");
             $stmt->bindParam(":idTipoinventario", $idTipoinventario, PDO::PARAM_INT);

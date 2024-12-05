@@ -10,7 +10,7 @@ class Bosta extends Conexion
     {
         $this->pdo = parent::getConexion();
     }
-    
+
     public function RegistroBostas($params = []): int
     {
         try {
@@ -22,7 +22,6 @@ class Bosta extends Conexion
             ]);
 
             return 1;
-
         } catch (Exception $e) {
             throw $e;
         }
@@ -52,16 +51,16 @@ class Bosta extends Conexion
         }
     }
 
-     // Método para eliminar un registro de bostas
-     public function eliminarBosta($idbosta): int
-     {
-         try {
-             $cmd = $this->pdo->prepare("CALL spu_eliminar_bosta(?)");
-             $cmd->execute([$idbosta]);
-             return $cmd->rowCount();
-         } catch (Exception $e) {
-             error_log("Error: " . $e->getMessage());
-             return -1;
-         }
-     }
+    // Método para eliminar un registro de bostas
+    public function eliminarBosta($idbosta): int
+    {
+        try {
+            $cmd = $this->pdo->prepare("CALL spu_eliminar_bosta(?)");
+            $cmd->execute([$idbosta]);
+            return $cmd->rowCount();
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return -1;
+        }
+    }
 }
