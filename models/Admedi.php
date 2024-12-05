@@ -1,20 +1,23 @@
 <?php
 require_once 'Conexion.php';
 
-class Admi extends Conexion {
+class Admi extends Conexion
+{
     private $pdo;
 
     // Constructor para establecer conexión con la base de datos
-    public function __CONSTRUCT() {
+    public function __CONSTRUCT()
+    {
         $this->pdo = parent::getConexion();
     }
-    
+
     // Obtener todos los medicamentos
-    public function getAllMedicamentos() {
+    public function getAllMedicamentos()
+    {
         try {
             // Llamada al procedimiento almacenado para listar los medicamentos
             $query = "CALL spu_listar_medicamentosMedi()"; // Llamada directa al procedimiento almacenado
-        
+
             $stmt = $this->pdo->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC); // Devolver todos los registros como un array asociativo
@@ -26,27 +29,30 @@ class Admi extends Conexion {
             return false;
         }
     }
-    
+
     // Método para registrar un nuevo medicamento
-    public function registrarMedicamento($params = []) {
+    public function registrarMedicamento($params = [])
+    {
         try {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
-    
+
             $idUsuario = $_SESSION['idUsuario'] ?? null;
-    
-            if (empty($params['nombreMedicamento']) || empty($params['lote']) || empty($params['presentacion']) || 
-                empty($params['dosisCompleta']) || empty($params['tipo']) || 
-                $params['cantidad_stock'] <= 0 || $params['precioUnitario'] <= 0) {
+
+            if (
+                empty($params['nombreMedicamento']) || empty($params['lote']) || empty($params['presentacion']) ||
+                empty($params['dosisCompleta']) || empty($params['tipo']) ||
+                $params['cantidad_stock'] <= 0 || $params['precioUnitario'] <= 0
+            ) {
                 throw new Exception('Datos inválidos. Verifique los datos obligatorios, stock y precio unitario.');
             }
-    
+
             error_log("Parámetros recibidos en registrarMedicamento:");
             foreach ($params as $key => $value) {
                 error_log("$key => $value");
             }
-    
+
             $stmt = $this->pdo->prepare("CALL spu_medicamentos_registrar(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $params['nombreMedicamento'],
@@ -61,7 +67,7 @@ class Admi extends Conexion {
                 $params['precioUnitario'],
                 $idUsuario
             ]);
-    
+
             return ['status' => 'success', 'message' => 'Medicamento registrado correctamente.'];
         } catch (PDOException $e) {
             // Extrae solo el mensaje relevante usando una expresión regular
@@ -77,10 +83,11 @@ class Admi extends Conexion {
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $errorMessage];
         }
     }
-    
+
 
     // Registrar entrada de medicamentos
-    public function entradaMedicamento($params = []) {
+    public function entradaMedicamento($params = [])
+    {
         try {
             // Iniciar la sesión si no está activa
             if (session_status() == PHP_SESSION_NONE) {
@@ -126,7 +133,8 @@ class Admi extends Conexion {
     }
 
     // Registrar salida de medicamentos
-    public function salidaMedicamento($params = []) {
+    public function salidaMedicamento($params = [])
+    {
         try {
             if (session_status() == PHP_SESSION_NONE) {
                 session_start(); // Iniciar la sesión si no está iniciada
@@ -175,23 +183,23 @@ class Admi extends Conexion {
             } else {
                 return ['status' => 'error', 'message' => 'No se pudo registrar la salida del medicamento.'];
             }
-
         } catch (Exception $e) {
             // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
             $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
             $errorMessage = trim($errorMessage); // Limpiar espacios adicionales
-            
+
             // Registrar el error en el log del servidor
             error_log("Error en salida de medicamentos: " . $errorMessage);
-            
+
             // Retornar el mensaje de error al cliente
             return ['status' => 'error', 'message' => 'Error inesperado: ' . $errorMessage];
         }
     }
-            
+
 
     // Notificar medicamentos con stock bajo
-    public function notificarStockBajo() {
+    public function notificarStockBajo()
+    {
         try {
             $query = $this->pdo->prepare("CALL spu_notificar_stock_bajo_medicamentos()");
             $query->execute();
@@ -226,7 +234,8 @@ class Admi extends Conexion {
     }
 
     // Método para obtener el historial de movimientos de medicamentos
-    public function obtenerHistorialMovimientosMedicamentos($params = []) {
+    public function obtenerHistorialMovimientosMedicamentos($params = [])
+    {
         try {
             // Validar que se haya proporcionado un tipo de movimiento válido
             $tipoMovimiento = $params['tipoMovimiento'] ?? 'Entrada';
@@ -268,7 +277,6 @@ class Admi extends Conexion {
             } else {
                 return ['status' => 'info', 'message' => 'No se encontraron movimientos en el rango seleccionado.'];
             }
-
         } catch (PDOException $e) {
             // Capturar y registrar cualquier error SQL
             error_log("Error en la base de datos: " . $e->getMessage());
@@ -293,7 +301,6 @@ class Admi extends Conexion {
             // Obtener el mensaje de salida directamente
             $result = $query->fetch(PDO::FETCH_ASSOC);
             return $result['mensaje'] ?? 'Combinación agregada exitosamente.';
-
         } catch (Exception $e) {
             // Registrar el error en los logs y devolver un mensaje de error amigable
             error_log("Error al agregar combinación de medicamento: " . $e->getMessage());
@@ -302,18 +309,19 @@ class Admi extends Conexion {
     }
 
     // editar segurencia de medicamento
-    public function editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad) {
+    public function editarCombinacionCompleta($idCombinacion, $nuevoTipo, $nuevaPresentacion, $nuevaUnidad)
+    {
         try {
             // Iniciar transacción
             $this->pdo->beginTransaction();
-            
+
             // Paso 1: Verificar o insertar el nuevo tipo
             $queryTipo = $this->pdo->prepare("
                 SELECT idTipo FROM TiposMedicamentos WHERE tipo = ?
             ");
             $queryTipo->execute([$nuevoTipo]);
             $idTipo = $queryTipo->fetchColumn();
-    
+
             if (!$idTipo) {
                 $insertTipo = $this->pdo->prepare("
                     INSERT INTO TiposMedicamentos (tipo) VALUES (?)
@@ -321,14 +329,14 @@ class Admi extends Conexion {
                 $insertTipo->execute([$nuevoTipo]);
                 $idTipo = $this->pdo->lastInsertId();
             }
-    
+
             // Paso 2: Verificar o insertar la nueva presentación
             $queryPresentacion = $this->pdo->prepare("
                 SELECT idPresentacion FROM PresentacionesMedicamentos WHERE presentacion = ?
             ");
             $queryPresentacion->execute([$nuevaPresentacion]);
             $idPresentacion = $queryPresentacion->fetchColumn();
-    
+
             if (!$idPresentacion) {
                 $insertPresentacion = $this->pdo->prepare("
                     INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (?)
@@ -336,14 +344,14 @@ class Admi extends Conexion {
                 $insertPresentacion->execute([$nuevaPresentacion]);
                 $idPresentacion = $this->pdo->lastInsertId();
             }
-    
+
             // Paso 3: Verificar o insertar la nueva unidad
             $queryUnidad = $this->pdo->prepare("
                 SELECT idUnidad FROM UnidadesMedida WHERE unidad = ?
             ");
             $queryUnidad->execute([$nuevaUnidad]);
             $idUnidad = $queryUnidad->fetchColumn();
-    
+
             if (!$idUnidad) {
                 $insertUnidad = $this->pdo->prepare("
                     INSERT INTO UnidadesMedida (unidad) VALUES (?)
@@ -351,7 +359,7 @@ class Admi extends Conexion {
                 $insertUnidad->execute([$nuevaUnidad]);
                 $idUnidad = $this->pdo->lastInsertId();
             }
-    
+
             // Paso 4: Actualizar la combinación específica con los nuevos IDs
             $queryUpdateCombinacion = $this->pdo->prepare("
                 UPDATE CombinacionesMedicamentos 
@@ -359,10 +367,10 @@ class Admi extends Conexion {
                 WHERE idCombinacion = ?
             ");
             $queryUpdateCombinacion->execute([$idTipo, $idPresentacion, $idUnidad, $idCombinacion]);
-    
+
             // Confirmar transacción si todo es exitoso
             $this->pdo->commit();
-    
+
             return true; // Retorna true si la transacción fue exitosa
         } catch (Exception $e) {
             // Deshacer cambios si hay un error
@@ -371,15 +379,16 @@ class Admi extends Conexion {
             return false;
         }
     }
-    
+
     // Validar presentación y dosis del medicamento
-    public function validarRegistrarCombinacion($params = []) {
+    public function validarRegistrarCombinacion($params = [])
+    {
         try {
             // Llamada al procedimiento almacenado para validar la combinación
             $query = $this->pdo->prepare("CALL spu_validar_registrar_combinacion(?, ?, ?, ?)");
             $query->execute([
-                $params['tipoMedicamento'],         
-                $params['presentacionMedicamento'], 
+                $params['tipoMedicamento'],
+                $params['presentacionMedicamento'],
                 $params['dosisMedicamento'], // Dosis como DECIMAL
                 $params['unidadMedida'] // Nueva unidad de medida
             ]);
@@ -391,8 +400,8 @@ class Admi extends Conexion {
                 if (strpos($result['mensaje'], 'combinación exacta') !== false || strpos($result['mensaje'], 'nueva combinación') !== false) {
                     // Devuelve éxito y el id de la combinación
                     return [
-                        'status' => 'success', 
-                        'message' => $result['mensaje'], 
+                        'status' => 'success',
+                        'message' => $result['mensaje'],
                         'data' => [
                             'idCombinacion' => $result['idCombinacion']
                         ]
@@ -418,8 +427,9 @@ class Admi extends Conexion {
         }
     }
 
-     // Listar los tipos de medicamentos
-    public function listarTiposMedicamentos() {
+    // Listar los tipos de medicamentos
+    public function listarTiposMedicamentos()
+    {
         try {
             // Ejecutar el procedimiento almacenado para listar los tipos de medicamentos
             $query = $this->pdo->prepare("CALL spu_listar_tipos_unicos()");
@@ -435,7 +445,8 @@ class Admi extends Conexion {
     }
 
     // Listar las presentaciones de medicamentos según el tipo
-    public function listarPresentacionesPorTipo($idTipo) {
+    public function listarPresentacionesPorTipo($idTipo)
+    {
         try {
             // Ejecutar el procedimiento almacenado para listar las presentaciones según el tipo de medicamento
             $query = $this->pdo->prepare("CALL spu_listar_presentaciones_por_tipo(?)");
@@ -451,7 +462,8 @@ class Admi extends Conexion {
     }
 
     // Función para listar las sugerencias de medicamentos
-    public function listarSugerenciasMedicamentos() {
+    public function listarSugerenciasMedicamentos()
+    {
         try {
             // Ejecutar el procedimiento almacenado para listar las sugerencias
             $query = $this->pdo->prepare("CALL spu_listar_tipos_presentaciones_dosis()");
@@ -467,34 +479,34 @@ class Admi extends Conexion {
     }
 
     // Función pública para eliminar un medicamento por ID
-    public function borrarMedicamento($idMedicamento) {
+    public function borrarMedicamento($idMedicamento)
+    {
         try {
             // Verificar que el ID del medicamento es válido
             if ($idMedicamento <= 0) {
                 return ['status' => 'error', 'message' => 'ID de medicamento no válido'];
             }
-    
+
             // Iniciar transacción para asegurar consistencia
             $this->pdo->beginTransaction();
-    
+
             // Eliminar registros relacionados en historialmovimientosmedicamentos
             $queryHistorial = $this->pdo->prepare("DELETE FROM historialmovimientosmedicamentos WHERE idMedicamento = ?");
             $queryHistorial->execute([$idMedicamento]);
-    
+
             // Eliminar el medicamento en la tabla Medicamentos
             $queryMedicamento = $this->pdo->prepare("DELETE FROM Medicamentos WHERE idMedicamento = ?");
             $queryMedicamento->execute([$idMedicamento]);
-    
+
             // Confirmar la transacción si ambas eliminaciones fueron exitosas
             $this->pdo->commit();
-    
+
             // Verificar si se eliminó algún registro en Medicamentos
             if ($queryMedicamento->rowCount() > 0) {
                 return ['status' => 'success', 'message' => 'Medicamento eliminado correctamente'];
             } else {
                 return ['status' => 'error', 'message' => 'El medicamento no fue encontrado o ya fue eliminado'];
             }
-    
         } catch (PDOException $e) {
             // Procesar el mensaje de error para eliminar 'SQLSTATE' y cualquier texto adicional
             $errorMessage = preg_replace('/SQLSTATE\[\w+\]:/', '', $e->getMessage());
@@ -504,15 +516,16 @@ class Admi extends Conexion {
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
-    
+
     // Método para listar lotes de medicamentos por nombre de medicamento
-    public function listarLotesMedicamentosPorNombre($nombreMedicamento) {
+    public function listarLotesMedicamentosPorNombre($nombreMedicamento)
+    {
         try {
             // Llama al procedimiento almacenado con el nombre del medicamento
             $query = $this->pdo->prepare("CALL spu_listar_lotes_medicamentos_por_nombre(:nombreMedicamento)");
             $query->bindParam(':nombreMedicamento', $nombreMedicamento, PDO::PARAM_STR);
             $query->execute();
-            
+
             // Obtiene los resultados
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
             error_log(print_r($result, true)); // Log para depuración
@@ -535,7 +548,8 @@ class Admi extends Conexion {
     }
 
     // Método para obtener la cantidad de equinos por categoría
-    public function getEquinosPorCategoria() {
+    public function getEquinosPorCategoria()
+    {
         try {
             // Preparar la llamada al procedimiento almacenado
             $query = $this->pdo->prepare("CALL spu_contar_equinos_por_categoria()");
@@ -550,7 +564,6 @@ class Admi extends Conexion {
             } else {
                 return ['status' => 'info', 'message' => 'No se encontraron equinos en las categorías especificadas.'];
             }
-
         } catch (PDOException $e) {
             // Registrar el error en los logs
             error_log("Error en la base de datos: " . $e->getMessage());
@@ -559,7 +572,4 @@ class Admi extends Conexion {
             return ['status' => 'error', 'message' => 'Error en la base de datos: ' . $e->getMessage()];
         }
     }
-    
 }
-
-
