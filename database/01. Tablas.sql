@@ -490,7 +490,7 @@ CREATE TABLE RotacionCampos (
     CONSTRAINT fk_rotacioncampo_tiporotacion FOREIGN KEY (idTipoRotacion) REFERENCES TipoRotaciones(idTipoRotacion)
 ) ENGINE = INNODB;
 
--- 39. CampanaPotrillos
+-- 41. CampanaPotrillos
 CREATE TABLE HistorialEquinos (
     idHistorial				INT PRIMARY KEY AUTO_INCREMENT,
     idEquino 				INT NOT NULL,
@@ -498,7 +498,7 @@ CREATE TABLE HistorialEquinos (
     CONSTRAINT fk_idEquino_historial FOREIGN KEY (idEquino) REFERENCES Equinos(idEquino)
 ) ENGINE = INNODB;
 
--- 40. AsistenciaPersonal
+-- 42. AsistenciaPersonal
 CREATE TABLE AsistenciaPersonal (
     idAsistencia 			INT PRIMARY KEY AUTO_INCREMENT,
     idPersonal 				INT NOT NULL,
@@ -509,7 +509,7 @@ CREATE TABLE AsistenciaPersonal (
     CONSTRAINT fk_asistencia_personal FOREIGN KEY (idPersonal) REFERENCES Personal(idPersonal)
 ) ENGINE = INNODB;
 
--- 41. modulos 28/10/2024 ACCESO AL SISTEMA - LOGIN
+-- 43. modulos 28/10/2024 ACCESO AL SISTEMA - LOGIN
 CREATE TABLE modulos
 (
 	idmodulo		INT AUTO_INCREMENT PRIMARY KEY,
@@ -518,7 +518,7 @@ CREATE TABLE modulos
     CONSTRAINT uk_modulo_mod UNIQUE (modulo)
 ) ENGINE = INNODB;
 
--- 42. vistas
+-- 44. vistas
 CREATE TABLE vistas
 (
 	idvista			INT AUTO_INCREMENT PRIMARY KEY,
@@ -532,7 +532,7 @@ CREATE TABLE vistas
     CONSTRAINT ck_sidebaroption_vis CHECK (sidebaroption IN ('S', 'N'))
 ) ENGINE = INNODB;
 
--- 43. permisos
+-- 45. permisos
 CREATE TABLE permisos
 (
 	idpermiso			INT AUTO_INCREMENT PRIMARY KEY,
@@ -544,7 +544,7 @@ CREATE TABLE permisos
     CONSTRAINT uk_vista_per UNIQUE (idRol, idvista)
 )ENGINE = INNODB;
 
--- 44. bostas
+-- 46. bostas
 CREATE TABLE bostas
 (
 	idbosta				INT AUTO_INCREMENT PRIMARY KEY,
@@ -557,7 +557,7 @@ CREATE TABLE bostas
     numero_semana		INT NULL
 ) ENGINE = INNODB;
 
--- 45. revision equinos, PARA UNA REVISION INTERDIARIA
+-- 47. revision equinos, PARA UNA REVISION INTERDIARIA
 CREATE TABLE revisionequinos (
 	idRevision 			INT PRIMARY KEY AUTO_INCREMENT,
 	idEquino 			INT NOT NULL,					-- FILTRAR SOLO YEGUAS PROPIAS O AJENAS QUE CUENTEN CON ALMENOS 1 SERVICIO
