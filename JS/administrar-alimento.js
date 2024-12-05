@@ -6,29 +6,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const alimentosTable = document.querySelector("#alimentos-table");
     const alimentoSelectEntrada = document.querySelector("#alimento-select-entrada");
     const alimentoSelectSalida = document.querySelector("#alimento-select-salida");
-    const mensajeDiv = document.querySelector("#mensaje");  // Div para mostrar los mensajes dinámicos
-
+    const mensajeDiv = document.querySelector("#mensaje");
 
     // Elementos del tipo de alimento y unidad de medida para ambos modales
     const tipoAlimentoElementRegistrar = document.getElementById('tipoAlimento');
     const unidadMedidaElementRegistrar = document.getElementById('unidadMedida');
-
     const unidadMedidaSelectEntrada = document.getElementById('unidadMedidaEntrada');
     const unidadMedidaSelectSalida = document.querySelector("#unidadMedidaSalida");
-
     // Elementos de fecha de caducidad e ingreso
     const fechaCaducidadElement = document.getElementById('fechaCaducidad');
-
     const loteInput = document.querySelector('#lote');
     const nombreAlimentoInput = document.querySelector('#nombreAlimento');
-
     // Verificar campos
     const verificarCampos = () => {
         const categoriaAlimento = document.getElementById("inputCategoriaAlimento")?.value?.trim();
         const unidadMedida = document.getElementById("inputUnidadMedida")?.value?.trim();
         const mensajeModal = document.getElementById("mensajeModal");
 
-        mensajeModal.innerHTML = ""; // Limpiar mensajes previos
+        mensajeModal.innerHTML = "";
 
         if (!categoriaAlimento) {
             mensajeModal.innerHTML = '<p class="text-danger">Por favor, complete el campo "Categoría de Alimento".</p>';
