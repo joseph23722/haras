@@ -204,7 +204,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 DROP PROCEDURE IF EXISTS `spu_gestionar_tratamiento`;
 DELIMITER $$
 CREATE PROCEDURE spu_gestionar_tratamiento(
@@ -343,7 +342,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 INSERT INTO ViasAdministracion (nombreVia, descripcion)
 VALUES 
 ('Oral', 'Por la boca.'),
@@ -353,4 +351,3 @@ VALUES
 ('Tópica', 'Sobre la piel.'),
 ('Rectal', 'Por el recto.'),
 ('Inhalatoria', 'Por las vías respiratorias.');
-
