@@ -90,6 +90,9 @@
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
+                        <a href="./listar-diagnostico-basico" class="btn btn-warning btn-lg" style="font-size: 1.1em; padding: 6px 20px;">
+                            Listado Revisión
+                        </a>
                     </div>
                 </div>
             </form>

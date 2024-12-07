@@ -105,21 +105,22 @@ DROP PROCEDURE IF EXISTS `spu_listar_revision_basica`;
 DELIMITER $$
 CREATE PROCEDURE spu_listar_revision_basica()
 BEGIN
-    -- Seleccionamos todos los registros de la tabla revisionequinos con el nombre del equino
+    -- Seleccionamos todos los registros de la tabla revisionequinos con el nombre del equino y el nombre del propietario (nombreHaras)
     SELECT 
         r.idRevision,
-        e.nombreEquino,  -- Obtenemos el nombre del equino desde la tabla Equinos
-        r.idPropietario,
+        e.nombreEquino,  -- Nombre del equino
+        p.nombreHaras,    -- Nombre del propietario (nombreHaras)
         r.tiporevision,
         r.fecharevision,
         r.observaciones,
-        r.costorevision,
-        r.create_at
+        r.costorevision
     FROM 
         revisionequinos r
     JOIN 
-        Equinos e ON r.idEquino = e.idEquino  -- Hacemos JOIN con la tabla Equinos
+        Equinos e ON r.idEquino = e.idEquino  -- JOIN con la tabla Equinos
+    JOIN 
+        Propietarios p ON r.idPropietario = p.idPropietario  -- JOIN con la tabla Propietarios
     ORDER BY 
-        r.fecharevision DESC; -- Ordenamos por la fecha de la revisión de forma descendente
+        r.fecharevision DESC; -- Ordenamos por la fecha de la revisión en orden descendente
 END $$
 DELIMITER ;

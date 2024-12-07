@@ -248,6 +248,9 @@ INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
 INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
     (2, 'listar-equino-externo', 'S', 'Listado Equinos Ajenos', 'fas fa-file-alt');
 
+INSERT INTO vistas (idmodulo, ruta, sidebaroption, texto, icono) VALUES
+	(3, 'listar-revision-basica', 'N', NULL, NULL);
+
 -- Gerente
 INSERT INTO permisos (idRol, idvista) VALUES
 	(1, 1),
@@ -314,7 +317,8 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 32),
     (3, 33),
     (3, 34),
-    (3, 35);
+    (3, 35),
+    (3, 36);
     
 -- Supervisor Campo
 INSERT INTO permisos (idRol, idvista) VALUES

@@ -70,7 +70,7 @@ class RevisionBasica extends Conexion
     }
 
     // Función para obtener lista revisión básica
-    public function listarRevisiónBásica(): array
+    public function listarRevisionBasica(): array
     {
         return parent::getData("spu_listar_revision_basica");
     }

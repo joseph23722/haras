@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 }
                 break;
 
-            case 'listarRevisiónBásica':
-                echo json_encode($controller->listarRevisiónBásica());
+            case 'listarRevisionBasica':
+                echo json_encode($controller->listarRevisionBasica());
                 break;
 
             default:
