@@ -16,8 +16,8 @@
                         <th>Equino</th>
                         <th>Medicamento</th>
                         <th>Dosis Aplicada</th>
-                        <th>Stock Restante</th>
-                        <th>Stock Antes</th>
+                        <th>Diferencia</th> <!-- Diferencia de la cantidad de una unidad, Ejemplo: si es 500mg y uso 300mg la diferencia es 200 -->
+                        <th>Aplicación Anterior</th> <!-- Aplicación en el registro anterior -->
                         <th>Stock Actual</th>
                         <th>Estado</th>
                         <th>Fecha Aplicación</th>
