@@ -68,4 +68,10 @@ class RevisionBasica extends Conexion
             return ['status' => 'error', 'message' => 'Hubo un error al obtener las yeguas.'];
         }
     }
+
+    // Función para obtener lista revisión básica
+    public function listarRevisiónBásica(): array
+    {
+        return parent::getData("spu_listar_revision_basica");
+    }
 }
