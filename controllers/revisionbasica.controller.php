@@ -17,6 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 }
                 break;
 
+            case 'listarRevisiónBásica':
+                echo json_encode($controller->listarRevisiónBásica());
+                break;
+
             default:
                 echo json_encode(["status" => "error", "message" => "Operación no válida."]);
                 break;
