@@ -161,8 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     selectViaAdministracion.appendChild(option);
                 });
 
-            } else {
-                console.error("Error al listar las vías de administración:", data.message || "Respuesta no exitosa.");
             }
         } catch (error) {
             console.error("Error en la solicitud al backend:", error.message);
@@ -237,7 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             mostrarMensajeDinamico("Error al cargar los equinos", "ERROR");
-            console.error("Error:", error);
         }
     }
 
@@ -261,7 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const data = await response.json();
-            console.log("Respuesta del servidor:", data);
 
             if (data.data && Array.isArray(data.data)) {
                 medicamentoSelect.innerHTML = '<option value="">Seleccione Medicamento</option>';
@@ -276,7 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             mostrarMensajeDinamico("Error al cargar los medicamentos", "ERROR");
-            console.error("Error:", error);
         }
     }
 
