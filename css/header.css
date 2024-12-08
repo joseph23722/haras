@@ -13,15 +13,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
 /* Estilos globales */
 body {
     font-family: 'Poppins', sans-serif;
@@ -29,7 +20,6 @@ body {
     background-color: #f4f6f9;
     margin: 0;
 }
-
 
 
 /* Barra superior que ocupa todo el ancho */
@@ -189,4 +179,15 @@ body {
         width: 100%;
         margin-left: 0;
     }
+}
+
+/* Estilo para el sidebar oculto */
+.sb-sidenav-toggled #layoutSidenav_nav {
+    display: none;
+}
+
+/* Estilo para expandir el contenido principal cuando el sidebar está oculto */
+.sb-sidenav-toggled #layoutSidenav_content {
+    margin-left: 0;
+    width: 100%;
 }

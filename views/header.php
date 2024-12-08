@@ -14,8 +14,6 @@ if (!isset($_SESSION['login']) || $_SESSION['login']['estado'] == false) {
         const identificadorUsuario = '{$correo}';
     </script>";
 
-
-
     // El usuario a ingresado al sistema, solo se le permitirá acceso a las vistas indicadores por su PERFIL
     $url = $_SERVER['REQUEST_URI'];         // Obtener URL
     $rutaCompleta = explode("/", $url);     // URL > array()

@@ -385,10 +385,6 @@ function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnSt
     new Chart(ctx, config);  // Crear y renderizar el gráfico
 }
 
-
-
-
-// Función para actualizar el gráfico circular de Medicamentos
 // Función para actualizar el gráfico circular de Medicamentos
 function actualizarGraficoCircularMedicamentos([enStock, criticos], medicamentosEnStockList, medicamentosCriticosList) {
     const ctx = document.getElementById("supportDonutChart").getContext("2d");

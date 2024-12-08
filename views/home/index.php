@@ -63,8 +63,6 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
       </div>
 
       <!-- Servicios Realizados GRAFICO + TOTAL -->
-      <!-- Servicios Realizados GRAFICO + TOTAL -->
-      <!-- Servicios Realizados GRAFICO + TOTAL -->
       <div class="col-md-6 col-lg-4">
         <div class="card">
           <h5 class="card-title">Servicios Realizados</h5>
@@ -85,7 +83,6 @@ $medicamentosCriticos = $medicamentosCriticos ?? 0;
           </div>
         </div>
       </div>
-
 
       <!-- Servicios con iconos para Servicios Propios y Mixtos -->
       <div class="col-md-6 col-lg-4">
