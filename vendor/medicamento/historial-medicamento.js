@@ -18,9 +18,9 @@ const configurarDataTableEntradas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'Medicamento', title: 'Medicamento' },
-                { data: 'Lote', title: 'Lote' },
-                { data: 'StockActual', title: 'Stock Actual' },
+                { data: 'Medicamento' },
+                { data: 'Lote' },
+                { data: 'StockActual' },
                 { data: 'Cantidad', title: 'Cantidad' },
                 { data: 'FechaMovimiento', title: 'Fecha Movimiento' }
             ],
