@@ -243,8 +243,7 @@ CREATE PROCEDURE spu_medicamentos_salida(
 )
 BEGIN
     DECLARE _idMedicamento INT;
-    DECLARE _currentStock INT;  -- Usar INT ya que la columna cantidad_stock es de tipo INT
-    DECLARE _finalMotivo TEXT;
+    DECLARE _currentStock INT;  
 
     -- Iniciar transacción
     START TRANSACTION;
@@ -275,16 +274,9 @@ BEGIN
     SET cantidad_stock = cantidad_stock - _cantidad
     WHERE idMedicamento = _idMedicamento;
 
-    -- Establecer el motivo en función de si es por equino o por otros motivos
-    IF _idEquino IS NOT NULL THEN
-        SET _finalMotivo = _motivo;
-    ELSE
-        SET _finalMotivo = 'No especificado';
-    END IF;
-
     -- Registrar el movimiento en la tabla HistorialMovimientosMedicamentos
     INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, motivo, idEquino, idUsuario)
-    VALUES (_idMedicamento, 'Salida', _cantidad, _finalMotivo, _idEquino, _idUsuario);
+    VALUES (_idMedicamento, 'Salida', _cantidad, _motivo, IF(_idEquino IS NULL, NULL, _idEquino), _idUsuario);
 
     -- Confirmar transacción
     COMMIT;
