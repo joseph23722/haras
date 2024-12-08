@@ -30,7 +30,7 @@ const configurarDataTableEntradasAlimentos = () => {
             searching: true,
             autoWidth: false,
             responsive: true,
-            order: [[6, 'desc']] // Ordenar por fecha de movimiento
+            order: [[5, 'desc']] // Ordenar por fecha de movimiento
         });
     } else {
         $('#tabla-entradas-alimentos').DataTable().ajax.reload();
@@ -72,7 +72,7 @@ const configurarDataTableSalidasAlimentos = () => {
             searching: true,
             autoWidth: false,
             responsive: true,
-            order: [[8, 'desc']] // Ordenar por fecha de salida
+            order: [[7, 'desc']] // Ordenar por fecha de salida
         });
     } else {
         $('#tabla-salidas-alimentos').DataTable().ajax.reload();

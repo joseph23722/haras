@@ -30,6 +30,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 DROP PROCEDURE IF EXISTS `ObtenerTotalEquinosRegistrados`;
 DELIMITER //
 CREATE PROCEDURE ObtenerTotalEquinosRegistrados()

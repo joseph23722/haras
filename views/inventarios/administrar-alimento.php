@@ -54,7 +54,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="number" name="stockActual" id="stockActual" class="form-control" required min="0" placeholder="">
-              <label for="stockActual"><i class="fas fa-weight" style="color: #3498db;"></i> Stock Actual</label>
+              <label for="stockActual"><i class="fas fa-weight" style="color: #3498db;"></i> Cantidad</label>
             </div>
           </div>
 
