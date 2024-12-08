@@ -18,9 +18,9 @@ const configurarDataTableEntradas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'Medicamento' },
-                { data: 'Lote' },
-                { data: 'StockActual' },
+                { data: 'Medicamento', title: 'Medicamento' },
+                { data: 'Lote', title: 'Lote' },
+                { data: 'StockActual', title: 'Stock Actual' },
                 { data: 'Cantidad', title: 'Cantidad' },
                 { data: 'FechaMovimiento', title: 'Fecha Movimiento' }
             ],
@@ -55,13 +55,13 @@ const configurarDataTableSalidas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'Medicamento' },
-                { data: 'Lote' },
-                { data: 'TipoEquino'},
-                { data: 'CantidadEquino' },
-                { data: 'Cantidad' },
-                { data: 'Motivo' },
-                { data: 'FechaSalida' }
+                { data: 'Medicamento', title: 'Medicamento' },
+                { data: 'Lote', title: 'Lote' },
+                { data: 'TipoEquino', title: 'Tipo Equino' },
+                { data: 'CantidadEquino', title: 'Cantidad Equinos' },
+                { data: 'Cantidad', title: 'Cantidad' },
+                { data: 'Motivo', title: 'Motivo' },
+                { data: 'FechaSalida', title: 'Fecha Movimiento' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
