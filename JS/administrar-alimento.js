@@ -793,9 +793,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('DOMContentLoaded', function () {
         const formEditarSugerencia = document.getElementById('formEditarSugerenciaAlimento');
         if (formEditarSugerencia) {
-            console.log("Evento 'submit' registrado para formEditarSugerenciaAlimento");
-        } else {
-            console.error("El formulario 'formEditarSugerenciaAlimento' no existe en el DOM.");
         }
     });
     cargarLotes();
