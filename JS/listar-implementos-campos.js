@@ -43,17 +43,10 @@ document.addEventListener("DOMContentLoaded", function () {
                             option.textContent = `${item.nombreProducto} - Stock: ${item.stockFinal}`;
                             selectNombreProducto.appendChild(option);
                         });
-                    } else {
-                        console.log('No se encontraron productos.');
-                        showToast('No se encontraron productos para este inventario.', 'ERROR');
                     }
-                } else {
-                    console.error('No se encontró el select con id "productos"');
-                    showToast('No se encontró el campo de productos.', 'ERROR');
                 }
             })
             .catch(error => {
-                console.error('Error de solicitud de productos:', error);
                 showToast('Hubo un problema al cargar los productos', 'ERROR');
             });
     }
@@ -81,10 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (implementos && implementos.length > 0) {
                 if ($.fn.dataTable.isDataTable('#implementos-table')) {
-                    console.log("La tabla ya existe. Actualizando datos...");
                     $('#implementos-table').DataTable().clear().rows.add(implementos).draw();
                 } else {
-                    console.log("Inicializando DataTable...");
                     $('#implementos-table').DataTable({
                         data: implementos,
                         columns: [

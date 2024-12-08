@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const historial = await response.json();
-            console.log("Respuesta del servidor en json:", historial);
 
             // Verifica si la respuesta es un array de implementos
             if (Array.isArray(historial)) {
@@ -54,8 +53,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     noDataRow.innerHTML = `<td colspan="7" class="text-center">No hay datos disponibles</td>`;
                     tbody.appendChild(noDataRow);
                 }
-            } else {
-                console.error("La respuesta no es un array válido:", historial);
             }
         } catch (error) {
             console.error("Error al cargar el historial de movimientos:", error);

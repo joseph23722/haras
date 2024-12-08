@@ -170,10 +170,6 @@ function cargarDatosDashboard() {
 
                 // Actualizar el gráfico de barras con las cantidades de stock y baja cantidad
                 actualizarGraficoBarrasAlimentos([alimentosEnStock, alimentosBajaCantidad], alimentosEnStockList, alimentosBajaCantidadList);
-
-                // Aquí puedes mostrar los nombres de los alimentos si los necesitas
-                console.log("Alimentos en stock:", alimentosEnStockList);
-                console.log("Alimentos con baja cantidad:", alimentosBajaCantidadList);
             }
         })
         .catch(error => console.error("Error fetching alimentos_stock:", error));
@@ -188,7 +184,6 @@ function cargarDatosDashboard() {
             carouselInner.innerHTML = '';
 
             if (data.error) {
-                console.error(data.error);
                 carouselInner.innerHTML = `
               <div class="carousel-item active">
                 <img src="https://via.placeholder.com/400x300?text=No+se+encontraron+imágenes" class="d-block w-100 equino-image" alt="No se encontraron imágenes">
@@ -211,7 +206,6 @@ function cargarDatosDashboard() {
             });
         })
         .catch(error => {
-            console.error('Error:', error);
             const carouselInner = document.querySelector('#carouselEquinosSimple .carousel-inner');
             carouselInner.innerHTML = `
             <div class="carousel-item active">
@@ -235,7 +229,6 @@ function validarRespuestaJSON(response) {
 function actualizarGraficoLineal(dataSeries) {
     // Verifica si los datos de la serie están vacíos
     if (dataSeries.length === 0) {
-        console.error('No hay datos para el gráfico.');
         return;  // Si no hay datos, no intentamos renderizar el gráfico
     }
 
@@ -325,8 +318,6 @@ function actualizarGraficoBarra(serviciosPropios, serviciosMixtos) {
                 duration: 1500,  // Duración de la animación en milisegundos
                 easing: 'easeOutBounce', // Tipo de animación (rebote al final)
                 onComplete: function () {
-                    // Llamar a cualquier función adicional al completar la animación (opcional)
-                    console.log('Animación completada');
                 }
             }
         }
@@ -384,10 +375,7 @@ function actualizarGraficoBarrasAlimentos([enStock, bajaCantidad], alimentosEnSt
             animation: {
                 duration: 1500,  // Duración de la animación en milisegundos (1.5 segundos)
                 easing: 'easeOutBounce', // Efecto de rebote en la animación
-                onComplete: function () {
-                    // Llamada de función opcional cuando la animación se completa
-                    console.log('Animación completada');
-                }
+                onComplete: function () {                }
             },
             barPercentage: 0.5, // Porcentaje de la barra
             borderRadius: 8, // Bordes redondeados de las barras
