@@ -193,8 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensajeDiv.style.boxShadow = 'none';
                 mensajeDiv.style.backgroundColor = 'transparent';
             }, 5000);
-        } else {
-            console.warn('El contenedor de mensajes para alimentos no está presente en el DOM.');
         }
     };
 
@@ -315,9 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                     }
                 });
-            } else {
-                console.warn('No se encontraron categorías de equinos.');
-            }
+            } 
         } catch (error) {
             console.error("Error al cargar categorías de equinos:", error);
         }
@@ -377,7 +373,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // Validar fecha de caducidad
             if (!validarFechaCaducidad()) {
                 mostrarMensajeDinamico('Error en las fechas de caducidad.', 'ERROR');
-                console.log("Error en la validación de la fecha de caducidad.");
                 return;
             }
 
@@ -575,8 +570,6 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (error) {
                 showToast("Error en la solicitud: " + error.message, 'ERROR');
             }
-        } else {
-            console.log("El usuario canceló la operación.");
         }
     };
 
