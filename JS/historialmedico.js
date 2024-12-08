@@ -58,8 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensajeDiv.style.boxShadow = 'none';
                 mensajeDiv.style.backgroundColor = 'transparent';
             }, 5000);
-        } else {
-            console.warn('El contenedor de mensajes no está presente en el DOM.');
         }
     };
 
@@ -343,7 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     type: 'GET',
                     dataSrc: function (json) {
                         if (!json || json.error) {
-                            console.error("Error en la respuesta del servidor:", json.error || "Respuesta vacía.");
                             return [];
                         }
                         return json.data;
