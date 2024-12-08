@@ -59,9 +59,9 @@ const configurarDataTableSalidas = () => {
                 { data: 'Lote',},
                 { data: 'TipoEquino'},
                 { data: 'CantidadEquino', title: 'Cantidad Equinos' },
-                { data: 'Cantidad', title: 'Cantidad' },
-                { data: 'Motivo', title: 'Motivo' },
-                { data: 'FechaSalida', title: 'Fecha Movimiento' }
+                { data: 'Cantidad' },
+                { data: 'Motivo' },
+                { data: 'FechaSalida' }
             ],
             language: {
                 url: '/haras/data/es_es.json'
