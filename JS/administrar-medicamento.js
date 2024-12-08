@@ -214,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cargar los tipos de medicamentos desde el servidor
     const loadTiposMedicamentos = async () => {
         try {
-            console.log("Iniciando carga de tipos de medicamentos...");
             const response = await fetch(`../../controllers/admedi.controller.php?operation=listarTiposMedicamentos`, {
                 method: "GET",
             });
@@ -291,7 +290,6 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             // Verificar si idTipo está definido
             if (!idTipo) {
-                showToast("No se olvide ,Debe seleccionar un tipo de medicamento antes de cargar las presentaciones.", 'INFO');
                 return;
             }
             const response = await fetch(`../../controllers/admedi.controller.php`, {
