@@ -43,18 +43,14 @@ const reloadHistorialAlimentos = () => {
         (json) => console.log('Tabla Entradas Recargada:', JSON.stringify(json)),
         false
       );
-    } else {
-      console.warn('La tabla de entradas no está inicializada.');
-    }
+    } 
 
     if ($.fn.DataTable.isDataTable('#tabla-salidas-alimentos')) {
       $('#tabla-salidas-alimentos').DataTable().ajax.reload(
         (json) => console.log('Tabla Salidas Recargada:', JSON.stringify(json)),
         false
       );
-    } else {
-      console.warn('La tabla de salidas no está inicializada.');
-    }
+    } 
   } catch (error) {
     console.error('Error al recargar las tablas:', error);
   }

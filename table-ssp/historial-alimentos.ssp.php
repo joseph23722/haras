@@ -40,8 +40,8 @@ function ejecutarProcedimientoHistorial($procedure, $sql_details, $params)
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Si hay un término de búsqueda, aplicar el filtro
-        if (!empty($params['busqueda'])) {
-            $busqueda = strtolower($params['busqueda']);
+        if (!empty($params['search']['value'])) {
+            $busqueda = strtolower($params['search']['value']);
             $data = array_filter($data, function ($row) use ($busqueda) {
                 // Concatenar los valores de las columnas en una sola cadena para buscar
                 $searchable = strtolower(implode(' ', array_values($row)));
@@ -53,7 +53,7 @@ function ejecutarProcedimientoHistorial($procedure, $sql_details, $params)
         $recordsTotal = count($data);
 
         // Aplicar paginación después del filtrado (si es necesario)
-        $data = array_slice($data, 0, $params['limite']);
+        $data = array_slice($data, $params['desplazamiento'], $params['limite']);
 
         // Formatear el resultado para DataTables
         $output = array(
@@ -76,9 +76,9 @@ $params = array(
     'tipoMovimiento' => isset($_GET['tipoMovimiento']) ? $_GET['tipoMovimiento'] : 'Entrada',
     'filtroFecha' => isset($_GET['filtroFecha']) ? $_GET['filtroFecha'] : 'hoy',
     'idUsuario' => isset($_GET['idUsuario']) && is_numeric($_GET['idUsuario']) ? (int)$_GET['idUsuario'] : 0,
-    'limite' => isset($_GET['limite']) && is_numeric($_GET['limite']) ? (int)$_GET['limite'] : 10,
-    'desplazamiento' => isset($_GET['desplazamiento']) && is_numeric($_GET['desplazamiento']) ? (int)$_GET['desplazamiento'] : 0,
-    'busqueda' => isset($_GET['busqueda']) ? $_GET['busqueda'] : ''
+    'limite' => isset($_GET['length']) && is_numeric($_GET['length']) ? (int)$_GET['length'] : 10,
+    'desplazamiento' => isset($_GET['start']) && is_numeric($_GET['start']) ? (int)$_GET['start'] : 0,
+    'search' => isset($_GET['search']) ? $_GET['search'] : array('value' => '')
 );
 
 // Llamar a la función con el procedimiento almacenado y los parámetros obtenidos

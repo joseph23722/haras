@@ -11,6 +11,7 @@ const configurarDataTableEntradasAlimentos = () => {
                     // Parámetros para el servidor
                     d.tipoMovimiento = 'Entrada';
                     d.filtroFecha = document.getElementById('filtroRangoAlimentos').value || 'hoy';
+                    d.search.value = d.search.value || ''; // Asegurarse de que el valor de búsqueda se envíe
                 },
                 dataSrc: 'data'
             },
@@ -50,6 +51,8 @@ const configurarDataTableSalidasAlimentos = () => {
                     // Parámetros para el servidor
                     d.tipoMovimiento = 'Salida';
                     d.filtroFecha = document.getElementById('filtroRangoAlimentos').value || 'hoy';
+                    d.search.value = d.search.value || ''; // Asegurarse de que el valor de búsqueda se envíe
+                    
                 },
                 dataSrc: 'data'
             },
