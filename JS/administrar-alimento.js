@@ -56,9 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
             options.forEach(({ id, nombre }) => {
                 selectElement.innerHTML += `<option value="${id}">${nombre}</option>`;
             });
-        } else {
-            console.warn("fillSelect: No se encontraron opciones para llenar el select.");
-        }
+        } 
     };
 
     // Cargar tipos de alimento en el formulario de registro
@@ -68,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tipos) {
             fillSelect(tipoAlimentoElementRegistrar, tipos.map(tipo => ({ id: tipo.idTipoAlimento, nombre: tipo.tipoAlimento })), "Seleccione el tipo de alimento");
         } else {
-            console.warn("cargarTiposAlimento: No se encontraron tipos de alimento.");
             fillSelect(tipoAlimentoElementRegistrar, [], "Seleccione el tipo de alimento");
         }
     };
@@ -155,8 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnGuardar = document.getElementById("btnGuardarCategoriaMedida");
     if (btnGuardar) {
         btnGuardar.addEventListener("click", guardarCategoriaMedida);
-    } else {
-        console.error("El botón #btnGuardarCategoriaMedida no se encontró.");
     }
 
     // **Función para mostrar notificaciones dinámicas para alimentos**
