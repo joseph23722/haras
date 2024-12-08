@@ -35,14 +35,29 @@ function ejecutarProcedimientoDataTablesConFiltro($procedure, $sql_details, $par
         ]);
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $recordsTotal = count($data);
-        $recordsFiltered = $recordsTotal;
 
+        // Si hay un término de búsqueda, aplicar el filtro
+        if (!empty($params['search']['value'])) {
+            $busqueda = strtolower($params['search']['value']);
+            $data = array_filter($data, function ($row) use ($busqueda) {
+                // Concatenar los valores de las columnas en una sola cadena para buscar
+                $searchable = strtolower(implode(' ', array_values($row)));
+                return strpos($searchable, $busqueda) !== false;
+            });
+        }
+
+        // Total de registros después de aplicar el filtro de búsqueda
+        $recordsFiltered = count($data);
+
+        // Aplicar paginación después del filtrado (si es necesario)
+        $data = array_slice($data, $params['offset'], $params['limit']);
+
+        // Formatear el resultado para DataTables
         $output = array(
             "draw" => isset($_GET['draw']) ? intval($_GET['draw']) : 0,
-            "recordsTotal" => $recordsTotal,
+            "recordsTotal" => $recordsFiltered,
             "recordsFiltered" => $recordsFiltered,
-            "data" => $data
+            "data" => array_values($data) // Reindexar el array
         );
 
         echo json_encode($output);
@@ -59,7 +74,8 @@ $params = [
     'filtroFecha' => $_GET['filtroFecha'] ?? 'hoy',          // hoy, ultimaSemana, ultimoMes, todos
     'idUsuario' => $_GET['idUsuario'] ?? 0,                  // ID del usuario
     'limit' => $_GET['length'] ?? 10,                        // Límite de resultados para la paginación
-    'offset' => $_GET['start'] ?? 0                          // Desplazamiento para la paginación
+    'offset' => $_GET['start'] ?? 0,                         // Desplazamiento para la paginación
+    'search' => $_GET['search'] ?? array('value' => '')      // Parámetro de búsqueda
 ];
 
 // Llamar a la función para ejecutar el procedimiento con los parámetros dados

@@ -13,6 +13,7 @@ const configurarDataTableEntradas = () => {
                     d.idUsuario = 0;  // ID del usuario si es necesario
                     d.limit = d.length;  // Define el límite de resultados basados en la configuración de la tabla
                     d.offset = d.start;  // Define el offset para paginación
+                    d.search.value = d.search.value || ''; // Asegurarse de que el valor de búsqueda se envíe
                 },
                 dataSrc: 'data'
             },
@@ -50,6 +51,7 @@ const configurarDataTableSalidas = () => {
                     d.idUsuario = 0;  // ID del usuario si es necesario
                     d.limit = d.length;  // Define el límite de resultados basados en la configuración de la tabla
                     d.offset = d.start;  // Define el offset para paginación
+                    d.search.value = d.search.value || ''; // Asegurarse de que el valor de búsqueda se envíe
                 },
                 dataSrc: 'data'
             },
