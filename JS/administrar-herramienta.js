@@ -46,8 +46,6 @@ const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
             mensajeDiv.style.boxShadow = 'none';
             mensajeDiv.style.backgroundColor = 'transparent';
         }, 5000);
-    } else {
-        console.warn('El contenedor de mensajes no está presente en el DOM.');
     }
 };
 
@@ -97,8 +95,6 @@ async function cargarTiposTrabajos() {
                 option.textContent = trabajo.nombreTrabajo;
                 trabajoSelect.appendChild(option);
             });
-        } else {
-            console.error('Error al cargar tipos de trabajo:', data.message);
         }
     } catch (error) {
         console.error('Error en la solicitud para tipos de trabajo:', error);
@@ -129,8 +125,6 @@ async function cargarHerramientas() {
                 option.textContent = herramienta.nombreHerramienta;
                 herramientaSelect.appendChild(option);
             });
-        } else {
-            console.error('Error al cargar herramientas:', data.message);
         }
     } catch (error) {
         console.error('Error en la solicitud para herramientas:', error);
@@ -410,6 +404,4 @@ document.getElementById('formEditarTipoHerramienta').addEventListener('submit', 
 const btnGuardarTrabajoHerramienta = document.getElementById("btnGuardarTrabajoHerramienta");
 if (btnGuardarTrabajoHerramienta) {
     btnGuardarTrabajoHerramienta.addEventListener("click", guardarTrabajoHerramienta);
-} else {
-    console.error("El botón #btnGuardarTrabajoHerramienta no se encontró.");
 }
