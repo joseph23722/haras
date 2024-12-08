@@ -62,9 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 messageArea.style.boxShadow = 'none';
                 messageArea.style.backgroundColor = 'transparent';
             }, 5000);
-        } else {
-            console.warn('El contenedor de mensajes para medicamentos no está presente en el DOM.');
-        }
+        } 
     }
 
     // Función para validar el campo lote
@@ -199,13 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         option.value = categoria.idEquino; // Confirmar que `idEquino` se usa correctamente
                         option.textContent = `${categoria.Categoria} (${categoria.Cantidad})`;
                         idEquinoSelect.appendChild(option);
-                    } else {
-                        console.warn(`Categoría sin idEquino:`, categoria);
-                    }
+                    } 
                 });
-            } else {
-                console.warn('No se encontraron categorías de equinos.');
-            }
+            } 
         } catch (error) {
             console.error("Error al cargar categorías de equinos:", error);
         }
@@ -800,7 +794,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Mostrar los datos que se enviarán al servidor
             for (let [key, value] of data.entries()) {
-                console.log(`${key}: ${value}`);
             }
             // Intentar enviar los datos al servidor
             try {
