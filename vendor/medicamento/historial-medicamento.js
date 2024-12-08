@@ -55,8 +55,8 @@ const configurarDataTableSalidas = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'Medicamento'},
-                { data: 'Lote',},
+                { data: 'Medicamento' },
+                { data: 'Lote' },
                 { data: 'TipoEquino'},
                 { data: 'CantidadEquino', title: 'Cantidad Equinos' },
                 { data: 'Cantidad' },
