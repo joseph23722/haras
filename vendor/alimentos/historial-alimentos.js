@@ -16,7 +16,6 @@ const configurarDataTableEntradasAlimentos = () => {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'idAlimento', title: 'ID Alimento' },
                 { data: 'nombreAlimento', title: 'Nombre Alimento' },
                 { data: 'nombreTipoAlimento', title: 'Tipo' },
                 { data: 'nombreUnidadMedida', title: 'Unidad' },
