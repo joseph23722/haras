@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     const estadoMontaSelect = document.getElementById("estadoMonta");
 
     function obtenerEstadosMonta() {
@@ -22,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     obtenerEstadosMonta();
 
     let datosEquinos = [];
+    let simpleTable;
 
     // Obtener los datos de los equinos
     function obtenerDatos(estadoMonta = "") {
@@ -33,10 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 datosEquinos = data;
-                if (data.length > 0) {
-                    let tabla = document.querySelector('#tabla-equinos tbody');
-                    tabla.innerHTML = '';
+                let tabla = document.querySelector('#tabla-equinos tbody');
+                tabla.innerHTML = '';
 
+                if (data.length > 0) {
                     data.forEach(element => {
                         let colorTexto = '';
                         let estado = element.estadoDescriptivo || '';
@@ -69,18 +69,28 @@ document.addEventListener("DOMContentLoaded", () => {
                         tabla.innerHTML += nuevaFila;
                     });
 
-                    // Inicializar DataTable después de cargar los datos
-                    const simpleTable = new simpleDatatables.DataTable("#tabla-equinos", {
-                        perPage: 10,
-                        searchable: true,
-                        sortable: true
-                    });
+                    // Inicializar DataTable si aún no se ha inicializado
+                    if (!simpleTable) {
+                        simpleTable = new simpleDatatables.DataTable("#tabla-equinos", {
+                            perPage: 10,
+                            searchable: true,
+                            sortable: true
+                        });
+                    } else {
+                        // Si ya está inicializado, recargamos la tabla para mantener el buscador
+                        simpleTable.update();
+                    }
 
                     // Restaurar el color de la cabecera
                     const encabezado = document.querySelector("#tabla-equinos thead");
                     if (encabezado) {
                         encabezado.style.backgroundColor = '#caf0f8';
                         encabezado.style.color = '#fff';
+                    }
+                } else {
+                    tabla.innerHTML = `<tr><td colspan="10" class="text-center">No se encontraron resultados</td></tr>`;
+                    if (simpleTable) {
+                        simpleTable.update();
                     }
                 }
             })
