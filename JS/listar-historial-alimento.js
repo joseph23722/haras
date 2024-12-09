@@ -39,17 +39,11 @@ const setFechaFiltroAlimentos = () => {
 const reloadHistorialAlimentos = () => {
   try {
     if ($.fn.DataTable.isDataTable('#tabla-entradas-alimentos')) {
-      $('#tabla-entradas-alimentos').DataTable().ajax.reload(
-        (json) => console.log('Tabla Entradas Recargada:', JSON.stringify(json)),
-        false
-      );
+      $('#tabla-entradas-alimentos').DataTable().ajax.reload(null, false);
     } 
 
     if ($.fn.DataTable.isDataTable('#tabla-salidas-alimentos')) {
-      $('#tabla-salidas-alimentos').DataTable().ajax.reload(
-        (json) => console.log('Tabla Salidas Recargada:', JSON.stringify(json)),
-        false
-      );
+      $('#tabla-salidas-alimentos').DataTable().ajax.reload(null, false);
     } 
   } catch (error) {
     console.error('Error al recargar las tablas:', error);
