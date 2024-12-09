@@ -7,7 +7,7 @@
 
   <!-- Tabla de Medicamentos Registrados -->
   <div class="card mb-4 shadow-lg rounded-3" style="background-color: #FFFFFF; border: none;">
-    <div class="card-header" style="background: #3498DB; color: #FFFFFF; border-radius: 15px 15px 0 0; border-bottom: 4px solid #2980B9;">
+    <div class="card-header" style="background: #1ABC9C; color: #FFFFFF; border-radius: 15px 15px 0 0; border-bottom: 4px solid #16A085;">
       <h5 class="text-center mb-0">
         <i class="fas fa-apple-alt" style="color: #F39C12;"></i> Movimientos Registrados
       </h5>
@@ -24,9 +24,6 @@
           <option value="todos">Todos</option>
         </select>
       </div>
-      <button type="button" id="buscarHistorialAlimentos" class="btn btn-outline-primary ms-3 rounded-pill px-4 py-2" style="font-weight: bold; border: 2px solid #3498DB; color: #3498DB;">
-        <i class="fas fa-search me-1"></i> Buscar
-      </button>
     </div>
 
     <!-- Pestañas para Entrada y Salida -->
