@@ -6,6 +6,16 @@
         <i class="fas fa-horse-head" style="color: #a0ffb8;"></i> Listado de Equinos
     </h1>
 
+    <!-- Filtro de Estado Monta -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <label for="estadoMonta" style="font-size: 16px; font-weight: bold; color: #003366;">Filtrar por Estado Monta:</label>
+            <select id="estadoMonta" class="form-select" style="width: 200px;">
+                <option value="">Todos</option>
+            </select>
+        </div>
+    </div>
+
     <!-- Sección de Listado de Equinos -->
     <div class="row">
         <div class="col-md-12">
