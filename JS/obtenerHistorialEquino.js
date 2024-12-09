@@ -1,11 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+    const estadoMontaSelect = document.getElementById("estadoMonta");
+
+    function obtenerEstadosMonta() {
+        fetch("../../controllers/registrarequino.controller.php?operation=listadoEstadoMonta")
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    data.forEach(estado => {
+                        const option = document.createElement("option");
+                        option.value = estado.idEstadoMonta;
+                        option.textContent = estado.nombreEstado;
+                        estadoMontaSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error al cargar los estados de monta:", error);
+            });
+    }
+    obtenerEstadosMonta();
+
     let datosEquinos = [];
 
     // Obtener los datos de los equinos
-    function obtenerDatos() {
-        fetch(`../../controllers/registrarequino.controller.php?operation=getAll`, {
-            method: 'GET'
-        })
+    function obtenerDatos(estadoMonta = "") {
+        const url = estadoMonta
+            ? `../../controllers/registrarequino.controller.php?operation=getAll&estadoMonta=${estadoMonta}`
+            : `../../controllers/registrarequino.controller.php?operation=getAll`;
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 datosEquinos = data;
@@ -119,6 +143,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const historialModal = new bootstrap.Modal(document.getElementById('historialModal'));
             historialModal.show();
         }
+    });
+
+    // Evento para filtrar por Estado Monta
+    estadoMontaSelect.addEventListener("change", (event) => {
+        const estadoMonta = event.target.value;
+        obtenerDatos(estadoMonta);
     });
 
     obtenerDatos();
