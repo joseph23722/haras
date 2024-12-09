@@ -180,6 +180,7 @@
                                 <div class="form-floating">
                                     <input type="text" class="form-control bg-light" id="propietario" style="border-radius: 5px;">
                                     <label for="idPropietario"><i class="fas fa-user" style="color: #4dabf7;"></i> Propietario</label>
+                                    <input type="hidden" id="idPropietario" name="idPropietario">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -226,13 +227,13 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="ingreso" style="border-radius: 5px;">
+                                    <input type="date" class="form-control bg-light" id="ingreso" style="border-radius: 5px;">
                                     <label for="fechaentrada"><i class="fas fa-weight" style="color: #4dabf7;"></i> Fecha Entrada</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control bg-light" id="salida" style="border-radius: 5px;">
+                                    <input type="date" class="form-control bg-light" id="salida" style="border-radius: 5px;">
                                     <label for="fechasalida"><i class="fas fa-heart" style="color: #4dabf7;"></i> Fecha Salida</label>
                                 </div>
                             </div>

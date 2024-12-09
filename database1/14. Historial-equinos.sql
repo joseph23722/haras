@@ -42,6 +42,7 @@ BEGIN
         n.nacionalidad,
         e.pesokg,
         p.nombreHaras,
+		p.idPropietario,
         e.fotografia,
         e.fechaentrada,
         e.fechasalida,

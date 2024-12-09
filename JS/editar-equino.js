@@ -44,14 +44,13 @@ function clearModalFields() {
     const fields = [
         "fechanacimiento", "nacionalidades", "propietario",
         "genero", "tipoEquino", "idEstadoMonta",
-        "peso", "estado", "fechaentrada", "fechasalida", "idEquino"
+        "peso", "estado", "ingreso", "salida", "idEquino"
     ];
     fields.forEach(field => document.getElementById(field).value = '');
 }
 
 // Función para cargar los datos en el modal
 function loadModalFields(equino) {
-
     document.getElementById("fechanacimiento").value = equino.fechaNacimiento || '--';
     document.getElementById("nacionalidades").value = equino.nacionalidad || '--';
     document.getElementById("propietario").value = equino.nombreHaras || 'Haras Rancho Sur';
@@ -60,11 +59,12 @@ function loadModalFields(equino) {
     document.getElementById("idEstadoMonta").value = equino.estadoMonta || '--';
     document.getElementById("peso").value = equino.pesokg || '--';
     document.getElementById("estado").value = equino.estado || 'Desconocido';
-    document.getElementById("ingreso").value = equino.fechaentrada || 'No Ingresó';
-    document.getElementById("salida").value = equino.fechasalida || 'No Salió';
+    document.getElementById("ingreso").value = equino.fechaentrada || '';
+    document.getElementById("salida").value = equino.fechasalida || '';  // Si la fecha de salida es nula o vacía, dejarla vacía
 
     document.getElementById("idEquino").value = equino.idEquino || '';
-    // Verificar si el propietario es null
+
+    // Verificar si el propietario es null y ocultar las fechas de entrada/salida si es necesario
     if (equino.nombreHaras === null || equino.nombreHaras === 'Haras Rancho Sur') {
         document.getElementById("ingreso").closest(".col-md-6").style.display = "none";
         document.getElementById("salida").closest(".col-md-6").style.display = "none";
@@ -74,13 +74,15 @@ function loadModalFields(equino) {
     }
 }
 
-// Evento para guardar los cambios al presionar el botón "Guardar cambios"
+// Guardar los cambios realizados en el formulario
 document.querySelector("#editarEquinosModal .btn-primary").addEventListener("click", async function () {
     const idEquino = document.getElementById("idEquino").value.trim();
     let idPropietario = document.getElementById("propietario").value.trim();
     const pesokg = document.getElementById("peso").value.trim();
     let idEstadoMonta = document.getElementById("idEstadoMonta").value.trim();
     let estado = document.getElementById("estado").value.trim();
+    const fechaEntrada = document.getElementById("ingreso").value.trim();
+    const fechaSalida = document.getElementById("salida").value.trim();  // Aquí capturamos la fecha de salida
 
     // Validar que el ID del equino esté presente
     if (!idEquino) {
@@ -124,6 +126,14 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
         if (pesokg) datosEdicion.pesokg = pesokg;
         if (idEstadoMonta !== undefined) datosEdicion.idEstadoMonta = idEstadoMonta;
         if (estado !== undefined) datosEdicion.estado = estado;
+        if (fechaEntrada) datosEdicion.fechaentrada = fechaEntrada;
+
+        // Aquí comprobamos si la fecha de salida está vacía o no, si está vacía enviamos "" (vacío)
+        if (fechaSalida !== "") {
+            datosEdicion.fechasalida = fechaSalida;  // Si el campo no está vacío, enviar el valor.
+        } else {
+            datosEdicion.fechasalida = "";  // Si el campo está vacío, enviar cadena vacía.
+        }
 
         // Enviar los datos al backend
         fetch('../../controllers/editarequino.controller.php', {
