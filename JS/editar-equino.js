@@ -54,11 +54,11 @@ function loadModalFields(equino) {
 
     document.getElementById("fechanacimiento").value = equino.fechaNacimiento || '--';
     document.getElementById("nacionalidades").value = equino.nacionalidad || '--';
-    document.getElementById("propietario").value = equino.idPropietario || 'Haras Rancho Sur';
+    document.getElementById("propietario").value = equino.nombreHaras || 'Haras Rancho Sur';
     document.getElementById("genero").value = equino.sexo || '--';
     document.getElementById("tipoEquino").value = equino.tipoEquino || '--';
     document.getElementById("idEstadoMonta").value = equino.estadoMonta || '--';
-    document.getElementById("peso").value = equino.pesokg || 'Por pesar';
+    document.getElementById("peso").value = equino.pesokg || '--';
     document.getElementById("estado").value = equino.estado || 'Desconocido';
     document.getElementById("idEquino").value = equino.idEquino || '';
 }
