@@ -82,8 +82,7 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
     let idEstadoMonta = document.getElementById("idEstadoMonta").value.trim();
     let estado = document.getElementById("estado").value.trim();
     const fechaEntrada = document.getElementById("ingreso").value.trim();
-    const fechaSalida = document.getElementById("salida").value.trim();  // Aquí capturamos la fecha de salida
-
+    const fechaSalida = document.getElementById("salida").value.trim();
     // Validar que el ID del equino esté presente
     if (!idEquino) {
         showToast("El ID del equino es obligatorio.", "WARNING");
@@ -130,9 +129,9 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
 
         // Aquí comprobamos si la fecha de salida está vacía o no, si está vacía enviamos "" (vacío)
         if (fechaSalida !== "") {
-            datosEdicion.fechasalida = fechaSalida;  // Si el campo no está vacío, enviar el valor.
+            datosEdicion.fechasalida = fechaSalida;
         } else {
-            datosEdicion.fechasalida = "";  // Si el campo está vacío, enviar cadena vacía.
+            datosEdicion.fechasalida = "";
         }
 
         // Enviar los datos al backend
@@ -141,7 +140,7 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
             body: JSON.stringify(datosEdicion),
             headers: { 'Content-Type': 'application/json' }
         })
-            .then(response => response.text()) // Capturar la respuesta como texto
+            .then(response => response.text())
             .then(text => {
                 try {
                     const data = JSON.parse(text);
