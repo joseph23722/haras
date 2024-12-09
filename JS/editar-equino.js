@@ -44,7 +44,7 @@ function clearModalFields() {
     const fields = [
         "fechanacimiento", "nacionalidades", "propietario",
         "genero", "tipoEquino", "idEstadoMonta",
-        "peso", "estado", "idEquino"
+        "peso", "estado", "fechaentrada", "fechasalida", "idEquino"
     ];
     fields.forEach(field => document.getElementById(field).value = '');
 }
@@ -60,7 +60,18 @@ function loadModalFields(equino) {
     document.getElementById("idEstadoMonta").value = equino.estadoMonta || '--';
     document.getElementById("peso").value = equino.pesokg || '--';
     document.getElementById("estado").value = equino.estado || 'Desconocido';
+    document.getElementById("ingreso").value = equino.fechaentrada || 'No Ingresó';
+    document.getElementById("salida").value = equino.fechasalida || 'No Salió';
+
     document.getElementById("idEquino").value = equino.idEquino || '';
+    // Verificar si el propietario es null
+    if (equino.nombreHaras === null || equino.nombreHaras === 'Haras Rancho Sur') {
+        document.getElementById("ingreso").closest(".col-md-6").style.display = "none";
+        document.getElementById("salida").closest(".col-md-6").style.display = "none";
+    } else {
+        document.getElementById("ingreso").closest(".col-md-6").style.display = "block";
+        document.getElementById("salida").closest(".col-md-6").style.display = "block";
+    }
 }
 
 // Evento para guardar los cambios al presionar el botón "Guardar cambios"

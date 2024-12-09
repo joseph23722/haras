@@ -43,6 +43,8 @@ BEGIN
         e.pesokg,
         p.nombreHaras,
         e.fotografia,
+        e.fechaentrada,
+        e.fechasalida,
         IF(e.estado = 1, 'Vivo', IF(e.estado = 0, 'Muerto', 'Desconocido')) AS estado
     FROM 
         Equinos e
