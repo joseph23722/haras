@@ -31,6 +31,21 @@ try {
             // Construir los parámetros para la edición
             $params = array_filter($input, fn($value) => $value !== null && $value !== '', ARRAY_FILTER_USE_BOTH);
 
+            // Validar que las fechas de entrada y salida tengan un formato correcto si están presentes
+            if (isset($params['fechaentrada']) && !empty($params['fechaentrada'])) {
+                if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $params['fechaentrada'])) {
+                    echo json_encode(["status" => "error", "message" => "La fecha de entrada no tiene un formato válido (YYYY-MM-DD)."]);
+                    exit;
+                }
+            }
+
+            if (isset($params['fechasalida']) && !empty($params['fechasalida'])) {
+                if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $params['fechasalida'])) {
+                    echo json_encode(["status" => "error", "message" => "La fecha de salida no tiene un formato válido (YYYY-MM-DD)."]);
+                    exit;
+                }
+            }
+
             // Registrar los parámetros enviados
             error_log("Parámetros recibidos para edición: " . json_encode($params));
 
