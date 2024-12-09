@@ -64,7 +64,7 @@ function loadModalFields(equino) {
 }
 
 // Evento para guardar los cambios al presionar el botón "Guardar cambios"
-document.querySelector("#editarEquinosModal .btn-primary").addEventListener("click", function () {
+document.querySelector("#editarEquinosModal .btn-primary").addEventListener("click", async function () {
     const idEquino = document.getElementById("idEquino").value.trim();
     let idPropietario = document.getElementById("propietario").value.trim();
     const pesokg = document.getElementById("peso").value.trim();
@@ -77,68 +77,69 @@ document.querySelector("#editarEquinosModal .btn-primary").addEventListener("cli
         return;
     }
 
-    // Mapear valores de texto a los valores esperados por el backend solo si están presentes
-    const estadoMap = {
-        "Vivo": 1,
-        "Muerto": 0
-    };
+    const confirmacion = await ask("¿Está seguro de guardar los cambios?", "Haras Rancho Sur");
 
-    const estadoMontaMap = {
-        "Activo": 1,
-        "Inactivo": 2,
-        "Preñada": 3,
-        "Servida": 4,
-        "S/S": 5,
-        "Por Servir": 6,
-        "Vacía": 7,
-        "Con Cria": 8
-    };
+    if (confirmacion) {
+        // Mapear valores de texto a los valores esperados por el backend solo si están presentes
+        const estadoMap = {
+            "Vivo": 1,
+            "Muerto": 0
+        };
 
-    // Convertir valores de texto a los valores del backend solo si están presentes
-    estado = estado ? estadoMap[estado] : undefined; // Convertir "Vivo" o "Muerto" a 1 o 0, o dejarlo como undefined
-    idEstadoMonta = idEstadoMonta ? estadoMontaMap[idEstadoMonta] : undefined; // Convertir "Inactivo" a su ID correspondiente
+        const estadoMontaMap = {
+            "Activo": 1,
+            "Inactivo": 2,
+            "Preñada": 3,
+            "Servida": 4,
+            "S/S": 5,
+            "Por Servir": 6,
+            "Vacía": 7,
+            "Con Cria": 8
+        };
 
-    // Si el propietario es "Haras Rancho Sur", enviar null para mantenerlo como propio
-    if (idPropietario === "Haras Rancho Sur") {
-        idPropietario = null;
-    }
+        // Convertir valores de texto a los valores del backend solo si están presentes
+        estado = estado ? estadoMap[estado] : undefined; // Convertir "Vivo" o "Muerto" a 1 o 0, o dejarlo como undefined
+        idEstadoMonta = idEstadoMonta ? estadoMontaMap[idEstadoMonta] : undefined; // Convertir "Inactivo" a su ID correspondiente
 
-    // Construir el objeto para enviar solo con los campos que tienen cambios
-    const datosEdicion = { operation: "editarEquino", idEquino };
+        // Si el propietario es "Haras Rancho Sur", enviar null para mantenerlo como propio
+        if (idPropietario === "Haras Rancho Sur") {
+            idPropietario = null;
+        }
 
-    if (idPropietario !== null) datosEdicion.idPropietario = idPropietario;
-    if (pesokg) datosEdicion.pesokg = pesokg;
-    if (idEstadoMonta !== undefined) datosEdicion.idEstadoMonta = idEstadoMonta;
-    if (estado !== undefined) datosEdicion.estado = estado;
+        // Construir el objeto para enviar solo con los campos que tienen cambios
+        const datosEdicion = { operation: "editarEquino", idEquino };
 
+        if (idPropietario !== null) datosEdicion.idPropietario = idPropietario;
+        if (pesokg) datosEdicion.pesokg = pesokg;
+        if (idEstadoMonta !== undefined) datosEdicion.idEstadoMonta = idEstadoMonta;
+        if (estado !== undefined) datosEdicion.estado = estado;
 
-    // Enviar los datos al backend
-    fetch('../../controllers/editarequino.controller.php', {
-        method: 'POST',
-        body: JSON.stringify(datosEdicion),
-        headers: { 'Content-Type': 'application/json' }
-    })
-        .then(response => {
-            return response.text(); // Capturar la respuesta como texto
+        // Enviar los datos al backend
+        fetch('../../controllers/editarequino.controller.php', {
+            method: 'POST',
+            body: JSON.stringify(datosEdicion),
+            headers: { 'Content-Type': 'application/json' }
         })
-        .then(text => {
-            // Intentar convertir la respuesta en JSON
-            try {
-                const data = JSON.parse(text);
-                // Manejo de respuesta
-                if (data.status === "success") {
-                    showToast(data.message || "Equino actualizado correctamente.", "SUCCESS");
-                    // Cerrar el modal
-                    const modal = bootstrap.Modal.getInstance(document.querySelector("#editarEquinosModal"));
-                    modal.hide();
-                } else {
-                    showToast(data.message || "Error al actualizar el equino.", "ERROR");
+            .then(response => response.text()) // Capturar la respuesta como texto
+            .then(text => {
+                try {
+                    const data = JSON.parse(text);
+                    if (data.status === "success") {
+                        showToast(data.message || "Equino actualizado correctamente.", "SUCCESS");
+                        // Cerrar el modal de edición
+                        const modal = bootstrap.Modal.getInstance(document.querySelector("#editarEquinosModal"));
+                        modal.hide();
+                    } else {
+                        showToast(data.message || "Error al actualizar el equino.", "ERROR");
+                    }
+                } catch (error) {
+                    showToast("Error inesperado en la respuesta del servidor.", "ERROR");
                 }
-            } catch (error) {
-                showToast("Error inesperado en la respuesta del servidor.", "ERROR");
-            }
-        })
-        .catch(error => {
-            showToast("Ocurrió un error al intentar guardar los cambios.", "ERROR");
-        });
+            })
+            .catch(error => {
+                showToast("Ocurrió un error al intentar guardar los cambios.", "ERROR");
+            });
+    } else {
+        showToast("Los cambios no han sido guardados.", "INFO");
+    }
 });
