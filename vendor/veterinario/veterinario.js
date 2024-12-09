@@ -3,9 +3,6 @@ const nombreEmpresa = "HARAS RANCHO SUR S.A.C";
 const direccionEmpresa = "CAL.FUNDO CHACARILLA NRO. S/N FND. CHACARILLA (SAN LUIS - EL OLIVAR CHINCHA) ICA - CHINCHA - CHINCHA BAJA";
 const modulo = "Historial Médico";
 
-
-
-
 // Función para cargar la imagen y convertirla a Base64
 function cargarImagenBase64(url, callback) {
     const img = new Image();
@@ -24,8 +21,6 @@ function cargarImagenBase64(url, callback) {
 
     img.src = url;
 }
-
-
 
 // Función para generar el PDF
 function generarPDF() {
@@ -196,7 +191,6 @@ function generarPDF() {
     });
 }
 
-
 // Función para generar y descargar el CSV
 function generarCSV() {
     const rows = $('#historialTable').DataTable().rows().data().toArray();
@@ -231,8 +225,6 @@ function generarCSV() {
     link.download = 'Reporte_historial_Medico.csv';
     link.click();
 }
-
-
 
 // Función para imprimir el documento
 function imprimirDocumento() {
@@ -300,8 +292,6 @@ function imprimirDocumento() {
     });
 }
 
-
-
 // Función genérica para enviar la solicitud al servidor
 const sendRequest = async (idRegistro, accion) => {
     const data = {
@@ -343,7 +333,6 @@ const eliminarRegistro = (idRegistro) => sendRequest(idRegistro, 'eliminar');
 window.pausarRegistro = pausarRegistro;
 window.continuarRegistro = continuarRegistro;
 window.eliminarRegistro = eliminarRegistro;
-
 
 $(document).ready(function () {
     // Cargar opciones de medicamentos dinámicamente evitando duplicados
