@@ -71,7 +71,6 @@ class Registrarequino extends Conexion
 
     public function listadoEquinos($estadoMonta = null): array
     {
-        // Aquí pasamos el parámetro al procedimiento almacenado
         return parent::getData("spu_equinos_listar", [$estadoMonta]);
     }
 
