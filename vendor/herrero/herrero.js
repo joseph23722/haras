@@ -3,7 +3,6 @@ const nombreEmpresa = "HARAS RANCHO SUR S.A.C";
 const direccionEmpresa = "CAL.FUNDO CHACARILLA NRO. S/N FND. CHACARILLA (SAN LUIS - EL OLIVAR CHINCHA) ICA - CHINCHA - CHINCHA BAJA";
 const modulo = "Historial Herrero";
 
-
 // Función para cargar la imagen y convertirla a Base64
 function cargarImagenBase64(url, callback) {
     const img = new Image();
@@ -168,9 +167,6 @@ function generarPDF() {
     });
 }
 
-
-
-
 // Función para generar y descargar el CSV
 function generarCSV() {
     const rows = $('#tabla-medicamento').DataTable().rows().data().toArray();
@@ -201,8 +197,6 @@ function generarCSV() {
     link.download = 'Reporte_Medicamentos.csv';
     link.click();
 }
-
-
 
 // Función para imprimir el documento
 function imprimirDocumento() {
@@ -259,8 +253,6 @@ function imprimirDocumento() {
         };
     });
 }
-
-
 
 // Configuración del DataTable
 const configurarDataTableHerrero = (tipoEquino = null) => {
@@ -346,4 +338,3 @@ $(document).ready(function () {
         loadHistorialHerreroTable(tipoEquino);  // Llamamos la función con el filtro de tipo de equino
     });
 });
-
