@@ -69,9 +69,10 @@ class Registrarequino extends Conexion
         return parent::getData("spu_listar_tipoequinos");
     }
 
-    public function listadoEquinos(): array
+    public function listadoEquinos($estadoMonta = null): array
     {
-        return parent::getData("spu_equinos_listar");
+        // Aquí pasamos el parámetro al procedimiento almacenado
+        return parent::getData("spu_equinos_listar", [$estadoMonta]);
     }
 
     public function buscarEquinoPorNombre($nombreEquino): array
