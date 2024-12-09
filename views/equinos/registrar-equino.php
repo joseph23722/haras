@@ -221,6 +221,22 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Quinta fila: ENTRADA Y SALIDA -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="ingreso" style="border-radius: 5px;">
+                                    <label for="fechaentrada"><i class="fas fa-weight" style="color: #4dabf7;"></i> Fecha Entrada</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="salida" style="border-radius: 5px;">
+                                    <label for="fechasalida"><i class="fas fa-heart" style="color: #4dabf7;"></i> Fecha Salida</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="modal-footer" style="background: #f8f9fa;">
