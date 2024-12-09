@@ -10,7 +10,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <label for="estadoMonta" style="font-size: 16px; font-weight: bold; color: #003366;">Filtrar por Estado Monta:</label>
-            <select id="estadoMonta" class="form-select" style="width: 200px;">
+            <select id="estadoMonta" class="form-select" style="width: 300px;">
                 <option value="">Todos</option>
             </select>
         </div>
