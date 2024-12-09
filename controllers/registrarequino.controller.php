@@ -11,7 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['operation'])) {
         switch ($_GET['operation']) {
             case 'getAll':
-                echo json_encode($controller->listadoEquinos());
+                $estadoMonta = isset($_GET['estadoMonta']) ? $_GET['estadoMonta'] : null;
+                echo json_encode($controller->listadoEquinos($estadoMonta));
                 break;
 
             case 'getHistorial':
