@@ -15,6 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 echo json_encode($controller->listadoEquinos($estadoMonta));
                 break;
 
+            case 'listadoEstadoMonta':
+                echo json_encode($controller->listadoEstadoMonta());
+                break;
+
             case 'getHistorial':
                 if (isset($_GET['idEquino'])) {
                     echo json_encode($controller->obtenerHistorialEquino($_GET['idEquino']));
