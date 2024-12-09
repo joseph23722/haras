@@ -79,3 +79,12 @@ BEGIN
         E.idEquino DESC;
 END //
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `spu_listar_estado_monta`;
+DELIMITER //
+CREATE PROCEDURE spu_listar_estado_monta()
+BEGIN
+    SELECT idEstadoMonta, nombreEstado
+    FROM EstadoMonta;
+END //
+DELIMITER ;
