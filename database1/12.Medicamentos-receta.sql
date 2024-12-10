@@ -135,11 +135,30 @@ BEGIN
         'Activo'                 -- El tratamiento comienza con el estado 'Activo'
     );
 
+    -- Actualizar el estado del tratamiento primario a 'Finalizado' si la fecha de fin ha pasado
+    UPDATE DetalleMedicamentos
+    SET estadoTratamiento = 'Finalizado'
+    WHERE idEquino = _idEquino
+    AND tipoTratamiento = 'Primario'
+    AND estadoTratamiento = 'Activo'
+    AND fechaFin < CURDATE();
+
     -- Confirmar la transacción
     COMMIT;
 
-END $$
+END $$ 
 DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
 
 DROP PROCEDURE IF EXISTS `spu_listar_equinos_propiosMedi`;
 DELIMITER $$
