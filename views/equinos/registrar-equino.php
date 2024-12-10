@@ -151,7 +151,7 @@
                             <div class="form-floating flex-grow-2">
                                 <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus style="border-radius: 5px;">
                                 <label for="buscarEquino"><i class="fas fa-search" style="color: #4dabf7;"></i> Buscar Equino</label>
-                                <input type="hidden" id="idEquino" name="idEquino">
+                                <!-- <input type="hidden" id="idEquino" name="idEquino"> -->
                             </div>
                             <button type="button" id="buscar-equino" class="btn btn-outline-success" title="Buscar" style="border-radius: 5px;">
                                 <i class="fas fa-search"></i>
@@ -180,6 +180,7 @@
                                 <div class="form-floating">
                                     <input type="text" class="form-control bg-light" id="propietario" style="border-radius: 5px;">
                                     <label for="idPropietario"><i class="fas fa-user" style="color: #4dabf7;"></i> Propietario</label>
+                                    <input type="hidden" id="idPropietario" name="idPropietario">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -218,6 +219,22 @@
                                 <div class="form-floating">
                                     <input type="text" class="form-control bg-light" id="estado" style="border-radius: 5px;">
                                     <label for="estado"><i class="fas fa-heart" style="color: #4dabf7;"></i> Estado</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quinta fila: ENTRADA Y SALIDA -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control bg-light" id="ingreso" style="border-radius: 5px;">
+                                    <label for="fechaentrada"><i class="fas fa-weight" style="color: #4dabf7;"></i> Fecha Entrada</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control bg-light" id="salida" style="border-radius: 5px;">
+                                    <label for="fechasalida"><i class="fas fa-heart" style="color: #4dabf7;"></i> Fecha Salida</label>
                                 </div>
                             </div>
                         </div>

@@ -41,8 +41,11 @@ BEGIN
         em.nombreEstado AS estadoMonta,
         n.nacionalidad,
         e.pesokg,
-        e.idPropietario,
+        p.nombreHaras,
+		p.idPropietario,
         e.fotografia,
+        e.fechaentrada,
+        e.fechasalida,
         IF(e.estado = 1, 'Vivo', IF(e.estado = 0, 'Muerto', 'Desconocido')) AS estado
     FROM 
         Equinos e
@@ -52,6 +55,8 @@ BEGIN
         EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta 
     LEFT JOIN 
         Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
+	LEFT JOIN 
+        Propietarios p ON e.idPropietario = p.idPropietario
     WHERE 
         e.nombreEquino = p_nombreEquino;
 END //

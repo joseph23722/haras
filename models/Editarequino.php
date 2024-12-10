@@ -66,27 +66,30 @@ class Editarequino extends Conexion
     public function editarEquino($params = []): int
     {
         try {
-            // Mapear valores de texto a IDs solo para campos enviados
             $params = $this->mapValues($params);
-
             error_log("Llamando al procedimiento almacenado con: " . json_encode($params));
 
+            // Verificar si las fechas de entrada y salida están presentes
+            $fechaEntrada = isset($params['fechaentrada']) && !empty($params['fechaentrada']) ? $params['fechaentrada'] : null;
+            $fechaSalida = isset($params['fechasalida']) && !empty($params['fechasalida']) ? $params['fechasalida'] : null;
+
             // Llamar al procedimiento almacenado con los parámetros
-            $cmd = $this->pdo->prepare("CALL spu_equino_editar(?, ?, ?, ?, ?)");
+            $cmd = $this->pdo->prepare("CALL spu_equino_editar(?, ?, ?, ?, ?, ?, ?)");
             $cmd->execute([
                 $params['idEquino'], // Obligatorio
                 $params['idPropietario'] ?? null, // Opcional
                 $params['pesokg'] ?? null, // Opcional
                 $params['idEstadoMonta'] ?? null, // Opcional
-                $params['estado'] ?? null // Opcional
+                $params['estado'] ?? null,
+                $fechaEntrada,
+                $fechaSalida
             ]);
 
-            return 1; // Operación exitosa
+            return 1;
         } catch (PDOException $e) {
             error_log("Error de base de datos al ejecutar spu_equino_editar: " . $e->getMessage());
-            // Limpiar el mensaje de error para ocultar la parte específica del error SQL
             $mensajeError = preg_replace('/SQLSTATE\[.*?\]:.*?:\s*\d*\s*/', '', $e->getMessage());
-            return 0; // Operación fallida
+            return 0;
         } catch (Exception $e) {
             error_log("Error al ejecutar spu_equino_editar: " . $e->getMessage());
             throw new Exception("Error al editar el equino: " . $e->getMessage());

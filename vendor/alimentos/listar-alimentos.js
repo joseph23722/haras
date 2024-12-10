@@ -22,7 +22,6 @@ function cargarImagenBase64(url, callback) {
     img.src = url;
 }
 
-
 // Función para generar el PDF
 function generarPDF() {
     // Obtener los datos actuales del DataTable
@@ -158,7 +157,6 @@ function generarPDF() {
     });
 }
 
-
 // Función para generar y descargar el CSV
 function generarCSV() {
     const rows = $('#alimentos-table').DataTable().rows().data().toArray();
@@ -189,7 +187,6 @@ function generarCSV() {
     link.download = 'Reporte_Alimentos.csv';
     link.click();
 }
-
 
 // Función para imprimir el documento
 function imprimirDocumento() {

@@ -69,9 +69,22 @@ class Registrarequino extends Conexion
         return parent::getData("spu_listar_tipoequinos");
     }
 
-    public function listadoEquinos(): array
+    public function listadoEquinos($estadoMonta = null): array
     {
-        return parent::getData("spu_equinos_listar");
+        try {
+            $sql = "CALL spu_equinos_listar(:estadoMonta)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':estadoMonta', $estadoMonta, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ["status" => "error", "message" => "Error al obtener los equinos: " . $e->getMessage()];
+        }
+    }
+
+    public function listadoEstadoMonta(): array
+    {
+        return parent::getData("spu_listar_estado_monta");
     }
 
     public function buscarEquinoPorNombre($nombreEquino): array
