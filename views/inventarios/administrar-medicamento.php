@@ -101,7 +101,7 @@
                         <div class="form-floating">
                             <input type="number" name="cantidad_stock" id="cantidad_stock" class="form-control" required min="0" placeholder="">
                             <label for="cantidad_stock">
-                                <i class="fas fa-balance-scale" style="color: #0096c7;"></i> Cantidad en Stock
+                                <i class="fas fa-balance-scale" style="color: #0096c7;"></i> Cantidad
                             </label>
                         </div>
                     </div>

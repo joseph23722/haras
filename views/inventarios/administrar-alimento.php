@@ -356,7 +356,7 @@
               </div>
 
               <!-- Unidad de Medida -->
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-floating">
                   <select id="unidadMedidaSalida" name="unidadMedida" class="form-select" required>
                     <option value="">Seleccione la Unidad de Medida</option>
