@@ -1,10 +1,10 @@
 <?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Equino</h1>
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">Registro de Equino</h1>
 
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Equino</h5>
         </div>
 
@@ -79,8 +79,8 @@
 
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <button name="fotografia" id="upload_button" class="form-control justify-content-center align-items-center" accept="image/*" style="text-align: center; padding: 10px; background-color: #e0f2ff; color: #007bff; border: 1px solid #007bff;">
-                                <span><i class="fas fa-camera" style="color: #007bff;"></i> Seleccionar Fotografía</span>
+                            <button name="fotografia" id="upload_button" class="form-control justify-content-center align-items-center" accept="image/*" style="text-align: center; padding: 10px; background-color: #123524; color: #EFE3C2; border: 1px solid #EFE3C2;">
+                                <span><i class="fas fa-camera" style="color: #EFE3C2;"></i> Seleccionar Fotografía</span>
                                 <input type="hidden" id="fotografia" name="fotografia">
                             </button>
                         </div>
