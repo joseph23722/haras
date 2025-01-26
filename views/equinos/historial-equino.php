@@ -1,15 +1,13 @@
 <?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 36px; color: #0056b3;">
-        <i class="fas fa-horse-head" style="color: #a0ffb8;"></i> Historial Equino
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 36px; color: #000;">
+        <i class="fas fa-horse-head" style="color: #000;"></i> Historial Equino
     </h1>
 
     <div class="card mb-4 shadow-lg border-0">
-        <div class="card-header text-center" style="background: linear-gradient(90deg, #a0ffb8, #9be8e4); color: #003366;">
-            <h5 class="m-0" style="font-weight: bold;">
-                <i class="fas fa-info-circle" style="color: #3498db;"></i> Información del Equino
-            </h5>
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
+            <h5 class="text-center m-0" style="font-weight: bold;"></h5>
         </div>
 
         <div class="card-body" style="background-color: #f7f9fc;">
@@ -87,8 +85,8 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <button type="button" id="upload_button" class="form-control justify-content-center align-items-center" style="text-align: center; padding: 10px; background-color: #e0f2ff; color: #007bff; border: 1px solid #007bff;">
-                                        <span><i class="fas fa-camera" style="color: #007bff;"></i> Añadir Fotografía</span>
+                                    <button type="button" id="upload_button" class="form-control justify-content-center align-items-center" style="text-align: center; padding: 10px; background-color: #123524; color: #EFE3C2; border: 1px solid #EFE3C2;">
+                                        <span><i class="fas fa-camera" style="color: #EFE3C2;"></i> Añadir Fotografía</span>
                                     </button>
                                     <input type="file" id="fotografia" name="fotografia" accept="image/*" style="display: none;">
                                     <input type="hidden" id="foto-nueva" name="foto-nueva">
@@ -116,7 +114,7 @@
                     <!-- Cuarta fila: Información adicional -->
                     <div class="row g-4 mb-4">
                         <h4 class="m-0" style="font-weight: bold;">
-                            <i class="fas fa-info-circle" style="color: #3498db;"></i>
+                            <i class="fas fa-info-circle" style="color: #FFE700;"></i>
                             Nota:
                             <h6>En este apartado se registrará toda información como Padre, Madre, carreras ganadas y otra información adicional relevante del Equino.</h6>
                         </h4>
