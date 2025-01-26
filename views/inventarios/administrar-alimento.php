@@ -2,13 +2,13 @@
 
 <div class="container-fluid px-4">
   <!-- Título principal -->
-  <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+  <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
     Gestionar Alimentos
   </h1>
   <!-- Formulario para Registrar Nuevo Alimento -->
   <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-      <h5 class="text-center"><i class="fas fa-apple-alt" style="color: #3498db;"></i> Registrar Nuevo Alimento</h5>
+    <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
+      <h5 class="text-center"><i class="fas fa-apple-alt" style="color: #EFE3C2;"></i> Registrar Nuevo Alimento</h5>
       <!-- Botón de Agregar en el header -->
       <button type="button" class="btn btn-success btn-sm"
         style="background-color: #28a745; border: none; position: absolute; right: 5px; top: 5px; padding: 10px 15px; font-size: 1.2em;"
@@ -106,7 +106,7 @@
 
           <!-- Botones -->
           <div class="col-md-12 text-end">
-            <button type="submit" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+            <button type="submit" class="btn btn-primary btn-lg" style="background-color: #001F3F; border-color: #3498db;">
               <i class="fas fa-save"></i> Registrar Alimento
             </button>
             <button type="button" class="btn btn-secondary btn-lg">
@@ -121,7 +121,7 @@
 
   <!-- Opciones de Movimiento -->
   <div class="card mb-4">
-    <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+    <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
       <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
     </div>
     <div class="card-body text-center" style="background-color: #f9f9f9;">
