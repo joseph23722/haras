@@ -1,16 +1,16 @@
 <!-- Footer -->
-<footer class="py-4 mt-auto" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff);">
+<footer class="py-4 mt-auto" style="background: linear-gradient(to left, #123524, #356C56);">
     <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted" style="font-weight: bold; color: #003366;">
+            <div class="text-muted" style="font-weight: bold; color: #EFE3C2;">
                 <i class="fas fa-copyright"></i> 2024 Haras Rancho Sur. Todos los derechos reservados.
             </div>
             <div>
-                <a href="#" style="color: #0077b6; text-decoration: none; font-weight: bold;">
+                <a href="#" style="color: #EFE3C2; text-decoration: none; font-weight: bold;">
                     <i class="fas fa-user-secret"></i> Privacy Policy
                 </a>
                 &middot;
-                <a href="#" style="color: #0077b6; text-decoration: none; font-weight: bold;">
+                <a href="#" style="color: #EFE3C2; text-decoration: none; font-weight: bold;">
                     <i class="fas fa-file-contract"></i> Terms &amp; Conditions
                 </a>
             </div>
