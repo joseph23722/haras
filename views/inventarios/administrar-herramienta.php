@@ -2,9 +2,9 @@
 
 <div class="container-fluid px-4">
     <!-- Título principal -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">Registro de Historial de Herrero</h1>
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">Registro de Historial de Herrero</h1>
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #ffcc80, #ffb74d); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial de Herrero</h5>
             <!-- Botón para abrir el modal de agregar trabajo o herramienta -->
             <button type="button" class="btn btn-success btn-sm"
@@ -91,10 +91,10 @@
 
                     <!-- Botones -->
                     <div class="col-md-12 text-end mt-3">
-                        <a href="./listar-accion-herrero" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+                        <a href="./listar-accion-herrero" class="btn btn-primary btn-lg" style="background-color: #1F4529; border-color: #3498db;">
                             <i class="fas fa-save"></i> Listado Herrero
                         </a>
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial-herrero" style="background-color: #0077b6; border: none;">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial-herrero" style="background-color: #001F3F; border: none;">
                             <i class="fas fa-save"></i> Registrar Historial
                         </button>
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
