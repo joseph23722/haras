@@ -154,12 +154,5 @@ document.addEventListener("DOMContentLoaded", () => {
             historialModal.show();
         }
     });
-
-    // Evento para filtrar por Estado Monta
-    estadoMontaSelect.addEventListener("change", (event) => {
-        const estadoMonta = event.target.value;
-        obtenerDatos(estadoMonta);
-    });
-
     obtenerDatos();
 });

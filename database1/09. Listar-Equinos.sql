@@ -1,4 +1,4 @@
-DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
+/* DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
 DELIMITER //
 CREATE PROCEDURE `spu_equinos_listar`()
 BEGIN
@@ -36,6 +36,7 @@ BEGIN
         E.idEquino DESC;
 END //
 DELIMITER ;
+*/
 
 DROP PROCEDURE IF EXISTS `spu_equinos_listar`;
 DELIMITER //
