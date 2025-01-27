@@ -1,10 +1,10 @@
 <?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
-  <h1 class="mt-4 text-center text-uppercase fw-bold" style="font-size: 32px; color: #2c3e50;">Listado de Servicios de Monta</h1>
-  <ol class="breadcrumb mb-4 p-2 rounded shadow-sm" style="background-color: #f8f9fa;">
-    <li class="breadcrumb-item active" style="color: #34495e; font-weight: bold;">
-      <i class="fas fa-info-circle me-2" style="color: #3498db;"></i> Seleccione el tipo de servicio para ver el listado de servicios de monta
+  <h1 class="mt-4 text-center text-uppercase fw-bold" style="font-size: 32px; color: #000;">Listado de Servicios de Monta</h1>
+  <ol class="breadcrumb mb-4 p-2 rounded shadow-sm" style="background-color: #123524;">
+    <li class="breadcrumb-item active" style="color: #EFE3C2; font-weight: bold;">
+      <i class="fas fa-info-circle me-2" style="color: #EFE3C2;"></i> Seleccione el tipo de servicio para ver el listado de servicios de monta
     </li>
   </ol>
 
@@ -22,7 +22,7 @@
           <div id="mensaje" style="margin-top: 10px; color: green; font-weight: bold;"></div>
         </div>
         <div class="col-md-4 d-flex align-items-end">
-          <button id="btnFiltrar" class="btn btn-primary w-100 fw-bold" style="background-color: #a0ffb8; border-color: #a0ffb8; color: #000;">
+          <button id="btnFiltrar" class="btn btn-primary w-100 fw-bold" style="background-color: #001F3F; border-color: #efe3c2; color: #EFE3C2;">
             Filtrar <i class="fas fa-filter ms-2"></i>
           </button>
         </div>
@@ -31,7 +31,7 @@
   </div>
 
   <table id="serviciosTable" class="table table-striped table-hover table-bordered">
-    <thead style="background-color: #a0ffb8; color: white;">
+    <thead style="background-color: #123524;">
       <tr class="text-center">
         <th><i class="fas fa-hashtag"></i> ID</th>
         <th><i class="fas fa-horse-head"></i> Padrillo</th>

@@ -1,6 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
     let datosServicios = [];
 
+    const aplicarEstiloEncabezado = () => {
+        const encabezado = document.querySelector("#serviciosTable thead");
+        if (encabezado) {
+            encabezado.style.backgroundColor = '#123524';
+            encabezado.style.color = '#EFE3C2'; // Aplica el color directamente
+            const thElements = encabezado.querySelectorAll("th");
+            thElements.forEach(th => {
+                th.style.color = '#EFE3C2'; // Asegura que cada etiqueta <th> también tenga el color
+            });
+        }
+    };
+
+    aplicarEstiloEncabezado();
+
     // Función para mostrar mensajes dinámicos
     const mostrarMensajeDinamico = (mensaje, tipo = 'INFO') => {
         const mensajeDiv = document.getElementById('mensaje');
@@ -35,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mensajeDiv.style.marginBottom = '15px';
             mensajeDiv.style.border = `1px solid ${estilo.color}`;
             mensajeDiv.style.borderRadius = '8px';
-            mensajeDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            mensajeDiv.style.boxShadow = '0 4px 8px rgba(239, 235, 235, 0.1)';
             mensajeDiv.style.display = 'flex';
             mensajeDiv.style.alignItems = 'center';
             mensajeDiv.innerHTML = `<span style="margin-right: 10px; font-size: 1.2em;">${estilo.icon}</span>${mensaje}`;
@@ -109,12 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             window.simpleTable.update();
                         }
 
-                        // Restaurar el color del encabezado
-                        const encabezado = document.querySelector("#serviciosTable thead");
-                        if (encabezado) {
-                            encabezado.style.backgroundColor = '#a0ffb8';
-                            encabezado.style.color = 'white';
-                        }
+                        // Restaurar el color del encabezado después de actualizar
+                        aplicarEstiloEncabezado();
                     } else {
                         console.error("El tbody no se encontró en el DOM.");
                     }
