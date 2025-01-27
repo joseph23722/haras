@@ -2,13 +2,13 @@
 
 <div class="container-fluid px-4">
     <!-- Título de la página -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
         Gestionar Implementos de Equino
     </h1>
 
     <!-- Sección del formulario para registrar un Implemento -->
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #003366;">
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
 
@@ -78,7 +78,7 @@
 
                     <!-- Botones de acción -->
                     <div class="col-md-12 text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #0077b6; border: none;">
+                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #001F3F; border: none;">
                             <i class="fas fa-save"></i> Registrar Implemento
                         </button>
                         <button type="reset" class="btn btn-secondary btn-lg" style="background-color: #adb5bd; border: none;">
@@ -92,7 +92,7 @@
 
     <!-- Opciones de Movimiento -->
     <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
