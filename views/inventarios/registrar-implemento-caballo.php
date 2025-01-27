@@ -97,21 +97,23 @@
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
             <div class="row justify-content-center">
-                <!-- Botón para el listado de implementos -->
+                <!-- Botón Listado Implementos -->
                 <div class="col-12 col-md-6 col-lg-4 mb-3">
-                    <button class="btn btn-primary btn-lg w-100" style="background-color: #3498db; border-color: #3498db;" onclick="window.location.href='./listar-implemento-caballo'">
+                    <button class="btn btn-lg w-100" style="background-color: #001F3F; color: white;" onclick="window.location.href='./listar-implemento-caballo'">
                         <i class="fas fa-save"></i> Listado Implementos
                     </button>
                 </div>
-                <!-- Botón para registrar movimiento de implementos -->
+
+                <!-- Botón Registrar Movimiento de Implementos -->
                 <div class="col-12 col-md-6 col-lg-4 mb-3">
-                    <button class="btn btn-outline-danger btn-lg w-100 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalMovimiento">
+                    <button class="btn btn-lg w-100" style="background-color: #dc3545; color: white;" data-bs-toggle="modal" data-bs-target="#modalMovimiento">
                         <i class="fas fa-arrow-down"></i> Registrar Movimiento de Implementos
                     </button>
                 </div>
-                <!-- Botón para el historial de movimientos -->
+
+                <!-- Botón Historial Movimientos (E/S) -->
                 <div class="col-12 col-md-6 col-lg-4 mb-3">
-                    <button class="btn btn-outline-success btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-I-caballo'">
+                    <button class="btn btn-lg w-100" style="background-color: #123524; color: white;" onclick="window.location.href='./listar-historial-I-caballo'">
                         <i class="fas fa-arrow-down"></i> Historial Movimientos (E/S)
                     </button>
                 </div>

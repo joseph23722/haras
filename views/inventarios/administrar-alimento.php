@@ -35,7 +35,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="text" name="nombreAlimento" id="nombreAlimento" class="form-control" required placeholder="">
-              <label for="nombreAlimento"><i class="fas fa-seedling" style="color: #3498db;"></i> Nombre del Alimento</label>
+              <label for="nombreAlimento"><i class="fas fa-seedling" style="color: #001F3F;"></i> Nombre del Alimento</label>
             </div>
           </div>
 
@@ -46,7 +46,7 @@
                 <option value="" disabled selected>Seleccione el tipo de alimento</option>
                 <!-- Las opciones se agregarán dinámicamente aquí -->
               </select>
-              <label for="tipoAlimento"><i class="fas fa-carrot" style="color: #3498db;"></i> Tipo de Alimento</label>
+              <label for="tipoAlimento"><i class="fas fa-carrot" style="color: #001F3F;"></i> Tipo de Alimento</label>
             </div>
           </div>
 
@@ -54,7 +54,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="number" name="stockActual" id="stockActual" class="form-control" required min="0" placeholder="">
-              <label for="stockActual"><i class="fas fa-weight" style="color: #3498db;"></i> Cantidad</label>
+              <label for="stockActual"><i class="fas fa-weight" style="color: #001F3F;"></i> Cantidad</label>
             </div>
           </div>
 
@@ -62,7 +62,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" value="10" required min="0">
-              <label for="stockMinimo"><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Stock Mínimo</label>
+              <label for="stockMinimo"><i class="fas fa-exclamation-triangle" style="color: #001F3F;"></i> Stock Mínimo</label>
             </div>
           </div>
 
@@ -73,7 +73,7 @@
                 <option value="">Seleccione la Unidad de Medida</option>
                 <!-- Las opciones se agregarán dinámicamente aquí -->
               </select>
-              <label for="unidadMedida"><i class="fas fa-balance-scale" style="color: #3498db;"></i> Unidad de Medida</label>
+              <label for="unidadMedida"><i class="fas fa-balance-scale" style="color: #001F3F;"></i> Unidad de Medida</label>
             </div>
           </div>
 
@@ -81,7 +81,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="number" step="0.01" name="costo" id="costo" class="form-control" required placeholder="">
-              <label for="costo"><i class="fas fa-dollar-sign" style="color: #3498db;"></i> Costo</label>
+              <label for="costo"><i class="fas fa-dollar-sign" style="color: #001F3F;"></i> Costo</label>
             </div>
           </div>
 
@@ -89,7 +89,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="text" name="lote" id="lote" class="form-control" placeholder="" required>
-              <label for="lote"><i class="fas fa-box" style="color: #3498db;"></i> Lote--</label>
+              <label for="lote"><i class="fas fa-box" style="color: #001F3F;"></i> Lote--</label>
             </div>
           </div>
 
@@ -97,7 +97,7 @@
           <div class="col-md-4">
             <div class="form-floating">
               <input type="date" name="fechaCaducidad" id="fechaCaducidad" class="form-control" required>
-              <label for="fechaCaducidad"><i class="fas fa-calendar-alt" style="color: #3498db;"></i> Fecha de Caducidad</label>
+              <label for="fechaCaducidad"><i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha de Caducidad</label>
             </div>
           </div>
 
@@ -128,32 +128,33 @@
       <div class="row justify-content-center">
         <!-- Botón Listado Alimentos -->
         <div class="col-12 col-md-3 mb-3">
-          <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-alimento'">
+          <button class="btn btn-lg w-100" style="background-color: #001F3F; color: white;" onclick="window.location.href='./listar-alimento'">
             <i class="fas fa-save"></i> Listado Alimentos
           </button>
         </div>
 
         <!-- Botón Registrar Entrada de Alimento -->
         <div class="col-12 col-md-3 mb-3">
-          <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntradaAlimento">
+          <button class="btn btn-lg w-100" style="background-color: #EFE3C2; color: black;" data-bs-toggle="modal" data-bs-target="#modalEntradaAlimento">
             <i class="fas fa-arrow-up"></i> Registrar Entrada de Alimento
           </button>
         </div>
 
         <!-- Botón Registrar Salida de Alimento -->
         <div class="col-12 col-md-3 mb-3">
-          <button class="btn btn-outline-danger btn-lg w-100" style="border-color: #dc3545;" data-bs-toggle="modal" data-bs-target="#modalSalidaAlimento">
+          <button class="btn btn-lg w-100" style="background-color: #dc3545; color: white;" data-bs-toggle="modal" data-bs-target="#modalSalidaAlimento">
             <i class="fas fa-arrow-down"></i> Registrar Salida de Alimento
           </button>
         </div>
 
         <!-- Botón Historial de Movimientos -->
         <div class="col-12 col-md-3 mb-3">
-          <button class="btn btn-outline-info btn-lg w-100" style="border-color: #17a2b8;" onclick="window.location.href='./listar-historial-alimento'">
+          <button class="btn btn-lg w-100" style="background-color: #123524; color: white;" onclick="window.location.href='./listar-historial-alimento'">
             <i class="fas fa-history"></i> Historial de Movimientos (E/S)
           </button>
         </div>
       </div>
+
     </div>
   </div>
 

@@ -14,7 +14,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="nombreEquino" id="nombreEquino" placeholder="" class="form-control" required autofocus>
-                            <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #00b4d8;"></i> Nombre del Equino</label>
+                            <label for="nombreEquino"><i class="fas fa-horse-head" style="color: #001F3F;"></i> Nombre del Equino</label>
                         </div>
                     </div>
 
@@ -23,14 +23,14 @@
                             <select name="idPropietario" id="idPropietario" class="form-select">
                                 <option value="">Haras Rancho Sur</option>
                             </select>
-                            <label for="idPropietario"><i class="fas fa-home" style="color: #ffa500;"></i> Propietario (Opcional)</label>
+                            <label for="idPropietario"><i class="fas fa-home" style="color: #001F3F;"></i> Propietario (Opcional)</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="date" name="fechaNacimiento" id="fechaNacimiento" class="form-control">
-                            <label for="fechaNacimiento"><i class="fas fa-calendar-alt" style="color: #32cd32;"></i> Fecha de Nacimiento</label>
+                            <label for="fechaNacimiento"><i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha de Nacimiento</label>
                         </div>
                     </div>
 
@@ -41,7 +41,7 @@
                                 <option value="Macho">Macho</option>
                                 <option value="Hembra">Hembra</option>
                             </select>
-                            <label for="sexo"><i class="fas fa-venus-mars" style="color: #ba55d3;"></i> Sexo</label>
+                            <label for="sexo"><i class="fas fa-venus-mars" style="color: #001F3F;"></i> Sexo</label>
                         </div>
                     </div>
 
@@ -50,7 +50,7 @@
                             <select name="idTipoEquino" id="TipoEquino" class="form-select" required>
                                 <option value="">Seleccione Tipo Equino</option>
                             </select>
-                            <label for="TipoEquino"><i class="fas fa-venus-mars" style="color: #ba55d3;"></i> Tipo Equino</label>
+                            <label for="TipoEquino"><i class="fas fa-venus-mars" style="color: #001F3F;"></i> Tipo Equino</label>
                         </div>
                     </div>
 
@@ -59,21 +59,21 @@
                             <input type="hidden" id="idNacionalidad" name="idNacionalidad" value="">
                             <input type="text" placeholder="" id="nacionalidad" name="nacionalidad" class="form-control" required placeholder="" list="sugerenciasNacionalidad">
                             <datalist id="sugerenciasNacionalidad"></datalist>
-                            <label for="nacionalidad"><i class="fas fa-flag" style="color: #1e90ff;"></i> Busque Nacionalidad</label>
+                            <label for="nacionalidad"><i class="fas fa-flag" style="color: #001F3F;"></i> Busque Nacionalidad</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-floating">
                             <textarea type="number" name="detalles" id="detalles" placeholder="" class="form-control" style="height: 60px;"></textarea>
-                            <label for="detalles"><i class="fas fa-info-circle" style="color: #1e90ff;"></i> Detalles</label>
+                            <label for="detalles"><i class="fas fa-info-circle" style="color: #001F3F;"></i> Detalles</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="number" name="pesokg" id="pesokg" placeholder="" class="form-control" min="10" max="1000" step="0.1" required>
-                            <label for="pesokg"><i class="fas fa-weight" style="color: #2d6a4f;"></i> Peso (kg)</label>
+                            <label for="pesokg"><i class="fas fa-weight" style="color: #001F3F;"></i> Peso (kg)</label>
                         </div>
                     </div>
 

@@ -35,7 +35,7 @@
                         <div class="form-floating">
                             <input type="text" name="nombreMedicamento" id="nombreMedicamento" placeholder="" class="form-control" required autofocus>
                             <label for="nombreMedicamento">
-                                <i class="fas fa-capsules" style="color: #00b4d8;"></i> Nombre del Medicamento
+                                <i class="fas fa-capsules" style="color: #001F3F;"></i> Nombre del Medicamento
                             </label>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                         <div class="form-floating">
                             <input type="text" name="descripcion" id="descripcion" placeholder="" class="form-control">
                             <label for="descripcion">
-                                <i class="fas fa-info-circle" style="color: #6d6875;"></i> Descripción
+                                <i class="fas fa-info-circle" style="color: #001F3F;"></i> Descripción
                             </label>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         <div class="form-floating">
                             <input type="text" name="lote" id="lote" class="form-control" placeholder="" required>
                             <label for="lote">
-                                <i class="fas fa-box" style="color: #6d6875;"></i> Lote del Medicamento (LOTE-)
+                                <i class="fas fa-box" style="color: #001F3F;"></i> Lote del Medicamento (LOTE-)
                             </label>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                                 <option value="">Seleccione el Tipo de Medicamento</option>
                             </select>
                             <label for="tipo">
-                                <i class="fas fa-pills" style="color: #ff6b6b;"></i> Tipo de Medicamento
+                                <i class="fas fa-pills" style="color: #001F3F;"></i> Tipo de Medicamento
                             </label>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                                 pattern="^\d+(\.\d+)?\s?[a-zA-Z]+$"
                                 title="Ingrese la cantidad seguida de la unidad (por ejemplo: 500 mg, 10 ml)">
                             <label for="dosis">
-                                <i class="fas fa-weight" style="color: #0096c7;"></i> Composición (ej. 500 mg)
+                                <i class="fas fa-weight" style="color: #001F3F;"></i> Composición (ej. 500 mg)
                             </label>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                                 <option value="">Seleccione la Presentación</option>
                             </select>
                             <label for="presentacion">
-                                <i class="fas fa-prescription-bottle-alt" style="color: #8e44ad;"></i> Presentación
+                                <i class="fas fa-prescription-bottle-alt" style="color: #001F3F;"></i> Presentación
                             </label>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                         <div class="form-floating">
                             <input type="number" name="cantidad_stock" id="cantidad_stock" class="form-control" required min="0" placeholder="">
                             <label for="cantidad_stock">
-                                <i class="fas fa-balance-scale" style="color: #0096c7;"></i> Cantidad
+                                <i class="fas fa-balance-scale" style="color: #001F3F;"></i> Cantidad
                             </label>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                         <div class="form-floating">
                             <input type="number" name="stockMinimo" id="stockMinimo" class="form-control" value="10" required min="0" placeholder="">
                             <label for="stockMinimo">
-                                <i class="fas fa-battery-quarter" style="color: #ff0000;"></i> Stock Mínimo
+                                <i class="fas fa-battery-quarter" style="color: #001F3F;"></i> Stock Mínimo
                             </label>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                         <div class="form-floating">
                             <input type="date" name="fechaCaducidad" id="fechaCaducidad" class="form-control" required min="<?= date('Y-m-d'); ?>">
                             <label for="fechaCaducidad">
-                                <i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha de Caducidad
+                                <i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha de Caducidad
                             </label>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
                         <div class="form-floating">
                             <input type="number" step="0.01" name="precioUnitario" placeholder="" id="precioUnitario" class="form-control" required min="0">
                             <label for="precioUnitario">
-                                <i class="fas fa-dollar-sign" style="color: #0077b6;"></i> Precio Unitario
+                                <i class="fas fa-dollar-sign" style="color: #001F3F;"></i> Precio Unitario
                             </label>
                         </div>
                     </div>
@@ -160,24 +160,31 @@
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
             <div class="row justify-content-center">
+                <!-- Botón Listado Medicamentos -->
                 <div class="col-12 col-md-3 mb-3">
-                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-medicamento'">
+                    <button class="btn btn-lg w-100" style="background-color: #001F3F; color: white;" onclick="window.location.href='./listar-medicamento'">
                         <i class="fas fa-save"></i> Listado Medicamentos
                     </button>
                 </div>
+
+                <!-- Botón Registrar Entrada de Medicamento -->
                 <div class="col-12 col-md-3 mb-3">
-                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #007bff;" data-bs-toggle="modal" data-bs-target="#modalEntrada">
+                    <button class="btn btn-lg w-100" style="background-color: #EFE3C2; color: black;" data-bs-toggle="modal" data-bs-target="#modalEntrada">
                         <i class="fas fa-arrow-up"></i> Registrar Entrada de Medicamento
                     </button>
                 </div>
+
+                <!-- Botón Registrar Salida de Medicamento -->
                 <div class="col-12 col-md-3 mb-3">
-                    <button class="btn btn-outline-danger btn-lg w-100 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalSalida">
+                    <button class="btn btn-lg w-100" style="background-color: #dc3545; color: white;" data-bs-toggle="modal" data-bs-target="#modalSalida">
                         <i class="fas fa-arrow-down"></i> Registrar Salida de Medicamento
                     </button>
                 </div>
+
+                <!-- Botón Historial Movimientos (E/S) -->
                 <div class="col-12 col-md-3 mb-3">
-                    <button class="btn btn-outline-primary btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-medicamento'">
-                        <i class="fas fa-save"></i> Historial Movimientos (E/S)
+                    <button class="btn btn-lg w-100" style="background-color: #123524; color: white;" onclick="window.location.href='./listar-historial-medicamento'">
+                        <i class="fas fa-history"></i> Historial Movimientos (E/S)
                     </button>
                 </div>
             </div>
