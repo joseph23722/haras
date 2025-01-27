@@ -1,11 +1,10 @@
 <?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #003300;">Registro de Rotación de Campos</h1>
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">Registro de Rotación de Campos</h1>
 
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #c9ffd6); color: #003300;">
-            <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Campo</h5>
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56);">
         </div>
 
         <div class="card-body p-4" style="background-color: #f9f9f9;">
@@ -17,14 +16,14 @@
                                 <option value="">Seleccione un campo</option>
                                 <!-- Opciones se llenarán dinámicamente -->
                             </select>
-                            <label for="campos"><i class="fas fa-home" style="color: #003300;"></i> Nro de potreros</label>
+                            <label for="campos"><i class="fas fa-home" style="color: #001F3F;"></i> Nro de potreros</label>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-floating">
                             <textarea name="ultimaAccionRealizada" id="ultimaAccionRealizada" class="form-control" style="height: 50px;" disabled>Ultima Acción</textarea>
-                            <label for="ultimaAccionRealizada"><i class="fas fa-sticky-note" style="color: #003300;"></i> Ultima Acción</label>
+                            <label for="ultimaAccionRealizada"><i class="fas fa-sticky-note" style="color: #001F3F;"></i> Ultima Acción</label>
                         </div>
                     </div>
 
@@ -33,36 +32,29 @@
                             <select name="tipoRotacion" id="tipoRotacion" class="form-select">
                                 <option value="">Seleccione un tipo de Rotación</option>
                             </select>
-                            <label for="tipoRotacion"><i class="fa-solid fa-arrow-rotate-left" style="color: #003300;"></i> Tipo de Rotación</label>
+                            <label for="tipoRotacion"><i class="fa-solid fa-arrow-rotate-left" style="color: #001F3F;"></i> Tipo de Rotación</label>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-floating">
                             <input type="date" name="fechaRotacion" id="fechaRotacion" class="form-control">
-                            <label for="fechaRotacion"><i class="fas fa-calendar-alt" style="color: #003300;"></i> Fecha de Rotación</label>
+                            <label for="fechaRotacion"><i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha de Rotación</label>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-floating">
                             <textarea name="detalleRotacion" id="detalleRotacion" placeholder="" class="form-control" style="height: 50px;"></textarea>
-                            <label for="detalleRotacion"><i class="fas fa-info-circle" style="color: #003300;"></i> Detalles</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input type="file" name="fotografia" id="fotografia" class="form-control" accept="image/*">
-                            <label for="fotografia"><i class="fas fa-camera" style="color: #003300;"></i> Fotografía del campo</label>
+                            <label for="detalleRotacion"><i class="fas fa-info-circle" style="color: #001F3F;"></i> Detalles</label>
                         </div>
                     </div>
 
                     <div class="col-md-12 text-end mt-3">
-                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #0077b6; border: none;" data-bs-toggle="modal" data-bs-target="#registerFieldModal">
+                        <button type="button" class="btn btn-primary btn-lg shadow-sm" style="background-color: #001F3F; border: none;" data-bs-toggle="modal" data-bs-target="#registerFieldModal">
                             <i class="fas fa-plus-circle"></i> Registrar Nuevo Campo
                         </button>
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-rotacion" style="background-color: #0077b6; border: none;">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-rotacion" style="background-color: #123524; border: none;">
                             <i class="fas fa-save"></i> Registrar Rotación
                         </button>
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
@@ -76,7 +68,7 @@
 
     <!-- Tabla de rotaciones -->
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #c9ffd6); color: #003300;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Lista de Rotaciones</h5>
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
