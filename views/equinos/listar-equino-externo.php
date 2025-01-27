@@ -1,14 +1,14 @@
 <?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
-  <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 36px; color: #0056b3;">
-    <i class="fas fa-horse-head" style="color: #0056b3;"></i> Equinos Externos
+  <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 36px; color: #000;">
+    <i class="fas fa-horse-head" style="color: #000;"></i> Equinos Externos
   </h1>
 
   <div class="card mb-4 shadow-lg border-0">
-    <div class="card-header text-center" style="background: linear-gradient(90deg, #a0ffb8, #9be8e4); color: #003366;">
+    <div class="card-header text-center" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
       <h5 class="m-0" style="font-weight: bold;">
-        <i class="fas fa-info-circle" style="color: #3498db;"></i> Listado de Equinos Externos
+        <i class="fas fa-info-circle" style="color: #EFE3C2;"></i> Listado de Equinos Externos
       </h5>
     </div>
 
