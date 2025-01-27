@@ -1,12 +1,12 @@
 <?php require_once '../header.php'; ?>
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #005b99;">LISTADO DE BOSTAS</h1>
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">LISTADO DE BOSTAS</h1>
 
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;"></div>
+                <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #003366;"></div>
                 <div class="card-body">
                     <table id="tabla-bostas" class="table table-bordered table-sm">
                         <thead>
