@@ -2,7 +2,7 @@
 
 <div class="container-fluid px-4">
     <!-- Título de la página -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
         Gestionar Medicamentos
     </h1>
 
@@ -17,13 +17,13 @@
             </select>
         </div>
         <div class="col-md-2 align-self-end">
-            <button id="filtrarButton" class="btn btn-primary">Buscar</button>
+            <button id="filtrarButton" class="btn" style="background-color: #001F3F; color: #EFE3C2;">Buscar</button>
         </div>
     </div>
 
     <!-- Tabla de Medicamentos Registrados -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="text-center mb-0"><i class="fas fa-pills"></i> Medicamentos Registrados</h5>
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">
