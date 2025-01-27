@@ -38,7 +38,7 @@
                                 <option value="3">Potranca</option>
                                 <option value="4">Potrillo</option>
                             </select>
-                            <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Tipo de Equino</label>
+                            <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #001F3F;"></i> Tipo de Equino</label>
                         </div>
                     </div>
 
@@ -48,7 +48,7 @@
                             <select id="equinoSelect" class="form-select" name="idEquino" required>
                                 <option value="">Seleccione Equino</option>
                             </select>
-                            <label for="equinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Equino</label>
+                            <label for="equinoSelect"><i class="fas fa-horse" style="color: #001F3F;"></i> Equino</label>
                         </div>
                     </div>
 
@@ -58,7 +58,7 @@
                             <select id="trabajoRealizado" class="form-select" name="idTrabajo" required>
                                 <option value="">Seleccione Trabajo Realizado</option>
                             </select>
-                            <label for="trabajoRealizado"><i class="fas fa-tools" style="color: #ff8c00;"></i> Trabajo Realizado</label>
+                            <label for="trabajoRealizado"><i class="fas fa-tools" style="color: #001F3F;"></i> Trabajo Realizado</label>
                         </div>
                     </div>
 
@@ -68,7 +68,7 @@
                             <select id="herramientaUsada" class="form-select" name="idHerramienta" required>
                                 <option value="">Seleccione Herramienta Usada</option>
                             </select>
-                            <label for="herramientaUsada"><i class="fas fa-wrench" style="color: #00b4d8;"></i> Herramienta Usada</label>
+                            <label for="herramientaUsada"><i class="fas fa-wrench" style="color: #001F3F;"></i> Herramienta Usada</label>
                         </div>
                     </div>
 
@@ -76,7 +76,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="date" id="fecha" name="fecha" class="form-control" required>
-                            <label for="fecha"><i class="fas fa-calendar-alt" style="color: #007bff;"></i> Fecha</label>
+                            <label for="fecha"><i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha</label>
                         </div>
                     </div>
 
@@ -84,14 +84,14 @@
                     <div class="col-md-12">
                         <div class="form-floating">
                             <textarea name="observaciones" id="observaciones" class="form-control" style="height: 100px;"></textarea>
-                            <label for="observaciones"><i class="fas fa-notes-medical" style="color: #007bff;"></i> Observaciones</label>
+                            <label for="observaciones"><i class="fas fa-notes-medical" style="color: #001F3F;"></i> Observaciones</label>
                         </div>
                     </div>
                     <div id="mensaje" style="margin-top: 10px; color: green; font-weight: bold;"></div>
 
                     <!-- Botones -->
                     <div class="col-md-12 text-end mt-3">
-                        <a href="./listar-accion-herrero" class="btn btn-primary btn-lg" style="background-color: #1F4529; border-color: #3498db;">
+                        <a href="./listar-accion-herrero" class="btn btn-lg" style="background-color: #1F4529; color: #EFE3C2;">
                             <i class="fas fa-save"></i> Listado Herrero
                         </a>
                         <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial-herrero" style="background-color: #001F3F; border: none;">
