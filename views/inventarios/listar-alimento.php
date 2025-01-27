@@ -4,7 +4,7 @@
 
 <div class="container-fluid px-4">
     <!-- Título principal -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
         Listado Alimentos
     </h1>
 
@@ -19,18 +19,18 @@
             </select>
         </div>
         <div class="col-md-3 align-self-end">
-            <button id="btn-buscar" class="btn btn-primary w-100"><i class="fas fa-search"></i> Buscar</button>
+            <button id="btn-buscar" class="btn" style="background-color: #001F3F; color: #EFE3C2;">Buscar</button>
         </div>
     </div>
 
     <!-- Tabla de Alimentos Registrados -->
     <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="text-center"><i class="fas fa-database"></i> Alimentos Registrados</h5>
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">
             <table id="alimentos-table" class="table table-striped table-hover table-bordered">
-                <thead style="background-color: #caf0f8; color: #003366;">
+                <thead style="background-color: #efe3c2; color: #EFE3C2;">
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
