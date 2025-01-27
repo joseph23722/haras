@@ -163,7 +163,7 @@
 
                 <!-- Botones -->
                 <div class="text-end mt-3">
-                    <a href="./listar-medicamento-usado" class="btn btn-primary btn-lg" style="background-color: #001F3F; border-color: #EFE3C2;">
+                    <a href="./listar-medicamento-usado" class="btn btn-primary btn-lg" style="background-color: #001F3F; color: #EFE3C2;">
                         <i class="fas fa-save"></i> Medicamentos Aplicados
                     </a>
                     <button type="submit" class="btn btn-primary btn-lg" style="background-color: #123524; border-color: #123524; color: #EFE3C2;">
