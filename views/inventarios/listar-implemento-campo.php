@@ -2,11 +2,11 @@
 
 <div class="container-fluid px-4">
     <!-- Título de la página -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
         Listado Implementos de Campo
     </h1>
     <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="text-center"><i class="fas fa-database"></i> Implementos Registrados</h5>
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">
