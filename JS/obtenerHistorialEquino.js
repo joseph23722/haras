@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Restaurar el color de la cabecera
                     const encabezado = document.querySelector("#tabla-equinos thead");
                     if (encabezado) {
-                        encabezado.style.backgroundColor = '#caf0f8';
+                        encabezado.style.backgroundColor = 'gray';
                         encabezado.style.color = '#fff';
                     }
                 } else {

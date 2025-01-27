@@ -15,7 +15,7 @@
                 </div>
                 <div class="card-body p-4" style="background-color: #f9f9f9;">
                     <table id="tabla-equinos" class="table table-striped table-hover table-bordered">
-                        <thead style="background-color: #caf0f8; color: #003366;">
+                        <thead style="background-color: #caf0f8; color: #EFE3C2;">
                             <tr>
                                 <th>#</th>
                                 <th>Nombre Equino</th>
