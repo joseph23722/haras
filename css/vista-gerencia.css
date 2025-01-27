@@ -19,9 +19,9 @@
     color: #2980b9;
 }
 .btn-report:hover {
-    background: #00712D;
+    background: #123524;
     color: white;
-    border-color: #00712D;
+    border-color: #123524;
     transform: translateY(-5px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }

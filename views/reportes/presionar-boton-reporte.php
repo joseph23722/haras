@@ -2,13 +2,13 @@
 <link rel="stylesheet" href="../../css/vista-gerencia.css">
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #2c3e50;">
-        <i class="fas fa-clipboard-list" style="color: #00712D;"></i> Reportes
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
+        <i class="fas fa-clipboard-list" style="color: #000;"></i> Reportes
     </h1>
 
     <div class="card shadow border-0 mt-4" style="border-radius: 15px; background-color: #ecf0f1;">
-        <div class="card-header text-center" style="background: #00712D; color: white; border-radius: 15px 15px 0 0;">
-            <h5 class="m-0" style="font-weight: bold;">Seleccione un reporte</h5>
+        <div class="card-header text-center" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
+            <h5 class="m-0" style="font-weight: bold;">SELECCIONE UNA SECCION PARA GENERAR REPORTE</h5>
         </div>
 
         <div class="card-body py-4">
