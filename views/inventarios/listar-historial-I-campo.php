@@ -2,14 +2,14 @@
 <!-- Historial de Movimientos de Implementos -->
 <div class="container-fluid px-4">
     <!-- Título de la página -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
         Historial Movimiento de Implementos
     </h1>
 
     <!-- Contenido de las Pestañas -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background: linear-gradient(to right, #a0c4ff, #c9f0ff); color: #003366;">
-            <h5 class="text-center mb-0"><i class="fas fa-box" style="color: #3498db;"></i> Movimientos Registrados</h5>
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
+            <h5 class="text-center mb-0"><i class="fas fa-box" style="color: #EFE3C2;"></i> Movimientos Registrados</h5>
         </div>
 
         <!-- Pestañas para Entrada y Salida -->
@@ -28,7 +28,7 @@
             <div class="tab-pane fade show active" id="entradas" role="tabpanel" aria-labelledby="entradas-tab">
                 <div class="table-responsive">
                     <table id="tabla-entradas" class="table table-bordered table-hover table-striped">
-                        <thead class="table-primary">
+                        <thead class="table">
                             <tr class="text-center">
                                 <th>ID Historial</th>
                                 <th>Nombre Producto</th>

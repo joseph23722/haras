@@ -2,13 +2,13 @@
 
 <div class="container-fluid px-4">
     <!-- Título de la página -->
-    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3;">
+    <h1 class="mt-4 text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #000;">
         Gestionar Implementos de Campo
     </h1>
 
     <!-- Sección del formulario para registrar un Implemento -->
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56);">
         </div>
         <div class="card-body p-4" style="background-color: #f9f9f9;">
 
@@ -21,7 +21,7 @@
                                 <option value="2">Implementos Campos</option>
                             </select>
                             <label for="idTipoinventario">
-                                <i class="fas fa-box" style="color: #6d6875;"></i> Tipo de Inventario
+                                <i class="fas fa-box" style="color: #001F3F;"></i> Tipo de Inventario
                             </label>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                         <div class="form-floating">
                             <input type="text" name="nombreProducto" id="nombreProducto" placeholder="" class="form-control">
                             <label for="nombreProducto">
-                                <i class="fas fa-info-circle" style="color: #6d6875;"></i> Nombre Producto
+                                <i class="fas fa-info-circle" style="color: #001F3F;"></i> Nombre Producto
                             </label>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                         <div class="form-floating">
                             <input type="number" name="cantidad" id="cantidad" class="form-control" placeholder="">
                             <label for="cantidad">
-                                <i class="fas fa-battery-quarter" style="color: #ff0000;"></i> Cantidad
+                                <i class="fas fa-battery-quarter" style="color: #001F3F;"></i> Cantidad
                             </label>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                         <div class="form-floating">
                             <input type="number" name="precioUnitario" id="precioUnitario" class="form-control" required min="0" placeholder="">
                             <label for="precioUnitario">
-                                <i class="fas fa-dollar-sign" style="color: #0077b6;"></i> Precio Unitario
+                                <i class="fas fa-dollar-sign" style="color: #001F3F;"></i> Precio Unitario
                             </label>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
                         <div class="form-floating">
                             <input type="number" name="precioTotal" id="precioTotal" class="form-control" placeholder="" disabled>
                             <label for="precioTotal">
-                                <i class="fas fa-dollar-sign" style="color: #0077b6;"></i> Precio Total
+                                <i class="fas fa-dollar-sign" style="color: #001F3F;"></i> Precio Total
                             </label>
                         </div>
                     </div>
@@ -71,14 +71,14 @@
                         <div class="form-floating">
                             <input type="text" name="descripcion" id="descripcion" class="form-control" placeholder="" required>
                             <label for="descripcion">
-                                <i class="fas fa-box" style="color: #6d6875;"></i> Descripcion
+                                <i class="fas fa-box" style="color: #001F3F;"></i> Descripcion
                             </label>
                         </div>
                     </div>
 
                     <!-- Botones de acción -->
                     <div class="col-md-12 text-end mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #0077b6; border: none;">
+                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #123524; border: none;">
                             <i class="fas fa-save"></i> Registrar Implemento
                         </button>
                         <button type="reset" class="btn btn-secondary btn-lg" style="background-color: #adb5bd; border: none;">
@@ -92,32 +92,34 @@
 
     <!-- Opciones de Movimiento -->
     <div class="card mb-4">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="text-center"><i class="fas fa-exchange-alt"></i> Opciones de Movimiento</h5>
         </div>
         <div class="card-body text-center" style="background-color: #f9f9f9;">
-            <div class="row justify-content-center">
-                <!-- Botón Listado Implementos -->
-                <div class="col-12 col-sm-6 col-md-3 mb-3">
-                    <button onclick="window.location.href='./listar-implemento-campo'" class="btn btn-primary btn-lg w-100" style="background-color: #3498db; border-color: #3498db;">
-                        <i class="fas fa-save"></i> Listado Implementos
-                    </button>
-                </div>
-
-                <!-- Botón Registrar Movimiento de Implementos -->
-                <div class="col-12 col-sm-6 col-md-3 mb-3">
-                    <button class="btn btn-outline-danger btn-lg w-100 me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalMovimiento">
-                        <i class="fas fa-arrow-down"></i> Registrar Movimiento de Implementos
-                    </button>
-                </div>
-                <!-- Botón Historial de Movimientos -->
-                <div class="col-12 col-sm-6 col-md-3 mb-3">
-                    <button class="btn btn-outline-success btn-lg w-100" style="border-color: #3498db;" onclick="window.location.href='./listar-historial-I-campo'">
-                        <i class="fas fa-arrow-down"></i> Historial Movimientos (E/S)
-                    </button>
-                </div>
-            </div>
+    <div class="row justify-content-center">
+        <!-- Botón Listado Implementos -->
+        <div class="col-12 col-sm-6 col-md-3 mb-3">
+            <button onclick="window.location.href='./listar-implemento-campo'" class="btn btn-lg w-100" style="background-color: #001F3F; border-color: #001F3F; color: #EFE3C2;">
+                <i class="fas fa-save"></i> Listado Implementos
+            </button>
         </div>
+
+        <!-- Botón Registrar Movimiento de Implementos -->
+        <div class="col-12 col-sm-6 col-md-3 mb-3">
+            <button class="btn btn-lg w-100 me-3 btn-custom-single" data-bs-toggle="modal" data-bs-target="#modalMovimiento" style="background-color: #dc3545; border-color: #dc3545; color: #EFE3C2;">
+                <i class="fas fa-arrow-down"></i> Registrar Movimiento de Implementos
+            </button>
+        </div>
+
+        <!-- Botón Historial de Movimientos -->
+        <div class="col-12 col-sm-6 col-md-3 mb-3">
+            <button class="btn btn-lg w-100" style="background-color: #123524; border-color: #123524; color: #EFE3C2;" onclick="window.location.href='./listar-historial-I-campo'">
+                <i class="fas fa-arrow-down"></i> Historial Movimientos (E/S)
+            </button>
+        </div>
+    </div>
+</div>
+
     </div>
 
     <!-- Modal para Registrar Movimiento de Producto -->
