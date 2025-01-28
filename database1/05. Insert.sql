@@ -327,6 +327,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 17),
     (3, 18),
     (3, 19),
+    (3, 20),
     (3, 21),
     (3, 23),
     (3, 24),

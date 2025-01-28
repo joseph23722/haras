@@ -285,7 +285,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
 
 -- Supervisor Equino
 INSERT INTO permisos (idRol, idvista) VALUES
-	(3, 1),
+	(3, 20),
 	(3, 4),
     (3, 6),
     (3, 7),
@@ -300,6 +300,7 @@ INSERT INTO permisos (idRol, idvista) VALUES
     (3, 17),
     (3, 18),
     (3, 19),
+    (3, 20),
     (3, 21),
     (3, 23),
     (3, 24),
