@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-01-2025 a las 06:08:24
+-- Tiempo de generación: 28-01-2025 a las 05:00:44
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -3013,13 +3013,6 @@ CREATE TABLE `alimentos` (
   `fechaMovimiento` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `alimentos`
---
-
-INSERT INTO `alimentos` (`idAlimento`, `idUsuario`, `nombreAlimento`, `idTipoAlimento`, `stockActual`, `stockMinimo`, `estado`, `idUnidadMedida`, `costo`, `idLote`, `idEquino`, `compra`, `fechaMovimiento`) VALUES
-(1, 3, 'Afrecho', 2, 600.00, 100.00, 'Disponible', 1, 65.00, 1, 15, 32500.00, '2025-01-28 00:04:55');
-
 -- --------------------------------------------------------
 
 --
@@ -3169,32 +3162,6 @@ CREATE TABLE `equinos` (
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `equinos`
---
-
-INSERT INTO `equinos` (`idEquino`, `nombreEquino`, `fechaNacimiento`, `sexo`, `idTipoEquino`, `detalles`, `idEstadoMonta`, `idNacionalidad`, `idPropietario`, `pesokg`, `fotografia`, `estado`, `fechaentrada`, `fechasalida`, `created_at`, `updated_at`) VALUES
-(1, 'Southdale', '2006-04-30', 'Macho', 2, NULL, 1, 35, NULL, 750.0, 'wamevh4drqeq6014yabu', b'1', NULL, NULL, '2025-01-28 04:04:36', '2025-01-28 04:57:13'),
-(2, 'Umbridled Command', '2009-03-22', 'Macho', 2, NULL, 2, 57, NULL, 730.0, 'fdox90by0ixfpqmqnwml', b'1', NULL, NULL, '2025-01-28 04:07:28', NULL),
-(3, 'Floriform', '2018-04-16', 'Macho', 2, NULL, 2, 57, NULL, 700.0, 'mbutbvtf7srkrulyrqwv', b'1', NULL, NULL, '2025-01-28 04:09:48', NULL),
-(4, 'La Lomada', '2012-08-05', 'Hembra', 1, NULL, 4, 8, NULL, 620.0, 'agzlw5eefgmhfyw8he5s', b'1', NULL, NULL, '2025-01-28 04:38:13', '2025-01-28 04:57:13'),
-(5, 'Gong Zhu', '2013-01-24', 'Hembra', 1, NULL, 5, 57, NULL, 630.0, 'siyzv6nrrxb1zecq4lu4', b'1', NULL, NULL, '2025-01-28 04:39:03', NULL),
-(6, 'Rocio de Lima', '2011-05-13', 'Hembra', 1, NULL, 5, 57, NULL, 650.0, 'snrw85wx03ygxhouhz7q', b'1', NULL, NULL, '2025-01-28 04:39:56', NULL),
-(7, 'Alena', '2016-03-03', 'Hembra', 1, NULL, 5, 137, NULL, 680.0, 'z88s36zxckkryce0pteb', b'1', NULL, NULL, '2025-01-28 04:40:43', NULL),
-(8, 'La Elegida', '2006-07-08', 'Hembra', 1, NULL, 5, 137, NULL, 640.0, 'g5e4cujkuzryiajuj0a3', b'1', NULL, NULL, '2025-01-28 04:41:26', NULL),
-(9, 'Nairobi', '2008-06-02', 'Hembra', 1, NULL, 5, 137, NULL, 600.0, 'amq0nqrlbcr9cbe9kesa', b'1', NULL, NULL, '2025-01-28 04:42:09', NULL),
-(10, 'Galaxia', '2016-05-05', 'Hembra', 1, NULL, 5, 137, NULL, 630.0, 'pcyx90wsaoq4fgrag58u', b'1', NULL, NULL, '2025-01-28 04:43:59', NULL),
-(11, 'Gwendoline', '2008-04-25', 'Hembra', 1, NULL, 5, 137, NULL, 620.0, 'qzuldgsu0vovijsynoti', b'1', NULL, NULL, '2025-01-28 04:44:49', NULL),
-(12, 'Moon Pass', '2009-03-24', 'Hembra', 1, NULL, 5, 57, NULL, 610.0, 'qziseur0xemjkbwanbgn', b'1', NULL, NULL, '2025-01-28 04:45:52', NULL),
-(13, 'Mosquetera', '2018-05-06', 'Hembra', 1, NULL, 5, 57, NULL, 620.0, 'qnznzzd93imue7ct2w15', b'1', NULL, NULL, '2025-01-28 04:46:29', NULL),
-(14, 'Q\'Orianka', '2017-04-16', 'Hembra', 1, NULL, 5, 8, NULL, 630.0, 'x97hi5dbkvs9kdvwpbbo', b'1', NULL, NULL, '2025-01-28 04:47:31', NULL),
-(15, 'Hechicero', '2023-10-11', 'Macho', 4, NULL, NULL, 137, NULL, 280.0, 'eplldnef8xjozjw2gttz', b'1', NULL, NULL, '2025-01-28 04:50:09', NULL),
-(16, 'Via Regina', '2022-09-17', 'Hembra', 3, NULL, 5, 137, NULL, 350.0, 'zakh9ur42g5mrijkh1et', b'1', NULL, NULL, '2025-01-28 04:51:21', '2025-01-28 04:57:13'),
-(17, 'Curare', '2023-10-06', 'Macho', 4, NULL, NULL, 137, NULL, 290.0, 'yncuf9afn7ysqecuyrwr', b'1', NULL, NULL, '2025-01-28 04:53:05', NULL),
-(18, 'La Candy', NULL, 'Hembra', 1, NULL, 4, 57, 1, NULL, '', b'1', NULL, NULL, '2025-01-28 04:54:02', '2025-01-28 04:58:39'),
-(19, 'La Negra', NULL, 'Hembra', 1, NULL, 5, 115, 2, NULL, '', b'1', '2025-01-27', '2025-01-31', '2025-01-28 04:54:52', NULL),
-(20, 'Poética', NULL, 'Hembra', 1, NULL, 5, 137, 1, NULL, '', b'1', NULL, NULL, '2025-01-28 04:56:16', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -3286,13 +3253,6 @@ CREATE TABLE `historialequinos` (
   `descripcion` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `historialequinos`
---
-
-INSERT INTO `historialequinos` (`idHistorial`, `idEquino`, `descripcion`) VALUES
-(1, 1, '<p>Linajudo zaino hijo de Street Cry con compaña en Canada donde logró ganar 4 carreras en 9 presentaciones incluso Eclipse S.<strong>(G3).</strong></p>');
-
 -- --------------------------------------------------------
 
 --
@@ -3343,14 +3303,6 @@ CREATE TABLE `historialmovimientos` (
   `fechaMovimiento` date DEFAULT current_timestamp(),
   `merma` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `historialmovimientos`
---
-
-INSERT INTO `historialmovimientos` (`idMovimiento`, `idAlimento`, `tipoMovimiento`, `cantidad`, `idEquino`, `idUsuario`, `unidadMedida`, `fechaMovimiento`, `merma`) VALUES
-(1, 1, 'Entrada', 200.00, NULL, 3, '1', '2025-01-28', NULL),
-(2, 1, 'Salida', 98.00, 15, 3, 'kg', '2025-01-28', 2.00);
 
 -- --------------------------------------------------------
 
@@ -3403,13 +3355,6 @@ CREATE TABLE `lotesalimento` (
   `estadoLote` enum('No Vencido','Vencido','Agotado') DEFAULT 'No Vencido'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `lotesalimento`
---
-
-INSERT INTO `lotesalimento` (`idLote`, `lote`, `fechaCaducidad`, `fechaIngreso`, `estadoLote`) VALUES
-(1, '0101', '2025-03-18', '2025-01-28 00:02:50', 'No Vencido');
-
 -- --------------------------------------------------------
 
 --
@@ -3459,13 +3404,6 @@ CREATE TABLE `mermasalimento` (
   `fechaMerma` datetime DEFAULT current_timestamp(),
   `motivo` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `mermasalimento`
---
-
-INSERT INTO `mermasalimento` (`idMerma`, `idAlimento`, `cantidadMerma`, `fechaMerma`, `motivo`) VALUES
-(1, 1, 2.00, '2025-01-28 00:04:55', 'Merma registrada en salida de inventario');
 
 -- --------------------------------------------------------
 
@@ -3790,8 +3728,7 @@ INSERT INTO `permisos` (`idpermiso`, `idRol`, `idvista`, `create_at`) VALUES
 (79, 6, 13, '2025-01-27 22:51:30'),
 (80, 6, 17, '2025-01-27 22:51:30'),
 (81, 6, 19, '2025-01-27 22:51:30'),
-(82, 6, 36, '2025-01-27 22:51:30'),
-(83, 3, 20, '2025-01-28 00:03:45');
+(82, 6, 36, '2025-01-27 22:51:30');
 
 -- --------------------------------------------------------
 
@@ -3952,14 +3889,6 @@ CREATE TABLE `servicios` (
   `idEstadoMonta` int(11) DEFAULT NULL,
   `costoServicio` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `servicios`
---
-
-INSERT INTO `servicios` (`idServicio`, `idEquinoMacho`, `idEquinoHembra`, `idEquinoExterno`, `fechaServicio`, `tipoServicio`, `detalles`, `idMedicamento`, `horaEntrada`, `horaSalida`, `idPropietario`, `idEstadoMonta`, `costoServicio`) VALUES
-(1, 1, 4, NULL, '2025-01-27', 'Propio', '', NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 1, NULL, 18, '2025-01-01', 'Mixto', '', NULL, '06:00:00', '06:15:00', 1, NULL, 3500.00);
 
 -- --------------------------------------------------------
 
@@ -4744,7 +4673,7 @@ ALTER TABLE `vistas`
 -- AUTO_INCREMENT de la tabla `alimentos`
 --
 ALTER TABLE `alimentos`
-  MODIFY `idAlimento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idAlimento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `asistenciapersonal`
@@ -4786,7 +4715,7 @@ ALTER TABLE `entrenamientos`
 -- AUTO_INCREMENT de la tabla `equinos`
 --
 ALTER TABLE `equinos`
-  MODIFY `idEquino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `idEquino` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `estadomonta`
@@ -4822,7 +4751,7 @@ ALTER TABLE `historialdosisaplicadas`
 -- AUTO_INCREMENT de la tabla `historialequinos`
 --
 ALTER TABLE `historialequinos`
-  MODIFY `idHistorial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idHistorial` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historialherrero`
@@ -4840,7 +4769,7 @@ ALTER TABLE `historialimplemento`
 -- AUTO_INCREMENT de la tabla `historialmovimientos`
 --
 ALTER TABLE `historialmovimientos`
-  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historialmovimientosmedicamentos`
@@ -4858,7 +4787,7 @@ ALTER TABLE `implementos`
 -- AUTO_INCREMENT de la tabla `lotesalimento`
 --
 ALTER TABLE `lotesalimento`
-  MODIFY `idLote` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idLote` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `lotesmedicamento`
@@ -4876,7 +4805,7 @@ ALTER TABLE `medicamentos`
 -- AUTO_INCREMENT de la tabla `mermasalimento`
 --
 ALTER TABLE `mermasalimento`
-  MODIFY `idMerma` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idMerma` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `modulos`
@@ -4894,7 +4823,7 @@ ALTER TABLE `nacionalidades`
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `idpermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `idpermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT de la tabla `personal`
@@ -4936,7 +4865,7 @@ ALTER TABLE `rotacioncampos`
 -- AUTO_INCREMENT de la tabla `servicios`
 --
 ALTER TABLE `servicios`
-  MODIFY `idServicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idServicio` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `tipoalimentos`
