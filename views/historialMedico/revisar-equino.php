@@ -75,7 +75,7 @@
                     </div>
 
                     <!-- Costo de la Revisión -->
-                    <div class="col-md-6" id="costorevision" style="display: none;">
+                    <div class="col-md-6" id="divCostoRevision" style="display: none;">
                         <div class="form-floating">
                             <input type="number" class="form-control" id="costorevision" name="costorevision" step="0.01" placeholder="">
                             <label for="costorevision"><i class="fas fa-dollar-sign" style="color: #001F3F;"></i> Costo de la Revisión (USD)</label>

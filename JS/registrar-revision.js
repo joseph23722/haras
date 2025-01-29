@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const idPropietarioSelect = document.querySelector("#idPropietario");
     const idEquinoSelect = document.querySelector("#idEquino");
-    const costoRevisionSelec = document.querySelector("#costorevision");
+    const costoRevisionSelec = document.querySelector("#divCostoRevision");
 
     // Función para mostrar u ocultar el campo de Costo de la Revisión
     function toggleCostoRevision() {
