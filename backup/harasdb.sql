@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-01-2025 a las 12:37:13
+-- Tiempo de generación: 29-01-2025 a las 06:50:36
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,2903 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `harasdb`
 --
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ConsultarHistorialEquino` ()   BEGIN
+    SELECT 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo AS TrabajoRealizado, 
+        GROUP_CONCAT(H.nombreHerramienta SEPARATOR ', ') AS HerramientasUsadas, 
+        HH.observaciones,
+        E.nombreEquino,              
+        TE.tipoEquino                 
+    FROM 
+        HistorialHerrero HH
+    INNER JOIN 
+        Equinos E ON HH.idEquino = E.idEquino
+    INNER JOIN 
+        TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
+    INNER JOIN 
+        TiposTrabajos TT ON HH.idTrabajo = TT.idTipoTrabajo
+    LEFT JOIN 
+        HerramientasUsadasHistorial HUH ON HH.idHistorialHerrero = HUH.idHistorialHerrero
+    LEFT JOIN 
+        Herramientas H ON HUH.idHerramienta = H.idHerramienta
+    GROUP BY 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo, 
+        HH.observaciones, 
+        E.nombreEquino, 
+        TE.tipoEquino
+    ORDER BY 
+        HH.fecha DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `EditarCombinacionAlimento` (IN `p_IdTipoActual` INT, IN `p_IdUnidadActual` INT, IN `p_NuevoTipo` VARCHAR(50), IN `p_NuevaUnidad` VARCHAR(10))   BEGIN
+    DECLARE v_IdNuevoTipo INT;
+    DECLARE v_IdNuevaUnidad INT;
+
+    -- Paso 1: Verificar o insertar el nuevo tipo de alimento
+    SELECT idTipoAlimento INTO v_IdNuevoTipo
+    FROM TipoAlimentos
+    WHERE tipoAlimento = p_NuevoTipo;
+
+    IF v_IdNuevoTipo IS NULL THEN
+        INSERT INTO TipoAlimentos (tipoAlimento)
+        VALUES (p_NuevoTipo);
+        SET v_IdNuevoTipo = LAST_INSERT_ID();
+    END IF;
+
+    -- Paso 2: Verificar o insertar la nueva unidad de medida
+    SELECT idUnidadMedida INTO v_IdNuevaUnidad
+    FROM UnidadesMedidaAlimento
+    WHERE nombreUnidad = p_NuevaUnidad;
+
+    IF v_IdNuevaUnidad IS NULL THEN
+        INSERT INTO UnidadesMedidaAlimento (nombreUnidad)
+        VALUES (p_NuevaUnidad);
+        SET v_IdNuevaUnidad = LAST_INSERT_ID();
+    END IF;
+
+    -- Paso 3: Actualizar la combinación específica en TipoAlimento_UnidadMedida
+    UPDATE TipoAlimento_UnidadMedida
+    SET idTipoAlimento = v_IdNuevoTipo, idUnidadMedida = v_IdNuevaUnidad
+    WHERE idTipoAlimento = p_IdTipoActual AND idUnidadMedida = p_IdUnidadActual;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `FiltrarHistorialHerreroPorTipoEquino` (IN `_tipoEquino` VARCHAR(50))   BEGIN
+    SELECT 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo AS TrabajoRealizado, 
+        GROUP_CONCAT(H.nombreHerramienta SEPARATOR ', ') AS HerramientasUsadas, 
+        HH.observaciones,
+        E.nombreEquino,              
+        TE.tipoEquino                 
+    FROM 
+        HistorialHerrero HH
+    INNER JOIN 
+        Equinos E ON HH.idEquino = E.idEquino
+    INNER JOIN 
+        TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
+    INNER JOIN 
+        TiposTrabajos TT ON HH.idTrabajo = TT.idTipoTrabajo
+    LEFT JOIN 
+        HerramientasUsadasHistorial HUH ON HH.idHistorialHerrero = HUH.idHistorialHerrero
+    LEFT JOIN 
+        Herramientas H ON HUH.idHerramienta = H.idHerramienta
+    WHERE 
+        TE.tipoEquino = _tipoEquino
+        AND TE.tipoEquino IN ('Padrillo', 'Yegua', 'Potrillo', 'Potranca')
+    GROUP BY 
+        HH.idHistorialHerrero, 
+        HH.fecha, 
+        TT.nombreTrabajo, 
+        HH.observaciones, 
+        E.nombreEquino, 
+        TE.tipoEquino
+    ORDER BY 
+        HH.fecha DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertarHistorialHerrero` (IN `p_idEquino` INT, IN `p_idUsuario` INT, IN `p_fecha` DATE, IN `p_idTrabajo` INT, IN `p_idHerramienta` INT, IN `p_observaciones` TEXT)   BEGIN
+    -- Manejo de errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error al insertar en HistorialHerrero';
+    END;
+
+    -- Validación de entrada
+    IF p_idEquino IS NULL OR p_idUsuario IS NULL OR p_fecha IS NULL OR p_idTrabajo IS NULL OR p_idHerramienta IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Campos obligatorios faltantes para la inserción.';
+    END IF;
+
+    -- Iniciar una transacción
+    START TRANSACTION;
+
+    -- Inserción en la tabla HistorialHerrero
+    INSERT INTO HistorialHerrero (
+        idEquino, idUsuario, fecha, idTrabajo, observaciones
+    ) VALUES (
+        p_idEquino, p_idUsuario, p_fecha, p_idTrabajo, p_observaciones
+    );
+
+    -- Obtener el ID generado para HistorialHerrero
+    SET @idHistorialHerrero = LAST_INSERT_ID();
+
+    -- Inserción en la tabla HerramientasUsadasHistorial
+    INSERT INTO HerramientasUsadasHistorial (
+        idHistorialHerrero, idHerramienta
+    ) VALUES (
+        @idHistorialHerrero, p_idHerramienta
+    );
+
+    -- Confirmar la transacción
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `listarMedicamentos` ()   BEGIN
+    SELECT idMedicamento, nombreMedicamento
+    FROM Medicamentos;
+ END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerResumenServicios` ()   BEGIN
+    SELECT 
+        COUNT(*) AS totalServicios, 
+        SUM(CASE WHEN tipoServicio = 'Propio' THEN 1 ELSE 0 END) AS totalServiciosPropios,
+        SUM(CASE WHEN tipoServicio = 'Mixto' THEN 1 ELSE 0 END) AS totalServiciosMixtos
+    FROM Servicios;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerResumenStockAlimentos` ()   BEGIN
+    SELECT 
+        SUM(stockActual) AS stock_total,
+        COUNT(*) AS cantidad_alimentos,
+        GROUP_CONCAT(CASE WHEN stockActual <= stockMinimo THEN CONCAT(nombreAlimento, ' (', stockActual, ')') ELSE NULL END) AS baja_cantidad,
+        GROUP_CONCAT(CASE WHEN stockActual > stockMinimo THEN CONCAT(nombreAlimento, ' (', stockActual, ')') ELSE NULL END) AS en_stock,
+        COUNT(CASE WHEN stockActual <= stockMinimo THEN 1 ELSE NULL END) AS baja_cantidad_count,
+        COUNT(CASE WHEN stockActual > stockMinimo THEN 1 ELSE NULL END) AS en_stock_count
+    FROM 
+        Alimentos;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerResumenStockMedicamentos` ()   BEGIN
+    SELECT 
+        SUM(cantidad_stock) AS stock_total,
+        COUNT(*) AS cantidad_medicamentos,
+        GROUP_CONCAT(CASE WHEN cantidad_stock <= stockMinimo THEN CONCAT(nombreMedicamento, ' (', cantidad_stock, ')') ELSE NULL END) AS criticos,
+        GROUP_CONCAT(CASE WHEN cantidad_stock > stockMinimo THEN CONCAT(nombreMedicamento, ' (', cantidad_stock, ')') ELSE NULL END) AS en_stock,
+        COUNT(CASE WHEN cantidad_stock <= stockMinimo THEN 1 ELSE NULL END) AS criticos_count,
+        COUNT(CASE WHEN cantidad_stock > stockMinimo THEN 1 ELSE NULL END) AS en_stock_count
+    FROM 
+        Medicamentos;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerServiciosRealizadosMensual` (IN `p_meta` INT)   BEGIN
+    SELECT COUNT(*) AS totalServiciosRealizados,
+           ROUND((COUNT(*) / p_meta) * 100, 2) AS porcentajeProgreso
+    FROM Servicios
+    WHERE MONTH(fechaServicio) = MONTH(CURDATE()) 
+      AND YEAR(fechaServicio) = YEAR(CURDATE());
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerServiciosSemanaActual` ()   BEGIN
+    SELECT COUNT(*) AS total_servicios
+    FROM Servicios
+    WHERE WEEK(fechaServicio) = WEEK(CURDATE()) AND YEAR(fechaServicio) = YEAR(CURDATE());
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerSugerenciasAlimentos` ()   BEGIN
+    SELECT 
+        tal.idTipoAlimento AS IdTipoAlimento,
+        tal.tipoAlimento AS TipoAlimento,
+        uma.idUnidadMedida AS IdUnidadMedida,
+        uma.nombreUnidad AS UnidadMedida
+    FROM 
+        TipoAlimento_UnidadMedida taum
+    INNER JOIN 
+        TipoAlimentos tal ON taum.idTipoAlimento = tal.idTipoAlimento
+    INNER JOIN 
+        UnidadesMedidaAlimento uma ON taum.idUnidadMedida = uma.idUnidadMedida
+    ORDER BY 
+        tal.tipoAlimento ASC, 
+        uma.nombreUnidad ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ObtenerTotalEquinosRegistrados` ()   BEGIN
+    SELECT COUNT(*) AS total_equinos 
+    FROM Equinos 
+    WHERE estado = 1
+    AND idPropietario IS NULL;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `registrarServicio` (IN `p_idEquinoMacho` INT, IN `p_idEquinoHembra` INT, IN `p_idPropietario` INT, IN `p_idEquinoExterno` INT, IN `p_fechaServicio` DATE, IN `p_tipoServicio` ENUM('propio','mixto'), IN `p_detalles` TEXT, IN `p_idMedicamento` INT, IN `p_horaEntrada` TIME, IN `p_horaSalida` TIME, IN `p_costoServicio` DECIMAL(10,2))   BEGIN
+    DECLARE v_mensajeError VARCHAR(255);
+    DECLARE v_idEstadoServida INT;
+    DECLARE v_idEstadoActivo INT;
+    DECLARE v_idEstadoSS INT;
+    DECLARE v_horaActual TIME;
+
+    -- Obtener los ID de estados correspondientes
+    SELECT idEstadoMonta INTO v_idEstadoServida FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'Servida' LIMIT 1;
+    SELECT idEstadoMonta INTO v_idEstadoActivo FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Activo' LIMIT 1;
+    SELECT idEstadoMonta INTO v_idEstadoSS FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1;
+
+    -- Verificar si la fecha de servicio es válida
+    IF p_fechaServicio > CURDATE() THEN
+        SET v_mensajeError = 'Error: La fecha de servicio no puede ser mayor que la fecha actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+    END IF;
+
+    -- Si la fecha de servicio es hoy, verificar que la hora de entrada y salida no sean mayores a la hora actual
+    IF p_fechaServicio = CURDATE() THEN
+        SET v_horaActual = CURTIME();
+
+        -- Verificar que la hora de entrada no sea mayor que la hora de salida
+        IF p_horaEntrada > p_horaSalida THEN
+            SET v_mensajeError = 'Error: La hora de entrada no puede ser mayor que la hora de salida.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+
+        -- Verificar que la hora de entrada y la hora de salida no sean mayores que la hora actual
+        IF p_horaEntrada > v_horaActual OR p_horaSalida > v_horaActual THEN
+            SET v_mensajeError = 'Error: La hora de entrada y la hora de salida no pueden ser mayores a la hora actual.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+    END IF;
+
+    -- Validar duplicados para yeguas propias
+    IF p_idEquinoHembra IS NOT NULL THEN
+        IF EXISTS (
+            SELECT 1
+            FROM Servicios
+            WHERE idEquinoHembra = p_idEquinoHembra
+              AND fechaServicio = p_fechaServicio
+        ) THEN
+            SET v_mensajeError = 'Error: La yegua propia ya recibió un servicio en esta fecha.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+    END IF;
+
+    -- Validar duplicados para yeguas externas
+    IF p_idEquinoExterno IS NOT NULL THEN
+        IF EXISTS (
+            SELECT 1
+            FROM Servicios
+            WHERE idEquinoExterno = p_idEquinoExterno
+              AND fechaServicio = p_fechaServicio
+        ) THEN
+            SET v_mensajeError = 'Error: La yegua externa ya recibió un servicio en esta fecha.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensajeError;
+        END IF;
+    END IF;
+
+    -- Registrar el servicio
+    IF p_tipoServicio = 'propio' THEN
+        INSERT INTO Servicios (
+            idEquinoMacho, idEquinoHembra, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
+        ) VALUES (
+            p_idEquinoMacho, p_idEquinoHembra, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, NULL, p_costoServicio
+        );
+
+        -- Cambiar estado del macho a "Activo"
+        UPDATE Equinos
+        SET idEstadoMonta = v_idEstadoActivo
+        WHERE idEquino = p_idEquinoMacho;
+
+        -- Cambiar estado de la yegua propia a "Servida"
+        UPDATE Equinos
+        SET idEstadoMonta = v_idEstadoServida
+        WHERE idEquino = p_idEquinoHembra;
+
+    ELSEIF p_tipoServicio = 'mixto' THEN
+        INSERT INTO Servicios (
+            idEquinoMacho, idEquinoHembra, idEquinoExterno, fechaServicio, tipoServicio, detalles, idMedicamento, horaEntrada, horaSalida, idPropietario, costoServicio
+        ) VALUES (
+            p_idEquinoMacho, p_idEquinoHembra, p_idEquinoExterno, p_fechaServicio, p_tipoServicio, p_detalles, p_idMedicamento, p_horaEntrada, p_horaSalida, p_idPropietario, p_costoServicio
+        );
+
+        -- Cambiar estado del macho a "Activo"
+        UPDATE Equinos
+        SET idEstadoMonta = v_idEstadoActivo
+        WHERE idEquino = p_idEquinoMacho;
+
+        -- Cambiar estado de la yegua propia a "Servida" si aplica
+        IF p_idEquinoHembra IS NOT NULL THEN
+            UPDATE Equinos
+            SET idEstadoMonta = v_idEstadoServida
+            WHERE idEquino = p_idEquinoHembra;
+        END IF;
+
+        -- Cambiar estado de la yegua externa a "Servida" si aplica
+        IF p_idEquinoExterno IS NOT NULL THEN
+            UPDATE Equinos
+            SET idEstadoMonta = v_idEstadoServida
+            WHERE idEquino = p_idEquinoExterno;
+        END IF;
+    END IF;
+
+    -- Actualizar el estado de todas las yeguas no servidas recientemente a "S/S"
+    UPDATE Equinos
+    SET idEstadoMonta = v_idEstadoSS
+    WHERE sexo = 'Hembra'
+      AND idEquino NOT IN (
+          SELECT idEquinoHembra
+          FROM Servicios
+          WHERE fechaServicio = p_fechaServicio
+      );
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_actualizar_contraseña` (IN `_correo` VARCHAR(120), IN `p_clave` VARCHAR(120))   BEGIN 
+    UPDATE usuarios
+    SET clave = p_clave
+    WHERE correo = _correo;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_agregarTipoUnidadMedidaNuevo` (IN `p_tipoAlimento` VARCHAR(50), IN `p_nombreUnidad` VARCHAR(10))   BEGIN
+    DECLARE tipoID INT;
+    DECLARE unidadID INT;
+
+    -- 1. Verificar si el tipo de alimento existe, si no, agregarlo
+    SET tipoID = (SELECT idTipoAlimento FROM TipoAlimentos WHERE tipoAlimento = p_tipoAlimento);
+    IF tipoID IS NULL THEN
+        INSERT INTO TipoAlimentos (tipoAlimento) VALUES (p_tipoAlimento);
+        SET tipoID = LAST_INSERT_ID();  -- Obtener el ID del tipo recién insertado
+    END IF;
+
+    -- 2. Verificar si la unidad de medida existe, si no, agregarla
+    SET unidadID = (SELECT idUnidadMedida FROM UnidadesMedidaAlimento WHERE nombreUnidad = p_nombreUnidad);
+    IF unidadID IS NULL THEN
+        INSERT INTO UnidadesMedidaAlimento (nombreUnidad) VALUES (p_nombreUnidad);
+        SET unidadID = LAST_INSERT_ID();  -- Obtener el ID de la unidad recién insertada
+    END IF;
+
+    -- 3. Verificar si la relación ya existe, si no, agregarla
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM TipoAlimento_UnidadMedida 
+        WHERE idTipoAlimento = tipoID AND idUnidadMedida = unidadID
+    ) THEN
+        INSERT INTO TipoAlimento_UnidadMedida (idTipoAlimento, idUnidadMedida)
+        VALUES (tipoID, unidadID);
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La combinación de tipo de alimento y unidad de medida ya existe.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_agregar_herramienta` (IN `_nombreHerramienta` VARCHAR(100))   BEGIN
+    -- Verificar que no exista una herramienta con el mismo nombre
+    IF EXISTS (SELECT 1 FROM Herramientas WHERE nombreHerramienta = _nombreHerramienta) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La herramienta ya existe.';
+    ELSE
+        -- Insertar la nueva herramienta
+        INSERT INTO Herramientas (nombreHerramienta)
+        VALUES (_nombreHerramienta);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_agregar_nueva_combinacion_medicamento` (IN `_tipo` VARCHAR(100), IN `_presentacion` VARCHAR(100), IN `_unidad` VARCHAR(50), IN `_dosis` DECIMAL(10,2), OUT `mensaje` VARCHAR(255))   BEGIN
+    DECLARE _idTipo INT;
+    DECLARE _idPresentacion INT;
+    DECLARE _idUnidad INT;
+    -- Paso 1: Verificar si el tipo ya existe en TiposMedicamentos
+    SELECT idTipo INTO _idTipo
+    FROM TiposMedicamentos
+    WHERE LOWER(tipo) = LOWER(_tipo);
+    
+    -- Si el tipo no existe, lo insertamos
+    IF _idTipo IS NULL THEN
+        INSERT INTO TiposMedicamentos (tipo) VALUES (_tipo);
+        SET _idTipo = LAST_INSERT_ID();
+        SET mensaje = CONCAT('Nuevo tipo de medicamento agregado: ', _tipo);
+    ELSE
+        SET mensaje = CONCAT('Tipo de medicamento ya existente: ', _tipo);
+    END IF;
+    -- Paso 2: Verificar si la presentación ya existe en PresentacionesMedicamentos
+    SELECT idPresentacion INTO _idPresentacion
+    FROM PresentacionesMedicamentos
+    WHERE LOWER(presentacion) = LOWER(_presentacion);
+    
+    -- Si la presentación no existe, la insertamos
+    IF _idPresentacion IS NULL THEN
+        INSERT INTO PresentacionesMedicamentos (presentacion) VALUES (_presentacion);
+        SET _idPresentacion = LAST_INSERT_ID();
+        SET mensaje = CONCAT(mensaje, '; Nueva presentación agregada: ', _presentacion);
+    ELSE
+        SET mensaje = CONCAT(mensaje, '; Presentación ya existente: ', _presentacion);
+    END IF;
+    -- Paso 3: Verificar si la unidad ya existe en UnidadesMedida
+    SELECT idUnidad INTO _idUnidad
+    FROM UnidadesMedida
+    WHERE LOWER(unidad) = LOWER(_unidad);
+    
+    -- Si la unidad no existe, la insertamos
+    IF _idUnidad IS NULL THEN
+        INSERT INTO UnidadesMedida (unidad) VALUES (_unidad);
+        SET _idUnidad = LAST_INSERT_ID();
+        SET mensaje = CONCAT(mensaje, '; Nueva unidad de medida agregada: ', _unidad);
+    ELSE
+        SET mensaje = CONCAT(mensaje, '; Unidad de medida ya existente: ', _unidad);
+    END IF;
+    -- Paso 4: Verificar si la combinación ya existe en CombinacionesMedicamentos
+    IF EXISTS (
+        SELECT 1 FROM CombinacionesMedicamentos 
+        WHERE idTipo = _idTipo 
+          AND idPresentacion = _idPresentacion 
+          AND idUnidad = _idUnidad
+          AND dosis = _dosis
+    ) THEN
+        -- Mensaje de advertencia amigable en lugar de error
+        SET mensaje = CONCAT(mensaje, '; La combinación de tipo, presentación, unidad y dosis ya existe.');
+    ELSE
+        -- Insertar la combinación si no existe
+        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, idUnidad, dosis) 
+        VALUES (_idTipo, _idPresentacion, _idUnidad, _dosis);
+        SET mensaje = 'Combinación agregada exitosamente.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_agregar_tipo_trabajo` (IN `_nombreTrabajo` VARCHAR(100))   BEGIN
+    -- Verificar que no exista un tipo de trabajo con el mismo nombre
+    IF EXISTS (SELECT 1 FROM TiposTrabajos WHERE nombreTrabajo = _nombreTrabajo) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El tipo de trabajo ya existe.';
+    ELSE
+        -- Insertar el nuevo tipo de trabajo
+        INSERT INTO TiposTrabajos (nombreTrabajo)
+        VALUES (_nombreTrabajo);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_Agregar_Via_Administracion` (IN `p_nombreVia` VARCHAR(50), IN `p_descripcion` TEXT)   BEGIN
+    -- Verificar si ya existe una vía con el mismo nombre
+    IF EXISTS (SELECT 1 FROM ViasAdministracion WHERE nombreVia = p_nombreVia) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ya existe una vía de administración con este nombre.';
+    ELSE
+        -- Insertar la nueva vía en la tabla
+        INSERT INTO ViasAdministracion (nombreVia, descripcion)
+        VALUES (p_nombreVia, p_descripcion);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_alimentos_entrada` (IN `_idUsuario` INT, IN `_nombreAlimento` VARCHAR(100), IN `_idUnidadMedida` INT, IN `_lote` VARCHAR(50), IN `_cantidad` DECIMAL(10,2))   BEGIN
+    DECLARE _idAlimento INT;
+    DECLARE _idLote INT;
+    DECLARE _currentStock DECIMAL(10,2);
+
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Verificar si el ID de la unidad de medida existe
+    IF _idUnidadMedida IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La unidad de medida especificada no existe.';
+    END IF;
+
+    -- Verificar si el lote existe y obtener su ID
+    SELECT idLote INTO _idLote
+    FROM LotesAlimento
+    WHERE LOWER(lote) = LOWER(_lote)
+    LIMIT 1; -- Asegúrate de obtener solo un registro
+
+    IF _idLote IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El lote especificado no existe.';
+    END IF;
+
+    -- Buscar el `idAlimento` correspondiente al nombre, lote y unidad de medida
+    -- Se agrega LIMIT 1 para asegurar que solo se obtenga un registro
+    SELECT idAlimento, stockActual INTO _idAlimento, _currentStock
+    FROM Alimentos
+    WHERE LOWER(nombreAlimento) = LOWER(_nombreAlimento)
+      AND idLote = _idLote
+      AND idUnidadMedida = _idUnidadMedida
+    ORDER BY idAlimento ASC -- Opcional: especifica el orden para seleccionar el primer registro consistente
+    LIMIT 1 FOR UPDATE;
+
+    IF _idAlimento IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El alimento con este lote y unidad de medida no está registrado.';
+    END IF;
+
+    -- Actualizar el `stockActual` sumando la cantidad
+    UPDATE Alimentos
+    SET stockActual = stockActual + _cantidad,
+        fechaMovimiento = NOW()
+    WHERE idAlimento = _idAlimento;
+
+    -- Registrar la entrada en el historial de movimientos
+    INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento, unidadMedida)
+    VALUES (_idAlimento, 'Entrada', _cantidad, _idUsuario, NOW(), _idUnidadMedida);
+
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_alimentos_nuevo` (IN `_idUsuario` INT, IN `_nombreAlimento` VARCHAR(100), IN `_idTipoAlimento` INT, IN `_idUnidadMedida` INT, IN `_lote` VARCHAR(50), IN `_costo` DECIMAL(10,2), IN `_fechaCaducidad` DATE, IN `_stockActual` DECIMAL(10,2), IN `_stockMinimo` DECIMAL(10,2))   BEGIN
+    DECLARE _exists INT DEFAULT 0;
+    DECLARE _idLote INT;
+    DECLARE _fechaCaducidadLote DATE;
+    DECLARE _estado ENUM('Disponible', 'Por agotarse', 'Agotado');
+    DECLARE _estadoLote ENUM('Vencido', 'No vencido', 'Agotado');
+    DECLARE _mensajeLote VARCHAR(255); -- Variable para el mensaje
+
+    -- Determinar el estado inicial del alimento
+    IF _stockActual = 0 THEN
+        SET _estado = 'Agotado';
+    ELSEIF _stockActual <= _stockMinimo THEN
+        SET _estado = 'Por agotarse';
+    ELSE
+        SET _estado = 'Disponible';
+    END IF;
+
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Verificar si el tipo de alimento existe y obtener `idTipoAlimento`
+    IF NOT EXISTS (SELECT 1 FROM TipoAlimentos WHERE idTipoAlimento = _idTipoAlimento) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Tipo de alimento no encontrado. Verifique el ID proporcionado.';
+    END IF;
+
+    -- Verificar si la unidad de medida existe y obtener `idUnidadMedida`
+    IF NOT EXISTS (SELECT 1 FROM UnidadesMedidaAlimento WHERE idUnidadMedida = _idUnidadMedida) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Unidad de medida no encontrada. Verifique el ID proporcionado.';
+    END IF;
+
+    -- Verificar si el lote ya está registrado
+    SELECT idLote, fechaCaducidad INTO _idLote, _fechaCaducidadLote 
+    FROM LotesAlimento
+    WHERE lote = _lote
+    LIMIT 1;
+
+    -- Si el lote ya existe y está vencido o agotado, actualizar la fecha de caducidad y el estado
+    IF _idLote IS NOT NULL THEN
+        IF _fechaCaducidadLote IS NOT NULL AND _fechaCaducidadLote < CURDATE() THEN
+            -- El lote está vencido, actualizar la fecha de caducidad y el estado a 'No vencido'
+            UPDATE LotesAlimento
+            SET fechaCaducidad = _fechaCaducidad, estadoLote = 'No vencido'
+            WHERE idLote = _idLote;
+        END IF;
+    ELSE
+        -- Si el lote no existe, registrarlo en la tabla LotesAlimento
+        INSERT INTO LotesAlimento (lote, fechaCaducidad, fechaIngreso) 
+        VALUES (_lote, _fechaCaducidad, NOW());
+        SET _idLote = LAST_INSERT_ID();
+    END IF;
+
+    -- Registrar el alimento
+    INSERT INTO Alimentos (
+        idUsuario, nombreAlimento, idTipoAlimento, idUnidadMedida, idLote, costo, 
+        stockActual, stockMinimo, estado, fechaMovimiento, compra
+    ) 
+    VALUES (
+        _idUsuario, _nombreAlimento, _idTipoAlimento, _idUnidadMedida, _idLote, _costo, 
+        _stockActual, _stockMinimo, _estado, NOW(), _costo * _stockActual
+    );
+
+    -- Confirmar la transacción
+    COMMIT;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_alimentos_salida` (IN `_idUsuario` INT, IN `_nombreAlimento` VARCHAR(100), IN `_idUnidadMedida` INT, IN `_cantidad` DECIMAL(10,2), IN `_uso` DECIMAL(10,2), IN `_merma` DECIMAL(10,2), IN `_idEquino` INT, IN `_lote` VARCHAR(50))   BEGIN
+    DECLARE _idAlimento INT;
+    DECLARE _idLote INT;
+    DECLARE _currentStock DECIMAL(10,2);
+
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Validar que la cantidad de uso y merma sumen la cantidad total de salida
+    IF _cantidad != (_uso + _merma) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad de uso y merma deben sumar el total de la salida.';
+        ROLLBACK;
+    ELSEIF _cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad a retirar debe ser mayor que cero.';
+        ROLLBACK;
+    ELSE
+        -- Verificar si el lote existe y obtener su ID
+        SELECT idLote INTO _idLote
+        FROM LotesAlimento
+        WHERE LOWER(lote) = LOWER(_lote)
+        LIMIT 1;
+
+        -- Si el lote no existe, generar un error
+        IF _idLote IS NULL THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El lote especificado no existe.';
+            ROLLBACK;
+        ELSE
+            -- Buscar el alimento usando el lote, nombre de alimento, y idUnidadMedida
+            SELECT a.idAlimento, a.stockActual INTO _idAlimento, _currentStock
+            FROM Alimentos a
+            WHERE LOWER(a.nombreAlimento) = LOWER(_nombreAlimento)
+              AND a.idLote = _idLote
+              AND a.idUnidadMedida = _idUnidadMedida
+            LIMIT 1 FOR UPDATE;
+
+            -- Verificar si el alimento existe y que el stock sea suficiente
+            IF _idAlimento IS NULL THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El alimento con este lote y unidad de medida no está registrado.';
+                ROLLBACK;
+            ELSEIF _currentStock < _cantidad THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock disponible.';
+                ROLLBACK;
+            ELSE
+                -- Actualizar el stock del alimento
+                UPDATE Alimentos
+                SET stockActual = stockActual - _cantidad,
+                    idEquino = _idEquino,
+                    fechaMovimiento = NOW()
+                WHERE idAlimento = _idAlimento;
+
+                -- Insertar en el historial de movimientos
+                INSERT INTO HistorialMovimientos (idAlimento, tipoMovimiento, cantidad, merma, idUsuario, fechaMovimiento, idEquino, unidadMedida)
+                VALUES (_idAlimento, 'Salida', _uso, _merma, _idUsuario, NOW(), _idEquino, (SELECT nombreUnidad FROM UnidadesMedidaAlimento WHERE idUnidadMedida = _idUnidadMedida));
+
+                -- Insertar en la tabla de Mermas
+                IF _merma > 0 THEN
+                    INSERT INTO MermasAlimento (idAlimento, cantidadMerma, fechaMerma, motivo)
+                    VALUES (_idAlimento, _merma, NOW(), 'Merma registrada en salida de inventario');
+                END IF;
+
+                -- Confirmación de éxito
+                COMMIT;
+                SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = 'Salida registrada exitosamente con desglose de uso y merma.';
+            END IF;
+        END IF;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_buscar_equino_por_nombre` (IN `p_nombreEquino` VARCHAR(100))   BEGIN
+    SELECT 
+        e.idEquino,
+        e.nombreEquino,
+        e.fechaNacimiento,
+        e.sexo,
+        te.tipoEquino,
+        em.nombreEstado AS estadoMonta,
+        n.nacionalidad,
+        e.pesokg,
+        e.idPropietario,
+        e.fotografia,
+        IF(e.estado = 1, 'Vivo', IF(e.estado = 2, 'Muerto', 'Desconocido')) AS estado
+    FROM 
+        Equinos e
+    JOIN 
+        TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
+    LEFT JOIN 
+        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta 
+    LEFT JOIN 
+        Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
+    WHERE 
+        e.nombreEquino = p_nombreEquino
+        AND e.idPropietario IS NULL; 
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_buscar_equino_por_nombre_general` (IN `p_nombreEquino` VARCHAR(100))   BEGIN
+    SELECT 
+        e.idEquino,
+        e.nombreEquino,
+        e.fechaNacimiento,
+        e.sexo,
+        te.tipoEquino,
+        em.nombreEstado AS estadoMonta,
+        n.nacionalidad,
+        e.pesokg,
+        e.idPropietario,
+        e.fotografia,
+        IF(e.estado = 1, 'Vivo', IF(e.estado = 2, 'Muerto', 'Desconocido')) AS estado
+    FROM 
+        Equinos e
+    JOIN 
+        TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
+    LEFT JOIN 
+        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta 
+    LEFT JOIN 
+        Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
+    WHERE 
+        e.nombreEquino = p_nombreEquino;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_buscar_nacionalidad` (IN `_nacionalidad` VARCHAR(255))   BEGIN
+    SELECT idNacionalidad, nacionalidad
+    FROM nacionalidades
+    WHERE nacionalidad LIKE CONCAT('%', _nacionalidad, '%');
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_cambiar_estado_implemento` (IN `p_idInventario` INT, IN `p_nuevoEstado` BIT)   BEGIN
+    -- Cambiar el estado del implemento
+    UPDATE Implementos
+    SET estado = p_nuevoEstado
+    WHERE idInventario = p_idInventario;
+
+    -- Verificar si la actualización fue exitosa
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Implemento no encontrado.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_campos_listar` ()   BEGIN
+    SELECT 
+        C.idCampo,
+        C.numeroCampo,
+        C.tamanoCampo,
+        TS.nombreTipoSuelo,
+        C.estado,
+        (SELECT TR.nombreRotacion
+         FROM RotacionCampos RC
+         JOIN TipoRotaciones TR ON RC.idTipoRotacion = TR.idTipoRotacion
+         WHERE RC.idCampo = C.idCampo
+         ORDER BY RC.fechaRotacion DESC
+         LIMIT 1) AS ultimaAccionRealizada,
+        MAX(RC.fechaRotacion) AS fechaUltimaAccion
+    FROM 
+        Campos C
+    LEFT JOIN 
+        RotacionCampos RC ON C.idCampo = RC.idCampo
+    LEFT JOIN 
+        TipoSuelo TS ON C.idTipoSuelo = TS.idTipoSuelo
+    GROUP BY 
+        C.idCampo, C.numeroCampo, C.tamanoCampo, TS.nombreTipoSuelo, C.estado
+    ORDER BY 
+        C.numeroCampo DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_consultar_historial_medicoMedi` ()   BEGIN
+    -- Actualizar el estado de los tratamientos en la tabla DetalleMedicamentos
+    -- Cambiar a 'Finalizado' los tratamientos cuya fecha de fin ha pasado y que están en estado 'Activo'
+    UPDATE DetalleMedicamentos
+    SET estadoTratamiento = 'Finalizado'
+    WHERE fechaFin < CURDATE() AND estadoTratamiento = 'Activo';
+
+    -- Seleccionar la información detallada de todos los registros de historial médico, incluyendo el nombre de la vía de administración y el estado del tratamiento
+    SELECT 
+        DM.idDetalleMed AS idRegistro,
+        DM.idEquino,
+        E.nombreEquino,
+        DM.idMedicamento,
+        M.nombreMedicamento,
+        DM.dosis,
+        DM.frecuenciaAdministracion,
+        VA.nombreVia AS viaAdministracion,  -- Obtener solo el nombre de la vía desde la tabla ViasAdministracion
+        E.pesokg,
+        DM.fechaInicio,
+        DM.fechaFin,
+        DM.observaciones,
+        DM.reaccionesAdversas,
+        DM.idUsuario AS responsable,
+        DM.tipoTratamiento,
+        DM.estadoTratamiento,       -- Incluir el estado del tratamiento
+        DM.fechaInicio AS fechaRegistro
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    INNER JOIN 
+        Usuarios U ON DM.idUsuario = U.idUsuario
+    LEFT JOIN 
+        ViasAdministracion VA ON DM.idViaAdministracion = VA.idViaAdministracion  -- Vincular con la tabla ViasAdministracion
+    ORDER BY 
+        DM.fechaInicio DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_contar_equinos_por_categoria` ()   BEGIN
+    -- Consulta directa para obtener el representante único y la cantidad de equinos por categoría
+    SELECT 
+        CASE 
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+            WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+            WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+            WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+            WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+        END AS Categoria,
+        COUNT(DISTINCT e.idEquino) AS Cantidad,
+        -- Selección de un representante único para la categoría (primer equino encontrado)
+        MIN(e.idEquino) AS idEquino
+    FROM 
+        Equinos e
+    JOIN 
+        TipoEquinos te ON e.idTipoEquino = te.idTipoEquino
+    LEFT JOIN 
+        EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
+    WHERE 
+        e.estado = 1  -- Solo los equinos vivos
+    AND (
+        (te.tipoEquino = 'Yegua' AND em.nombreEstado IN ('S/S', 'Preñada', 'Con Cria'))
+        OR (te.tipoEquino = 'Padrillo' AND em.nombreEstado IN ('Activo', 'Inactivo'))
+        OR te.tipoEquino IN ('Potranca', 'Potrillo')
+    )
+    GROUP BY 
+        Categoria
+    ORDER BY 
+        Categoria;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_editar_bosta` (IN `p_idbosta` INT, IN `p_fecha` DATE, IN `p_cantidadsacos` INT, IN `p_pesoaprox` DECIMAL(4,2))   BEGIN
+    -- Verificar si la fecha es mayor a la fecha actual
+    IF p_fecha > CURRENT_DATE THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha no puede ser mayor a la fecha actual.';
+    END IF;
+
+    -- Verificar si la fecha es domingo
+    IF DAYOFWEEK(p_fecha) = 1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se permite registrar datos los domingos';
+    ELSE
+        -- Actualizar el registro
+        UPDATE bostas
+        SET 
+            fecha = p_fecha,
+            cantidadsacos = p_cantidadsacos,
+            pesoaprox = p_pesoaprox,
+            peso_diario = p_cantidadsacos * p_pesoaprox,
+            numero_semana = WEEK(p_fecha, 1) -- Actualiza el número de semana
+        WHERE idbosta = p_idbosta;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_editar_campo` (IN `p_idCampo` INT, IN `p_numeroCampo` INT, IN `p_tamanoCampo` DECIMAL(10,2), IN `p_idTipoSuelo` INT, IN `p_estado` ENUM('Activo','Inactivo'))   BEGIN
+    DECLARE campoExistente INT;
+
+    SELECT COUNT(*) INTO campoExistente
+    FROM Campos
+    WHERE idCampo = p_idCampo;
+
+    IF campoExistente = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El campo no existe.';
+    ELSE
+        UPDATE Campos
+        SET 
+            numeroCampo = p_numeroCampo,
+            tamanoCampo = p_tamanoCampo,
+            idTipoSuelo = p_idTipoSuelo,  -- Cambiado a idTipoSuelo
+            estado = p_estado
+        WHERE idCampo = p_idCampo;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_eliminarAlimento` (IN `_idAlimento` INT)   BEGIN
+    -- Verificar si el alimento existe antes de intentar eliminarlo
+    IF EXISTS (SELECT 1 FROM Alimentos WHERE idAlimento = _idAlimento) THEN
+        -- Eliminar el alimento
+        DELETE FROM Alimentos WHERE idAlimento = _idAlimento;
+    ELSE
+        -- Si no existe, generar un error de control
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El alimento no existe.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_eliminar_bosta` (IN `p_idbosta` INT)   BEGIN
+    -- Eliminar el registro
+    DELETE FROM bostas
+    WHERE idbosta = p_idbosta;
+
+    -- Opcional: verificar si la eliminación fue exitosa
+    IF ROW_COUNT() = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se encontró un registro con el ID proporcionado.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_eliminar_campo` (IN `p_idCampo` INT)   BEGIN
+    -- Eliminar las rotaciones asociadas
+    DELETE FROM rotacioncampos WHERE idCampo = p_idCampo;
+
+    -- Ahora eliminar el campo
+    DELETE FROM campos WHERE idCampo = p_idCampo;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equinos_listar` (IN `p_estadoMonta` INT)   BEGIN
+    SELECT
+        E.idEquino,
+        E.nombreEquino,
+        E.fechaNacimiento,
+        E.sexo,
+        TE.tipoEquino,
+        E.detalles,
+        EM.nombreEstado,
+        E.pesokg,
+        N.nacionalidad AS nacionalidad,
+        E.estado,
+        E.fotografia,
+        CASE 
+            WHEN E.estado = 1 THEN 'Vivo'
+            WHEN E.estado = 0 THEN 'Muerto'
+            ELSE 'Desconocido'
+        END AS estadoDescriptivo,
+        HE.descripcion AS descripcion
+        
+    FROM
+        Equinos E
+    LEFT JOIN TipoEquinos TE ON E.idTipoEquino = TE.idTipoEquino
+    LEFT JOIN EstadoMonta EM ON E.idEstadoMonta = EM.idEstadoMonta
+    LEFT JOIN nacionalidades N ON E.idNacionalidad = N.idNacionalidad
+    LEFT JOIN HistorialEquinos HE ON E.idEquino = HE.idEquino
+    WHERE
+        E.idPropietario IS NULL
+        AND (
+            p_estadoMonta IS NULL 
+            OR E.idEstadoMonta = p_estadoMonta
+        )
+    ORDER BY 
+        E.estado DESC,
+        E.idEquino DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equino_editar` (IN `_idEquino` INT, IN `_idPropietario` INT, IN `_pesokg` DECIMAL(5,1), IN `_idEstadoMonta` VARCHAR(50), IN `_estado` ENUM('Vivo','Muerto'), IN `_fechaEntrada` DATE, IN `_fechaSalida` DATE)   BEGIN
+    DECLARE _errorMsg VARCHAR(255);
+
+    -- Verificar si el equino existe
+    IF NOT EXISTS (SELECT 1 FROM Equinos WHERE idEquino = _idEquino) THEN
+        SET _errorMsg = 'Error: No existe un equino con el ID proporcionado.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    -- Iniciar una transacción
+    START TRANSACTION;
+
+    -- Actualizar solo los campos que no sean NULL o vacíos
+    UPDATE Equinos
+    SET 
+        idPropietario = COALESCE(NULLIF(_idPropietario, 0), idPropietario),
+        pesokg = COALESCE(NULLIF(_pesokg, 0), pesokg),
+        idEstadoMonta = COALESCE(NULLIF(_idEstadoMonta, ''), idEstadoMonta),
+        estado = COALESCE(NULLIF(_estado, ''), estado),
+        -- Actualizar las fechas solo si no son NULL
+        fechaentrada = COALESCE(NULLIF(_fechaEntrada, '0000-00-00'), fechaentrada),
+        fechasalida = COALESCE(NULLIF(_fechaSalida, '0000-00-00'), fechasalida)
+    WHERE idEquino = _idEquino;
+
+    -- Validar si se actualizó correctamente
+    IF ROW_COUNT() = 0 THEN
+        SET _errorMsg = 'Error: No se realizaron cambios en el registro.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    -- Confirmar los cambios
+    COMMIT;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equino_registrar` (IN `_nombreEquino` VARCHAR(100), IN `_fechaNacimiento` DATE, IN `_sexo` ENUM('Macho','Hembra'), IN `_detalles` TEXT, IN `_idTipoEquino` INT, IN `_idPropietario` INT, IN `_pesokg` DECIMAL(5,1), IN `_idNacionalidad` INT, IN `_public_id` VARCHAR(255), IN `_fechaentrada` DATE, IN `_fechasalida` DATE)   BEGIN
+    DECLARE _errorMsg VARCHAR(255);
+    DECLARE _edadDias INT;
+    DECLARE _idEquino INT;
+    DECLARE _idEstadoMonta INT;
+
+    -- Calcular la edad en días
+    SET _edadDias = TIMESTAMPDIFF(DAY, _fechaNacimiento, CURDATE());
+
+    -- Validaciones de fecha y propietario
+    IF _fechaNacimiento > CURDATE() THEN
+        SET _errorMsg = 'Error: La fecha de nacimiento no puede ser posterior a la fecha actual.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    IF _idPropietario IS NOT NULL AND NOT EXISTS (SELECT * FROM Propietarios WHERE idPropietario = _idPropietario) THEN
+        SET _errorMsg = 'Error: El propietario no existe.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    IF EXISTS (SELECT * FROM Equinos WHERE nombreEquino = _nombreEquino) THEN
+        SET _errorMsg = 'Error: Ya existe un equino con ese nombre.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+
+    -- Validaciones de edad y tipo de equino
+    IF _idPropietario IS NULL THEN
+        -- Recién nacido (<= 180 días)
+        IF _edadDias <= 180 THEN
+            IF _idTipoEquino NOT IN (5) THEN
+                SET _errorMsg = 'Error: Un equino recién nacido debe ser registrado como tipo "Recién nacido".';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+        -- Potrillo o potranca (<= 730 días)
+        ELSEIF _edadDias > 180 AND _edadDias <= 730 THEN
+            IF _sexo = 'Macho' AND _idTipoEquino != 4 THEN
+                SET _errorMsg = 'Error: Un macho de esta edad debe ser registrado como potrillo.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+            IF _sexo = 'Hembra' AND _idTipoEquino != 3 THEN
+                SET _errorMsg = 'Error: Una hembra de esta edad debe ser registrada como potranca.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+        -- Equinos mayores de 730 días
+        ELSEIF _edadDias > 730 THEN
+            IF _sexo = 'Macho' AND _idTipoEquino NOT IN (2, 4) THEN
+                SET _errorMsg = 'Error: Un macho mayor de 730 días debe ser registrado como padrillo o potrillo.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+            IF _sexo = 'Hembra' AND _idTipoEquino NOT IN (1, 3) THEN
+                SET _errorMsg = 'Error: Una hembra mayor de 730 días debe ser registrada como yegua o potranca.';
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+            END IF;
+        END IF;
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM nacionalidades WHERE idNacionalidad = _idNacionalidad) THEN
+        SET _errorMsg = 'Error: La nacionalidad seleccionada no existe.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+    END IF;
+    
+    -- Validar fechas de entrada y salida si no son NULL
+    IF _fechaEntrada IS NOT NULL AND _fechaSalida IS NOT NULL THEN
+        IF _fechaEntrada > _fechaSalida THEN
+            SET _errorMsg = 'Error: La fecha de entrada no puede ser mayor a la fecha de salida.';
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
+        END IF;
+    END IF;
+
+    SET _idEstadoMonta = CASE 
+        WHEN _sexo = 'Macho' AND _idTipoEquino = 2 THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Macho' AND nombreEstado = 'Inactivo' LIMIT 1)
+        WHEN _sexo = 'Hembra' AND _idTipoEquino = 1 THEN (SELECT idEstadoMonta FROM EstadoMonta WHERE genero = 'Hembra' AND nombreEstado = 'S/S' LIMIT 1)
+        ELSE NULL
+    END;
+
+    -- INSERT con estado "Vivo"
+    INSERT INTO Equinos (
+        nombreEquino, 
+        fechaNacimiento, 
+        sexo, 
+        idTipoEquino, 
+        detalles, 
+        idPropietario,
+        pesokg,
+        idNacionalidad,
+        idEstadoMonta,
+        fotografia,       -- Aquí guardaremos el public_id
+        estado,
+        fechaentrada,
+        fechasalida
+    ) 
+    VALUES (
+        _nombreEquino, 
+        _fechaNacimiento, 
+        _sexo, 
+        _idTipoEquino, 
+        _detalles, 
+        _idPropietario,
+        _pesokg,
+        _idNacionalidad,
+        _idEstadoMonta,
+        _public_id,       -- Guardar el public_id en la columna fotografia
+        1,  -- Estado "Vivo" (1)
+        _fechaentrada,
+        _fechasalida
+    );
+
+    -- Obtener el ID del equino recién insertado
+    SET _idEquino = LAST_INSERT_ID();
+    -- Retornar el ID del equino registrado
+    SELECT _idEquino AS idEquino;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_filtrarAlimentos` (IN `_fechaCaducidadInicio` DATE, IN `_fechaCaducidadFin` DATE, IN `_fechaRegistroInicio` DATETIME, IN `_fechaRegistroFin` DATETIME)   BEGIN
+    -- Realizar la consulta de los alimentos con los filtros especificados
+    SELECT 
+        A.idAlimento,
+        A.idUsuario,
+        A.nombreAlimento,
+        TA.tipoAlimento AS nombreTipoAlimento,
+        A.stockActual,
+        A.stockMinimo,
+        A.estado,
+        U.nombreUnidad AS unidadMedidaNombre,
+        A.costo,
+        A.idLote,
+        A.idEquino,
+        A.compra,
+        A.fechaMovimiento,
+        L.idLote AS loteId,
+        L.lote,
+        L.fechaCaducidad,
+        L.fechaIngreso,
+        L.estadoLote
+    FROM 
+        Alimentos A
+    INNER JOIN 
+        LotesAlimento L ON A.idLote = L.idLote
+    INNER JOIN 
+        TipoAlimentos TA ON A.idTipoAlimento = TA.idTipoAlimento
+    INNER JOIN 
+        UnidadesMedidaAlimento U ON A.idUnidadMedida = U.idUnidadMedida
+    WHERE 
+        (_fechaCaducidadInicio IS NULL OR L.fechaCaducidad >= _fechaCaducidadInicio)
+        AND (_fechaCaducidadFin IS NULL OR L.fechaCaducidad <= _fechaCaducidadFin)
+        AND (_fechaRegistroInicio IS NULL OR L.fechaIngreso >= _fechaRegistroInicio)
+        AND (_fechaRegistroFin IS NULL OR L.fechaIngreso <= _fechaRegistroFin);
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_filtrar_historial_medicoMedi` (IN `_nombreEquino` VARCHAR(255), IN `_nombreMedicamento` VARCHAR(255), IN `_estadoTratamiento` VARCHAR(50))   BEGIN
+    -- Desactivar el modo seguro temporalmente
+    SET SQL_SAFE_UPDATES = 0;
+
+    -- Actualizar el estado de los tratamientos en la tabla DetalleMedicamentos
+    -- Cambiar a 'Finalizado' los tratamientos cuya fecha de fin ha pasado y que están en estado 'Activo'
+    UPDATE DetalleMedicamentos
+    SET estadoTratamiento = 'Finalizado'
+    WHERE fechaFin < CURDATE() AND estadoTratamiento = 'Activo';
+
+    -- Seleccionar la información detallada de los registros de historial médico con filtros aplicados
+    SELECT 
+        DM.idDetalleMed AS idRegistro,
+        DM.idEquino,
+        E.nombreEquino,
+        DM.idMedicamento,
+        M.nombreMedicamento,
+        DM.dosis,
+        DM.frecuenciaAdministracion,
+        VA.nombreVia AS viaAdministracion,  -- Obtener solo el nombre de la vía desde la tabla ViasAdministracion
+        E.pesokg,
+        DM.fechaInicio,
+        DM.fechaFin,
+        DM.observaciones,
+        DM.reaccionesAdversas,
+        DM.idUsuario AS responsable,
+        DM.tipoTratamiento,
+        DM.estadoTratamiento,       -- Incluir el estado del tratamiento
+        DM.fechaInicio AS fechaRegistro
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    INNER JOIN 
+        Usuarios U ON DM.idUsuario = U.idUsuario
+    LEFT JOIN 
+        ViasAdministracion VA ON DM.idViaAdministracion = VA.idViaAdministracion  -- Vincular con la tabla ViasAdministracion
+    WHERE 
+        (E.nombreEquino LIKE CONCAT('%', _nombreEquino, '%') OR _nombreEquino IS NULL OR _nombreEquino = '')
+        AND (M.nombreMedicamento LIKE CONCAT('%', _nombreMedicamento, '%') OR _nombreMedicamento IS NULL OR _nombreMedicamento = '')
+        AND (DM.estadoTratamiento = _estadoTratamiento OR _estadoTratamiento IS NULL OR _estadoTratamiento = '')
+    ORDER BY 
+        DM.fechaInicio DESC;
+
+    -- Reactivar el modo seguro
+    SET SQL_SAFE_UPDATES = 1;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_gestionar_tratamiento` (IN `_idDetalleMed` INT, IN `_accion` VARCHAR(10))   BEGIN
+    -- Verificar la acción solicitada
+    IF _accion = 'pausar' THEN
+        -- Cambiar el estado del tratamiento a 'En pausa' solo si actualmente está 'Activo'
+        UPDATE DetalleMedicamentos
+        SET estadoTratamiento = 'En pausa'
+        WHERE idDetalleMed = _idDetalleMed
+          AND estadoTratamiento = 'Activo';
+
+        -- Verificar si el estado fue actualizado a 'En pausa'
+        IF ROW_COUNT() = 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El tratamiento no está activo o no se encontró.';
+        END IF;
+
+    ELSEIF _accion = 'eliminar' THEN
+        -- Eliminar el tratamiento solo si está en estado 'Finalizado' o 'En pausa'
+        DELETE FROM DetalleMedicamentos
+        WHERE idDetalleMed = _idDetalleMed
+          AND estadoTratamiento IN ('Finalizado', 'En pausa');
+
+        -- Verificar si el tratamiento fue eliminado
+        IF ROW_COUNT() = 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El tratamiento no está en estado Finalizado o En pausa, o no se encontró.';
+        END IF;
+
+    ELSEIF _accion = 'continuar' THEN
+        -- Cambiar el estado del tratamiento a 'Activo' solo si actualmente está 'En pausa'
+        UPDATE DetalleMedicamentos
+        SET estadoTratamiento = 'Activo'
+        WHERE idDetalleMed = _idDetalleMed
+          AND estadoTratamiento = 'En pausa';
+
+        -- Verificar si el estado fue actualizado a 'Activo'
+        IF ROW_COUNT() = 0 THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El tratamiento no está en pausa o no se encontró.';
+        END IF;
+
+    ELSE
+        -- Si la acción no es válida, lanzar un error
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Acción no válida. Use "pausar", "eliminar" o "continuar".';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_historial_completo` (IN `tipoMovimiento` VARCHAR(50), IN `filtroFecha` VARCHAR(20), IN `idUsuario` INT, IN `limite` INT, IN `desplazamiento` INT)   BEGIN
+    DECLARE fechaInicio DATE;
+    DECLARE fechaFin DATE;
+
+    -- Establecer las fechas según el filtro seleccionado
+    IF filtroFecha = 'hoy' THEN
+        SET fechaInicio = CURDATE();
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimaSemana' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 7 DAY;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimoMes' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 1 MONTH;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'todos' THEN
+        SET fechaInicio = '1900-01-01'; -- Fecha muy antigua para incluir todos los registros
+        SET fechaFin = CURDATE();
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Filtro de fecha no válido.';
+    END IF;
+
+    -- Validar los límites de la paginación
+    IF limite <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El límite de registros debe ser mayor que cero.';
+    END IF;
+
+    IF desplazamiento < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El desplazamiento no puede ser negativo.';
+    END IF;
+
+    -- Si el tipo de movimiento es 'Entrada', mostrar campos específicos para entradas, incluyendo la cantidad
+    IF tipoMovimiento = 'Entrada' THEN
+        SELECT 
+            h.idAlimento,
+            a.nombreAlimento,
+            ta.tipoAlimento AS nombreTipoAlimento,
+            um.nombreUnidad AS nombreUnidadMedida,
+            l.lote,
+            l.fechaCaducidad,
+            a.stockActual,
+            h.cantidad,
+            h.unidadMedida,
+            h.fechaMovimiento
+        FROM 
+            HistorialMovimientos h
+        JOIN 
+            Alimentos a ON h.idAlimento = a.idAlimento
+        JOIN
+            LotesAlimento l ON a.idLote = l.idLote
+        JOIN
+            TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento
+        JOIN
+            UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+        WHERE 
+            h.tipoMovimiento = 'Entrada'  
+            AND h.fechaMovimiento >= fechaInicio
+            AND h.fechaMovimiento <= fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
+        ORDER BY 
+            h.fechaMovimiento DESC
+        LIMIT 
+            limite OFFSET desplazamiento;
+
+    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos incluyendo el tipo de equino, cantidad de equinos por categoría, y otros detalles
+    ELSEIF tipoMovimiento = 'Salida' THEN
+        SELECT 
+            h.idMovimiento AS ID,
+            a.nombreAlimento AS Alimento,
+            CASE 
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+                WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+                WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+                ELSE 'Desconocido'
+            END AS TipoEquino,
+            COUNT(h.idEquino) AS CantidadEquino,
+            h.cantidad AS Cantidad,
+            um.nombreUnidad AS Unidad,
+            h.merma AS Merma,
+            l.lote AS Lote,
+            h.fechaMovimiento AS FechaSalida
+        FROM 
+            HistorialMovimientos h
+        JOIN 
+            Alimentos a ON h.idAlimento = a.idAlimento
+        LEFT JOIN
+            Equinos eq ON h.idEquino = eq.idEquino
+        LEFT JOIN
+            TipoEquinos te ON eq.idTipoEquino = te.idTipoEquino
+        LEFT JOIN
+            EstadoMonta em ON eq.idEstadoMonta = em.idEstadoMonta
+        JOIN
+            UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+        JOIN 
+            LotesAlimento l ON a.idLote = l.idLote
+        WHERE 
+            h.tipoMovimiento = 'Salida'
+            AND h.fechaMovimiento >= fechaInicio
+            AND h.fechaMovimiento <= fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
+        GROUP BY 
+            h.idMovimiento, Alimento, TipoEquino, Unidad, Lote, FechaSalida
+        ORDER BY 
+            h.fechaMovimiento DESC
+        LIMIT 
+            limite OFFSET desplazamiento;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_historial_completo_medicamentos` (IN `tipoMovimiento` VARCHAR(50), IN `filtroFecha` VARCHAR(20), IN `idUsuario` INT, IN `limite` INT, IN `desplazamiento` INT)   BEGIN
+    DECLARE fechaInicio DATE;
+    DECLARE fechaFin DATE;
+
+    -- Establecer las fechas según el filtro seleccionado
+    IF filtroFecha = 'hoy' THEN
+        SET fechaInicio = CURDATE();
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimaSemana' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 7 DAY;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'ultimoMes' THEN
+        SET fechaInicio = CURDATE() - INTERVAL 1 MONTH;
+        SET fechaFin = CURDATE();
+    ELSEIF filtroFecha = 'todos' THEN
+        SET fechaInicio = '1900-01-01'; -- Fecha muy antigua para incluir todos los registros
+        SET fechaFin = CURDATE();
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Filtro de fecha no válido.';
+    END IF;
+
+    -- Validar los límites de la paginación
+    IF limite <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El límite de registros debe ser mayor que cero.';
+    END IF;
+
+    IF desplazamiento < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El desplazamiento no puede ser negativo.';
+    END IF;
+
+    -- Si el tipo de movimiento es 'Entrada', mostrar campos específicos para entradas
+    IF tipoMovimiento = 'Entrada' THEN
+        SELECT 
+            h.idMedicamento,
+            m.nombreMedicamento AS Medicamento,
+            m.descripcion AS Descripcion,
+            lm.lote AS Lote,
+            m.cantidad_stock AS StockActual,
+            h.cantidad AS Cantidad,
+            h.fechaMovimiento AS FechaMovimiento
+        FROM 
+            HistorialMovimientosMedicamentos h
+        JOIN 
+            Medicamentos m ON h.idMedicamento = m.idMedicamento
+        JOIN
+            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+        WHERE 
+            h.tipoMovimiento = 'Entrada'
+            AND h.fechaMovimiento BETWEEN fechaInicio AND fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
+        ORDER BY 
+            h.fechaMovimiento DESC
+        LIMIT 
+            limite OFFSET desplazamiento;
+
+    -- Si el tipo de movimiento es 'Salida', mostrar campos específicos incluyendo tipo de equino y cantidad por categoría
+    ELSEIF tipoMovimiento = 'Salida' THEN
+        SELECT 
+            h.idMovimiento AS ID,
+            m.nombreMedicamento AS Medicamento,
+            m.descripcion AS Descripcion,
+            lm.lote AS Lote,
+            CASE 
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'S/S' THEN 'Yegua Vacía'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Preñada' THEN 'Yegua Preñada'
+                WHEN te.tipoEquino = 'Yegua' AND em.nombreEstado = 'Con Cria' THEN 'Yegua Con Cria'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Activo' THEN 'Padrillo Activo'
+                WHEN te.tipoEquino = 'Padrillo' AND em.nombreEstado = 'Inactivo' THEN 'Padrillo Inactivo'
+                WHEN te.tipoEquino = 'Potranca' THEN 'Potranca'
+                WHEN te.tipoEquino = 'Potrillo' THEN 'Potrillo'
+                ELSE 'Desconocido'
+            END AS TipoEquino, 
+            COUNT(h.idEquino) AS CantidadEquino, 
+            h.cantidad AS Cantidad, 
+            h.motivo AS Motivo, 
+            h.fechaMovimiento AS FechaSalida
+        FROM 
+            HistorialMovimientosMedicamentos h
+        JOIN 
+            Medicamentos m ON h.idMedicamento = m.idMedicamento
+        JOIN
+            LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+        LEFT JOIN
+            Equinos eq ON h.idEquino = eq.idEquino
+        LEFT JOIN
+            TipoEquinos te ON eq.idTipoEquino = te.idTipoEquino
+        LEFT JOIN
+            EstadoMonta em ON eq.idEstadoMonta = em.idEstadoMonta
+        WHERE 
+            h.tipoMovimiento = 'Salida'
+            AND h.fechaMovimiento BETWEEN fechaInicio AND fechaFin
+            AND (idUsuario = 0 OR h.idUsuario = idUsuario)
+        GROUP BY 
+            h.idMovimiento, Medicamento, TipoEquino, Motivo, FechaSalida
+        ORDER BY 
+            h.fechaMovimiento DESC
+        LIMIT 
+            limite OFFSET desplazamiento;
+    ELSE
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Tipo de movimiento no válido.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listarServiciosPorTipo` (IN `p_tipoServicio` ENUM('Propio','Mixto','General'))   BEGIN
+    SELECT 
+        s.idServicio,
+        em.nombreEquino AS nombrePadrillo,
+        eh.nombreEquino AS nombreYegua,
+        ee.nombreEquino AS nombreEquinoExterno,
+        s.fechaServicio,
+        s.detalles,
+        s.horaEntrada,
+        s.horaSalida,
+        s.costoServicio,
+        p.nombreHaras
+    FROM 
+        Servicios s
+    LEFT JOIN Equinos em ON s.idEquinoMacho = em.idEquino
+    LEFT JOIN Equinos eh ON s.idEquinoHembra = eh.idEquino
+    LEFT JOIN Equinos ee ON s.idEquinoExterno = ee.idEquino
+    LEFT JOIN Propietarios p ON s.idPropietario = p.idPropietario
+    WHERE 
+        (
+            (p_tipoServicio = 'General' AND s.tipoServicio IN ('General', 'Mixto', 'Propio'))
+            OR s.tipoServicio = p_tipoServicio
+        )
+    ORDER BY 
+        s.fechaServicio DESC;
+ END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_ListarTiposYHerramientas` ()   BEGIN
+    -- Combinar TiposTrabajos y Herramientas en un solo resultado con IDs únicos
+    SELECT 
+        CONCAT('T-', idTipoTrabajo) AS id, -- Prefijo 'T-' para TiposTrabajos
+        nombreTrabajo AS nombre,
+        'Tipo de Trabajo' AS tipo
+    FROM 
+        TiposTrabajos
+    UNION ALL
+    SELECT 
+        CONCAT('H-', idHerramienta) AS id, -- Prefijo 'H-' para Herramientas
+        nombreHerramienta AS nombre,
+        'Herramienta' AS tipo
+    FROM 
+        Herramientas
+    ORDER BY 
+        nombre ASC; -- Ordena por nombre de forma ascendente
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_bostas` ()   BEGIN
+    SELECT 
+        b.idbosta,
+        b.fecha,
+        b.cantidadsacos,
+        b.pesoaprox,
+        b.peso_diario,
+        CASE 
+            WHEN ROW_NUMBER() OVER (PARTITION BY b.numero_semana ORDER BY b.fecha) = 1 THEN 
+                (SELECT SUM(peso_diario) 
+                 FROM bostas 
+                 WHERE WEEK(fecha, 1) = b.numero_semana 
+                   AND YEAR(fecha) = YEAR(b.fecha)) 
+            ELSE NULL 
+        END AS peso_semanal,
+        b.numero_semana,
+        (SELECT SUM(peso_diario) 
+         FROM bostas 
+         WHERE fecha <= CURDATE()) AS total_acumulado
+    FROM 
+        bostas b
+    ORDER BY 
+        b.numero_semana DESC,
+        b.fecha ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_equinos_externos` ()   BEGIN
+	SELECT 
+        e.idEquino,
+        e.nombreEquino,
+        e.sexo,
+        t.TipoEquino,
+        e.detalles,
+        em.nombreEstado,
+        n.nacionalidad,
+        p.nombreHaras,
+        e.fechaentrada,
+        e.fechasalida
+    FROM Equinos e
+    LEFT JOIN TipoEquinos t ON e.idTipoEquino = t.idTipoEquino
+    LEFT JOIN EstadoMonta em ON e.idEstadoMonta = em.idEstadoMonta
+    LEFT JOIN Nacionalidades n ON e.idNacionalidad = n.idNacionalidad
+    LEFT JOIN Propietarios p ON e.idPropietario = p.idPropietario
+    WHERE e.idPropietario IS NOT NULL;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_equinos_para_revision` (IN `p_idPropietario` INT)   BEGIN
+    -- Si se pasa un idPropietario, listar las yeguas de ese propietario específico
+    IF p_idPropietario IS NOT NULL THEN
+        SELECT 
+            idEquino, 
+            nombreEquino
+        FROM 
+            Equinos
+        WHERE 
+            sexo = 'Hembra'
+            AND idPropietario = p_idPropietario
+            AND estado = 1;
+
+    -- Si no se pasa un idPropietario (NULL), listar las yeguas sin propietario
+    ELSE
+        SELECT 
+            idEquino, 
+            nombreEquino
+        FROM 
+            Equinos
+        WHERE 
+            sexo = 'Hembra'
+            AND idPropietario IS NULL
+            AND estado = 1;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_equinos_por_propietario` (IN `_idPropietario` INT, IN `_genero` INT)   BEGIN
+    SELECT 
+        e.idEquino,           
+        e.nombreEquino,         
+        p.nombreHaras            
+    FROM 
+        Equinos e
+    JOIN 
+        Propietarios p ON e.idPropietario = p.idPropietario 
+    WHERE 
+        e.idPropietario = _idPropietario AND  
+        e.sexo = _genero;                      
+ END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_equinos_propios` ()   BEGIN
+    SELECT 
+        idEquino,
+        nombreEquino,
+        sexo,
+        idTipoEquino
+    FROM 
+        Equinos
+    WHERE 
+        idPropietario IS NULL
+        AND idTipoEquino IN (1, 2)
+        AND estado = 1;
+ END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_equinos_propiosMedi` ()   BEGIN
+	SELECT 
+		idEquino,
+		nombreEquino,
+		sexo,
+        pesokg,
+		idTipoEquino
+	FROM 
+		Equinos
+	WHERE 
+		idPropietario IS NULL
+		AND idTipoEquino IN (1, 2, 3, 4)
+		AND estado = 1;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_fotografias_equinos` (IN `p_idEquino` INT)   BEGIN
+    -- Selecciona las fotografías asociadas a un idEquino específico
+    SELECT idEquino, public_id, created_at
+    FROM fotografiaequinos
+    WHERE idEquino = p_idEquino
+    ORDER BY created_at DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_fotografia_dashboard` ()   BEGIN
+    SELECT nombreEquino, fotografia FROM Equinos
+    WHERE idPropietario IS NULL;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_haras` ()   BEGIN
+		SELECT DISTINCT 
+        idPropietario,
+        nombreHaras
+    FROM Propietarios;
+ END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_herramientas` ()   BEGIN
+    SELECT idHerramienta, nombreHerramienta
+    FROM Herramientas;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_historial_movimiento` (IN `p_idTipoinventario` INT, IN `p_idTipomovimiento` INT)   BEGIN
+    SELECT 
+        h.idHistorial, 
+        i.nombreProducto, 
+        h.idTipomovimiento, 
+        h.cantidad, 
+        h.precioUnitario, 
+        h.descripcion, 
+        h.fechaMovimiento,
+        ti.nombreInventario
+    FROM 
+        HistorialImplemento h
+    INNER JOIN 
+        TipoInventarios ti ON h.idTipoinventario = ti.idTipoinventario
+	INNER JOIN
+        Implementos i ON h.idInventario = i.idInventario 
+    INNER JOIN 
+        TipoMovimientos tm ON h.idTipomovimiento = tm.idTipomovimiento
+	WHERE 
+        h.idTipoinventario = p_idTipoinventario
+		AND h.idTipomovimiento = p_idTipomovimiento;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_implementos_con_cantidad` (IN `p_idTipoinventario` INT)   BEGIN
+    -- Consulta para obtener la lista de implementos filtrados por idTipoinventario
+    SELECT 
+        idInventario, nombreProducto, stockFinal,
+        cantidad, precioUnitario, precioTotal,
+        estado
+    FROM 
+        Implementos
+    WHERE
+        idTipoinventario = p_idTipoinventario
+    ORDER BY 
+        nombreProducto;  -- Ordena por nombre, puedes cambiar el orden si lo necesitas
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_implementos_por_tipo` (IN `p_idTipoinventario` INT)   BEGIN
+    -- Listar implementos según el tipo de inventario, con estado 0 al final
+    SELECT *
+    FROM Implementos
+    WHERE idTipoinventario = p_idTipoinventario
+    ORDER BY estado DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_lotes_medicamentos_por_nombre` (IN `nombreMedicamento` VARCHAR(255))   BEGIN
+    -- Seleccionar solo los lotes de medicamentos asociados al nombre especificado
+    SELECT 
+        lm.lote AS loteMedicamento       -- Lote del medicamento
+    FROM 
+        Medicamentos m
+    JOIN 
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+    WHERE 
+        m.nombreMedicamento = nombreMedicamento; -- Filtrar por el nombre del medicamento
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_lotes_por_nombre` (IN `nombreAlimento` VARCHAR(100))   BEGIN
+    SELECT 
+        l.lote
+    FROM 
+        Alimentos a
+    JOIN 
+        LotesAlimento l ON a.idLote = l.idLote
+    WHERE 
+        a.nombreAlimento = nombreAlimento;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_medicamentos` ()   BEGIN                                       
+    SELECT 
+        idMedicamento,
+        nombreMedicamento
+    FROM 
+        Medicamentos
+    ORDER BY 
+        nombreMedicamento ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_medicamentosMedi` ()   BEGIN
+    UPDATE Medicamentos 
+    SET estado = 'Agotado'
+    WHERE cantidad_stock = 0;
+
+    UPDATE Medicamentos 
+    SET estado = 'Por agotarse'
+    WHERE cantidad_stock > 0 AND cantidad_stock <= stockMinimo;
+
+    UPDATE Medicamentos 
+    SET estado = 'Disponible'
+    WHERE cantidad_stock > stockMinimo;
+
+    -- Mostrar la información detallada de todos los medicamentos registrados
+    SELECT 
+        m.idMedicamento,
+        m.nombreMedicamento,
+        m.descripcion,
+        lm.lote,                         -- Lote del medicamento (desde LotesMedicamento)
+        p.presentacion,
+        CONCAT(c.dosis, ' ', u.unidad) AS dosis,  -- Concatenar la cantidad y la unidad de medida
+        t.tipo AS nombreTipo,            -- Mostrar el nombre del tipo de medicamento
+        m.cantidad_stock,
+        m.stockMinimo,
+        lm.fechaIngreso,                 -- Fecha de ingreso del lote
+        lm.fechaCaducidad,               -- Fecha de caducidad del lote
+        m.precioUnitario,
+        m.estado
+    FROM 
+        Medicamentos m
+    JOIN 
+        CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN 
+        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    JOIN
+        UnidadesMedida u ON c.idUnidad = u.idUnidad  -- Relación con UnidadesMedida para obtener la unidad
+    JOIN
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con LotesMedicamento
+    ORDER BY 
+        m.nombreMedicamento ASC; -- Ordenar alfabéticamente por nombre de medicamento
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_presentaciones_por_tipo` (IN `_idTipo` INT)   BEGIN
+    SELECT DISTINCT p.idPresentacion, p.presentacion
+    FROM CombinacionesMedicamentos c
+    JOIN PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    WHERE c.idTipo = _idTipo
+    ORDER BY p.presentacion ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_revision_basica` ()   BEGIN
+    -- Seleccionamos todos los registros de la tabla revisionequinos con el nombre del equino
+    SELECT 
+        r.idRevision,
+        e.nombreEquino,  -- Obtenemos el nombre del equino desde la tabla Equinos
+        p.nombreHaras,    -- Nombre del propietario (nombreHaras)
+        r.tiporevision,
+        r.fecharevision,
+        r.observaciones,
+        r.costorevision
+    FROM 
+        revisionequinos r
+    JOIN 
+        Equinos e ON r.idEquino = e.idEquino  -- Hacemos JOIN con la tabla Equinos
+	LEFT JOIN 
+		Propietarios p ON r.idPropietario = p.idPropietario
+    ORDER BY 
+        r.fecharevision DESC; -- Ordenamos por la fecha de la revisión de forma descendente
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_rotaciones` ()   BEGIN
+    SELECT 
+    c.numeroCampo,
+    tr.nombreRotacion, 
+    rc.fechaRotacion 
+	FROM 
+		RotacionCampos rc
+	JOIN 
+		TipoRotaciones tr ON rc.idTipoRotacion = tr.idTipoRotacion
+	JOIN
+        Campos c ON rc.idCampo = c.idCampo;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_tipoequinos` ()   BEGIN
+    SELECT idTipoEquino, tipoEquino
+    FROM TipoEquinos;
+ END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_tipos_presentaciones_dosis` ()   BEGIN
+    -- Selecciona los tipos de medicamentos junto con la presentación y la dosis (cantidad y unidad), agrupados
+    SELECT 
+        c.idCombinacion,
+        t.tipo, 
+        GROUP_CONCAT(DISTINCT p.presentacion ORDER BY p.presentacion ASC SEPARATOR ', ') AS presentaciones,
+        GROUP_CONCAT(DISTINCT u.unidad ORDER BY c.dosis ASC SEPARATOR ', ') AS dosis
+    FROM 
+        CombinacionesMedicamentos c
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN 
+        PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
+    JOIN 
+        UnidadesMedida u ON c.idUnidad = u.idUnidad
+    GROUP BY 
+        c.idCombinacion, t.tipo  -- Asegúrate de agrupar por idCombinacion para evitar resultados ambiguos
+    ORDER BY 
+        t.tipo ASC;  -- Ordena por tipo de medicamento
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_tipos_trabajos` ()   BEGIN
+    SELECT idTipoTrabajo, nombreTrabajo
+    FROM TiposTrabajos;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_tipos_unicos` ()   BEGIN
+    SELECT DISTINCT t.idTipo, t.tipo
+    FROM TiposMedicamentos t
+    JOIN CombinacionesMedicamentos c ON t.idTipo = c.idTipo
+    ORDER BY t.tipo ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_tipo_movimiento` ()   BEGIN
+    SELECT * FROM tipomovimientos;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_Listar_ViasAdministracion` ()   BEGIN
+    SELECT idViaAdministracion, nombreVia, descripcion
+    FROM ViasAdministracion;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_medicamentos_entrada` (IN `_idUsuario` INT, IN `_nombreMedicamento` VARCHAR(255), IN `_lote` VARCHAR(100), IN `_cantidad` INT)   BEGIN
+    DECLARE _idMedicamento INT;
+    DECLARE _idLoteMedicamento INT;
+    DECLARE _currentStock INT;
+    DECLARE _debugInfo VARCHAR(255) DEFAULT '';
+
+    -- Verificar si la cantidad es mayor que cero
+    IF _cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad debe ser mayor a 0 para registrar una entrada de medicamento.';
+    ELSE
+        -- Iniciar transacción para asegurar la consistencia de la operación
+        START TRANSACTION;
+
+        -- Verificar si el lote existe en LotesMedicamento y obtener su ID
+        SELECT idLoteMedicamento INTO _idLoteMedicamento
+        FROM LotesMedicamento
+        WHERE lote = _lote;
+
+        -- Si el lote no existe, generar un error
+        IF _idLoteMedicamento IS NULL THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El lote especificado no existe en LotesMedicamento.';
+        END IF;
+
+        -- Buscar el `idMedicamento` correspondiente al nombre y lote
+        SELECT idMedicamento, cantidad_stock INTO _idMedicamento, _currentStock
+        FROM Medicamentos
+        WHERE LOWER(nombreMedicamento) = LOWER(_nombreMedicamento)
+          AND idLoteMedicamento = _idLoteMedicamento
+        LIMIT 1 FOR UPDATE;
+
+        -- Si el medicamento no existe para el lote, generar un error
+        IF _idMedicamento IS NULL THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'El medicamento con este lote no está registrado.';
+        END IF;
+
+        -- Actualizar el `cantidad_stock` sumando la cantidad
+        UPDATE Medicamentos
+        SET cantidad_stock = cantidad_stock + _cantidad,
+            ultima_modificacion = NOW()
+        WHERE idMedicamento = _idMedicamento;
+
+        -- Registrar la entrada en el historial de movimientos de medicamentos
+        INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, idUsuario, fechaMovimiento)
+        VALUES (_idMedicamento, 'Entrada', _cantidad, _idUsuario, NOW());
+
+        -- Confirmar la transacción
+        COMMIT;
+
+        -- Confirmación de éxito
+        SET _debugInfo = 'Transacción completada exitosamente.';
+        SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = _debugInfo;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_medicamentos_registrar` (IN `_nombreMedicamento` VARCHAR(255), IN `_descripcion` TEXT, IN `_lote` VARCHAR(100), IN `_idPresentacion` INT, IN `_dosisCompleta` VARCHAR(50), IN `_idTipo` INT, IN `_cantidad_stock` INT, IN `_stockMinimo` INT, IN `_fechaCaducidad` DATE, IN `_precioUnitario` DECIMAL(10,2), IN `_idUsuario` INT)   BEGIN
+    DECLARE _idCombinacion INT DEFAULT NULL;
+    DECLARE _idLoteMedicamento INT DEFAULT NULL;
+    DECLARE _dosis DECIMAL(10,2);
+    DECLARE _unidad VARCHAR(50);
+
+    -- Separar dosis en cantidad y unidad
+    SET _dosis = CAST(SUBSTRING_INDEX(_dosisCompleta, ' ', 1) AS DECIMAL(10,2));
+    SET _unidad = TRIM(SUBSTRING_INDEX(_dosisCompleta, ' ', -1));
+
+    -- Validar y registrar la combinación de dosis con IDs de tipo y presentación
+    CALL spu_validar_registrar_combinacion(_idTipo, _idPresentacion, _dosis, _unidad);
+
+    -- Recuperar el idCombinacion ya validado o registrado en `spu_validar_registrar_combinacion`
+    SELECT idCombinacion INTO _idCombinacion
+    FROM CombinacionesMedicamentos
+    WHERE idTipo = _idTipo
+      AND idPresentacion = _idPresentacion
+      AND dosis = _dosis
+      AND idUnidad = (SELECT idUnidad FROM UnidadesMedida WHERE unidad = _unidad LIMIT 1);
+
+    -- Verificar si el idCombinacion es NULL y lanzar un error
+    IF _idCombinacion IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: idCombinacion es NULL.';
+    END IF;
+
+    -- Verificar si el lote ya existe
+    SELECT idLoteMedicamento INTO _idLoteMedicamento 
+    FROM LotesMedicamento
+    WHERE lote = _lote;
+
+    -- Crear el lote si no existe
+    IF _idLoteMedicamento IS NULL THEN
+        INSERT INTO LotesMedicamento (lote, fechaCaducidad) 
+        VALUES (_lote, _fechaCaducidad);
+        SET _idLoteMedicamento = LAST_INSERT_ID();
+    END IF;
+
+    -- Verificar si el idLoteMedicamento es NULL y lanzar un error
+    IF _idLoteMedicamento IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: idLoteMedicamento es NULL.';
+    END IF;
+
+    -- Insertar en Medicamentos
+    INSERT INTO Medicamentos (
+        nombreMedicamento, 
+        descripcion, 
+        idLoteMedicamento, 
+        idCombinacion,
+        cantidad_stock,
+        stockMinimo, 
+        estado,
+        fecha_registro,
+        precioUnitario, 
+        idUsuario
+    ) 
+    VALUES (
+        _nombreMedicamento, 
+        _descripcion, 
+        _idLoteMedicamento, 
+        _idCombinacion,
+        _cantidad_stock, 
+        _stockMinimo, 
+        'Disponible',
+        CURDATE(), 
+        _precioUnitario, 
+        _idUsuario
+    );
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_medicamentos_salida` (IN `_idUsuario` INT, IN `_nombreMedicamento` VARCHAR(255), IN `_cantidad` DECIMAL(10,2), IN `_idEquino` INT, IN `_lote` VARCHAR(100), IN `_motivo` TEXT)   BEGIN
+    DECLARE _idMedicamento INT;
+    DECLARE _currentStock INT;  -- Usar INT ya que la columna cantidad_stock es de tipo INT
+    DECLARE _finalMotivo TEXT;
+
+    -- Iniciar transacción
+    START TRANSACTION;
+
+    -- Validar que la cantidad a retirar sea mayor que cero
+    IF _cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad a retirar debe ser mayor que cero.';
+    END IF;
+
+    -- Buscar el ID del medicamento y la cantidad en stock
+    SELECT M.idMedicamento, M.cantidad_stock INTO _idMedicamento, _currentStock
+    FROM Medicamentos M
+    JOIN LotesMedicamento L ON M.idLoteMedicamento = L.idLoteMedicamento
+    WHERE M.nombreMedicamento = _nombreMedicamento AND L.lote = _lote;
+
+    -- Verificar que el medicamento exista
+    IF _idMedicamento IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El medicamento especificado no existe.';
+    END IF;
+
+    -- Verificar si hay suficiente stock
+    IF _currentStock < _cantidad THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock de este medicamento.';
+    END IF;
+
+    -- Actualizar el stock del medicamento
+    UPDATE Medicamentos
+    SET cantidad_stock = cantidad_stock - _cantidad
+    WHERE idMedicamento = _idMedicamento;
+
+    -- Establecer el motivo en función de si es por equino o por otros motivos
+    IF _idEquino IS NOT NULL THEN
+        SET _finalMotivo = _motivo;
+    ELSE
+        SET _finalMotivo = 'No especificado';
+    END IF;
+
+    -- Registrar el movimiento en la tabla HistorialMovimientosMedicamentos
+    INSERT INTO HistorialMovimientosMedicamentos (idMedicamento, tipoMovimiento, cantidad, motivo, idEquino, idUsuario)
+    VALUES (_idMedicamento, 'Salida', _cantidad, _finalMotivo, _idEquino, _idUsuario);
+
+    -- Confirmar transacción
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_modificar_estado_user` (IN `p_idUsuario` INT)   BEGIN
+	IF EXISTS (SELECT 1 FROM Usuarios WHERE idUsuario = p_idUsuario) THEN
+    UPDATE Usuarios
+    SET estado = CASE
+		WHEN estado = 1 THEN 0
+        ELSE 1
+        END
+	WHERE idUsuario = p_idUsuario;
+    
+    SELECT 'Estado cambiado correctamente' AS mensaje;
+    ELSE
+		SELECT 'Usuario no encontrado' AS mensaje;
+	end if;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_movimiento_implemento` (IN `p_idTipomovimiento` INT, IN `p_idTipoinventario` INT, IN `p_idInventario` INT, IN `p_cantidad` INT, IN `p_precioUnitario` DECIMAL(10,2), IN `p_descripcion` TEXT)   BEGIN
+    DECLARE v_idInventario INT;
+    DECLARE v_stockFinal INT;
+    DECLARE v_precioTotal DECIMAL(10,2);
+
+    -- Validar que la cantidad sea un número positivo
+    IF p_cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad debe ser un número positivo.';
+    END IF;
+
+    -- Obtener el idInventario y stockFinal a partir del nombreProducto
+    SELECT idInventario, stockFinal INTO v_idInventario, v_stockFinal
+    FROM Implementos
+    WHERE idInventario = p_idInventario AND idTipoinventario = p_idTipoinventario
+    LIMIT 1;
+
+    -- Si el producto no existe y el tipo de movimiento es 'Entrada', se crea un nuevo registro
+    IF v_idInventario IS NULL AND p_idTipomovimiento = 1 THEN  -- 1 = Entrada
+        -- Insertar un nuevo implemento en la tabla Implementos con el precio unitario
+        INSERT INTO Implementos (
+            idTipoinventario, idInventario, descripcion, precioUnitario, stockFinal, estado
+        )
+        VALUES (
+            p_idTipoinventario, p_idInventario, p_descripcion, p_precioUnitario, p_cantidad, 1  -- Estado por defecto 1 (activo)
+        );
+
+        -- Obtener el ID del nuevo implemento
+        SET v_idInventario = LAST_INSERT_ID();
+        SET v_stockFinal = p_cantidad;  -- La cantidad total que entra
+
+    ELSEIF v_idInventario IS NOT NULL THEN
+        -- Si el producto ya existe, actualizamos el stock y el precio según el tipo de movimiento
+        IF p_idTipomovimiento = 1 THEN  -- 1 = Entrada
+            -- Sumar la cantidad en caso de entrada
+            SET v_stockFinal = v_stockFinal + p_cantidad;
+            -- Actualizar el precio unitario si es diferente al actual
+            UPDATE Implementos
+            SET stockFinal = v_stockFinal, precioUnitario = p_precioUnitario
+            WHERE idInventario = v_idInventario;
+        ELSEIF p_idTipomovimiento = 2 THEN  -- 2 = Salida
+            -- Validar que haya suficiente stock para la salida
+            IF v_stockFinal < p_cantidad THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No hay suficiente stock para la salida solicitada.';
+            END IF;
+            -- Restar la cantidad en caso de salida
+            SET v_stockFinal = v_stockFinal - p_cantidad;
+            -- Actualizar el stock en la tabla Implementos
+            UPDATE Implementos
+            SET stockFinal = v_stockFinal
+            WHERE idInventario = v_idInventario;
+        END IF;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El producto no existe.';
+    END IF;
+
+    -- Calcular el precio total para el movimiento
+    SET v_precioTotal = p_precioUnitario * p_cantidad;
+
+    -- Registrar el movimiento en el historial de implementos
+    INSERT INTO HistorialImplemento (
+        idInventario, 
+        idTipoinventario, 
+        idTipomovimiento, 
+        cantidad, 
+        precioUnitario, 
+        precioTotal,  -- Este es el precio total que ahora se está calculando y guardando
+        descripcion
+    )
+    VALUES (
+        v_idInventario, 
+        p_idTipoinventario, 
+        p_idTipomovimiento, 
+        p_cantidad, 
+        p_precioUnitario,
+        v_precioTotal,  -- Precio total (precio unitario * cantidad)
+        p_descripcion  -- La descripción puede ser NULL
+    );
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_notificar_stock_bajo_alimentos` ()   BEGIN
+    -- Seleccionamos directamente las columnas necesarias, incluyendo un mensaje personalizado
+    SELECT 
+        a.nombreAlimento AS nombreAlimento,       -- Nombre del alimento
+        l.lote AS loteAlimento,                  -- Lote del alimento
+        a.stockActual AS stockActual,            -- Stock actual del alimento
+        a.stockMinimo AS stockMinimo,            -- Stock mínimo permitido
+        ta.tipoAlimento AS tipoAlimento,         -- Tipo de alimento
+        um.nombreUnidad AS unidadMedida,         -- Unidad de medida
+        CASE 
+            WHEN a.stockActual = 0 THEN 'Agotado'   -- Mensaje si el stock es 0
+            WHEN a.stockActual < a.stockMinimo THEN 'Stock bajo' -- Mensaje si está por debajo del mínimo
+            ELSE 'En stock'                         -- Por si acaso, un valor genérico
+        END AS mensaje                            -- Mensaje personalizado basado en la condición
+    FROM Alimentos a
+    JOIN LotesAlimento l ON a.idLote = l.idLote
+    JOIN TipoAlimentos ta ON a.idTipoAlimento = ta.idTipoAlimento
+    JOIN UnidadesMedidaAlimento um ON a.idUnidadMedida = um.idUnidadMedida
+    WHERE a.stockActual <= a.stockMinimo          -- Filtro para stock bajo o agotado
+    ORDER BY a.stockActual ASC                   -- Orden por stock más bajo
+    LIMIT 5;                                     -- Limitamos los resultados a 5
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_notificar_stock_bajo_medicamentos` ()   BEGIN
+    -- Seleccionamos directamente las columnas necesarias, incluyendo un mensaje personalizado
+    SELECT 
+        m.nombreMedicamento AS nombreMedicamento,
+        lm.lote AS loteMedicamento,
+        m.cantidad_stock AS stockActual,
+        m.stockMinimo AS stockMinimo,
+        CASE 
+            WHEN m.cantidad_stock = 0 THEN 'Agotado'
+            WHEN m.cantidad_stock > 0 AND m.cantidad_stock < m.stockMinimo THEN 'Stock bajo'
+        END AS mensaje
+    FROM 
+        Medicamentos m
+    JOIN 
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento
+    WHERE 
+        m.cantidad_stock <= m.stockMinimo
+    ORDER BY 
+        m.cantidad_stock ASC
+    LIMIT 10; -- Limitar a las primeras 10 notificaciones
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_notificar_tratamientos_veterinarios` ()   BEGIN
+    -- Seleccionar tratamientos próximos a finalizar (dentro de los próximos 3 días)
+    SELECT 
+        CONCAT(
+            'El tratamiento del equino "', E.nombreEquino, 
+            '" con el medicamento "', M.nombreMedicamento, 
+            '" finaliza pronto el ', DATE_FORMAT(DM.fechaFin, '%d-%m-%Y'), '.'
+        ) AS Notificacion,
+        DM.idDetalleMed AS idTratamiento,
+        E.idEquino,
+        E.nombreEquino AS nombreEquino, -- Alias explícito
+        M.idMedicamento,
+        M.nombreMedicamento AS nombreMedicamento, -- Alias explícito
+        DM.fechaFin,
+        'PRONTO' AS TipoNotificacion
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    WHERE 
+        DM.estadoTratamiento = 'Activo' 
+        AND DM.fechaFin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)
+
+    UNION ALL
+
+    -- Seleccionar tratamientos finalizados recientemente (últimos 7 días)
+    SELECT 
+        CONCAT(
+            'El tratamiento del equino "', E.nombreEquino, 
+            '" con el medicamento "', M.nombreMedicamento, 
+            '" ha finalizado el ', DATE_FORMAT(DM.fechaFin, '%d-%m-%Y'), '.'
+        ) AS Notificacion,
+        DM.idDetalleMed AS idTratamiento,
+        E.idEquino,
+        E.nombreEquino AS nombreEquino, -- Alias explícito
+        M.idMedicamento,
+        M.nombreMedicamento AS nombreMedicamento, -- Alias explícito
+        DM.fechaFin,
+        'FINALIZADO' AS TipoNotificacion
+    FROM 
+        DetalleMedicamentos DM
+    INNER JOIN 
+        Medicamentos M ON DM.idMedicamento = M.idMedicamento
+    INNER JOIN 
+        Equinos E ON DM.idEquino = E.idEquino
+    WHERE 
+        DM.estadoTratamiento = 'Finalizado' 
+        AND DM.fechaFin BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE();
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_nuevas_fotografias_equinos` (IN `p_idEquino` INT, IN `p_public_id` VARCHAR(255))   BEGIN
+    -- Inserta una nueva fotografía en la tabla fotografiaequinos
+    INSERT INTO fotografiaequinos (idEquino, public_id, created_at)
+    VALUES (p_idEquino, p_public_id, NOW());
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtenerAlimentosConLote` (IN `_idAlimento` INT)   BEGIN
+    DECLARE _idLote INT;
+    DECLARE _fechaCaducidadLote DATE;
+
+    -- Actualizar el estado de los alimentos según su stock
+    UPDATE Alimentos 
+    SET estado = 'Agotado'
+    WHERE stockActual = 0;
+
+    UPDATE Alimentos 
+    SET estado = 'Por agotarse'
+    WHERE stockActual > 0 AND stockActual <= stockMinimo;
+
+    UPDATE Alimentos 
+    SET estado = 'Disponible'
+    WHERE stockActual > stockMinimo;
+
+    -- Obtener el idLote y fechaCaducidad del lote asociado al alimento
+    SELECT idLote, fechaCaducidad INTO _idLote, _fechaCaducidadLote 
+    FROM LotesAlimento
+    WHERE lote = (SELECT lote FROM Alimentos WHERE idAlimento = _idAlimento LIMIT 1);
+
+    -- Verificar si el lote está vencido (si la fecha de caducidad es menor a la fecha actual)
+    IF _fechaCaducidadLote IS NOT NULL AND _fechaCaducidadLote < CURDATE() THEN
+        -- El lote está vencido, actualizar el estado del lote y de los alimentos a 'Vencido'
+        UPDATE LotesAlimento
+        SET estadoLote = 'Vencido'
+        WHERE idLote = _idLote;
+
+        UPDATE Alimentos
+        SET estado = 'Vencido'
+        WHERE idLote = _idLote;
+    ELSE
+        -- Si el lote no está vencido, asegurarse que su estado sea 'No Vencido'
+        UPDATE LotesAlimento
+        SET estadoLote = 'No Vencido'
+        WHERE idLote = _idLote;
+    END IF;
+
+    -- Realizar la consulta de los alimentos (excluyendo los vencidos)
+    SELECT 
+        A.idAlimento,
+        A.idUsuario,
+        A.nombreAlimento,
+        TA.tipoAlimento AS nombreTipoAlimento,
+        A.stockActual,
+        A.stockMinimo,
+        A.estado,
+        U.nombreUnidad AS unidadMedidaNombre,
+        A.costo,
+        A.idLote,
+        A.idEquino,
+        A.compra,
+        A.fechaMovimiento,
+        L.idLote AS loteId,
+        L.lote,
+        L.fechaCaducidad,
+        L.fechaIngreso,
+        L.estadoLote
+    FROM 
+        Alimentos A
+    INNER JOIN 
+        LotesAlimento L ON A.idLote = L.idLote
+    INNER JOIN 
+        TipoAlimentos TA ON A.idTipoAlimento = TA.idTipoAlimento
+    INNER JOIN 
+        UnidadesMedidaAlimento U ON A.idUnidadMedida = U.idUnidadMedida
+    WHERE 
+        (_idAlimento IS NULL OR A.idAlimento = _idAlimento)
+        AND A.estado != 'Vencido'; -- Excluir alimentos con estado 'Vencido'
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_ObtenerHistorialDosisAplicadas` ()   BEGIN
+    SELECT 
+        m.nombreMedicamento AS Medicamento,                     -- Nombre del medicamento
+        CONCAT(h.cantidadAplicada, ' ', u.unidad) AS DosisAplicada, -- Dosis aplicada con unidad desde la base
+        CONCAT(h.cantidadRestante, ' ', u.unidad) AS StockRestante, -- Stock restante después de la aplicación con unidad
+        CONCAT((h.cantidadRestante + h.cantidadAplicada), ' ', u.unidad) AS StockAntes, -- Stock antes de la aplicación con unidad
+        m.cantidad_stock AS StockActual,                        -- Stock actual disponible en unidades completas
+        m.estado AS EstadoMedicamento,                         -- Estado del medicamento (Disponible, Agotado, etc.)
+        h.fechaAplicacion AS FechaAplicación,                  -- Fecha en la que se aplicó la dosis
+        e.nombreEquino AS NombreDelEquino,                     -- Nombre del equino al que se aplicó la dosis
+        CONCAT(p.nombres, ' ', p.apellidos) AS NombreUsuario    -- Nombre completo del usuario que realizó la aplicación
+    FROM 
+        Medicamentos m
+    JOIN 
+        CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+    JOIN 
+        TiposMedicamentos t ON c.idTipo = t.idTipo
+    JOIN
+        UnidadesMedida u ON c.idUnidad = u.idUnidad            -- Relación con unidades de medida
+    JOIN
+        LotesMedicamento lm ON m.idLoteMedicamento = lm.idLoteMedicamento -- Relación con lotes
+    JOIN
+        HistorialDosisAplicadas h ON m.idMedicamento = h.idMedicamento    -- Relación con historial de dosis
+    JOIN
+        Equinos e ON h.idEquino = e.idEquino                              -- Relación con equinos
+    JOIN
+        Usuarios usr ON h.idUsuario = usr.idUsuario                       -- Relación con usuarios
+    JOIN
+        Personal p ON usr.idPersonal = p.idPersonal                       -- Relación con personal
+    ORDER BY 
+        h.fechaAplicacion DESC, m.nombreMedicamento ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtenerTiposAlimento` ()   BEGIN
+    SELECT idTipoAlimento, tipoAlimento 
+    FROM TipoAlimentos 
+    ORDER BY tipoAlimento;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtenerUnidadesPorTipoAlimento` (IN `_idTipoAlimento` INT)   BEGIN
+    -- Verificar si el tipo de alimento existe
+    IF EXISTS (SELECT 1 FROM TipoAlimentos WHERE idTipoAlimento = _idTipoAlimento) THEN
+        -- Seleccionar las unidades de medida asociadas al tipo de alimento
+        SELECT um.idUnidadMedida, um.nombreUnidad 
+        FROM TipoAlimento_UnidadMedida tum
+        JOIN UnidadesMedidaAlimento um ON tum.idUnidadMedida = um.idUnidadMedida
+        WHERE tum.idTipoAlimento = _idTipoAlimento;
+    ELSE
+        -- Enviar mensaje de error si el tipo de alimento no existe
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El tipo de alimento especificado no existe.';
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtener_acceso_usuario` (IN `_idRol` INT)   BEGIN
+    SELECT 
+       PE.idpermiso,
+       MO.modulo,
+       VI.ruta,
+       VI.sidebaroption,
+       VI.texto,
+       VI.icono
+       FROM permisos PE
+       INNER JOIN vistas VI ON VI.idvista = PE.idvista
+       LEFT JOIN modulos MO ON MO.idmodulo = VI.idmodulo
+       WHERE PE.idRol = _idRol;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtener_campoID` (IN `p_idCampo` INT)   BEGIN
+    SELECT 
+        c.idCampo,
+        c.numeroCampo,
+        c.tamanoCampo,
+        c.idTipoSuelo,  -- Asegúrate de incluir idTipoSuelo aquí
+        ts.nombreTipoSuelo,
+        c.estado
+    FROM Campos c
+    LEFT JOIN tipoSuelo ts ON c.idTipoSuelo = ts.idTipoSuelo
+    WHERE c.idCampo = p_idCampo;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtener_historial_equino` (IN `p_idEquino` INT)   BEGIN
+    -- Verificar si existen registros en el historial
+    IF EXISTS (SELECT 1 FROM HistorialEquinos WHERE idEquino = p_idEquino) THEN
+        -- Selección del historial y la fotografía
+        SELECT
+            HE.descripcion,
+            E.fotografia
+        FROM
+            HistorialEquinos HE
+        JOIN
+            Equinos E ON HE.idEquino = E.idEquino
+        WHERE
+            HE.idEquino = p_idEquino;
+    ELSE
+        -- Mensaje en caso de no haber registros
+        SELECT 'No se encontró historial para el equino con ID ' AS mensaje;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtener_pesos` ()   BEGIN
+    DECLARE v_peso_semanal DECIMAL(9,2);
+    DECLARE v_peso_mensual DECIMAL(12,2);
+    
+    -- Calcular el peso semanal (desde el lunes hasta la fecha actual)
+    SELECT COALESCE(SUM(peso_diario), 0)
+    INTO v_peso_semanal
+    FROM bostas
+    WHERE WEEK(fecha, 1) = WEEK(CURDATE(), 1) 
+      AND YEAR(fecha) = YEAR(CURDATE())
+      AND fecha <= CURDATE(); -- Solo hasta la fecha actual
+
+    -- Calcular el peso mensual (todo el mes actual)
+    SELECT COALESCE(SUM(peso_diario), 0)
+    INTO v_peso_mensual
+    FROM bostas
+    WHERE MONTH(fecha) = MONTH(CURDATE())
+      AND YEAR(fecha) = YEAR(CURDATE());
+
+    -- Devolver resultados sin el peso diario
+    SELECT v_peso_semanal AS peso_semanal,
+           v_peso_mensual AS peso_mensual;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_obtener_ultima_accion` (IN `idCampo` INT)   BEGIN
+    DECLARE nombreRotacion VARCHAR(100);
+    
+    SELECT tr.nombreRotacion INTO nombreRotacion
+    FROM RotacionCampos rc
+    JOIN TipoRotaciones tr ON rc.idTipoRotacion = tr.idTipoRotacion
+    WHERE rc.idCampo = idCampo
+    ORDER BY rc.fechaRotacion DESC
+    LIMIT 1;
+
+    IF nombreRotacion IS NULL THEN
+        SELECT 'No hay acciones registradas' AS mensaje;
+    ELSE
+        SELECT nombreRotacion;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_personal_listar` ()   BEGIN
+    SELECT 
+        p.idPersonal, 
+        p.nombres, 
+        p.apellidos, 
+        p.direccion,
+        p.tipodoc,
+        p.nrodocumento,
+        CASE 
+            WHEN u.idUsuario IS NOT NULL THEN 1 
+            ELSE 0 
+        END AS tieneUsuario,
+        u.idUsuario,
+        u.correo
+    FROM 
+        Personal p
+    LEFT JOIN 
+        Usuarios u ON p.idPersonal = u.idPersonal;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_personal_registrar` (OUT `_idPersonal` INT, IN `_nombres` VARCHAR(100), IN `_apellidos` VARCHAR(100), IN `_direccion` VARCHAR(255), IN `_tipodoc` VARCHAR(20), IN `_nrodocumento` VARCHAR(50), IN `_fechaIngreso` DATE, IN `_tipoContrato` ENUM('Parcial','Completo','Por Prácticas','Otro'))   BEGIN
+    -- Declaración de variables
+    DECLARE existe_error INT DEFAULT 0;
+    
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET existe_error = 1;
+    END;
+    
+    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, fechaIngreso, tipoContrato)
+    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _fechaIngreso, _tipoContrato);
+    
+    -- Verificar si ocurrió un error
+    IF existe_error = 1 THEN
+        SET _idPersonal = -1;  -- Devuelve -1 si hay error
+    ELSE
+        SET _idPersonal = LAST_INSERT_ID();  -- Devuelve el ID del nuevo registro
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_bosta` (IN `p_fecha` DATE, IN `p_cantidadsacos` INT, IN `p_pesoaprox` DECIMAL(4,2))   BEGIN
+    DECLARE v_peso_diario DECIMAL(9,2);
+    DECLARE v_peso_semanal DECIMAL(9,2);
+    DECLARE v_peso_mensual DECIMAL(12,2);
+    DECLARE v_numero_semana INT;
+    DECLARE v_mensaje_error VARCHAR(255);
+
+    -- Verificar si la fecha es mayor a la fecha actual
+    IF p_fecha > CURRENT_DATE THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha no puede ser mayor a la fecha actual.';
+    END IF;
+
+    -- Verificar si la fecha es domingo
+    IF DAYOFWEEK(p_fecha) = 1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se permite registrar datos los domingos';
+    ELSE
+        -- Verificar si ya existe un registro para esta fecha
+        IF EXISTS (SELECT 1 FROM bostas WHERE fecha = p_fecha) THEN
+            SET v_mensaje_error = CONCAT('Ya existe un registro para esta fecha: ', p_fecha);
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_mensaje_error;
+        ELSE
+            -- Calcular el número de semana y el peso diario
+            SET v_numero_semana = WEEK(p_fecha, 1);
+            SET v_peso_diario = p_cantidadsacos * p_pesoaprox;
+
+            -- Calcular el peso semanal (incluyendo el peso diario actual)
+            SELECT COALESCE(SUM(peso_diario), 0) + v_peso_diario
+            INTO v_peso_semanal
+            FROM bostas
+            WHERE WEEK(fecha, 1) = v_numero_semana
+              AND YEAR(fecha) = YEAR(p_fecha);  -- Coincide con el año
+
+            -- Calcular el peso mensual (incluyendo el peso diario actual)
+            SELECT COALESCE(SUM(peso_diario), 0) + v_peso_diario
+            INTO v_peso_mensual
+            FROM bostas
+            WHERE MONTH(fecha) = MONTH(p_fecha)
+              AND YEAR(fecha) = YEAR(p_fecha);  -- Coincide con el año
+
+            -- Insertar el registro con el peso calculado
+            INSERT INTO bostas (fecha, cantidadsacos, pesoaprox, peso_diario, peso_semanal, peso_mensual, numero_semana)
+            VALUES (
+                p_fecha,
+                p_cantidadsacos,
+                p_pesoaprox,
+                v_peso_diario,
+                v_peso_semanal,
+                v_peso_mensual,
+                v_numero_semana
+            );
+        END IF;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_campo` (IN `p_numeroCampo` INT, IN `p_tamanoCampo` DECIMAL(10,2), IN `p_idTipoSuelo` INT, IN `p_estado` VARCHAR(50))   BEGIN
+    DECLARE campoExistente INT;
+
+    SELECT COUNT(*) INTO campoExistente
+    FROM Campos
+    WHERE numeroCampo = p_numeroCampo;
+
+    IF campoExistente > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Ya existe un campo con el mismo número.';
+    ELSE
+        INSERT INTO Campos (numeroCampo, tamanoCampo, idTipoSuelo, estado)  -- Cambiado a idTipoSuelo
+        VALUES (p_numeroCampo, p_tamanoCampo, p_idTipoSuelo, p_estado);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_dosis_aplicada` (IN `_idMedicamento` INT, IN `_idEquino` INT, IN `_cantidadAplicada` DECIMAL(10,2), IN `_idUsuario` INT, IN `_unidadAplicada` VARCHAR(50), IN `_fechaAplicacion` DATE)   BEGIN
+    DECLARE _stockActual DECIMAL(10, 2); -- Stock actual del medicamento
+    DECLARE _unidadCompleta DECIMAL(10, 2); -- Cantidad por unidad en stock (en mg)
+    DECLARE _unidadBase VARCHAR(50); -- Unidad real del medicamento desde la base
+    DECLARE _cantidadRestanteAcumulada DECIMAL(10, 2); -- Cantidad restante acumulada de dosis anteriores
+    DECLARE _cantidadTotal DECIMAL(10, 2); -- Total acumulado con la nueva dosis
+    DECLARE _nuevasUnidades INT; -- Número de unidades completas que se pueden descontar
+    DECLARE _errorMessage VARCHAR(255); -- Mensaje de error
+
+    -- Obtener la cantidad por unidad, stock actual y unidad base del medicamento
+    SELECT c.dosis, m.cantidad_stock, u.unidad
+    INTO _unidadCompleta, _stockActual, _unidadBase
+    FROM Medicamentos m
+    JOIN CombinacionesMedicamentos c ON m.idCombinacion = c.idCombinacion
+    JOIN UnidadesMedida u ON c.idUnidad = u.idUnidad
+    WHERE m.idMedicamento = _idMedicamento
+    FOR UPDATE;
+
+    -- Verificar que la unidad proporcionada coincide con la unidad base
+    IF _unidadAplicada != _unidadBase THEN
+        SET _errorMessage = CONCAT('Unidad no válida. Se esperaba: ', _unidadBase);
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMessage;
+    END IF;
+
+    -- Calcular la cantidad restante acumulada de dosis anteriores
+    SELECT COALESCE(cantidadRestante, 0)
+    INTO _cantidadRestanteAcumulada
+    FROM HistorialDosisAplicadas
+    WHERE idMedicamento = _idMedicamento
+    ORDER BY idDosis DESC
+    LIMIT 1;
+
+    -- Sumar la nueva cantidad aplicada al acumulado
+    SET _cantidadTotal = _cantidadRestanteAcumulada + _cantidadAplicada;
+
+    -- Calcular cuántas unidades completas se pueden descontar
+    SET _nuevasUnidades = FLOOR(_cantidadTotal / _unidadCompleta);
+
+    -- Verificar que el stock es suficiente para descontar las unidades completas
+    IF _nuevasUnidades > _stockActual THEN
+        SET _errorMessage = 'Stock insuficiente para completar la operación.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMessage;
+    END IF;
+
+    -- Calcular la cantidad restante después de completar las unidades
+    SET _cantidadRestanteAcumulada = MOD(_cantidadTotal, _unidadCompleta);
+
+    -- Registrar la dosis aplicada en el historial, usando la fecha de aplicación proporcionada
+    INSERT INTO HistorialDosisAplicadas (idMedicamento, idEquino, cantidadAplicada, cantidadRestante, fechaAplicacion, idUsuario)
+    VALUES (_idMedicamento, _idEquino, _cantidadAplicada, _cantidadRestanteAcumulada, _fechaAplicacion, _idUsuario);
+
+    -- Actualizar el stock general si se completaron unidades completas
+    IF _nuevasUnidades > 0 THEN
+        UPDATE Medicamentos
+        SET cantidad_stock = cantidad_stock - _nuevasUnidades,
+            ultima_modificacion = NOW()
+        WHERE idMedicamento = _idMedicamento;
+    END IF;
+
+    -- Confirmar la transacción
+    COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_historial_equinos` (IN `p_idEquino` INT, IN `p_descripcion` TEXT)   BEGIN
+    DECLARE historial_existe INT;
+
+    -- Verificamos si ya existe un historial para el equino
+    SELECT COUNT(*) 
+    INTO historial_existe
+    FROM HistorialEquinos
+    WHERE idEquino = p_idEquino;
+
+    -- Si ya existe un historial, enviamos un mensaje de error
+    IF historial_existe > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un historial para este equino';
+    ELSE
+        -- Si no existe un historial, procedemos con la inserción
+        INSERT INTO HistorialEquinos (idEquino, descripcion)
+        VALUES (p_idEquino, p_descripcion);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_implemento` (IN `p_idTipoinventario` INT, IN `p_nombreProducto` VARCHAR(100), IN `p_descripcion` TEXT, IN `p_precioUnitario` DECIMAL(10,2), IN `p_cantidad` INT)   BEGIN
+    DECLARE v_idInventario INT;
+    DECLARE v_stockFinal INT;
+    DECLARE v_precioTotal DECIMAL(10,2);
+
+    -- Validar que la cantidad y precio sean números positivos mayores a 0
+    IF p_cantidad <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La cantidad debe ser un número positivo mayor a 0.';
+    END IF;
+
+    IF p_precioUnitario <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El precio unitario debe ser un número positivo mayor a 0.';
+    END IF;
+
+    -- Calcular el precio total (precio unitario * cantidad)
+    SET v_precioTotal = p_precioUnitario * p_cantidad;
+
+    -- Verificar si el producto con el mismo nombre ya existe en el tipo de inventario
+    SELECT idInventario INTO v_idInventario
+    FROM Implementos
+    WHERE nombreProducto = p_nombreProducto AND idTipoinventario = p_idTipoinventario
+    LIMIT 1;
+
+    -- Si el producto ya existe, lanzar error
+    IF v_idInventario IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un producto con el mismo nombre en este tipo de inventario.';
+    ELSE
+        -- Registrar nuevo producto en el inventario, incluyendo el precio total
+        INSERT INTO Implementos (
+            idTipoinventario, nombreProducto, descripcion, precioUnitario,
+            idTipomovimiento, cantidad, stockFinal, estado, precioTotal
+        )
+        VALUES (
+            p_idTipoinventario, p_nombreProducto, p_descripcion, p_precioUnitario,
+            1, p_cantidad, p_cantidad, 1, v_precioTotal
+        );
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_propietario` (OUT `_idPropietario` INT, IN `_nombreHaras` VARCHAR(100))   BEGIN
+    -- Declaración de una variable para capturar errores
+    DECLARE existe_error INT DEFAULT 0;
+    DECLARE nombre_existente INT;
+
+    -- Manejo de errores de SQL
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET existe_error = 1;
+    END;
+
+    -- Verificar si el nombre ya existe en la base de datos
+    SELECT COUNT(*) INTO nombre_existente
+    FROM Propietarios
+    WHERE nombreHaras = _nombreHaras;
+
+    -- Si el nombre ya existe, asignar un valor de error y salir del procedimiento
+    IF nombre_existente > 0 THEN
+        SET _idPropietario = -2; -- Error: El nombre ya existe
+    ELSE
+        -- Si el nombre no existe, realizar la inserción
+        INSERT INTO Propietarios (nombreHaras) 
+        VALUES (_nombreHaras);
+
+        -- Verificar si ocurrió un error en la inserción
+        IF existe_error = 1 THEN
+            SET _idPropietario = -1; -- Error en la inserción
+        ELSE
+            SET _idPropietario = LAST_INSERT_ID(); -- Devuelve el id del nuevo propietario
+        END IF;
+    END IF;
+
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_revision_equino` (IN `p_idEquino` INT, IN `p_idPropietario` INT, IN `p_tiporevision` ENUM('Ecografía','Examen ginecológico','Citología','Cultivo bacteriológico','Biopsia endometrial'), IN `p_fecharevision` DATE, IN `p_observaciones` TEXT, IN `p_costorevision` DECIMAL(10,2))   BEGIN
+    -- Verificar si el equino es una Yegua
+    DECLARE v_tipoEquino INT;
+    DECLARE v_serviciosCount INT;
+
+    -- Obtener el tipo de equino (1 = Yegua, 2 = Padrillo, 3 = Potranca, 4 = Potrillo)
+    SELECT idTipoEquino INTO v_tipoEquino
+    FROM Equinos
+    WHERE idEquino = p_idEquino;
+
+    -- Verificar si el equino es una Yegua (tipo 1)
+    IF v_tipoEquino != 1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El equino no es una yegua';
+    END IF;
+
+    -- Verificar si el equino ha tenido al menos un servicio
+    -- Verificar para yeguas propias (idEquinoHembra)
+    SELECT COUNT(*) INTO v_serviciosCount
+    FROM Servicios
+    WHERE idEquinoHembra = p_idEquino;
+
+    -- Verificar para yeguas externas (idEquinoExterno)
+    IF v_serviciosCount = 0 THEN
+        SELECT COUNT(*) INTO v_serviciosCount
+        FROM Servicios
+        WHERE idEquinoExterno = p_idEquino;
+    END IF;
+
+    IF v_serviciosCount = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La yegua no tiene servicios registrados';
+    END IF;
+    
+    -- Verificar si la fecha de la revisión no es posterior a la fecha actual
+    IF p_fecharevision > CURDATE() THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede registrar una revisión con una fecha futura';
+    END IF;
+
+    -- Insertar la nueva revisión en la tabla revisionequinos
+    INSERT INTO revisionequinos (
+        idEquino, 
+        idPropietario, 
+        tiporevision, 
+        fecharevision, 
+        observaciones, 
+        costorevision
+    )
+    VALUES (
+        p_idEquino, 
+        p_idPropietario, 
+        p_tiporevision, 
+        p_fecharevision, 
+        p_observaciones, 
+        p_costorevision
+    );
+
+    -- Mensaje de confirmación
+    SELECT 'Revisión registrada correctamente' AS mensaje;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_registrar_rotacion_campos` (IN `p_idCampo` INT, IN `p_idTipoRotacion` INT, IN `p_fechaRotacion` DATETIME, IN `p_detalleRotacion` TEXT)   BEGIN
+    DECLARE v_count INT;
+
+    -- Verificar si ya existe una rotación del mismo tipo en la misma fecha
+    SELECT COUNT(*) INTO v_count
+    FROM RotacionCampos
+    WHERE idCampo = p_idCampo
+      AND idTipoRotacion = p_idTipoRotacion
+      AND DATE(fechaRotacion) = DATE(p_fechaRotacion);
+
+    IF v_count > 0 THEN
+        -- Si existe, se puede lanzar un error o manejarlo como desees
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ya existe una rotación del mismo tipo en la misma fecha.';
+    ELSE
+        -- Si no existe, proceder a insertar
+        INSERT INTO RotacionCampos (idCampo, idTipoRotacion, fechaRotacion, detalleRotacion)
+        VALUES (p_idCampo, p_idTipoRotacion, p_fechaRotacion, p_detalleRotacion);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_tiposuelo_listar` ()   BEGIN
+    SELECT 
+        C.idTipoSuelo,
+        C.nombreTipoSuelo
+    FROM 
+        tipoSuelo C;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_tipos_rotaciones_listar` ()   BEGIN
+    SELECT 
+        TR.idTipoRotacion,
+        TR.nombreRotacion,
+        TR.detalles
+    FROM 
+        TipoRotaciones TR
+    ORDER BY 
+        TR.nombreRotacion;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_usuarios_listar` ()   BEGIN
+    SELECT 
+        USU.idUsuario,
+        PER.nombres,
+        PER.apellidos,
+        PER.tipodoc,
+        PER.nrodocumento,
+        PER.direccion,
+        USU.correo,
+        USU.idRol
+    FROM 
+        Usuarios USU
+    INNER JOIN 
+        Personal PER ON USU.idPersonal = PER.idPersonal
+    ORDER BY 
+        USU.idUsuario DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_usuarios_login` (IN `_correo` VARCHAR(100))   BEGIN
+    SELECT 
+        USU.idUsuario,
+        PER.apellidos,
+        PER.nombres,
+        USU.correo,
+        USU.clave,
+        USU.idRol
+    FROM 
+        Usuarios USU
+    INNER JOIN 
+        Personal PER ON PER.idPersonal = USU.idPersonal
+    WHERE 
+        USU.correo = _correo
+        AND USU.estado = 1; -- Filtro para solo usuarios activos
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_usuarios_registrar` (OUT `_idUsuario` INT, IN `_idPersonal` INT, IN `_correo` VARCHAR(50), IN `_clave` VARCHAR(100), IN `_idRol` INT)   BEGIN
+    DECLARE existe_error INT DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SET existe_error = 1;
+    END;
+    
+    INSERT INTO Usuarios (idPersonal, correo, clave, idRol)
+    VALUES (_idPersonal, _correo, _clave, _idRol);
+    
+    IF existe_error = 1 THEN
+        SET _idUsuario = -1; 
+    ELSE
+        SET _idUsuario = LAST_INSERT_ID(); 
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_validar_registrar_combinacion` (IN `_idTipo` INT, IN `_idPresentacion` INT, IN `_dosisMedicamento` DECIMAL(10,2), IN `_unidadMedida` VARCHAR(50))   BEGIN
+    DECLARE _idUnidad INT;
+    DECLARE _idCombinacion INT;
+    DECLARE _errorMensaje VARCHAR(255);
+    -- Manejador de errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        IF _errorMensaje IS NULL THEN
+            SET _errorMensaje = 'Lo sentimos, ha ocurrido un error inesperado. Por favor, inténtalo de nuevo o contacta al administrador.';
+        END IF;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END;
+    -- Iniciar la transacción
+    START TRANSACTION;
+    -- Validar unidad de medida y agregar depuración
+    SELECT idUnidad INTO _idUnidad
+    FROM UnidadesMedida
+    WHERE LOWER(unidad) = LOWER(_unidadMedida)
+    LIMIT 1;
+    -- Verificar si la unidad de medida existe
+    IF _idUnidad IS NULL THEN
+        SET _errorMensaje = CONCAT('La unidad de medida "', _unidadMedida, '" no está registrada. Verifica que sea correcta.');
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END IF;
+    -- Agregar mensaje de depuración para _idTipo, _idPresentacion, _dosisMedicamento y _idUnidad
+    SELECT _idTipo AS "ID Tipo", _idPresentacion AS "ID Presentacion", _dosisMedicamento AS "Dosis", _idUnidad AS "ID Unidad";
+    -- Buscar combinación exacta
+    SELECT idCombinacion INTO _idCombinacion
+    FROM CombinacionesMedicamentos
+    WHERE idTipo = _idTipo
+      AND idPresentacion = _idPresentacion
+      AND dosis = _dosisMedicamento
+      AND idUnidad = _idUnidad
+    LIMIT 1;
+    -- Verificar si existe la combinación y agregar mensaje de depuración
+    IF _idCombinacion IS NOT NULL THEN
+        COMMIT;
+        SELECT 'Combinación exacta encontrada.' AS mensaje, _idCombinacion AS idCombinacion;
+    ELSE
+        -- Registrar nueva combinación
+        INSERT INTO CombinacionesMedicamentos (idTipo, idPresentacion, dosis, idUnidad)
+        VALUES (_idTipo, _idPresentacion, _dosisMedicamento, _idUnidad);
+        SET _idCombinacion = LAST_INSERT_ID();
+        COMMIT;
+        SELECT 'Nueva combinación registrada.' AS mensaje, _idCombinacion AS idCombinacion;
+    END IF;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -187,13 +3084,6 @@ CREATE TABLE `detallemedicamentos` (
   `tipoTratamiento` enum('Primario','Complementario') DEFAULT 'Primario',
   `estadoTratamiento` enum('Activo','Finalizado','En pausa') DEFAULT 'Activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `detallemedicamentos`
---
-
-INSERT INTO `detallemedicamentos` (`idDetalleMed`, `idMedicamento`, `idEquino`, `dosis`, `frecuenciaAdministracion`, `idViaAdministracion`, `fechaInicio`, `fechaFin`, `observaciones`, `reaccionesAdversas`, `idUsuario`, `tipoTratamiento`, `estadoTratamiento`) VALUES
-(1, 2, 1, 'mg', '8h', 1, '2025-01-16', '2025-01-31', 'PRUEBA', '', 3, 'Primario', 'Activo');
 
 -- --------------------------------------------------------
 
@@ -1954,7 +4844,7 @@ ALTER TABLE `combinacionesmedicamentos`
 -- AUTO_INCREMENT de la tabla `detallemedicamentos`
 --
 ALTER TABLE `detallemedicamentos`
-  MODIFY `idDetalleMed` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idDetalleMed` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `entrenamientos`
@@ -2188,7 +5078,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `viasadministracion`
 --
 ALTER TABLE `viasadministracion`
-  MODIFY `idViaAdministracion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idViaAdministracion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `vistas`
