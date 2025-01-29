@@ -7,6 +7,7 @@ CREATE PROCEDURE spu_historial_medico_registrarMedi(
     IN _dosis VARCHAR(50),
     IN _frecuenciaAdministracion VARCHAR(50),
     IN _idViaAdministracion INT, -- Ahora usamos el ID de la vía
+    IN _fechaInicio DATE, -- Nuevo parámetro para la fecha de inicio
     IN _fechaFin DATE,
     IN _observaciones TEXT,
     IN _reaccionesAdversas TEXT, -- Permitir NULL
@@ -57,10 +58,31 @@ BEGIN
         SIGNAL SQLSTATE '45000';
     END IF;
 
+    -- Validar que la fecha de inicio no sea posterior a la fecha de fin
+    IF _fechaInicio > _fechaFin THEN
+        SET _errorMensaje = 'La fecha de inicio no puede ser posterior a la fecha de fin.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Validar que la fecha de fin no sea anterior a la fecha de inicio
+    IF _fechaFin < _fechaInicio THEN
+        SET _errorMensaje = 'La fecha de fin no puede ser anterior a la fecha de inicio.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
     -- Validar el tipo de tratamiento (debe ser 'Primario' o 'Complementario')
     IF _tipoTratamiento NOT IN ('Primario', 'Complementario') THEN
         SET _errorMensaje = 'El tipo de tratamiento debe ser "Primario" o "Complementario".';
         SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Verificar si el equino tiene algún registro de tratamiento
+    IF NOT EXISTS (SELECT 1 FROM DetalleMedicamentos WHERE idEquino = _idEquino) THEN
+        -- Si no tiene registros, el primer tratamiento debe ser 'Primario'
+        IF _tipoTratamiento != 'Primario' THEN
+            SET _errorMensaje = 'El primer registro del equino debe ser un tratamiento primario, no complementario.';
+            SIGNAL SQLSTATE '45000';
+        END IF;
     END IF;
 
     -- Verificar que el equino no tenga un tratamiento primario activo si se va a registrar un nuevo tratamiento primario
@@ -84,7 +106,7 @@ BEGIN
         SIGNAL SQLSTATE '45000';
     END IF;
 
-    -- Insertar el detalle del medicamento administrado al equino con la fecha de inicio como la fecha actual
+    -- Insertar el detalle del medicamento administrado al equino con la fecha de inicio proporcionada
     INSERT INTO DetalleMedicamentos (
         idMedicamento,
         idEquino,
@@ -104,7 +126,7 @@ BEGIN
         _dosis,
         _frecuenciaAdministracion,
         _idViaAdministracion,    -- Insertar el ID de la vía
-        NOW(),                   -- Fecha de inicio se asigna a la fecha y hora actual
+        _fechaInicio,            -- Usar la fecha de inicio proporcionada
         _fechaFin,
         _observaciones,
         IFNULL(_reaccionesAdversas, NULL),
@@ -112,6 +134,14 @@ BEGIN
         _tipoTratamiento,        -- Asignar el tipo de tratamiento (Primario o Complementario)
         'Activo'                 -- El tratamiento comienza con el estado 'Activo'
     );
+
+    -- Actualizar el estado del tratamiento primario a 'Finalizado' si la fecha de fin ha pasado
+    UPDATE DetalleMedicamentos
+    SET estadoTratamiento = 'Finalizado'
+    WHERE idEquino = _idEquino
+    AND tipoTratamiento = 'Primario'
+    AND estadoTratamiento = 'Activo'
+    AND fechaFin < CURDATE();
 
     -- Confirmar la transacción
     COMMIT;
