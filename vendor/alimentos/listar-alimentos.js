@@ -29,7 +29,7 @@ function generarPDF() {
     const data = table.rows({ search: 'applied' }).data().toArray();
 
     // La URL de la imagen en el servidor
-    const imagenURL = 'https://corsproxy.io/?https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
+    const imagenURL = 'https://corsproxy.io/?key=18482624&url=https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
 
     // Llamar a la función para convertir la imagen a Base64
     cargarImagenBase64(imagenURL, function (base64Image) {
@@ -191,7 +191,7 @@ function generarCSV() {
 // Función para imprimir el documento
 function imprimirDocumento() {
     // La URL de la imagen en el servidor
-    const imagenURL = 'https://corsproxy.io/?https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
+    const imagenURL = 'https://corsproxy.io/?key=18482624&url=https://contactohipico.pe/wp-content/uploads/2020/10/IMG-20201009-WA0001.jpg';
 
     // Llamar a la función para convertir la imagen a Base64
     cargarImagenBase64(imagenURL, function (base64Image) {
