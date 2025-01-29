@@ -147,7 +147,7 @@ INSERT INTO TipoRotaciones (nombreRotacion)
         ('Rufiado'), ('Potrillo'),
         ('Potranca'),('Yeguas Preñadas'),
         ('Yeguas con Crías'), ('Yeguas Vacías'),
-        ('Destetados');
+        ('Destetados'), ('Sembrío');
 
 -- 3. Insertar Datos en TipoEquinos
 INSERT INTO TipoEquinos (tipoEquino) VALUES 
