@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-01-2025 a las 06:50:36
+-- Tiempo de generación: 28-01-2025 a las 06:08:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -959,39 +959,26 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equinos_listar` (IN `p_estadoMo
         E.idEquino DESC;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equino_editar` (IN `_idEquino` INT, IN `_idPropietario` INT, IN `_pesokg` DECIMAL(5,1), IN `_idEstadoMonta` VARCHAR(50), IN `_estado` ENUM('Vivo','Muerto'), IN `_fechaEntrada` DATE, IN `_fechaSalida` DATE)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equino_editar` (IN `_idEquino` INT, IN `_idPropietario` INT, IN `_pesokg` DECIMAL(5,1), IN `_idEstadoMonta` VARCHAR(50), IN `_estado` ENUM('Vivo','Muerto'))   BEGIN
     DECLARE _errorMsg VARCHAR(255);
-
     -- Verificar si el equino existe
     IF NOT EXISTS (SELECT 1 FROM Equinos WHERE idEquino = _idEquino) THEN
         SET _errorMsg = 'Error: No existe un equino con el ID proporcionado.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
-
-    -- Iniciar una transacción
-    START TRANSACTION;
-
-    -- Actualizar solo los campos que no sean NULL o vacíos
+    -- Actualizar solo los campos que no sean NULL
     UPDATE Equinos
     SET 
-        idPropietario = COALESCE(NULLIF(_idPropietario, 0), idPropietario),
-        pesokg = COALESCE(NULLIF(_pesokg, 0), pesokg),
-        idEstadoMonta = COALESCE(NULLIF(_idEstadoMonta, ''), idEstadoMonta),
-        estado = COALESCE(NULLIF(_estado, ''), estado),
-        -- Actualizar las fechas solo si no son NULL
-        fechaentrada = COALESCE(NULLIF(_fechaEntrada, '0000-00-00'), fechaentrada),
-        fechasalida = COALESCE(NULLIF(_fechaSalida, '0000-00-00'), fechasalida)
+        idPropietario = COALESCE(_idPropietario, idPropietario),
+        pesokg = COALESCE(_pesokg, pesokg),
+        idEstadoMonta = COALESCE(_idEstadoMonta, idEstadoMonta),
+        estado = COALESCE(_estado, estado)
     WHERE idEquino = _idEquino;
-
     -- Validar si se actualizó correctamente
     IF ROW_COUNT() = 0 THEN
         SET _errorMsg = 'Error: No se realizaron cambios en el registro.';
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMsg;
     END IF;
-
-    -- Confirmar los cambios
-    COMMIT;
-
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_equino_registrar` (IN `_nombreEquino` VARCHAR(100), IN `_fechaNacimiento` DATE, IN `_sexo` ENUM('Macho','Hembra'), IN `_detalles` TEXT, IN `_idTipoEquino` INT, IN `_idPropietario` INT, IN `_pesokg` DECIMAL(5,1), IN `_idNacionalidad` INT, IN `_public_id` VARCHAR(255), IN `_fechaentrada` DATE, IN `_fechasalida` DATE)   BEGIN
@@ -1466,6 +1453,112 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_historial_completo_medicamentos
     END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_historial_medico_registrarMedi` (IN `_idEquino` INT, IN `_idUsuario` INT, IN `_idMedicamento` INT, IN `_dosis` VARCHAR(50), IN `_frecuenciaAdministracion` VARCHAR(50), IN `_idViaAdministracion` INT, IN `_fechaFin` DATE, IN `_observaciones` TEXT, IN `_reaccionesAdversas` TEXT, IN `_tipoTratamiento` VARCHAR(20))   BEGIN
+    DECLARE _errorMensaje VARCHAR(255);
+    DECLARE _dosisCantidad DECIMAL(10, 2);
+    DECLARE _unidadMedida VARCHAR(50);
+
+    -- Manejador de errores para revertir la transacción si hay algún error
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = _errorMensaje;
+    END;
+
+    -- Iniciar la transacción
+    START TRANSACTION;
+
+    -- Verificar que el equino existe
+    IF NOT EXISTS (SELECT 1 FROM Equinos WHERE idEquino = _idEquino) THEN
+        SET _errorMensaje = 'El equino especificado no existe en la base de datos.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+    
+    -- Verificar que el usuario existe
+    IF NOT EXISTS (SELECT 1 FROM Usuarios WHERE idUsuario = _idUsuario) THEN
+        SET _errorMensaje = 'El usuario especificado no existe en la base de datos.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+    
+    -- Verificar que el medicamento existe
+    IF NOT EXISTS (SELECT 1 FROM Medicamentos WHERE idMedicamento = _idMedicamento) THEN
+        SET _errorMensaje = 'El medicamento especificado no existe en la base de datos.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Verificar que la vía de administración existe
+    IF NOT EXISTS (SELECT 1 FROM ViasAdministracion WHERE idViaAdministracion = _idViaAdministracion) THEN
+        SET _errorMensaje = 'La vía de administración especificada no existe en la base de datos.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Validar que la fecha de fin sea una fecha futura
+    IF _fechaFin < CURDATE() THEN
+        SET _errorMensaje = 'La fecha de fin no puede ser anterior a la fecha actual.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Validar el tipo de tratamiento (debe ser 'Primario' o 'Complementario')
+    IF _tipoTratamiento NOT IN ('Primario', 'Complementario') THEN
+        SET _errorMensaje = 'El tipo de tratamiento debe ser "Primario" o "Complementario".';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Verificar que el equino no tenga un tratamiento primario activo si se va a registrar un nuevo tratamiento primario
+    IF _tipoTratamiento = 'Primario' AND EXISTS (
+        SELECT 1 FROM DetalleMedicamentos 
+        WHERE idEquino = _idEquino 
+        AND tipoTratamiento = 'Primario' 
+        AND estadoTratamiento = 'Activo'
+    ) THEN
+        SET _errorMensaje = 'El equino ya tiene un tratamiento primario activo. No se permite registrar otro tratamiento primario hasta que el tratamiento actual esté finalizado o en pausa.';
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Separar la dosis y la unidad de medida, similar al registro de medicamentos
+    SET _dosisCantidad = CAST(SUBSTRING_INDEX(_dosis, ' ', 1) AS DECIMAL(10,2));
+    SET _unidadMedida = TRIM(SUBSTRING_INDEX(_dosis, ' ', -1));
+
+    -- Verificar que la unidad de medida esté registrada en la tabla UnidadesMedida
+    IF NOT EXISTS (SELECT 1 FROM UnidadesMedida WHERE unidad = _unidadMedida) THEN
+        SET _errorMensaje = CONCAT('La unidad de medida "', _unidadMedida, '" no está registrada. Verifica que sea correcta.');
+        SIGNAL SQLSTATE '45000';
+    END IF;
+
+    -- Insertar el detalle del medicamento administrado al equino con la fecha de inicio como la fecha actual
+    INSERT INTO DetalleMedicamentos (
+        idMedicamento,
+        idEquino,
+        dosis,
+        frecuenciaAdministracion,
+        idViaAdministracion, -- Usar el ID en lugar del texto plano
+        fechaInicio,
+        fechaFin,
+        observaciones,
+        reaccionesAdversas,
+        idUsuario,
+        tipoTratamiento,         -- Insertar el tipo de tratamiento
+        estadoTratamiento        -- Insertar el estado del tratamiento
+    ) VALUES (
+        _idMedicamento,
+        _idEquino,
+        _dosis,
+        _frecuenciaAdministracion,
+        _idViaAdministracion,    -- Insertar el ID de la vía
+        NOW(),                   -- Fecha de inicio se asigna a la fecha y hora actual
+        _fechaFin,
+        _observaciones,
+        IFNULL(_reaccionesAdversas, NULL),
+        _idUsuario,
+        _tipoTratamiento,        -- Asignar el tipo de tratamiento (Primario o Complementario)
+        'Activo'                 -- El tratamiento comienza con el estado 'Activo'
+    );
+
+    -- Confirmar la transacción
+    COMMIT;
+
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listarServiciosPorTipo` (IN `p_tipoServicio` ENUM('Propio','Mixto','General'))   BEGIN
     SELECT 
         s.idServicio,
@@ -1781,26 +1874,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_presentaciones_por_tipo`
     JOIN PresentacionesMedicamentos p ON c.idPresentacion = p.idPresentacion
     WHERE c.idTipo = _idTipo
     ORDER BY p.presentacion ASC;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_revision_basica` ()   BEGIN
-    -- Seleccionamos todos los registros de la tabla revisionequinos con el nombre del equino
-    SELECT 
-        r.idRevision,
-        e.nombreEquino,  -- Obtenemos el nombre del equino desde la tabla Equinos
-        p.nombreHaras,    -- Nombre del propietario (nombreHaras)
-        r.tiporevision,
-        r.fecharevision,
-        r.observaciones,
-        r.costorevision
-    FROM 
-        revisionequinos r
-    JOIN 
-        Equinos e ON r.idEquino = e.idEquino  -- Hacemos JOIN con la tabla Equinos
-	LEFT JOIN 
-		Propietarios p ON r.idPropietario = p.idPropietario
-    ORDER BY 
-        r.fecharevision DESC; -- Ordenamos por la fecha de la revisión de forma descendente
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_listar_rotaciones` ()   BEGIN
@@ -2471,7 +2544,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_personal_listar` ()   BEGIN
         Usuarios u ON p.idPersonal = u.idPersonal;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_personal_registrar` (OUT `_idPersonal` INT, IN `_nombres` VARCHAR(100), IN `_apellidos` VARCHAR(100), IN `_direccion` VARCHAR(255), IN `_tipodoc` VARCHAR(20), IN `_nrodocumento` VARCHAR(50), IN `_fechaIngreso` DATE, IN `_tipoContrato` ENUM('Parcial','Completo','Por Prácticas','Otro'))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_personal_registrar` (OUT `_idPersonal` INT, IN `_nombres` VARCHAR(100), IN `_apellidos` VARCHAR(100), IN `_direccion` VARCHAR(255), IN `_tipodoc` VARCHAR(20), IN `_nrodocumento` VARCHAR(50), IN `_numeroHijos` INT, IN `_fechaIngreso` DATE, IN `_tipoContrato` ENUM('Parcial','Completo','Por Prácticas','Otro'))   BEGIN
     -- Declaración de variables
     DECLARE existe_error INT DEFAULT 0;
     
@@ -2480,8 +2553,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spu_personal_registrar` (OUT `_idPe
         SET existe_error = 1;
     END;
     
-    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, fechaIngreso, tipoContrato)
-    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _fechaIngreso, _tipoContrato);
+    INSERT INTO Personal (nombres, apellidos, direccion, tipodoc, nrodocumento, numeroHijos, fechaIngreso, tipoContrato)
+    VALUES (_nombres, _apellidos, _direccion, _tipodoc, _nrodocumento, _numeroHijos, _fechaIngreso, _tipoContrato);
     
     -- Verificar si ocurrió un error
     IF existe_error = 1 THEN
@@ -2945,10 +3018,7 @@ CREATE TABLE `alimentos` (
 --
 
 INSERT INTO `alimentos` (`idAlimento`, `idUsuario`, `nombreAlimento`, `idTipoAlimento`, `stockActual`, `stockMinimo`, `estado`, `idUnidadMedida`, `costo`, `idLote`, `idEquino`, `compra`, `fechaMovimiento`) VALUES
-(1, 3, 'Afrecho', 2, 412.50, 100.00, 'Disponible', 1, 65.00, 1, 5, 32500.00, '2025-01-28 22:03:33'),
-(2, 3, 'Afrecho', 2, 10000.00, 1000.00, 'Disponible', 1, 70.00, 2, NULL, 700000.00, '2025-01-28 21:50:39'),
-(3, 3, 'Cebada', 2, 8000.00, 1000.00, 'Disponible', 1, 65.00, 2, NULL, 520000.00, '2025-01-28 21:51:50'),
-(4, 3, 'Afrecho', 2, 10000.00, 1000.00, 'Disponible', 1, 69.00, 3, NULL, 690000.00, '2025-01-28 21:52:45');
+(1, 3, 'Afrecho', 2, 600.00, 100.00, 'Disponible', 1, 65.00, 1, 15, 32500.00, '2025-01-28 00:04:55');
 
 -- --------------------------------------------------------
 
@@ -2982,15 +3052,6 @@ CREATE TABLE `bostas` (
   `numero_semana` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `bostas`
---
-
-INSERT INTO `bostas` (`idbosta`, `fecha`, `cantidadsacos`, `pesoaprox`, `peso_diario`, `peso_semanal`, `peso_mensual`, `numero_semana`) VALUES
-(1, '2024-12-31', 34, 27.00, 918.00, 918.00, 918.00, 53),
-(2, '2025-01-10', 36, 25.00, 900.00, 900.00, 900.00, 2),
-(3, '2025-01-20', 40, 24.00, 960.00, 960.00, 1860.00, 4);
-
 -- --------------------------------------------------------
 
 --
@@ -3004,20 +3065,6 @@ CREATE TABLE `campos` (
   `idTipoSuelo` int(11) NOT NULL,
   `estado` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `campos`
---
-
-INSERT INTO `campos` (`idCampo`, `numeroCampo`, `tamanoCampo`, `idTipoSuelo`, `estado`) VALUES
-(1, 1, 998.83, 1, 'Activo'),
-(2, 2, 1023.89, 1, 'Activo'),
-(3, 3, 1015.33, 1, 'Activo'),
-(4, 4, 1008.52, 1, 'Activo'),
-(5, 5, 1004.52, 2, 'Activo'),
-(6, 6, 999.65, 2, 'Activo'),
-(7, 7, 997.77, 2, 'Activo'),
-(8, 8, 989.45, 2, 'Activo');
 
 -- --------------------------------------------------------
 
@@ -3048,8 +3095,6 @@ INSERT INTO `combinacionesmedicamentos` (`idCombinacion`, `idTipo`, `idPresentac
 (6, 3, 5, 5.00, 1),
 (15, 3, 14, 15.00, 1),
 (17, 3, 16, 100.00, 4),
-(21, 3, 18, 10.00, 1),
-(22, 3, 18, 50.00, 1),
 (7, 4, 6, 300.00, 1),
 (8, 5, 7, 100.00, 3),
 (14, 5, 13, 50.00, 1),
@@ -3059,9 +3104,7 @@ INSERT INTO `combinacionesmedicamentos` (`idCombinacion`, `idTipo`, `idPresentac
 (11, 8, 10, 20.00, 1),
 (12, 9, 11, 5.00, 1),
 (13, 10, 12, 1.00, 3),
-(19, 11, 4, 200.00, 3),
-(24, 11, 19, 10.00, 1),
-(23, 11, 19, 10.00, 2);
+(19, 11, 4, 200.00, 3);
 
 -- --------------------------------------------------------
 
@@ -3132,26 +3175,25 @@ CREATE TABLE `equinos` (
 
 INSERT INTO `equinos` (`idEquino`, `nombreEquino`, `fechaNacimiento`, `sexo`, `idTipoEquino`, `detalles`, `idEstadoMonta`, `idNacionalidad`, `idPropietario`, `pesokg`, `fotografia`, `estado`, `fechaentrada`, `fechasalida`, `created_at`, `updated_at`) VALUES
 (1, 'Southdale', '2006-04-30', 'Macho', 2, NULL, 1, 35, NULL, 750.0, 'wamevh4drqeq6014yabu', b'1', NULL, NULL, '2025-01-28 04:04:36', '2025-01-28 04:57:13'),
-(2, 'Umbridled Command', '2009-03-22', 'Macho', 2, NULL, 1, 57, NULL, 730.0, 'fdox90by0ixfpqmqnwml', b'1', NULL, NULL, '2025-01-28 04:07:28', '2025-01-29 05:25:19'),
-(3, 'Floriform', '2018-04-16', 'Macho', 2, NULL, 1, 57, NULL, 700.0, 'mbutbvtf7srkrulyrqwv', b'1', NULL, NULL, '2025-01-28 04:09:48', '2025-01-29 05:25:30'),
-(4, 'La Lomada', '2012-08-05', 'Hembra', 1, NULL, 5, 8, NULL, 620.0, 'agzlw5eefgmhfyw8he5s', b'1', NULL, NULL, '2025-01-28 04:38:13', '2025-01-29 05:25:19'),
+(2, 'Umbridled Command', '2009-03-22', 'Macho', 2, NULL, 2, 57, NULL, 730.0, 'fdox90by0ixfpqmqnwml', b'1', NULL, NULL, '2025-01-28 04:07:28', NULL),
+(3, 'Floriform', '2018-04-16', 'Macho', 2, NULL, 2, 57, NULL, 700.0, 'mbutbvtf7srkrulyrqwv', b'1', NULL, NULL, '2025-01-28 04:09:48', NULL),
+(4, 'La Lomada', '2012-08-05', 'Hembra', 1, NULL, 4, 8, NULL, 620.0, 'agzlw5eefgmhfyw8he5s', b'1', NULL, NULL, '2025-01-28 04:38:13', '2025-01-28 04:57:13'),
 (5, 'Gong Zhu', '2013-01-24', 'Hembra', 1, NULL, 5, 57, NULL, 630.0, 'siyzv6nrrxb1zecq4lu4', b'1', NULL, NULL, '2025-01-28 04:39:03', NULL),
 (6, 'Rocio de Lima', '2011-05-13', 'Hembra', 1, NULL, 5, 57, NULL, 650.0, 'snrw85wx03ygxhouhz7q', b'1', NULL, NULL, '2025-01-28 04:39:56', NULL),
 (7, 'Alena', '2016-03-03', 'Hembra', 1, NULL, 5, 137, NULL, 680.0, 'z88s36zxckkryce0pteb', b'1', NULL, NULL, '2025-01-28 04:40:43', NULL),
-(8, 'La Elegida', '2006-07-08', 'Hembra', 1, NULL, 5, 137, NULL, 640.0, 'g5e4cujkuzryiajuj0a3', b'1', NULL, NULL, '2025-01-28 04:41:26', '2025-01-29 05:25:30'),
+(8, 'La Elegida', '2006-07-08', 'Hembra', 1, NULL, 5, 137, NULL, 640.0, 'g5e4cujkuzryiajuj0a3', b'1', NULL, NULL, '2025-01-28 04:41:26', NULL),
 (9, 'Nairobi', '2008-06-02', 'Hembra', 1, NULL, 5, 137, NULL, 600.0, 'amq0nqrlbcr9cbe9kesa', b'1', NULL, NULL, '2025-01-28 04:42:09', NULL),
 (10, 'Galaxia', '2016-05-05', 'Hembra', 1, NULL, 5, 137, NULL, 630.0, 'pcyx90wsaoq4fgrag58u', b'1', NULL, NULL, '2025-01-28 04:43:59', NULL),
 (11, 'Gwendoline', '2008-04-25', 'Hembra', 1, NULL, 5, 137, NULL, 620.0, 'qzuldgsu0vovijsynoti', b'1', NULL, NULL, '2025-01-28 04:44:49', NULL),
 (12, 'Moon Pass', '2009-03-24', 'Hembra', 1, NULL, 5, 57, NULL, 610.0, 'qziseur0xemjkbwanbgn', b'1', NULL, NULL, '2025-01-28 04:45:52', NULL),
-(13, 'Mosquetera', '2018-05-06', 'Hembra', 1, NULL, 4, 57, NULL, 620.0, 'qnznzzd93imue7ct2w15', b'1', NULL, NULL, '2025-01-28 04:46:29', '2025-01-29 05:25:30'),
+(13, 'Mosquetera', '2018-05-06', 'Hembra', 1, NULL, 5, 57, NULL, 620.0, 'qnznzzd93imue7ct2w15', b'1', NULL, NULL, '2025-01-28 04:46:29', NULL),
 (14, 'Q\'Orianka', '2017-04-16', 'Hembra', 1, NULL, 5, 8, NULL, 630.0, 'x97hi5dbkvs9kdvwpbbo', b'1', NULL, NULL, '2025-01-28 04:47:31', NULL),
 (15, 'Hechicero', '2023-10-11', 'Macho', 4, NULL, NULL, 137, NULL, 280.0, 'eplldnef8xjozjw2gttz', b'1', NULL, NULL, '2025-01-28 04:50:09', NULL),
 (16, 'Via Regina', '2022-09-17', 'Hembra', 3, NULL, 5, 137, NULL, 350.0, 'zakh9ur42g5mrijkh1et', b'1', NULL, NULL, '2025-01-28 04:51:21', '2025-01-28 04:57:13'),
 (17, 'Curare', '2023-10-06', 'Macho', 4, NULL, NULL, 137, NULL, 290.0, 'yncuf9afn7ysqecuyrwr', b'1', NULL, NULL, '2025-01-28 04:53:05', NULL),
-(18, 'La Candy', NULL, 'Hembra', 1, NULL, 4, 57, 1, NULL, '', b'1', NULL, NULL, '2025-01-28 04:54:02', '2025-01-29 05:40:50'),
-(19, 'La Negra', NULL, 'Hembra', 1, NULL, 5, 115, 2, NULL, '', b'1', '2025-01-27', '2025-01-31', '2025-01-28 04:54:52', '2025-01-29 05:25:19'),
-(20, 'Poética', NULL, 'Hembra', 1, NULL, 5, 137, 1, NULL, '', b'1', NULL, NULL, '2025-01-28 04:56:16', NULL),
-(21, 'Rayo Veloz', '2025-01-15', 'Macho', 5, NULL, NULL, 137, NULL, 40.0, 'ie2fgreqsrhkrpjsk5op', b'1', NULL, NULL, '2025-01-29 02:58:51', NULL);
+(18, 'La Candy', NULL, 'Hembra', 1, NULL, 4, 57, 1, NULL, '', b'1', NULL, NULL, '2025-01-28 04:54:02', '2025-01-28 04:58:39'),
+(19, 'La Negra', NULL, 'Hembra', 1, NULL, 5, 115, 2, NULL, '', b'1', '2025-01-27', '2025-01-31', '2025-01-28 04:54:52', NULL),
+(20, 'Poética', NULL, 'Hembra', 1, NULL, 5, 137, 1, NULL, '', b'1', NULL, NULL, '2025-01-28 04:56:16', NULL);
 
 -- --------------------------------------------------------
 
@@ -3204,16 +3246,6 @@ CREATE TABLE `herramientas` (
   `nombreHerramienta` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `herramientas`
---
-
-INSERT INTO `herramientas` (`idHerramienta`, `nombreHerramienta`) VALUES
-(2, 'Corta-casco'),
-(3, 'Cortador de herraduras'),
-(4, 'Cuñas y espuelas'),
-(1, 'Tenazas');
-
 -- --------------------------------------------------------
 
 --
@@ -3225,13 +3257,6 @@ CREATE TABLE `herramientasusadashistorial` (
   `idHistorialHerrero` int(11) NOT NULL,
   `idHerramienta` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `herramientasusadashistorial`
---
-
-INSERT INTO `herramientasusadashistorial` (`idHerramientasUsadas`, `idHistorialHerrero`, `idHerramienta`) VALUES
-(1, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -3283,13 +3308,6 @@ CREATE TABLE `historialherrero` (
   `observaciones` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `historialherrero`
---
-
-INSERT INTO `historialherrero` (`idHistorialHerrero`, `idEquino`, `idUsuario`, `fecha`, `idTrabajo`, `observaciones`) VALUES
-(1, 1, 3, '2025-01-31', 2, 'Se requiere realizar el recorte de los cascos del equino Southdale para poder salvaguardar el estado y salubridad del mismo.');
-
 -- --------------------------------------------------------
 
 --
@@ -3307,13 +3325,6 @@ CREATE TABLE `historialimplemento` (
   `descripcion` varchar(100) DEFAULT NULL,
   `fechaMovimiento` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `historialimplemento`
---
-
-INSERT INTO `historialimplemento` (`idHistorial`, `idInventario`, `idTipoinventario`, `idTipomovimiento`, `cantidad`, `precioUnitario`, `precioTotal`, `descripcion`, `fechaMovimiento`) VALUES
-(1, 6, 2, 2, 1, NULL, NULL, 'Mal estado', '2025-01-29 05:39:42');
 
 -- --------------------------------------------------------
 
@@ -3339,13 +3350,7 @@ CREATE TABLE `historialmovimientos` (
 
 INSERT INTO `historialmovimientos` (`idMovimiento`, `idAlimento`, `tipoMovimiento`, `cantidad`, `idEquino`, `idUsuario`, `unidadMedida`, `fechaMovimiento`, `merma`) VALUES
 (1, 1, 'Entrada', 200.00, NULL, 3, '1', '2025-01-28', NULL),
-(2, 1, 'Salida', 98.00, 15, 3, 'kg', '2025-01-28', 2.00),
-(3, 1, 'Salida', 7.00, 1, 3, 'kg', '2025-01-28', 0.00),
-(4, 1, 'Salida', 12.00, 2, 3, 'kg', '2025-01-28', 0.00),
-(5, 1, 'Salida', 5.00, 16, 3, 'kg', '2025-01-28', 0.00),
-(6, 1, 'Salida', 10.00, 15, 3, 'kg', '2025-01-28', 0.50),
-(7, 1, 'Salida', 72.00, 5, 3, 'kg', '2025-01-28', 1.00),
-(8, 1, 'Salida', 75.00, 5, 3, 'kg', '2025-01-28', 5.00);
+(2, 1, 'Salida', 98.00, 15, 3, 'kg', '2025-01-28', 2.00);
 
 -- --------------------------------------------------------
 
@@ -3363,13 +3368,6 @@ CREATE TABLE `historialmovimientosmedicamentos` (
   `idUsuario` int(11) NOT NULL,
   `fechaMovimiento` date DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `historialmovimientosmedicamentos`
---
-
-INSERT INTO `historialmovimientosmedicamentos` (`idMovimiento`, `idMedicamento`, `tipoMovimiento`, `cantidad`, `motivo`, `idEquino`, `idUsuario`, `fechaMovimiento`) VALUES
-(1, 1, 'Entrada', 20, '', NULL, 3, '2025-01-28');
 
 -- --------------------------------------------------------
 
@@ -3391,18 +3389,6 @@ CREATE TABLE `implementos` (
   `create_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `implementos`
---
-
-INSERT INTO `implementos` (`idInventario`, `idTipoinventario`, `nombreProducto`, `descripcion`, `precioUnitario`, `precioTotal`, `idTipomovimiento`, `cantidad`, `stockFinal`, `estado`, `create_at`) VALUES
-(1, 1, 'Soga', 'Soga de 3.5 metros de largo.', 12.00, 240.00, 1, 20, 20, b'1', '2025-01-28 23:56:18'),
-(2, 1, 'Jáquima', 'Jáquima para diferenciar equinos', 100.00, 1500.00, 1, 15, 15, b'1', '2025-01-28 23:57:35'),
-(3, 1, 'Cepillo de cuerpo', 'Cepillo de cerdas suaves, de cerdas duras.', 12.00, 60.00, 1, 5, 5, b'1', '2025-01-28 23:58:49'),
-(4, 1, 'Cepillo de crin', 'Mantener las crines y colas desenredadas.', 8.00, 16.00, 1, 2, 2, b'1', '2025-01-28 23:59:56'),
-(5, 1, 'Refuerzo para casco', 'Mantener la salud del pie del caballo.', 150.00, 450.00, 1, 3, 3, b'1', '2025-01-29 00:00:33'),
-(6, 2, 'Lampa', 'Beneficiar campos', 26.00, 156.00, 1, 6, 5, b'1', '2025-01-29 00:05:28');
-
 -- --------------------------------------------------------
 
 --
@@ -3422,9 +3408,7 @@ CREATE TABLE `lotesalimento` (
 --
 
 INSERT INTO `lotesalimento` (`idLote`, `lote`, `fechaCaducidad`, `fechaIngreso`, `estadoLote`) VALUES
-(1, '0101', '2025-03-18', '2025-01-28 00:02:50', 'No Vencido'),
-(2, '1114', '2025-03-20', '2025-01-28 21:50:39', 'No Vencido'),
-(3, '1142', '2025-05-07', '2025-01-28 21:52:45', 'No Vencido');
+(1, '0101', '2025-03-18', '2025-01-28 00:02:50', 'No Vencido');
 
 -- --------------------------------------------------------
 
@@ -3438,14 +3422,6 @@ CREATE TABLE `lotesmedicamento` (
   `fechaCaducidad` date NOT NULL,
   `fechaIngreso` date DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `lotesmedicamento`
---
-
-INSERT INTO `lotesmedicamento` (`idLoteMedicamento`, `lote`, `fechaCaducidad`, `fechaIngreso`) VALUES
-(1, '0101', '2025-06-27', '2025-01-28'),
-(2, '0552', '2027-05-31', '2025-01-28');
 
 -- --------------------------------------------------------
 
@@ -3470,14 +3446,6 @@ CREATE TABLE `medicamentos` (
   `ultima_modificacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `medicamentos`
---
-
-INSERT INTO `medicamentos` (`idMedicamento`, `idUsuario`, `nombreMedicamento`, `descripcion`, `idCombinacion`, `cantidad_stock`, `stockMinimo`, `estado`, `idEquino`, `idLoteMedicamento`, `precioUnitario`, `motivo`, `fecha_registro`, `ultima_modificacion`) VALUES
-(1, 3, 'Flunixin Meglumine', 'Antiinflamatorio no esteroideo (AINE).', 22, 30, 3, 'Disponible', NULL, 1, 110.00, NULL, '2025-01-28', '2025-01-29 04:51:34'),
-(2, 3, 'Ivermectina', '', 24, 15, 5, 'Disponible', NULL, 2, 35.00, NULL, '2025-01-28', '2025-01-29 04:50:41');
-
 -- --------------------------------------------------------
 
 --
@@ -3497,10 +3465,7 @@ CREATE TABLE `mermasalimento` (
 --
 
 INSERT INTO `mermasalimento` (`idMerma`, `idAlimento`, `cantidadMerma`, `fechaMerma`, `motivo`) VALUES
-(1, 1, 2.00, '2025-01-28 00:04:55', 'Merma registrada en salida de inventario'),
-(2, 1, 0.50, '2025-01-28 22:02:05', 'Merma registrada en salida de inventario'),
-(3, 1, 1.00, '2025-01-28 22:02:35', 'Merma registrada en salida de inventario'),
-(4, 1, 5.00, '2025-01-28 22:03:33', 'Merma registrada en salida de inventario');
+(1, 1, 2.00, '2025-01-28 00:04:55', 'Merma registrada en salida de inventario');
 
 -- --------------------------------------------------------
 
@@ -3856,8 +3821,7 @@ INSERT INTO `personal` (`idPersonal`, `nombres`, `apellidos`, `direccion`, `tipo
 (3, 'SupervisorE', 'Gereda', 'AV. Los Angeles', 'DNI', '33333333', '2024-08-27', NULL, 'Completo'),
 (4, 'SupervisorC', 'Mamani', 'Calle Fatima', 'DNI', '44444444', '2024-08-27', NULL, 'Completo'),
 (5, 'Medico', 'Paullac', 'Calle Fatima', 'DNI', '55555555', '2024-08-27', NULL, 'Completo'),
-(6, 'Herrero', 'Nuñez', 'Calle Fatima', 'DNI', '66666666', '2024-08-27', NULL, 'Parcial'),
-(9, 'José Aurelio', 'Quispe Yupanqui', 'Av. Brasil', 'DNI', '77777777', '2024-12-30', NULL, 'Parcial');
+(6, 'Herrero', 'Nuñez', 'Calle Fatima', 'DNI', '66666666', '2024-08-27', NULL, 'Parcial');
 
 -- --------------------------------------------------------
 
@@ -3885,12 +3849,10 @@ INSERT INTO `presentacionesmedicamentos` (`idPresentacion`, `presentacion`) VALU
 (14, 'goteros'),
 (6, 'grageas'),
 (4, 'inyectable'),
-(18, 'inyectables'),
 (2, 'jarabes'),
 (11, 'píldoras'),
 (15, 'polvos medicinales'),
 (7, 'pomadas'),
-(19, 'solución oral'),
 (17, 'spray'),
 (5, 'suspensión'),
 (1, 'tabletas');
@@ -3931,14 +3893,6 @@ CREATE TABLE `revisionequinos` (
   `create_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `revisionequinos`
---
-
-INSERT INTO `revisionequinos` (`idRevision`, `idEquino`, `idPropietario`, `tiporevision`, `fecharevision`, `observaciones`, `costorevision`, `create_at`) VALUES
-(1, 18, 1, 'Ecografía', '2025-01-06', 'Abortó', NULL, '2025-01-28 22:34:03'),
-(7, 18, 1, 'Biopsia endometrial', '2025-01-23', 'Ninguna, solo rutinaria', 1100.00, '2025-01-28 23:37:52');
-
 -- --------------------------------------------------------
 
 --
@@ -3977,15 +3931,6 @@ CREATE TABLE `rotacioncampos` (
   `detalleRotacion` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `rotacioncampos`
---
-
-INSERT INTO `rotacioncampos` (`idRotacion`, `idCampo`, `idTipoRotacion`, `fechaRotacion`, `estadoRotacion`, `detalleRotacion`) VALUES
-(1, 8, 3, '2025-01-01', '', ''),
-(2, 3, 2, '2025-01-10', '', ''),
-(3, 8, 12, '2025-01-04', '', '');
-
 -- --------------------------------------------------------
 
 --
@@ -4014,12 +3959,7 @@ CREATE TABLE `servicios` (
 
 INSERT INTO `servicios` (`idServicio`, `idEquinoMacho`, `idEquinoHembra`, `idEquinoExterno`, `fechaServicio`, `tipoServicio`, `detalles`, `idMedicamento`, `horaEntrada`, `horaSalida`, `idPropietario`, `idEstadoMonta`, `costoServicio`) VALUES
 (1, 1, 4, NULL, '2025-01-27', 'Propio', '', NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 1, NULL, 18, '2025-01-01', 'Mixto', '', NULL, '06:00:00', '06:15:00', 1, NULL, 3500.00),
-(3, 1, NULL, 19, '2025-01-01', 'Mixto', '', NULL, '10:44:00', '10:49:00', 2, NULL, 2000.00),
-(4, 1, 4, NULL, '2025-01-01', 'Propio', '', NULL, NULL, NULL, NULL, NULL, NULL),
-(5, 2, 8, NULL, '2024-12-29', 'Propio', '', NULL, NULL, NULL, NULL, NULL, NULL),
-(6, 3, 13, NULL, '2025-01-16', 'Propio', '', NULL, NULL, NULL, NULL, NULL, NULL),
-(7, 1, NULL, 18, '2025-01-17', 'Mixto', '', NULL, '12:40:00', '12:50:00', 1, NULL, 2500.00);
+(2, 1, NULL, 18, '2025-01-01', 'Mixto', '', NULL, '06:00:00', '06:15:00', 1, NULL, 3500.00);
 
 -- --------------------------------------------------------
 
@@ -4185,8 +4125,7 @@ INSERT INTO `tiporotaciones` (`idTipoRotacion`, `nombreRotacion`, `detalles`) VA
 (8, 'Yeguas Preñadas', NULL),
 (9, 'Yeguas con Crías', NULL),
 (10, 'Yeguas Vacías', NULL),
-(11, 'Destetados', NULL),
-(12, 'Sembrío', NULL);
+(11, 'Destetados', NULL);
 
 -- --------------------------------------------------------
 
@@ -4227,14 +4166,6 @@ CREATE TABLE `tipostrabajos` (
   `idTipoTrabajo` int(11) NOT NULL,
   `nombreTrabajo` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `tipostrabajos`
---
-
-INSERT INTO `tipostrabajos` (`idTipoTrabajo`, `nombreTrabajo`) VALUES
-(1, 'Colocación de herraduras'),
-(2, 'Recorte de los cascos');
 
 -- --------------------------------------------------------
 
@@ -4360,8 +4291,7 @@ INSERT INTO `usuarios` (`idUsuario`, `idPersonal`, `correo`, `clave`, `idRol`, `
 (3, 3, 'superE', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 3, b'1', '2025-01-28 03:51:30', NULL),
 (4, 4, 'superC', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 4, b'1', '2025-01-28 03:51:30', NULL),
 (5, 5, 'medico', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 5, b'1', '2025-01-28 03:51:30', NULL),
-(6, 6, 'herrero', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 6, b'1', '2025-01-28 03:51:30', NULL),
-(7, 9, 'jose', '$2y$10$8UuHdbYIkL036ecao7Y69.yCV9GHZhMbMDulc95h/dSDTbR6shCU.', 2, b'0', '2025-01-29 05:47:51', NULL);
+(6, 6, 'herrero', '$2y$10$RaoPTBz9oVETRVocodEaWuwxQPjshzARRmDnGZcWcDY43YxNF/sIa', 6, b'1', '2025-01-28 03:51:30', NULL);
 
 -- --------------------------------------------------------
 
@@ -4401,7 +4331,7 @@ CREATE TABLE `vistas` (
   `sidebaroption` char(1) NOT NULL,
   `texto` varchar(40) DEFAULT NULL,
   `icono` varchar(35) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ;
 
 --
 -- Volcado de datos para la tabla `vistas`
@@ -4814,7 +4744,7 @@ ALTER TABLE `vistas`
 -- AUTO_INCREMENT de la tabla `alimentos`
 --
 ALTER TABLE `alimentos`
-  MODIFY `idAlimento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idAlimento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `asistenciapersonal`
@@ -4826,19 +4756,19 @@ ALTER TABLE `asistenciapersonal`
 -- AUTO_INCREMENT de la tabla `bostas`
 --
 ALTER TABLE `bostas`
-  MODIFY `idbosta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idbosta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `campos`
 --
 ALTER TABLE `campos`
-  MODIFY `idCampo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idCampo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `combinacionesmedicamentos`
 --
 ALTER TABLE `combinacionesmedicamentos`
-  MODIFY `idCombinacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `idCombinacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `detallemedicamentos`
@@ -4856,7 +4786,7 @@ ALTER TABLE `entrenamientos`
 -- AUTO_INCREMENT de la tabla `equinos`
 --
 ALTER TABLE `equinos`
-  MODIFY `idEquino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `idEquino` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `estadomonta`
@@ -4874,13 +4804,13 @@ ALTER TABLE `fotografiaequinos`
 -- AUTO_INCREMENT de la tabla `herramientas`
 --
 ALTER TABLE `herramientas`
-  MODIFY `idHerramienta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idHerramienta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `herramientasusadashistorial`
 --
 ALTER TABLE `herramientasusadashistorial`
-  MODIFY `idHerramientasUsadas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idHerramientasUsadas` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historialdosisaplicadas`
@@ -4898,55 +4828,55 @@ ALTER TABLE `historialequinos`
 -- AUTO_INCREMENT de la tabla `historialherrero`
 --
 ALTER TABLE `historialherrero`
-  MODIFY `idHistorialHerrero` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idHistorialHerrero` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historialimplemento`
 --
 ALTER TABLE `historialimplemento`
-  MODIFY `idHistorial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idHistorial` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historialmovimientos`
 --
 ALTER TABLE `historialmovimientos`
-  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `historialmovimientosmedicamentos`
 --
 ALTER TABLE `historialmovimientosmedicamentos`
-  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idMovimiento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `implementos`
 --
 ALTER TABLE `implementos`
-  MODIFY `idInventario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `idInventario` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `lotesalimento`
 --
 ALTER TABLE `lotesalimento`
-  MODIFY `idLote` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idLote` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `lotesmedicamento`
 --
 ALTER TABLE `lotesmedicamento`
-  MODIFY `idLoteMedicamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idLoteMedicamento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `medicamentos`
 --
 ALTER TABLE `medicamentos`
-  MODIFY `idMedicamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idMedicamento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `mermasalimento`
 --
 ALTER TABLE `mermasalimento`
-  MODIFY `idMerma` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `idMerma` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `modulos`
@@ -4970,13 +4900,13 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `personal`
 --
 ALTER TABLE `personal`
-  MODIFY `idPersonal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idPersonal` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `presentacionesmedicamentos`
 --
 ALTER TABLE `presentacionesmedicamentos`
-  MODIFY `idPresentacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `idPresentacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `propietarios`
@@ -4988,7 +4918,7 @@ ALTER TABLE `propietarios`
 -- AUTO_INCREMENT de la tabla `revisionequinos`
 --
 ALTER TABLE `revisionequinos`
-  MODIFY `idRevision` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idRevision` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -5000,13 +4930,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `rotacioncampos`
 --
 ALTER TABLE `rotacioncampos`
-  MODIFY `idRotacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idRotacion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `servicios`
 --
 ALTER TABLE `servicios`
-  MODIFY `idServicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idServicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `tipoalimentos`
@@ -5036,7 +4966,7 @@ ALTER TABLE `tipomovimientos`
 -- AUTO_INCREMENT de la tabla `tiporotaciones`
 --
 ALTER TABLE `tiporotaciones`
-  MODIFY `idTipoRotacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `idTipoRotacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `tiposmedicamentos`
@@ -5048,7 +4978,7 @@ ALTER TABLE `tiposmedicamentos`
 -- AUTO_INCREMENT de la tabla `tipostrabajos`
 --
 ALTER TABLE `tipostrabajos`
-  MODIFY `idTipoTrabajo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idTipoTrabajo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `tiposuelo`
@@ -5072,7 +5002,7 @@ ALTER TABLE `unidadesmedidaalimento`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `viasadministracion`
@@ -5084,7 +5014,7 @@ ALTER TABLE `viasadministracion`
 -- AUTO_INCREMENT de la tabla `vistas`
 --
 ALTER TABLE `vistas`
-  MODIFY `idvista` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `idvista` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
