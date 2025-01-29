@@ -151,7 +151,7 @@
                             <div class="form-floating flex-grow-2">
                                 <input type="text" class="form-control" id="buscarEquino" placeholder="Buscar Equino" autofocus style="border-radius: 5px;">
                                 <label for="buscarEquino"><i class="fas fa-search" style="color: #4dabf7;"></i> Buscar Equino</label>
-                                <!-- <input type="hidden" id="idEquino" name="idEquino"> -->
+                                <input type="hidden" id="idEquino" name="idEquino">
                             </div>
                             <button type="button" id="buscar-equino" class="btn btn-outline-success" title="Buscar" style="border-radius: 5px;">
                                 <i class="fas fa-search"></i>
