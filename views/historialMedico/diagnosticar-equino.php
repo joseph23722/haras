@@ -2,7 +2,7 @@
 
 <div class="container-fluid px-4">
     <!-- Título principal -->
-    <div class="card-body p-1" style="background-color: #f9f9f9;">
+    <div class="card-body p-1" style="background-color: #fff;">
         <div class="d-flex justify-content-center align-items-center mt-1" style="position: relative; width: 100%;">
             <h1 class="text-center text-uppercase" style="font-weight: bold; font-size: 32px; color: #0056b3; margin: 0; flex-grow: 1; text-align: center; margin-left: 170px;">
                 Registro de Historial Médico
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="card mb-4 shadow border-0">
-        <div class="card-header" style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+        <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2;">
             <h5 class="mb-0 text-uppercase" style="font-weight: bold;">Datos del Historial Médico</h5>
             <!-- Botón para abrir el modal de agregar vías de administración -->
             <button type="button" class="btn btn-success btn-sm"
@@ -48,7 +48,7 @@
                                 <option value="3">Potranca</option>
                                 <option value="4">Potrillo</option>
                             </select>
-                            <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Tipo de Equino</label>
+                            <label for="tipoEquinoSelect"><i class="fas fa-horse" style="color: #001F3F;"></i> Tipo de Equino</label>
                         </div>
                     </div>
 
@@ -58,14 +58,14 @@
                             <select id="equinoSelect" class="form-select" name="idEquino" required>
                                 <option value="">Seleccione Equino</option>
                             </select>
-                            <label for="equinoSelect"><i class="fas fa-horse" style="color: #00b4d8;"></i> Equino</label>
+                            <label for="equinoSelect"><i class="fas fa-horse" style="color: #001F3F;"></i> Equino</label>
                         </div>
                     </div>
                     <!-- Peso Equino (opcional) -->
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input name="pesokg" id="pesokg" class="form-control" readonly disabled>
-                            <label for="pesokg"><i class="fas fa-weight" style="color: #ff6f61;"></i> Peso Equino (kg)</label>
+                            <label for="pesokg"><i class="fas fa-weight" style="color: #001F3F;"></i> Peso Equino (kg)</label>
                         </div>
                     </div>
 
@@ -75,7 +75,7 @@
                             <select id="selectMedicamento" class="form-select" name="idMedicamento" required>
                                 <option value="">Seleccione Medicamento</option>
                             </select>
-                            <label for="selectMedicamento"><i class="fas fa-pills" style="color: #ffa500;"></i> Medicamento</label>
+                            <label for="selectMedicamento"><i class="fas fa-pills" style="color: #001F3F;"></i> Medicamento</label>
                         </div>
                     </div>
 
@@ -87,7 +87,7 @@
                                 <option value="Primario">Primario</option>
                                 <option value="Complementario">Complementario</option>
                             </select>
-                            <label for="tipoTratamiento"><i class="fas fa-list-alt" style="color: #ff8c00;"></i> Tipo de Tratamiento</label>
+                            <label for="tipoTratamiento"><i class="fas fa-list-alt" style="color: #001F3F;"></i> Tipo de Tratamiento</label>
                         </div>
                     </div>
 
@@ -95,7 +95,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" required>
-                            <label for="fechaInicio"><i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha de Inicio</label>
+                            <label for="fechaInicio"><i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha de Inicio</label>
                         </div>
                     </div>
 
@@ -103,7 +103,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="date" name="fechaFin" id="fechaFin" class="form-control" required>
-                            <label for="fechaFin"><i class="fas fa-calendar-alt" style="color: #ba55d3;"></i> Fecha de Fin</label>
+                            <label for="fechaFin"><i class="fas fa-calendar-alt" style="color: #001F3F;"></i> Fecha de Fin</label>
                         </div>
                     </div>
 
@@ -111,7 +111,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="dosis" id="dosis" placeholder="" class="form-control" required>
-                            <label for="dosis"><i class="fas fa-syringe" style="color: #ff6347;"></i> Dosis</label>
+                            <label for="dosis"><i class="fas fa-syringe" style="color: #001F3F;"></i> Dosis</label>
                         </div>
                     </div>
 
@@ -119,7 +119,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="frecuenciaAdministracion" id="frecuenciaAdministracion" class="form-control" required>
-                            <label for="frecuenciaAdministracion"><i class="fas fa-stopwatch" style="color: #6a5acd;"></i> Frecuencia de Administración</label>
+                            <label for="frecuenciaAdministracion"><i class="fas fa-stopwatch" style="color: #001F3F;"></i> Frecuencia de Administración</label>
                         </div>
                     </div>
 
@@ -131,7 +131,7 @@
                                 <!-- Las opciones se cargarán dinámicamente -->
                             </select>
                             <label for="viaAdministracion">
-                                <i class="fas fa-route" style="color: #00b4d8;"></i> Vía de Administración
+                                <i class="fas fa-route" style="color: #001F3F;"></i> Vía de Administración
                             </label>
                         </div>
                     </div>
@@ -140,7 +140,7 @@
                     <div class="col-md-12">
                         <div class="form-floating">
                             <textarea name="observaciones" id="observaciones" class="form-control" style="height: 100px;"></textarea>
-                            <label for="observaciones"><i class="fas fa-notes-medical" style="color: #007bff;"></i> Observaciones</label>
+                            <label for="observaciones"><i class="fas fa-notes-medical" style="color: #001F3F;"></i> Observaciones</label>
                         </div>
                     </div>
 
@@ -148,7 +148,7 @@
                     <div class="col-md-12">
                         <div class="form-floating">
                             <textarea name="reaccionesAdversas" id="reaccionesAdversas" class="form-control" style="height: 100px;"></textarea>
-                            <label for="reaccionesAdversas"><i class="fas fa-exclamation-circle" style="color: #dc3545;"></i> Reacciones Adversas</label>
+                            <label for="reaccionesAdversas"><i class="fas fa-exclamation-circle" style="color: #001F3F;"></i> Reacciones Adversas</label>
                         </div>
                     </div>
 
@@ -156,10 +156,10 @@
 
                     <!-- Botones -->
                     <div class="col-md-12 text-end mt-3">
-                        <a href="./listar-diagnostico-avanzado" class="btn btn-primary btn-lg" style="background-color: #3498db; border-color: #3498db;">
+                        <a href="./listar-diagnostico-avanzado" class="btn btn-primary btn-lg" style="background-color: #001F3F; border: none;">
                             <i class="fas fa-save"></i> Listado Diagnóstico
                         </a>
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial" style="background-color: #0077b6; border: none;">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" id="registrar-historial" style="background-color: #123524; border: none;">
                             <i class="fas fa-save"></i> Registrar Historial
                         </button>
                         <button type="reset" class="btn btn-secondary btn-lg shadow-sm" style="background-color: #adb5bd; border: none;">
