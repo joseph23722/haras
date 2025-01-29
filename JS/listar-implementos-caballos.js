@@ -1,8 +1,3 @@
-function mostrarMensajeDinamico(mensaje, tipo) {
-    let color = tipo === 'ERROR' ? 'red' : tipo === 'INFO' ? 'blue' : 'green';
-    console.log(`%c${mensaje}`, `color: ${color}; font-weight: bold;`);
-    // Aquí puedes agregar más lógica para mostrar el mensaje en el UI
-}
 const cargarImplementos = async (idTipoinventario = 1) => {
     try {
         const params = new URLSearchParams({
@@ -32,7 +27,19 @@ const cargarImplementos = async (idTipoinventario = 1) => {
                         { data: 'cantidad', title: 'Cantidad' },
                         { data: 'precioUnitario', title: 'Precio Unitario' },
                         { data: 'precioTotal', title: 'Precio Total' },
-                        { data: 'estado', title: 'Estado' }
+                        {
+                            data: 'estado',
+                            title: 'Estado',
+                            render: function (data, type, row) {
+                                // Verificar si el estado es 1 (Disponible) o 0 (No Disponible)
+                                if (data === 1) {
+                                    return `<span style="color: green; font-weight: bold;">Disponible</span>`;
+                                } else if (data === 0) {
+                                    return `<span style="color: red; font-weight: bold;">No Disponible</span>`;
+                                }
+                                return data; // En caso de que el valor no sea 1 o 0
+                            }
+                        }
                     ]
                 });
             }

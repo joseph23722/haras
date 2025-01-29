@@ -12,7 +12,7 @@
         </div>
         <div class="card-body" style="background-color: #f9f9f9;">
             <table id="implementos-table" class="table table-striped table-hover table-bordered">
-                <thead style="background: linear-gradient(to right, #a0ffb8, #a0ffb8); color: #003366;">
+                <thead>
                 </thead>
             </table>
         </div>
