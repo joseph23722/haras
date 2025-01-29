@@ -2,15 +2,15 @@
 
 <div class="container-fluid px-4">
   <!-- Título de la página -->
-  <h1 class="mt-4 text-center text-uppercase fw-bold" style="font-size: 40px; color: #2C3E50; letter-spacing: 2px; font-family: 'Roboto', sans-serif;">
+  <h1 class="mt-4 text-center text-uppercase fw-bold" style="font-size: 40px; color: #000; letter-spacing: 2px; font-family: 'Roboto', sans-serif;">
     Historial Medicamentos
   </h1>
 
   <!-- Tabla de Medicamentos Registrados -->
   <div class="card mb-4 shadow-lg rounded-3" style="background-color: #FFFFFF; border: none;">
-    <div class="card-header" style="background: #1ABC9C; color: #FFFFFF; border-radius: 15px 15px 0 0; border-bottom: 4px solid #16A085;">
+    <div class="card-header" style="background: linear-gradient(to left, #123524, #356C56); color: #EFE3C2">
       <h5 class="text-center mb-0">
-        <i class="fas fa-pills" style="color: #F39C12;"></i> Movimientos Registrados
+        <i class="fas fa-pills" style="color: #EFE3C2;"></i> Movimientos Registrados
       </h5>
     </div>
 
